@@ -114,7 +114,7 @@ export const glossaryTerms: GlossaryTerm[] = [
       'A technique where AI retrieves relevant documents before generating a response, grounding answers in real data.',
     fullDefinition:
       'Retrieval-Augmented Generation (RAG) is an architecture that combines a retrieval system (like a vector database search) with a generative AI model. When you ask a question, the system first retrieves relevant documents from a knowledge base, then feeds those documents to the LLM as context. This significantly reduces hallucinations and allows AI to answer questions about private or up-to-date information.',
-    category: 'rag-and-memory',
+    category: 'architecture',
     difficulty: 'intermediate',
     relatedTerms: ['embedding', 'vector-database', 'large-language-model', 'context-window'],
     examples: [

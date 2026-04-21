@@ -35,7 +35,7 @@ export const modules: Module[] = [
     phaseSlug: 'phase-1-foundations',
     title: 'AI Tools Overview',
     description:
-      'Explore the landscape of today's AI tools — chatbots, image generators, coding assistants, and more. Know which tools to reach for and when.',
+      "Explore the landscape of today's AI tools — chatbots, image generators, coding assistants, and more. Know which tools to reach for and when.",
     order: 2,
     difficulty: 'beginner',
     estimatedHours: 1.5,

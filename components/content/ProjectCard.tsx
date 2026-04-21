@@ -36,7 +36,7 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
 
       {/* Skills */}
       <div className="mb-3">
-        <p className="mb-1.5 text-xs font-medium text-fg-subtle">Skills you'll practice</p>
+        <p className="mb-1.5 text-xs font-medium text-fg-subtle">Skills you&apos;ll practice</p>
         <div className="flex flex-wrap gap-1">
           {project.skills.map((skill) => (
             <span
