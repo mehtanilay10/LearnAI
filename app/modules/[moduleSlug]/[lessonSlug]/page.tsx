@@ -90,7 +90,7 @@ export default async function LessonDetailPage({ params }: Params) {
 
       {/* Main content */}
       <div className="flex flex-1 min-w-0">
-        <article className="mx-auto w-full max-w-2xl min-w-0 px-4 py-8 sm:px-6 lg:px-8">
+        <article className="mx-auto w-full max-w-[800px] min-w-0 px-4 py-8 sm:px-6 lg:px-8">
           {/* Breadcrumbs */}
           <Breadcrumbs
             items={[

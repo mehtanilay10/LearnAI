@@ -143,6 +143,15 @@ body {
 .mermaid svg {
   max-width: 100%;
   height: auto;
+  display: block;
+}
+
+/* Fallback sizing for diagrams that render with invalid/missing intrinsic heights. */
+.mermaid-diagram svg:not([height]),
+.mermaid-diagram svg[height="100%"],
+.mermaid-diagram svg[height="0"],
+.mermaid-diagram svg[height="0px"] {
+  min-height: 180px;
 }
 
 .dark .mermaid {

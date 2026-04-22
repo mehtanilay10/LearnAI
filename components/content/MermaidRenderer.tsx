@@ -138,7 +138,7 @@ export function MermaidRenderer({ definition, caption, className }: MermaidRende
         >
           <div
             ref={containerRef}
-            className="mermaid max-w-full"
+            className="mermaid mermaid-diagram max-w-full"
             aria-label={caption ?? 'Diagram'}
           />
 
