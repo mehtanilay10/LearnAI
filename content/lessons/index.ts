@@ -32,19 +32,19 @@ const aiVsMlVsGenerativeAi: Lesson = {
     {
       type: 'paragraph',
       data: {
-        text: 'Let\'s clear it up with one simple diagram and a few clean definitions.',
+        text: 'The good news: these three terms have a precise relationship. Each one is a subset of the previous. Once you see the structure, everything clicks.',
       },
     },
     {
       type: 'heading',
       id: 'the-big-picture',
-      data: { level: 2, text: 'The big picture', anchor: 'the-big-picture' },
+      data: { level: 2, text: 'The big picture: nested layers', anchor: 'the-big-picture' },
     },
     {
       type: 'mermaid',
       data: {
         id: 'ai-ml-genai',
-        caption: 'Generative AI is a subset of ML, which is a subset of AI',
+        caption: 'Generative AI is a subset of Deep Learning, which is a subset of ML, which is a subset of AI — each layer adds capability',
         definition: `graph TD
   A[Artificial Intelligence\\nTeach machines to do smart things]
   B[Machine Learning\\nLearn from data automatically]
@@ -79,7 +79,13 @@ const aiVsMlVsGenerativeAi: Lesson = {
       type: 'callout',
       data: {
         variant: 'note',
-        text: 'AI includes both simple rule-based systems ("if X, show Y") and advanced systems that learn from data. The word is often used loosely.',
+        text: 'AI includes both simple rule-based systems ("if X, show Y") and advanced systems that learn from data. The word is used loosely — which is why the confusion exists.',
+      },
+    },
+    {
+      type: 'paragraph',
+      data: {
+        text: 'AI has existed since the 1950s. Early AI programs were hand-crafted rule systems — "if the user types \'hello\', respond with \'hi\'." These worked only in narrow, predefined conditions.',
       },
     },
     {
@@ -90,59 +96,111 @@ const aiVsMlVsGenerativeAi: Lesson = {
     {
       type: 'paragraph',
       data: {
-        text: 'Machine learning is a type of AI where systems learn from examples rather than following explicit rules. Instead of telling a computer "a spam email has these words," you show it thousands of spam examples and it figures out the patterns.',
+        text: 'Machine learning is a type of AI where systems learn from examples rather than following explicit rules. Instead of telling a computer "a spam email has these words," you show it thousands of spam examples and it figures out the patterns on its own.',
+      },
+    },
+    {
+      type: 'paragraph',
+      data: {
+        text: 'The key shift: instead of humans writing rules, the system discovers rules from data. This made AI practical for complex real-world tasks where it\'s impossible to manually write all the rules.',
       },
     },
     {
       type: 'example',
       data: {
-        title: 'ML in action',
-        content: 'Netflix recommendations, Instagram feeds, fraud detection at your bank, voice recognition on your phone — all of these use machine learning.',
+        title: 'ML in action all around you',
+        content: 'Netflix recommendations — learned from millions of viewing patterns\nInstagram feed ranking — learned from billions of engagement signals\nFraud detection — learned from millions of legitimate and fraudulent transactions\nVoice recognition — learned from millions of speech samples\nGoogle Search ranking — learned from trillions of search-click pairs\n\nAll of these use ML. None required engineers to write explicit rules for every case.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'deep-learning',
+      data: { level: 2, text: 'Deep Learning: the engine inside modern AI', anchor: 'deep-learning' },
+    },
+    {
+      type: 'paragraph',
+      data: {
+        text: 'Deep learning is a specific type of ML that uses neural networks — loosely inspired by how the brain works — with many layers ("deep" refers to the number of layers). Deep learning is what made modern AI so powerful. It can learn complex patterns directly from raw data like images, audio, and text.',
+      },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Era', 'What was possible', 'Limitation'],
+        rows: [
+          ['1950s–1980s: Rule-based AI', 'Chess, simple Q&A, basic logic', 'Brittle — failed on anything not anticipated'],
+          ['1990s–2000s: Classic ML', 'Spam filtering, recommendations, search ranking', 'Required hand-crafted feature engineering'],
+          ['2010s: Deep Learning', 'Image recognition, voice assistants, translation', 'Needed huge compute and labeled data'],
+          ['2020s: Generative AI (LLMs)', 'Conversation, writing, coding, reasoning', 'Expensive to train; can hallucinate'],
+        ],
       },
     },
     {
       type: 'heading',
       id: 'generative-ai',
-      data: { level: 2, text: 'Generative AI', anchor: 'generative-ai' },
+      data: { level: 2, text: 'Generative AI: the revolution you\'re living through', anchor: 'generative-ai' },
     },
     {
       type: 'paragraph',
       data: {
-        text: 'Generative AI is the newest and most impactful category. These are AI systems that can generate new content — text, images, code, audio, or video — that did not exist before.',
+        text: 'Generative AI is the newest and most impactful category. These are AI systems that can generate new content — text, images, code, audio, or video — that did not exist before. The breakthrough was building models large enough (billions of parameters) and training them on enough data (the entire internet) that they emerged with general-purpose intelligence.',
       },
     },
     {
       type: 'paragraph',
       data: {
-        text: 'ChatGPT, Claude, Gemini, Midjourney, and DALL-E are all generative AI tools. They work by learning patterns from massive amounts of data, then using those patterns to produce new, plausible outputs.',
+        text: 'ChatGPT launched in November 2022 and crossed 100 million users in two months — the fastest product adoption in history. The reason: for the first time, AI was general-purpose and accessible to anyone via a chat interface.',
       },
     },
     {
       type: 'comparison-cards',
       data: {
-        title: 'Quick comparison',
+        title: 'The three eras compared',
         cards: [
           {
             title: 'Traditional AI',
-            description: 'Rule-based systems that follow explicit logic',
-            pros: ['Predictable', 'Auditable', 'Fast'],
-            cons: ['Rigid', 'Cannot handle new situations well'],
+            description: 'Rule-based systems that follow explicit logic written by engineers',
+            pros: ['Perfectly predictable', 'Auditable — you can inspect every rule', 'Fast and cheap to run'],
+            cons: ['Rigid — breaks on unanticipated inputs', 'Requires engineers for every new case', 'Cannot handle natural language'],
             tags: ['rules', 'deterministic'],
           },
           {
             title: 'Machine Learning',
-            description: 'Systems that learn patterns from data',
-            pros: ['Adapts from examples', 'Handles complex patterns'],
-            cons: ['Needs lots of data', 'Can be a black box'],
+            description: 'Systems that learn patterns from large datasets — no explicit rules needed',
+            pros: ['Learns from examples not rules', 'Handles complex real-world patterns', 'Can improve with more data'],
+            cons: ['Needs lots of labeled training data', 'Often a black box — hard to explain decisions', 'Narrow — trained for one task'],
             tags: ['data-driven', 'training'],
           },
           {
-            title: 'Generative AI',
-            description: 'Systems that create new content',
-            pros: ['Flexible', 'Creative', 'Handles natural language'],
-            cons: ['Can hallucinate', 'Unpredictable outputs'],
+            title: 'Generative AI (LLMs)',
+            description: 'Massive models trained on internet-scale text that can create new content and reason across almost any topic',
+            pros: ['Flexible and general-purpose', 'Understands and generates natural language', 'Can handle unprecedented tasks'],
+            cons: ['Can confidently hallucinate wrong information', 'Expensive to train; slower to run', 'Harder to verify and audit'],
             tags: ['creative', 'llm', 'modern'],
           },
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'why-this-matters',
+      data: { level: 2, text: 'Why these distinctions matter for you', anchor: 'why-this-matters' },
+    },
+    {
+      type: 'paragraph',
+      data: {
+        text: 'Understanding the layers helps you set realistic expectations. When someone says "AI is wrong about this fact," they mean generative AI hallucinated — that\'s a property of LLMs, not all AI. When someone says "the algorithm is biased," they usually mean ML bias from training data. Different layers, different problems, different solutions.',
+      },
+    },
+    {
+      type: 'key-terms',
+      data: {
+        terms: [
+          { term: 'AI', definition: 'The broad field. All ML and generative AI are AI, but not all AI is ML.', learnMoreSlug: 'artificial-intelligence' },
+          { term: 'Machine Learning', definition: 'A type of AI that learns patterns from data rather than following hand-coded rules.', learnMoreSlug: 'machine-learning' },
+          { term: 'Deep Learning', definition: 'A type of ML using neural networks with many layers. The technology powering most modern AI breakthroughs.', },
+          { term: 'Generative AI', definition: 'AI that creates new content (text, images, code, audio). ChatGPT, Claude, and DALL-E are all generative AI.', learnMoreSlug: 'generative-ai' },
+          { term: 'LLM', definition: 'Large Language Model — the specific type of generative AI that processes and generates text. Powers all major AI chatbots.', learnMoreSlug: 'large-language-model' },
         ],
       },
     },
@@ -151,12 +209,14 @@ const aiVsMlVsGenerativeAi: Lesson = {
       data: {
         title: 'Key takeaways',
         points: [
-          'AI is the broad field; ML and Generative AI are types of AI',
+          'AI is the broad field — ML and Generative AI are nested subsets within it',
           'Machine learning learns from data examples, not hand-coded rules',
-          'Generative AI (ChatGPT, Claude, etc.) creates new content — text, images, code',
-          'When someone says "AI" today, they usually mean generative AI',
+          'Deep learning (neural networks) is the engine behind modern AI power',
+          'Generative AI creates new content — text, images, code, audio',
+          'When someone says "AI" today, they almost always mean generative AI / LLMs',
+          'Different types of AI have different failure modes — knowing which is which helps you use them wisely',
         ],
-        takeaway: 'You now have the vocabulary to talk about these technologies clearly.',
+        takeaway: 'You now have the vocabulary to talk about these technologies clearly and precisely.',
       },
     },
   ],
@@ -180,26 +240,26 @@ const howLlmsWorkSimply: Lesson = {
     {
       type: 'paragraph',
       data: {
-        text: 'You\'ve used ChatGPT or another AI chatbot. You type something, and it responds intelligently. But what is actually happening inside? Understanding this — even at a simple level — makes you dramatically better at using these tools.',
+        text: 'You\'ve used ChatGPT or another AI chatbot. You type something, and it responds intelligently. But what is actually happening inside? Understanding this — even at a simple level — makes you dramatically better at using these tools and much less surprised when they fail.',
       },
     },
     {
       type: 'heading',
       id: 'autocomplete-on-steroids',
-      data: { level: 2, text: 'The core idea: autocomplete at a massive scale', anchor: 'autocomplete-on-steroids' },
+      data: { level: 2, text: 'The core idea: extremely good autocomplete', anchor: 'autocomplete-on-steroids' },
     },
     {
       type: 'paragraph',
       data: {
-        text: 'At its core, a large language model (LLM) is a very sophisticated next-word predictor. Given a sequence of text, it predicts what should come next — over and over, word by word (technically token by token), until it produces a complete response.',
+        text: 'At its core, a large language model (LLM) is a very sophisticated next-token predictor. Given a sequence of text, it predicts what should come next — over and over, token by token, until it produces a complete response.',
       },
     },
     {
       type: 'callout',
       data: {
         variant: 'info',
-        title: 'Think of it this way',
-        text: 'Your phone keyboard predicts the next word. An LLM does the same thing — but it was trained on hundreds of billions of words, so its predictions are remarkably accurate and nuanced.',
+        title: 'The phone keyboard analogy',
+        text: 'Your phone keyboard predicts the next word based on what you\'ve typed. An LLM does the same thing — but it was trained on hundreds of billions of words, and it "remembers" the entire conversation while predicting. Its predictions are so accurate that the result feels like genuine understanding.',
       },
     },
     {
@@ -210,58 +270,61 @@ const howLlmsWorkSimply: Lesson = {
     {
       type: 'paragraph',
       data: {
-        text: 'AI models don\'t read word by word — they use tokens. A token is roughly 3-4 characters of text. The word "learning" is one token. "Unbelievable" might be 2-3 tokens. Numbers and punctuation have their own tokens too.',
-      },
-    },
-    {
-      type: 'callout',
-      data: {
-        variant: 'tip',
-        text: 'Token limits matter. Most models have a "context window" — a limit on how much text (tokens) they can process at once. This is why very long conversations can cause the AI to forget earlier context.',
+        text: 'AI models don\'t read word by word — they split text into tokens. A token is roughly 3-4 characters. The word "learning" is 1 token. "Unbelievable" might be 3 tokens. The model generates a response one token at a time, which is why you see text appear letter by letter in ChatGPT.',
       },
     },
     {
       type: 'heading',
       id: 'how-it-was-trained',
-      data: { level: 2, text: 'How was it trained?', anchor: 'how-it-was-trained' },
+      data: { level: 2, text: 'How was the model trained?', anchor: 'how-it-was-trained' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'llm-training-phases',
+        caption: 'LLMs are built in three phases — pre-training, then alignment, then deployment',
+        definition: `flowchart TD
+  A["Phase 1: Pre-training\\n(months of compute)"]
+  A --> A1["Feed model hundreds of billions\\nof tokens from the internet,\\nbooks, and code"]
+  A1 --> A2["Model learns to predict\\nmissing text billions of times"]
+  A2 --> A3["Result: Base model —\\ncan complete any text plausibly"]
+
+  A3 --> B["Phase 2: RLHF Alignment\\n(weeks of human feedback)"]
+  B --> B1["Human raters rank AI responses\\nfor helpfulness and safety"]
+  B1 --> B2["Model learns to prefer\\nhelpful, honest, harmless responses"]
+  B2 --> B3["Result: Chat model —\\nfollows instructions, stays on task"]
+
+  B3 --> C["Phase 3: Deployment"]
+  C --> C1["Released to users as\\nChatGPT, Claude, Gemini etc."]
+
+  style A fill:#ddf4ff,stroke:#0969da
+  style B fill:#d1f3d8,stroke:#1a7f37
+  style C fill:#eddff8,stroke:#8250df`,
+      },
     },
     {
       type: 'numbered-list',
       data: {
-        title: 'Super simplified training process:',
+        title: 'Simplified training process:',
         items: [
-          'Collected hundreds of billions of words from the internet, books, and other text',
-          'Trained a neural network to predict missing words billions of times',
-          'The network adjusted its internal parameters each time it was wrong',
-          'After training, the model can complete any text in a plausible way',
-          'Then it was fine-tuned via human feedback to be helpful and safe (RLHF)',
+          'Collected hundreds of billions of words from the internet, books, Wikipedia, and code repositories',
+          'Trained a neural network to predict missing words — billions of times across billions of examples',
+          'The network adjusted its billions of internal parameters each time it was wrong',
+          'After pre-training, the model can plausibly complete any text',
+          'Then fine-tuned via human feedback (RLHF) to be helpful, honest, and safe in conversations',
         ],
       },
     },
     {
       type: 'heading',
-      id: 'why-it-halluccinates',
-      data: { level: 2, text: 'Why AI sometimes makes things up', anchor: 'why-it-halluccinates' },
-    },
-    {
-      type: 'paragraph',
-      data: {
-        text: 'Because the model generates text that sounds plausible based on patterns — it has no built-in fact-checking step. It doesn\'t know when it doesn\'t know something. It will produce confident-sounding text even when it\'s wrong. This is called hallucination.',
-      },
-    },
-    {
-      type: 'callout',
-      data: {
-        variant: 'warning',
-        title: 'Critical habit',
-        text: 'Always verify important facts from AI with a second source. The AI sounds confident even when it\'s wrong.',
-      },
+      id: 'how-it-generates',
+      data: { level: 2, text: 'How a response is generated', anchor: 'how-it-generates' },
     },
     {
       type: 'mermaid',
       data: {
         id: 'llm-flow',
-        caption: 'How an LLM processes your message and generates a response',
+        caption: 'How an LLM processes your message and generates a response — token by token',
         definition: `sequenceDiagram
   participant U as You
   participant T as Tokenizer
@@ -271,22 +334,80 @@ const howLlmsWorkSimply: Lesson = {
 
   U->>T: "Explain photosynthesis simply"
   T->>M: [token ids: 1204, 384, 9021...]
-  M->>M: Predict next token (repeated 100s of times)
+  Note over M: Looks at ALL previous tokens in context
+  M->>M: Predict the single most likely next token
   M->>D: Output token probabilities
   D->>R: Decode tokens → readable text
+  Note over M,R: This loop repeats hundreds of times
   R->>U: "Photosynthesis is the process..."`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'temperature-explained',
+      data: { level: 2, text: 'Temperature: controlling creativity vs. precision', anchor: 'temperature-explained' },
+    },
+    {
+      type: 'paragraph',
+      data: {
+        text: 'When predicting the next token, the model calculates a probability for every possible token. Temperature controls how strictly it follows those probabilities. Low temperature = picks the most likely token almost every time (precise, predictable). High temperature = sometimes picks a less-likely token (creative, varied).',
+      },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Temperature', 'Behaviour', 'Best for'],
+        rows: [
+          ['Low (0.1–0.3)', 'Very consistent, predictable, factual', 'Data extraction, factual Q&A, code generation'],
+          ['Medium (0.5–0.7)', 'Balanced quality and variety', 'General writing, explanation, analysis'],
+          ['High (0.8–1.0)', 'Creative, varied, surprising', 'Brainstorming, creative writing, ideation'],
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        text: 'Most interfaces handle temperature automatically. In ChatGPT you can\'t set it directly, but you can achieve the effect by prompting: "Give me a highly creative / unconventional response" or "Give me the most accurate, concise answer."',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'why-it-hallucinates',
+      data: { level: 2, text: 'Why AI sometimes makes things up', anchor: 'why-it-hallucinates' },
+    },
+    {
+      type: 'paragraph',
+      data: {
+        text: 'Because the model generates the next most plausible token — there is no separate fact-checking step. When it hits a knowledge gap, it keeps generating plausible-sounding tokens anyway. It cannot say "I don\'t know" unless that was the most likely next sequence to generate. This is the root cause of hallucination.',
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'warning',
+        title: 'Critical habit to build now',
+        text: 'Always verify important facts from AI with a second source. The model\'s confident tone is a product of its generation process — not a signal of accuracy.',
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        text: 'Token limits matter. Each model has a "context window" — a limit on how many tokens it can process at once. This is why very long conversations can cause the AI to seem to forget earlier context. The oldest messages get dropped when the window fills.',
       },
     },
     {
       type: 'summary-box',
       data: {
-        title: 'What you just learned',
+        title: 'The mental model that makes everything else make sense',
         points: [
-          'LLMs work by predicting the next token in a sequence — repeatedly',
-          'They were trained on massive amounts of text from the internet',
-          'They have no memory between conversations (unless the app adds it)',
-          'Hallucination happens because they predict plausible text, not verified facts',
-          'Context window = how much text they can "hold in mind" at once',
+          'LLMs predict the next token — one at a time, based on everything before it',
+          'Trained on hundreds of billions of words, then fine-tuned to be helpful via human feedback',
+          'No memory between conversations — each new chat starts blank',
+          'Hallucination = the model generates a plausible token even when it should say "I don\'t know"',
+          'Temperature controls how creative vs. precise the outputs are',
+          'Context window = how much text the model can "hold in mind" in one session',
         ],
       },
     },
@@ -314,18 +435,112 @@ const whatAiCanAndCannotDo: Lesson = {
       },
     },
     {
+      type: 'paragraph',
+      data: {
+        text: 'The key insight: AI excels at tasks involving language, pattern recognition, synthesis, and generation. It struggles with anything that requires real-world grounding, verified facts, precise arithmetic, or knowledge of events after its training cutoff.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'ai-capabilities-map',
+      data: { level: 2, text: 'The capability zones', anchor: 'ai-capabilities-map' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'ai-can-cannot-map',
+        caption: 'AI capability zones — green areas are where AI genuinely excels, red areas are where it regularly fails',
+        definition: `graph TB
+  subgraph STRONG ["✅ AI Excels Here"]
+    S1[Writing & Editing Text]
+    S2[Summarizing Documents]
+    S3[Brainstorming Ideas]
+    S4[Writing & Reviewing Code]
+    S5[Explaining Complex Topics Simply]
+    S6[Translating Languages]
+    S7[Classifying & Categorizing]
+    S8[Answering General Knowledge]
+  end
+  subgraph WEAK ["❌ AI Frequently Fails Here"]
+    W1[Precise Arithmetic]
+    W2[Verifying Facts]
+    W3[Current Events & Real-time Data]
+    W4[Physical or Sensory Tasks]
+    W5[Self-awareness of its own limits]
+    W6[Sustained Long-form Reasoning]
+  end
+
+  style STRONG fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37
+  style WEAK fill:#ffebe9,stroke:#cf222e,color:#cf222e`,
+      },
+    },
+    {
       type: 'table',
       data: {
         headers: ['AI is great at…', 'AI struggles with…'],
         rows: [
-          ['Drafting and editing text', 'Knowing today\'s news (without search tools)'],
-          ['Summarizing long documents', 'Precise arithmetic and calculations'],
-          ['Brainstorming ideas quickly', 'Verifying facts reliably'],
+          ['Drafting and editing text', 'Precise arithmetic and calculations'],
+          ['Summarizing long documents', 'Verifying facts reliably'],
+          ['Brainstorming ideas quickly', 'Knowing today\'s news (without search tools)'],
           ['Explaining complex concepts simply', 'Consistent long-context reasoning'],
           ['Writing and reviewing code', 'Truly original creative intuition'],
           ['Translating between languages', 'Real-world physical tasks'],
           ['Answering general knowledge questions', 'Knowing what it doesn\'t know'],
+          ['Classifying and categorizing content', 'Making decisions with real consequences'],
         ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'why-these-limits',
+      data: { level: 2, text: 'Why these limitations exist', anchor: 'why-these-limits' },
+    },
+    {
+      type: 'paragraph',
+      data: {
+        text: 'AI\'s limitations are not random bugs — they follow directly from how language models work. An LLM is a text-pattern predictor trained on a vast corpus. It has no live connection to the world, no internal calculator, and no ability to verify what it says. Any task requiring those things will expose its limits.',
+      },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'Why AI can\'t do arithmetic reliably:',
+        items: [
+          'Numbers are just tokens — "347" is processed like a word, not a value',
+          'The model predicts plausible-looking numbers, not mathematically correct ones',
+          'Small rounding errors compound invisibly across multi-step calculations',
+          'Fix: use code interpreter or a calculator — never rely on AI for real math',
+        ],
+      },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'Why AI can\'t verify facts:',
+        items: [
+          'Its knowledge is frozen at training time — it cannot look anything up',
+          'It cannot tell a well-sourced fact from a widely-shared falsehood',
+          'It sounds equally confident whether it\'s right or wrong',
+          'Fix: use Perplexity or a browsing-enabled model for fact-sensitive queries',
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'the-brilliant-intern',
+      data: { level: 2, text: 'The "brilliant intern" mental model', anchor: 'the-brilliant-intern' },
+    },
+    {
+      type: 'paragraph',
+      data: {
+        text: 'The single most useful mental model for working with AI: think of it as a brilliant but very junior intern. They\'ve read everything, can draft documents at remarkable speed, speak every language, and never complain. But they need supervision — they sometimes make things up to avoid seeming uncertain, they lack real-world experience, and they have no accountability for being wrong. Your judgment is still required.',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Applying the mental model',
+        content: 'Would you send an intern\'s first draft directly to a client without reading it? No — you\'d review it first.\n\nApply the same standard to AI output:\n• Brainstorming → let the intern run freely, use everything\n• First draft → review and edit before sending\n• Contract, policy, or medical info → always get a qualified human to check\n• Specific statistics or citations → verify each one with a primary source',
       },
     },
     {
@@ -342,9 +557,10 @@ const whatAiCanAndCannotDo: Lesson = {
         title: 'The right mental model',
         points: [
           'AI is like a brilliant intern — fast, wide-ranging, enthusiastic, but needs supervision',
-          'Use AI for speed and breadth; bring your own judgment and expertise for depth',
-          'The more specific your prompt, the better the output',
+          'Use AI for speed and breadth; apply your judgment and expertise for depth',
+          'The more specific your prompt, the better the output can be',
           'Always ask: "Does this need verification before I act on it?"',
+          'For math → use code interpreter; for facts → verify with Perplexity or a primary source',
         ],
       },
     },
@@ -369,7 +585,7 @@ const anatomyOfAGoodPrompt: Lesson = {
     {
       type: 'paragraph',
       data: {
-        text: 'Most people use AI by typing a quick question and hoping for the best. That works — but learning to write good prompts is like learning to ask good questions. It dramatically improves what you get back.',
+        text: 'Most people use AI by typing a quick question and hoping for the best. That works — but learning to write good prompts is like learning to ask good questions. It dramatically improves what you get back. The difference between a vague prompt and a structured one can mean the difference between a mediocre paragraph and exactly what you needed.',
       },
     },
     {
@@ -380,7 +596,24 @@ const anatomyOfAGoodPrompt: Lesson = {
     {
       type: 'paragraph',
       data: {
-        text: 'A strong prompt usually contains four elements. Think of them as levers you can adjust:',
+        text: 'A strong prompt usually contains four elements. You do not always need all four — but knowing each one helps you diagnose why a prompt failed and what to add next time.',
+      },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'crtf-framework',
+        caption: 'The four components of a high-quality prompt — each one narrows the AI\'s response space toward what you actually want',
+        definition: `flowchart LR
+  C["🗂 Context\nWho you are + situation\ne.g. 'I\'m a UX designer\nreviewing an MVP'"] --> T
+  R["🎭 Role\nPersona for the AI\ne.g. 'Act as a senior\nproduct manager'"] --> T
+  T["📋 Task\nThe actual instruction\ne.g. 'List the 5 biggest\nusability issues'"] --> F
+  F["📐 Format\nOutput structure\ne.g. 'Bullet points,\nmax 20 words each'"]
+
+  style C fill:#ddf4ff,stroke:#0969da
+  style R fill:#d1f3d8,stroke:#1a7f37
+  style T fill:#fff8c5,stroke:#9a6700
+  style F fill:#eddff8,stroke:#8250df`,
       },
     },
     {
@@ -389,28 +622,84 @@ const anatomyOfAGoodPrompt: Lesson = {
         terms: [
           {
             term: 'Context',
-            definition: 'Background information the AI needs. Who are you? What situation are you in? What has already happened?',
+            definition: 'Background information the AI needs. Who are you? What situation are you in? What has already happened? What constraints exist? Without context, the AI writes for a generic audience and generic situation.',
           },
           {
             term: 'Role',
-            definition: 'Ask the AI to act as a specific persona — "Act as a UX designer", "You are a patient high school teacher".',
+            definition: 'Ask the AI to act as a specific expert persona. This primes it to use the vocabulary, reasoning style, and priorities of that role. "Act as a senior UX designer", "You are a patient high school biology teacher", "Respond as a skeptical investor."',
           },
           {
             term: 'Task',
-            definition: 'The actual instruction — what you want it to do. Be specific and action-oriented.',
+            definition: 'The actual instruction — what you want it to do. Be specific and action-oriented. Use verbs: Write, Summarize, Analyze, Rewrite, Compare, List, Explain. Vague tasks get vague outputs.',
           },
           {
             term: 'Format',
-            definition: 'How you want the output structured — "give me a bullet list", "write in under 100 words", "use markdown headers".',
+            definition: 'How you want the output structured — "give me a numbered list", "write in under 100 words", "use markdown headers", "respond as a table", "write two short paragraphs". Format constraints force precision.',
           },
         ],
       },
     },
     {
+      type: 'heading',
+      id: 'before-after-examples',
+      data: { level: 2, text: 'Before vs. After: three real examples', anchor: 'before-after-examples' },
+    },
+    {
       type: 'example',
       data: {
-        title: 'Before vs After',
-        content: 'Bad prompt: "Write me an email"\n\nGood prompt: "Act as a professional copywriter. I need to send an email to a client who missed our meeting without explanation. Tone: firm but not aggressive. Keep it under 80 words. Use two short paragraphs."',
+        title: 'Email writing — before',
+        content: 'Write me an email.\n\n→ Result: A generic email template. Not useful.',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Email writing — after (CRTF applied)',
+        content: 'Context: I manage a small agency. A client missed our third project check-in without explanation and the deadline is in 4 days.\nRole: Act as a professional account manager.\nTask: Write a follow-up email that conveys urgency without being confrontational.\nFormat: Two short paragraphs. Max 80 words. Professional but warm tone.\n\n→ Result: A polished, ready-to-send email that hits all your constraints.',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Content analysis — before',
+        content: 'Tell me about this article. [paste text]\n\n→ Result: A vague summary. Probably not what you wanted.',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Content analysis — after (CRTF applied)',
+        content: 'Context: I\'m preparing a competitive analysis for our marketing team.\nRole: Act as a content strategist.\nTask: Identify the three main arguments in this article and evaluate how well each is supported by evidence. Flag any logical gaps.\nFormat: Numbered list. One sentence per argument, two sentences on evidence quality.\n\n[paste article]\n\n→ Result: A structured, actionable analysis you can use directly in a slide.',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Code review — after',
+        content: 'Context: I\'m a junior developer and wrote this Python function. It works but I\'m not confident it\'s clean.\nRole: Act as a senior Python developer doing a code review.\nTask: Review this function for readability, edge cases, and any bugs. Suggest improvements.\nFormat: Use markdown. First show issues as a numbered list, then show the improved code block.\n\n[paste code]\n\n→ Result: A genuine code review with concrete suggestions and revised code.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'building-incrementally',
+      data: { level: 2, text: 'Build your prompt incrementally', anchor: 'building-incrementally' },
+    },
+    {
+      type: 'paragraph',
+      data: {
+        text: 'You do not have to write the whole CRTF prompt at once. Start with the task, see what you get, then add elements to refine it. Here is what that iteration looks like:',
+      },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Pass', 'Prompt', 'Problem with output'],
+        rows: [
+          ['1', '"Explain machine learning"', 'Too general — could be a textbook chapter or a tweet'],
+          ['2', '"Explain machine learning in plain English, no jargon"', 'Still too long, no audience'],
+          ['3', '"Explain machine learning to a business executive in 3 sentences, focusing on practical impact"', 'Much better — but tone could be more direct'],
+          ['4', '"You are a consultant. Explain machine learning value to a skeptical CFO in 3 sentences. No jargon. Start with the business benefit."', '✅ Ready to use'],
+        ],
       },
     },
     {
@@ -421,7 +710,7 @@ const anatomyOfAGoodPrompt: Lesson = {
     {
       type: 'paragraph',
       data: {
-        text: 'You rarely get a perfect result on the first try — and that\'s fine. Treat prompting like a conversation: refine, clarify, ask it to adjust the tone, make it shorter, add an example, try again.',
+        text: 'You rarely get a perfect result on the first try — and that\'s fine. Treat prompting like a conversation: refine, clarify, ask it to adjust the tone, make it shorter, add an example, try again. Follow-up prompts can be simple: "Make it more direct.", "Add one concrete example.", "Cut it to half the length."',
       },
     },
     {
@@ -431,8 +720,9 @@ const anatomyOfAGoodPrompt: Lesson = {
         items: [
           { text: 'Did I give enough context for the AI to understand my situation?' },
           { text: 'Did I specify a role or persona if useful?' },
-          { text: 'Is my task instruction clear and specific?' },
+          { text: 'Is my task instruction clear, specific, and action-oriented?' },
           { text: 'Did I specify the desired format and length?' },
+          { text: 'Did I include any constraints (what NOT to do, tone, audience)?' },
           { text: 'If the output was wrong, did I refine rather than restart?' },
         ],
       },
@@ -442,10 +732,11 @@ const anatomyOfAGoodPrompt: Lesson = {
       data: {
         title: 'Takeaways',
         points: [
-          'Good prompts have: Context + Role + Task + Format',
+          'Good prompts have: Context + Role + Task + Format (CRTF)',
           'Specificity is your superpower — vague prompts get vague answers',
+          'You do not need all four elements every time — add what\'s missing when output disappoints',
           'Prompting is iterative — refine the result instead of accepting the first output',
-          'The AI cannot read your mind; tell it exactly what you need',
+          'The AI cannot read your mind; tell it exactly what you need, for whom, and in what form',
         ],
       },
     },
@@ -465,13 +756,118 @@ const aiInEverydayLife: Lesson = {
   estimatedMinutes: 8,
   tags: ['everyday-ai', 'practical', 'awareness'],
   blocks: [
-    { type: 'paragraph', data: { text: 'AI is not a future technology. It is already running in dozens of apps you use every day — most of the time invisibly.' } },
-    { type: 'heading', id: 'ai-already-here', data: { level: 2, text: 'AI you already use', anchor: 'ai-already-here' } },
-    { type: 'bullet-list', data: { items: ['Email spam filters — AI scores every email before you see it', 'Autocomplete in Google Search and your phone keyboard', 'Netflix and Spotify recommendations', 'Face unlock and photo tagging on your phone', 'Google Translate and Live Caption', 'Voice assistants: Siri, Alexa, Google Assistant', 'Fraud detection when your bank blocks a suspicious charge', 'YouTube, Instagram, and TikTok feed algorithms'] } },
-    { type: 'callout', data: { variant: 'info', title: 'The shift happening now', text: 'Until recently, AI worked silently in the background. Now, with generative AI, you can talk to AI directly — making it a tool you can actively use, not just passively experience.' } },
-    { type: 'heading', id: 'why-this-matters', data: { level: 2, text: 'Why this matters for you', anchor: 'why-this-matters' } },
-    { type: 'paragraph', data: { text: 'Understanding that AI is already part of your life makes the next step easier: using AI deliberately and proactively — to draft emails, research topics, plan projects, write code, and much more.' } },
-    { type: 'summary-box', data: { title: 'Key points', points: ['AI has been running invisibly in apps for years', 'Generative AI (ChatGPT etc.) made AI something you talk to directly', 'You are not starting from zero — you already have AI experience', 'The next step is using AI intentionally'], takeaway: 'AI fluency is now a practical everyday skill, not a specialty.' } },
+    {
+      type: 'paragraph',
+      data: { text: 'AI is not a future technology. It is already running in dozens of apps you use every day — most of the time invisibly. Before we explore deliberate AI use, it helps to recognize how much AI experience you already have.' },
+    },
+    {
+      type: 'heading',
+      id: 'ai-evolution',
+      data: { level: 2, text: 'How AI went from invisible to interactive', anchor: 'ai-evolution' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'ai-evolution-timeline',
+        caption: 'AI\'s journey from invisible background system to interactive tool you can talk to directly',
+        definition: `timeline
+  title Evolution of AI in Daily Life
+  2000s : Spam filters
+        : Early recommendation engines
+  2010s : Voice assistants (Siri, Alexa)
+        : Face recognition
+        : Feed algorithms (Facebook, YouTube)
+        : Real-time translation (Google Translate)
+  2020s : GPT-3 — AI you could write to
+        : DALL-E — AI that generates images
+        : ChatGPT — AI for everyone
+  2024+ : Agents that act on your behalf
+        : AI in every productivity tool`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'ai-already-here',
+      data: { level: 2, text: 'AI you already use every day', anchor: 'ai-already-here' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'You interact with AI dozens of times a day without thinking about it. Here are the categories and specific examples you\'ve likely used this week:' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Category', 'Examples you know'],
+        rows: [
+          ['Filtering & sorting', 'Email spam filters, social media feeds, search rankings'],
+          ['Recommendations', 'Netflix, Spotify, YouTube, Amazon, TikTok For You page'],
+          ['Language & translation', 'Google Translate, Live Caption, phone keyboard autocomplete'],
+          ['Recognition', 'Face unlock, photo tagging, voice recognition ("Hey Siri")'],
+          ['Fraud & safety', 'Bank fraud detection, credit card alerts, content moderation'],
+          ['Navigation', 'Google Maps ETAs, traffic rerouting, "you may also like"'],
+          ['Productivity', 'Gmail Smart Compose, Grammarly, autocorrect'],
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'info',
+        title: 'The big shift happening right now',
+        text: 'Until 2022, AI worked silently in the background — invisible, automatic, and operated by companies. With generative AI (ChatGPT, Claude, Gemini), AI became something you can talk to directly. This shift from passive-AI-consumer to active-AI-user is what this course is about.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'passive-vs-active',
+      data: { level: 2, text: 'Passive AI use vs. active AI use', anchor: 'passive-vs-active' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Passive AI use (what you\'ve always done)', 'Active AI use (what this course teaches)'],
+        rows: [
+          ['Letting the algorithm pick your next video', 'Asking AI to summarize a video transcript'],
+          ['Having Gmail autocomplete a sentence', 'Having AI draft the entire email'],
+          ['Spam filter quietly sorting your inbox', 'Asking AI to categorize and prioritize your messages'],
+          ['Google Maps suggesting a route', 'Asking AI to help plan a complex trip itinerary'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'why-this-matters',
+      data: { level: 2, text: 'Why this matters for your learning', anchor: 'why-this-matters' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'Recognizing how much AI you already use has an important psychological benefit: you are not starting from zero. You already have intuitions about what AI can and cannot do. This course takes those intuitions and turns them into deliberate, versatile skills.' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'The difference between someone who "uses AI sometimes" and someone with genuine AI fluency is mainly habit and intentionality — not technical skill. The tools are the same; the question is whether you reach for them deliberately or wait for the algorithm to do it for you.' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'The same AI, two very different uses',
+        content: 'Language AI powers both the Instagram caption suggestions you ignore AND the full email draft you could ask Claude to write for you.\n\nThe technology is nearly identical. The difference is: one operates in the background without your input, and one amplifies your intent because you asked clearly.',
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Key points',
+        points: [
+          'AI has been running invisibly in apps for over a decade',
+          'Generative AI (ChatGPT, Claude) made AI something you talk to directly',
+          'You are not starting from zero — you already have years of AI experience',
+          'The difference is moving from passive use to active, intentional use',
+          'AI fluency is a practical everyday skill anyone can develop',
+        ],
+        takeaway: 'AI fluency is now a practical everyday skill, not a specialty.',
+      },
+    },
   ],
   relatedLessons: ['ai-vs-ml-vs-generative-ai', 'chatbot-landscape'],
 };
@@ -489,16 +885,100 @@ const chatbotLandscape: Lesson = {
   tags: ['chatgpt', 'claude', 'gemini', 'perplexity', 'tools'],
   relatedGlossaryTerms: ['large-language-model', 'prompt', 'hallucination'],
   blocks: [
-    { type: 'paragraph', data: { text: 'There are now dozens of AI chatbots. But four dominate everyday use. Here is a plain-language guide to each.' } },
+    { type: 'paragraph', data: { text: 'There are now dozens of AI chatbots. But four dominate everyday use — ChatGPT, Claude, Gemini, and Perplexity. Each has genuine strengths and real limitations. This lesson gives you a honest, practical map of each one so you can pick the right tool for the right job.' } },
     { type: 'heading', id: 'the-big-four', data: { level: 2, text: 'The four you need to know', anchor: 'the-big-four' } },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'chatbot-landscape-map',
+        caption: 'Quick orientation — the four major chatbots and their primary strengths',
+        definition: `graph TD
+  subgraph CREATIVE ["✍️ Creative & Writing"]
+    CLAUDE["Claude (Anthropic)\nLong docs, careful writing\n200K context window"]
+    CHATGPT["ChatGPT (OpenAI)\nGeneral-purpose + images\nLargest ecosystem"]
+  end
+  subgraph RESEARCH ["🔍 Research & Facts"]
+    PERPLEXITY["Perplexity\nCited web search\nBest for factual Q&A"]
+  end
+  subgraph WORKSPACE ["🏢 Workspace Integration"]
+    GEMINI["Gemini (Google)\nDeep Google Workspace\nDocs, Gmail, Drive"]
+  end
+
+  style CREATIVE fill:#ddf4ff,stroke:#0969da
+  style RESEARCH fill:#d1f3d8,stroke:#1a7f37
+  style WORKSPACE fill:#fff8c5,stroke:#9a6700`,
+      },
+    },
     { type: 'comparison-cards', data: { cards: [
-      { title: 'ChatGPT (OpenAI)', description: 'The most widely used AI chatbot. Excellent for writing, coding, brainstorming, and analysis. GPT-4o is the flagship model. Has the largest ecosystem of plugins and integrations.', pros: ['Free tier is excellent', 'Huge feature set', 'Best integration ecosystem'], cons: ['Can hallucinate confidently', 'Context can drop in long chats'], tags: ['openai', 'freemium'] },
-      { title: 'Claude (Anthropic)', description: 'Known for nuanced, careful writing and handling very long documents (200K context window). Often preferred for thoughtful analysis and editing.', pros: ['200K context', 'Very careful reasoning', 'Excellent writing style'], cons: ['Fewer integrations', 'No image generation'], tags: ['anthropic', 'freemium'] },
-      { title: 'Gemini (Google)', description: 'Google\'s AI. Deeply integrated with Google Workspace (Docs, Gmail, Drive). Strong real-time web access and multimodal capabilities.', pros: ['Best Google Workspace integration', 'Real-time web access', 'Multimodal'], cons: ['Responses can be verbose', 'Less predictable tone'], tags: ['google', 'freemium'] },
-      { title: 'Perplexity', description: 'AI-powered search. Best for factual questions where you need cited sources. Dramatically reduces hallucination risk on factual topics.', pros: ['Shows sources for every claim', 'Real-time web search', 'Great for research'], cons: ['Less useful for creative tasks', 'No document editing'], tags: ['search', 'freemium'] },
+      {
+        title: 'ChatGPT (OpenAI)',
+        description: 'The most widely used AI chatbot in the world. Made by OpenAI. The flagship model is GPT-4o, which handles text, images, audio, and can interpret charts and screenshots. Has the richest plugin and API ecosystem.',
+        pros: ['Free tier with GPT-4o access', 'Image input/output (DALL-E)', 'Code interpreter / data analysis', 'Largest third-party integration library', 'Custom GPTs for specialized tasks'],
+        cons: ['Can hallucinate with confident tone', 'Context can degrade in very long chats', 'Best features behind $20/month paywall'],
+        tags: ['openai', 'freemium', 'multimodal'],
+      },
+      {
+        title: 'Claude (Anthropic)',
+        description: 'Built by Anthropic, a safety-focused AI company. Known for nuanced, careful reasoning and handling very long documents. The 200K token context window is its standout feature — you can paste an entire book.',
+        pros: ['200K token context (biggest free-tier window)', 'Exceptionally precise, careful writing', 'Great at following complex multi-step instructions', 'Strong constitutional safety design'],
+        cons: ['No image generation built-in', 'Fewer third-party integrations', 'Can be overly cautious on edge-case requests'],
+        tags: ['anthropic', 'freemium', 'long-context'],
+      },
+      {
+        title: 'Gemini (Google)',
+        description: 'Google\'s AI chatbot, deeply integrated into Google Workspace. If you live in Gmail, Docs, and Drive, Gemini blends into your environment in ways other chatbots cannot. Strong real-time web access and multimodal understanding.',
+        pros: ['Best-in-class Google Workspace integration', 'Real-time web search with citations', 'Understands images and PDFs', 'Free access via Google account'],
+        cons: ['Responses can be longer and less precise', 'Less consistent tone than Claude/ChatGPT', 'Best features need Google One AI Premium'],
+        tags: ['google', 'freemium', 'workspace'],
+      },
+      {
+        title: 'Perplexity',
+        description: 'An AI-powered search engine rather than a general chatbot. Every answer cites its sources. This dramatically reduces hallucination risk for factual questions. Think of it as Google + AI summary with footnotes.',
+        pros: ['Every claim shows its source link', 'Real-time web search always on', 'Domain-specific search (Academic, Reddit, etc.)', 'Free tier is highly usable'],
+        cons: ['Less useful for creative or coding tasks', 'Not designed for long-form writing', 'Sources can still be wrong — verify important claims'],
+        tags: ['search', 'freemium', 'research'],
+      },
     ] } },
-    { type: 'callout', data: { variant: 'tip', title: 'Which one should I use?', text: 'Start with ChatGPT or Claude for general tasks. Use Perplexity any time you need verified facts. Most people end up using 2-3 tools for different purposes.' } },
-    { type: 'summary-box', data: { title: 'Quick reference', points: ['ChatGPT — best overall, largest ecosystem', 'Claude — best for long documents and careful writing', 'Gemini — best with Google Workspace', 'Perplexity — best for research and factual questions'] } },
+    {
+      type: 'heading',
+      id: 'when-each-shines',
+      data: { level: 2, text: 'When each chatbot shines', anchor: 'when-each-shines' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Situation', 'Best choice', 'Why'],
+        rows: [
+          ['Editing or writing a long document', 'Claude', '200K context + careful tone matching'],
+          ['Generating images', 'ChatGPT (paid)', 'Built-in DALL-E 3 integration'],
+          ['Researching a factual topic', 'Perplexity', 'Shows citations for every claim'],
+          ['Working in Gmail or Docs', 'Gemini', 'Deep native integration'],
+          ['Analyzing uploaded images/charts', 'ChatGPT or Gemini', 'Both have strong vision'],
+          ['Summarizing a very long PDF', 'Claude', 'Handles 200K tokens in one go'],
+          ['First general-purpose chat', 'ChatGPT (GPT-4o)', 'Best free tier feature set'],
+          ['Code review and debugging', 'ChatGPT or Claude', 'Both excellent at code'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'free-tier-comparison',
+      data: { level: 2, text: 'What you get for free', anchor: 'free-tier-comparison' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Tool', 'Free tier', 'Paid tier'],
+        rows: [
+          ['ChatGPT', 'GPT-4o with some limits, no image generation', '$20/month — full GPT-4o, DALL-E, code interpreter'],
+          ['Claude', 'Claude 3.5 Sonnet with daily limits', '$20/month — higher limits, Claude 3 Opus access'],
+          ['Gemini', 'Gemini 1.5 Pro with Google account', '$20/month Google One AI Premium — Gemini Advanced'],
+          ['Perplexity', 'Full search with source citations', '$20/month — unlimited searches, advanced models'],
+        ],
+      },
+    },
+    { type: 'callout', data: { variant: 'tip', title: 'Start strategy', text: 'Start with one tool — ChatGPT or Claude — and use it for 2 weeks across different tasks. Then add Perplexity for research. Most power users eventually run 2-3 tools for different jobs, not one tool for everything.' } },
+    { type: 'summary-box', data: { title: 'Quick reference', points: ['ChatGPT — best overall, largest ecosystem, best free tier features', 'Claude — best for long documents, careful writing, complex instructions', 'Gemini — best with Google Workspace and for real-time web', 'Perplexity — best for factual research that needs cited sources', 'Most professionals use 2-3 tools — not one for everything'] } },
   ],
   relatedLessons: ['choosing-the-right-tool', 'ai-vs-ml-vs-generative-ai'],
 };
@@ -515,28 +995,82 @@ const choosingTheRightTool: Lesson = {
   estimatedMinutes: 10,
   tags: ['tool-selection', 'decision-framework', 'practical'],
   blocks: [
-    { type: 'paragraph', data: { text: 'Having too many tool choices is its own problem. This lesson gives you a simple decision framework you can apply to any task in under 30 seconds.' } },
+    { type: 'paragraph', data: { text: 'Having too many tool choices is its own problem. This lesson gives you a simple decision framework you can apply to any task in under 30 seconds. The goal is to stop second-guessing and start doing.' } },
+    { type: 'heading', id: 'decision-tree', data: { level: 2, text: 'The tool selection decision tree', anchor: 'decision-tree' } },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'tool-choice-decision-tree',
+        caption: 'Follow this tree for any task — you will land on the right starting tool within seconds',
+        definition: `flowchart TD
+  START(["What do you need to do?"])
+  Q1{"Need verified\nfacts + citations?"}
+  Q2{"Working in Gmail,\nDocs, or Drive?"}
+  Q3{"Long document\n(20+ pages)?"}
+  Q4{"Need images\nor data charts?"}
+  Q5{"General writing\nor coding?"}
+
+  PERP["📎 Perplexity\nBest for research"]
+  GEMINI["🟢 Gemini\nGoogle Workspace"]
+  CLAUDE["💜 Claude\nLong docs / careful"]
+  CHATGPT_PAID["💚 ChatGPT Plus\nImages + data"]
+  CHATGPT_FREE["💚 ChatGPT Free\nGeneral tasks"]
+  CLAUDE2["💜 Claude\nWriting / coding"]
+
+  START --> Q1
+  Q1 -->|Yes| PERP
+  Q1 -->|No| Q2
+  Q2 -->|Yes| GEMINI
+  Q2 -->|No| Q3
+  Q3 -->|Yes| CLAUDE
+  Q3 -->|No| Q4
+  Q4 -->|Yes| CHATGPT_PAID
+  Q4 -->|No| Q5
+  Q5 -->|Yes| CHATGPT_FREE
+  Q5 -->|Writing| CLAUDE2
+
+  style PERP fill:#d1f3d8,stroke:#1a7f37
+  style GEMINI fill:#fff8c5,stroke:#9a6700
+  style CLAUDE fill:#eddff8,stroke:#8250df
+  style CHATGPT_PAID fill:#ddf4ff,stroke:#0969da
+  style CHATGPT_FREE fill:#ddf4ff,stroke:#0969da
+  style CLAUDE2 fill:#eddff8,stroke:#8250df`,
+      },
+    },
     { type: 'heading', id: 'decision-framework', data: { level: 2, text: 'The tool selection checklist', anchor: 'decision-framework' } },
     { type: 'checklist', data: { title: 'Ask these questions before choosing a tool', items: [
       { text: 'Does this task need verified, sourced facts?', hint: 'If yes → Perplexity first' },
       { text: 'Is this long document analysis or careful writing?', hint: 'If yes → Claude' },
       { text: 'Am I working in Google Docs, Gmail, or Drive?', hint: 'If yes → Gemini' },
-      { text: 'Do I need images or code interpreter?', hint: 'If yes → ChatGPT (paid)' },
-      { text: 'Is privacy critical and no sensitive data involved?', hint: 'All major tools are similar here — check enterprise plans for business data' },
+      { text: 'Do I need image generation or data analysis on a file?', hint: 'If yes → ChatGPT (paid)' },
+      { text: 'Is this business-sensitive data?', hint: 'Check the tool\'s enterprise plan — most tools have a version with data privacy guarantees' },
     ] } },
-    { type: 'heading', id: 'task-map', data: { level: 2, text: 'Task-to-tool map', anchor: 'task-map' } },
-    { type: 'table', data: { headers: ['Task', 'Best First Choice', 'Good Alternative'], rows: [
-      ['Research with citations', 'Perplexity', 'ChatGPT with browse'],
-      ['Edit a long document', 'Claude', 'ChatGPT'],
-      ['Write a first draft', 'Claude or ChatGPT', 'Gemini'],
-      ['Brainstorm ideas', 'ChatGPT or Claude', 'Any'],
-      ['Gmail/Docs help', 'Gemini', 'ChatGPT'],
-      ['Code help', 'ChatGPT or Claude', 'GitHub Copilot'],
-      ['Image generation', 'DALL-E / Midjourney', 'Adobe Firefly'],
-      ['Summarize a PDF', 'Claude', 'ChatGPT'],
+    { type: 'heading', id: 'task-map', data: { level: 2, text: 'Comprehensive task-to-tool map', anchor: 'task-map' } },
+    { type: 'table', data: { headers: ['Task', 'Best First Choice', 'Good Alternative', 'Why'], rows: [
+      ['Research with citations', 'Perplexity', 'ChatGPT with browse', 'Perplexity shows source for every claim'],
+      ['Edit or rewrite a long document', 'Claude', 'ChatGPT', 'Claude\'s 200K window handles full documents'],
+      ['Write a first draft', 'Claude or ChatGPT', 'Gemini', 'Both excel at structured writing'],
+      ['Brainstorm ideas', 'ChatGPT or Claude', 'Any', 'Temperature/creativity is similar across tools'],
+      ['Gmail/Docs/Sheets help', 'Gemini', 'ChatGPT', 'Gemini is native to Google Workspace'],
+      ['Code help or debugging', 'ChatGPT or Claude', 'GitHub Copilot (in editor)', 'Both excellent, Copilot better for in-editor use'],
+      ['Generate images', 'ChatGPT Plus (DALL-E)', 'Midjourney, Adobe Firefly', 'DALL-E 3 is built into ChatGPT Plus'],
+      ['Summarize a large PDF', 'Claude', 'ChatGPT (file upload)', 'Claude handles larger files more reliably'],
+      ['Analyze uploaded data/CSV', 'ChatGPT Plus', 'Claude', 'ChatGPT\'s code interpreter runs actual analysis'],
+      ['Fact-check a specific claim', 'Perplexity', 'ChatGPT with browse', 'Get cited primary sources, not just AI opinion'],
+      ['Email drafting', 'Claude or ChatGPT', 'Gemini', 'Any works well — Gemini best for Gmail replies'],
+      ['Learning a new topic', 'ChatGPT or Claude', 'Perplexity', 'Ask ChatGPT/Claude to explain; use Perplexity for supplementary facts'],
     ] } },
-    { type: 'callout', data: { variant: 'note', text: 'The best tool changes over time as models improve. Focus on learning the skill of prompt writing — that transfers across any tool.' } },
-    { type: 'summary-box', data: { title: 'Decision shortcut', points: ['Facts with sources → Perplexity', 'Long docs/careful writing → Claude', 'Google Workspace → Gemini', 'General tasks → ChatGPT or Claude', 'The skill of prompting matters more than the tool'] } },
+    {
+      type: 'heading',
+      id: 'multi-tool-workflows',
+      data: { level: 2, text: 'Using multiple tools for one task', anchor: 'multi-tool-workflows' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'Many workflows benefit from combining tools. Use Perplexity to research the facts, then Claude to write the article with those facts, then Gemini\'s Docs integration to insert it into your document. The tools are complementary, not mutually exclusive.' },
+    },
+    { type: 'callout', data: { variant: 'note', text: 'The best tool changes month by month as models improve. Focus on learning the skill of prompt writing — that skill transfers across any tool that exists now or will exist in the future.' } },
+    { type: 'summary-box', data: { title: 'Decision shortcut', points: ['Facts with sources → Perplexity', 'Long docs and careful writing → Claude', 'Google Workspace tasks → Gemini', 'Images, data analysis, or general tasks → ChatGPT', 'Power users combine 2-3 tools in the same workflow', 'The skill of prompting matters more than the tool you choose'] } },
   ],
   relatedLessons: ['chatbot-landscape', 'anatomy-of-a-good-prompt'],
 };
@@ -553,21 +1087,62 @@ const promptPatterns: Lesson = {
   estimatedMinutes: 14,
   tags: ['prompt-patterns', 'templates', 'role-play', 'step-by-step'],
   blocks: [
-    { type: 'paragraph', data: { text: 'Beyond the basic CRTF framework, certain prompt patterns reliably produce better results across very different tasks. Think of these as repeatable recipes.' } },
+    { type: 'paragraph', data: { text: 'Beyond the basic CRTF framework, certain prompt patterns reliably produce better results across very different tasks. Think of these as repeatable recipes you can combine and remix. Unlike one-off prompts, patterns are transferable — once you know them, you use them everywhere.' } },
+    {
+      type: 'heading',
+      id: 'when-to-use-which',
+      data: { level: 2, text: 'Pattern quick-reference', anchor: 'when-to-use-which' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Pattern', 'Best for', 'Key phrase to use'],
+        rows: [
+          ['Role-play', 'Getting expert-level responses, setting tone', '"Act as a [expert]. Be [style]..."'],
+          ['Step-by-step', 'Complex reasoning, math, decisions, strategy', '"Think through this step by step..."'],
+          ['Before/After', 'Editing, improving, transforming existing text', '"Here is [X]. Rewrite it to [goal]"'],
+          ['Constraints', 'When precision matters, when length control is needed', '"In exactly 3 bullets, max 15 words each..."'],
+          ['Output template', 'Structured documents, reports, consistent format', '"Fill in this template: [template]"'],
+        ],
+      },
+    },
     { type: 'heading', id: 'role-play-pattern', data: { level: 2, text: 'Pattern 1: Role-play', anchor: 'role-play-pattern' } },
-    { type: 'paragraph', data: { text: 'Telling the AI to act as a specific expert sets its tone, vocabulary, and approach. It subtly activates the most relevant part of its training.' } },
-    { type: 'example', data: { title: 'Role-play prompt', content: '"Act as a senior product manager reviewing a feature spec. Be direct and focus on user impact and technical feasibility."' } },
-    { type: 'heading', id: 'step-by-step-pattern', data: { level: 2, text: 'Pattern 2: Step-by-step', anchor: 'step-by-step-pattern' } },
-    { type: 'paragraph', data: { text: 'Asking the AI to think step by step dramatically improves accuracy on complex questions. This is called chain-of-thought and is one of the most well-studied prompt techniques.' } },
-    { type: 'example', data: { title: 'Step-by-step prompt', content: '"Think through this step by step before answering: If I have a $10,000 marketing budget and want to reach professionals aged 35-50, which channels should I prioritize and why?"' } },
+    { type: 'paragraph', data: { text: 'Telling the AI to act as a specific expert sets its tone, vocabulary, and approach. It activates the most relevant patterns from its training. The more specific the role, the better the output.' } },
+    { type: 'example', data: { title: 'Role-play — basic', content: '"Act as a senior product manager reviewing a feature spec. Be direct and focus on user impact and technical feasibility."' } },
+    { type: 'example', data: { title: 'Role-play — advanced with audience', content: '"You are a friendly GP explaining a medical test result to a worried patient who has no medical background. Use plain language, avoid jargon, and be reassuring but honest. Here is the result: [PASTE]"' } },
+    { type: 'callout', data: { variant: 'tip', text: 'You can also specify who NOT to be: "Don\'t be overly technical. Don\'t be condescending. Don\'t use jargon." Negative role constraints are just as powerful.' } },
+    { type: 'heading', id: 'step-by-step-pattern', data: { level: 2, text: 'Pattern 2: Step-by-step (Chain-of-thought)', anchor: 'step-by-step-pattern' } },
+    { type: 'paragraph', data: { text: 'Asking the AI to reason step by step dramatically improves accuracy on complex problems. This explicit reasoning technique — called chain-of-thought prompting — is well-studied in AI research and consistently improves results on problems requiring planning or calculation.' } },
+    { type: 'example', data: { title: 'Step-by-step — budget decision', content: '"Think through this step by step before answering: I have a $10,000 marketing budget to reach professionals aged 35-50 in London. Walk through which channels would be most cost-effective, what the trade-offs are, and give me a recommended split."' } },
+    { type: 'example', data: { title: 'Step-by-step — problem diagnosis', content: '"My website conversion rate dropped 30% last week. Think step by step through the possible causes — technical, content, traffic source, and pricing factors. Then rank the most likely causes."' } },
     { type: 'heading', id: 'before-after-pattern', data: { level: 2, text: 'Pattern 3: Before / After', anchor: 'before-after-pattern' } },
-    { type: 'example', data: { title: 'Before/after prompt', content: '"Here is a paragraph I wrote [PASTE]. Rewrite it to be 30% shorter while keeping all the key information. Show me the before and after side by side."' } },
+    { type: 'paragraph', data: { text: 'Giving the AI something to transform is one of the most reliable patterns. You supply the input, specify what needs to change, and optionally show what the result should look like.' } },
+    { type: 'example', data: { title: 'Before/after — rewrite', content: '"Here is a paragraph I wrote [PASTE]. Rewrite it to be 30% shorter while keeping all the key information. Show me the original and the rewritten version side by side with word counts."' } },
+    { type: 'example', data: { title: 'Before/after — tone shift', content: '"Here is my reply to a negative customer review: [PASTE]. Rewrite it to be: (1) empathetic, not defensive; (2) under 50 words; (3) end with an invitation to resolve the issue. Show before and after."' } },
     { type: 'heading', id: 'constraint-pattern', data: { level: 2, text: 'Pattern 4: Constraints', anchor: 'constraint-pattern' } },
-    { type: 'paragraph', data: { text: 'Constraints force the AI to be precise. Word limits, format rules, and specific requirements all improve output quality.' } },
-    { type: 'example', data: { title: 'Constraint prompt', content: '"Summarize this in exactly 3 bullets. Each bullet must start with an action verb. Maximum 15 words per bullet."' } },
+    { type: 'paragraph', data: { text: 'Constraints force the AI to be precise. Word limits, format rules, banned words, and specific requirements all dramatically improve output quality. Constraints are especially powerful when you know exactly what you do NOT want.' } },
+    { type: 'example', data: { title: 'Constraint prompt — with bans', content: '"Summarize this in exactly 3 bullets. Each bullet must start with an action verb. Maximum 15 words per bullet. Do NOT use the word \"important\". Do NOT include statistics."' } },
+    { type: 'example', data: { title: 'Constraint prompt — audience level', content: '"Explain blockchain to me in under 150 words. Assume I know nothing about technology. No technical terms. No metaphors involving chains or blocks."' } },
     { type: 'heading', id: 'output-template-pattern', data: { level: 2, text: 'Pattern 5: Output template', anchor: 'output-template-pattern' } },
-    { type: 'example', data: { title: 'Template prompt', content: '"Fill in this template based on the notes below:\n## Meeting Summary\n**Date:** [DATE]\n**Key decisions:** [LIST]\n**Action items:** [OWNER: TASK by DATE]\n**Open questions:** [LIST]\n\nNotes: [PASTE NOTES]"' } },
-    { type: 'summary-box', data: { title: 'The 5 core patterns', points: ['Role-play — set an expert persona', 'Step-by-step — force reasoning on hard problems', 'Before/After — show what to transform', 'Constraints — force precision with limits', 'Output template — define the exact structure you need'] } },
+    { type: 'paragraph', data: { text: 'Give the AI the skeleton, have it fill in the flesh. Output templates are the fastest way to get consistently structured documents — meeting notes, reports, job postings, proposals, emails.' } },
+    { type: 'example', data: { title: 'Meeting notes template', content: '"Fill in this template based on the notes below:\n## Meeting Summary\n**Date:** [DATE]\n**Attendees:** [NAMES]\n**Key decisions made:** [LIST]\n**Action items:** [OWNER: TASK by DATE]\n**Open questions:** [LIST]\n**Next meeting:** [DATE]\n\nMeeting notes: [PASTE]"' } },
+    {
+      type: 'heading',
+      id: 'combining-patterns',
+      data: { level: 2, text: 'Combining patterns', anchor: 'combining-patterns' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'The real power comes from combining patterns. A single prompt can use role-play + step-by-step + output template all at once. Here is an example:' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Combined pattern prompt — business analysis',
+        content: '"Role: You are a senior business consultant. Tone: direct, no fluff.\n\nContext: I\'m evaluating whether to launch a SaaS product in Southeast Asia vs. Latin America.\n\nTask: Think through this step by step — consider market size, competition, regulatory environment, and go-to-market difficulty.\n\nFormat:\n## Region 1: Southeast Asia\n- Market opportunity: [2-3 sentences]\n- Key risks: [bullet list]\n- Verdict: [1 sentence]\n\n## Region 2: Latin America\n[same structure]\n\n## My recommendation\n[2-3 sentences with clear rationale]"\n\n→ This one prompt will return a structured, consultant-quality analysis.',
+      },
+    },
+    { type: 'summary-box', data: { title: 'The 5 core patterns', points: ['Role-play — set an expert persona; specify tone and what to avoid', 'Step-by-step — force reasoning on hard problems; dramatically improves accuracy', 'Before/After — show what to transform; most reliable for editing tasks', 'Constraints — force precision with word limits, format rules, and banned terms', 'Output template — give the AI the skeleton; it fills in the detail', 'Combine patterns for complex tasks — role + step-by-step + template = best results'] } },
   ],
   relatedLessons: ['anatomy-of-a-good-prompt', 'common-prompting-mistakes'],
 };
@@ -584,18 +1159,109 @@ const commonPromptingMistakes: Lesson = {
   estimatedMinutes: 10,
   tags: ['mistakes', 'debugging-prompts', 'improvement'],
   blocks: [
-    { type: 'paragraph', data: { text: 'When AI output disappoints, the problem is almost always the prompt — not the model. Here are the most common mistakes and their fixes.' } },
-    { type: 'table', data: { headers: ['Mistake', 'Why it fails', 'Fix'], rows: [
-      ['Too vague ("write something about AI")', 'AI has no target to aim at', 'Add context, audience, length, and purpose'],
-      ['No context about yourself', 'AI assumes a generic audience', 'Add: "I am a [role] working on [situation]"'],
-      ['Accepting the first draft', 'First output is rarely the best', 'Iterate: "Make it shorter / more direct / change tone"'],
-      ['Asking too many things at once', 'AI tries to do everything, does nothing well', 'One clear task per prompt; chain if needed'],
-      ['Not specifying format', 'AI picks a format you did not want', 'Add: "Use bullet points" or "Reply in under 100 words"'],
-      ['Not saying what NOT to do', 'AI includes things you wanted excluded', 'Add: "Do not include [X]. Avoid [Y]."'],
-      ['Treating AI output as final', 'AI can hallucinate or miss nuance', 'Always review and edit AI output'],
+    { type: 'paragraph', data: { text: 'When AI output disappoints, the problem is almost always the prompt — not the model. Understanding why your prompt failed is a skill that compounds rapidly. Here are the most common mistakes, why each fails, and exactly how to fix it.' } },
+    {
+      type: 'heading',
+      id: 'the-iteration-loop',
+      data: { level: 2, text: 'The prompt iteration loop', anchor: 'the-iteration-loop' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'prompt-iteration-cycle',
+        caption: 'Prompting is a diagnosis-and-refine loop, not a one-shot process',
+        definition: `flowchart TD
+  WRITE["Write your prompt"] --> SEND["Send it"]
+  SEND --> REVIEW{"Is the output\nwhat you needed?"}
+  REVIEW -->|Yes| DONE["✅ Done!"]
+  REVIEW -->|Too long| SHORT["Add: 'In half the words'…"]
+  REVIEW -->|Wrong tone| TONE["Add: 'More direct / casual / formal'…"]
+  REVIEW -->|Off-topic| CONTEXT["Add more context about\nyour situation"]
+  REVIEW -->|Too generic| SPECIFIC["Add constraints, examples,\nor a specific audience"]
+  REVIEW -->|Wrong format| FORMAT["Specify: 'Use a table / bullets / <150 words'…"]
+
+  SHORT --> SEND
+  TONE --> SEND
+  CONTEXT --> SEND
+  SPECIFIC --> SEND
+  FORMAT --> SEND
+
+  style DONE fill:#d1f3d8,stroke:#1a7f37
+  style WRITE fill:#ddf4ff,stroke:#0969da`,
+      },
+    },
+    { type: 'table', data: { headers: ['Mistake', 'Why it fails', 'Fix', 'Example'], rows: [
+      [
+        'Too vague',
+        'AI has no target to aim at — picks the most generic possible interpretation',
+        'Add context, audience, length, and purpose',
+        'BAD: "Write about leadership" → GOOD: "Write a 200-word LinkedIn post for new managers about why listening matters more than speaking"',
+      ],
+      [
+        'No context about yourself',
+        'AI assumes a generic neutral audience',
+        'Add: "I am a [role] working on [specific situation]"',
+        'BAD: "How should I handle this?" → GOOD: "I\'m a first-time manager and my team member missed 3 deadlines. How should I approach the conversation?"',
+      ],
+      [
+        'Accepting the first draft',
+        'First output is a starting point, never the finished product',
+        'Reply with: "Make it more [X]. Remove [Y]. Add [Z]."',
+        'Instead of starting over: "This is good but too formal. Rewrite in a casual, conversational tone."',
+      ],
+      [
+        'Asking too many things at once',
+        'AI tries to do everything and does nothing well',
+        'One clear task per prompt; chain separate prompts',
+        'BAD: "Write an email, summarize the findings and create action items" → Three separate prompts',
+      ],
+      [
+        'Not specifying format',
+        'AI picks a format you didn\'t want',
+        'Specify: "Use bullet points" or "Reply in under 100 words" or "Use a comparison table"',
+        'BAD: "Compare these two options" → GOOD: "Compare in a 3-column table: Feature | Option A | Option B"',
+      ],
+      [
+        'Not saying what NOT to do',
+        'AI includes things you wanted excluded',
+        'Add: "Do not include [X]. Avoid [Y]. No jargon."',
+        'BAD: just task → GOOD: "Do not include sales language. Avoid bullet points. Don\'t mention competitors."',
+      ],
+      [
+        'Treating AI output as final',
+        'AI can hallucinate facts, miss nuance, or get tone wrong',
+        'Always review, fact-check important claims, and edit before using',
+        'Treat everything from AI as a strong first draft, not a published article',
+      ],
     ] } },
-    { type: 'callout', data: { variant: 'tip', title: 'The quick fix', text: 'If you got a bad result, do not start over. Instead, reply with: "That was not quite right. [Specific issue]. Try again with [specific adjustment]."' } },
-    { type: 'summary-box', data: { title: 'Remember', points: ['Vagueness is the #1 cause of bad AI output', 'Prompting is a conversation — iterate, do not restart', 'Constraints improve quality', 'AI output is a starting point, not a final answer'] } },
+    {
+      type: 'heading',
+      id: 'diagnosing-bad-output',
+      data: { level: 2, text: 'Diagnosing bad output quickly', anchor: 'diagnosing-bad-output' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Symptom', 'Likely cause', 'Fix to add'],
+        rows: [
+          ['Output is too long', 'No length constraint', 'Add: "In under [N] words" or "Be brief"'],
+          ['Output is generic/surface-level', 'No context or specific audience', 'Add who you are, what you\'re trying to do, and for whom'],
+          ['Output missed the point', 'Task was ambiguous', 'Restate the task more specifically; add an example of what you want'],
+          ['Output sounds like a robot', 'No tone instruction', 'Add: "Sound like a human. Conversational tone. No buzzwords."'],
+          ['Output contains wrong facts', 'Hallucination', 'Ask it to cite sources; verify externally; use Perplexity instead'],
+          ['Output is repetitive', 'No "no repetition" constraint', 'Add: "Do not repeat information. Each point should add something new."'],
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        title: 'The quick fix',
+        text: 'If you got a bad result, do not start over. Instead, reply to the AI with: "That was not quite right. [Specific issue]. Try again with [specific adjustment]." This keeps the context and lets the model understand exactly what to change.',
+      },
+    },
+    { type: 'summary-box', data: { title: 'Remember', points: ['Vagueness is the #1 cause of bad AI output', 'Prompting is a conversation — iterate, do not restart from scratch', 'Adding constraints (format, length, tone, bans) consistently improves quality', 'One task per prompt — chain them if you need multiple outputs', 'AI output is a starting point, not a final product — always review and edit'] } },
   ],
   relatedLessons: ['anatomy-of-a-good-prompt', 'prompt-patterns'],
 };
@@ -614,14 +1280,122 @@ const tokensExplained: Lesson = {
   tags: ['tokens', 'context', 'cost', 'limits'],
   relatedGlossaryTerms: ['token', 'context-window', 'large-language-model'],
   blocks: [
-    { type: 'paragraph', data: { text: 'Every AI model has limits. Those limits are measured in tokens — not words. Understanding tokens helps you avoid frustrating cut-offs and understand why some requests cost more than others.' } },
-    { type: 'heading', id: 'what-is-a-token', data: { level: 2, text: 'What is a token?', anchor: 'what-is-a-token' } },
-    { type: 'paragraph', data: { text: 'A token is a chunk of text — roughly 3-4 characters. The word "hello" is 1 token. "Unbelievably" might be 3 tokens. Numbers, punctuation, and spaces all take tokens too.' } },
-    { type: 'table', data: { headers: ['Text', 'Approx. tokens'], rows: [['1,000 tokens', '≈ 750 words'], ['1 page of text', '≈ 500–700 tokens'], ['A short story (5,000 words)', '≈ 6,500 tokens'], ['An average PDF (20 pages)', '≈ 10,000–15,000 tokens']] } },
-    { type: 'heading', id: 'why-tokens-matter', data: { level: 2, text: 'Why tokens matter', anchor: 'why-tokens-matter' } },
-    { type: 'bullet-list', data: { title: 'Tokens affect:', items: ['Context limits — how much text the AI can "see" at once', 'API costs — you pay per token used (input + output)', 'Response truncation — long conversations may cut off early messages', 'Speed — more tokens generally means slower responses'] } },
-    { type: 'callout', data: { variant: 'tip', text: 'For practical use: think of 1,000 tokens as roughly one page of reading. If your document is 50 pages you might hit limits with smaller models. Claude handles up to ~150,000 words in one session.' } },
-    { type: 'summary-box', data: { title: 'Key facts', points: ['1 token ≈ 3-4 characters or ¾ of a word', '1,000 tokens ≈ 750 words', 'Token limits determine how much context an AI can process at once', 'Longer inputs use more tokens and may cost more on paid APIs'] } },
+    {
+      type: 'paragraph',
+      data: { text: 'Every AI model has limits. Those limits are measured in tokens — not words. Understanding tokens helps you avoid frustrating cut-offs, understand why costs differ, and get better output from long-context tasks.' },
+    },
+    {
+      type: 'heading',
+      id: 'what-is-a-token',
+      data: { level: 2, text: 'What is a token?', anchor: 'what-is-a-token' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'A token is a chunk of text — roughly 3-4 characters. The word "hello" is 1 token. "Unbelievably" might be 3 tokens. Numbers, punctuation, and spaces all take tokens too. AI models don\'t read letter-by-letter or word-by-word — they read chunk-by-chunk.' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'tokenization-example',
+        caption: 'How the sentence "The quick brown fox jumps." is split into tokens by an AI model (approximate)',
+        definition: `graph LR
+  A["The"] --> B[" quick"] --> C[" brown"] --> D[" fox"] --> E[" jumps"] --> F["."]
+
+  style A fill:#ddf4ff,stroke:#0969da,color:#0550ae
+  style B fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37
+  style C fill:#fff8c5,stroke:#9a6700,color:#9a6700
+  style D fill:#ffe1cc,stroke:#bc4c00,color:#bc4c00
+  style E fill:#eddff8,stroke:#8250df,color:#6639ba
+  style F fill:#ffd8d3,stroke:#cf222e,color:#cf222e`,
+      },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Text', 'Approx. tokens'],
+        rows: [
+          ['1,000 tokens', '≈ 750 words'],
+          ['1 page of text', '≈ 500–700 tokens'],
+          ['A short story (5,000 words)', '≈ 6,500 tokens'],
+          ['An average PDF (20 pages)', '≈ 10,000–15,000 tokens'],
+          ['A typical chat message', '≈ 50–200 tokens'],
+          ['A full book (80,000 words)', '≈ 100,000+ tokens'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'input-vs-output-tokens',
+      data: { level: 2, text: 'Input tokens vs output tokens', anchor: 'input-vs-output-tokens' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'On paid AI APIs, both what you send (input) and what the model writes back (output) cost tokens. Output tokens typically cost 2-5x more than input tokens, because generating text is computationally more intensive than reading it. This is why concise prompts are better — and why asking for long detailed output costs more.' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Token type', 'Includes', 'Relative cost'],
+        rows: [
+          ['Input tokens', 'Your prompt + conversation history + uploaded files + system prompt', 'Lower (e.g. $3/M)'],
+          ['Output tokens', 'The AI\'s response text', 'Higher (e.g. $15/M)'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'why-tokens-matter',
+      data: { level: 2, text: 'Why tokens matter for practical use', anchor: 'why-tokens-matter' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'Tokens affect four things:',
+        items: [
+          'Context limits — how much text the AI can "see" at once in one conversation',
+          'API costs — you pay per token used (input + output) on paid APIs',
+          'Response truncation — long conversations may drop earliest messages when the limit is hit',
+          'Speed — more tokens generally means slower responses on the same model',
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        text: 'For practical free use: think of 1,000 tokens as roughly one page of text. Most free tiers give you 128,000+ tokens per conversation — enough for dozens of pages. For business API use, token costs become important to track.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'token-limits-by-model',
+      data: { level: 2, text: 'Context window sizes', anchor: 'token-limits-by-model' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Model', 'Context window', 'Approx. words', 'What you can fit'],
+        rows: [
+          ['GPT-4o', '128,000 tokens', '~96,000 words', '~100 pages of text'],
+          ['Claude 3.5 Sonnet', '200,000 tokens', '~150,000 words', '~170 pages'],
+          ['Gemini 1.5 Pro', '1,000,000 tokens', '~750,000 words', '~800 pages'],
+          ['Smaller/local models', '4,000–32,000 tokens', '3,000–24,000 words', '3–24 pages'],
+        ],
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Key facts',
+        points: [
+          '1 token ≈ 3-4 characters or ¾ of a word',
+          '1,000 tokens ≈ 750 words ≈ one page of text',
+          'Token limits determine how much context an AI can process at once',
+          'Output tokens cost more than input tokens on paid APIs',
+          'Larger context windows = better for long documents and extended conversations',
+        ],
+      },
+    },
   ],
   relatedLessons: ['context-window-deep-dive', 'how-llms-work-simply'],
 };
@@ -638,13 +1412,124 @@ const contextWindowDeepDive: Lesson = {
   tags: ['context-window', 'memory', 'long-context', 'limits'],
   relatedGlossaryTerms: ['context-window', 'token'],
   blocks: [
-    { type: 'paragraph', data: { text: "The context window is one of the most important and most misunderstood concepts in AI. Once you understand it, AI behavior — including seemingly random 'forgetting' — starts making sense." } },
-    { type: 'heading', id: 'what-is-context', data: { level: 2, text: 'What is the context window?', anchor: 'what-is-context' } },
-    { type: 'paragraph', data: { text: 'The context window is the total amount of text an AI model can process in one session. Everything within that window — your messages, its replies, uploaded documents, a system prompt — counts toward the limit. When you exceed it, the oldest content is quietly dropped.' } },
-    { type: 'callout', data: { variant: 'warning', title: 'The AI does not have memory between sessions', text: 'Every new conversation starts blank. The context window is working memory for a single session only. It does not remember anything from a previous chat.' } },
-    { type: 'table', data: { headers: ['Model', 'Context size', 'Approx. words'], rows: [['GPT-4o', '128,000 tokens', '~96,000 words'], ['Claude 3.5', '200,000 tokens', '~150,000 words'], ['Gemini 1.5 Pro', '1,000,000 tokens', '~750,000 words'], ['Smaller/local models', '4,000–32,000 tokens', '3,000–24,000 words']] } },
-    { type: 'bullet-list', data: { title: 'Practical tips:', items: ['Start a new chat for unrelated tasks — do not let context bleed between topics', 'Paste long documents early in the conversation, not at the end', "If the AI seems to 'forget' earlier instructions, the context window may be full", 'For very long projects, summarize progress and paste the summary into a new chat'] } },
-    { type: 'summary-box', data: { title: 'Remember', points: ["Context window = the AI's working memory per session", 'When it fills up, older content is dropped', 'No memory persists between separate conversations', 'Larger context windows = better for long documents'] } },
+    {
+      type: 'paragraph',
+      data: { text: "The context window is one of the most important and most misunderstood concepts in AI. Once you understand it, AI behavior — including seemingly random 'forgetting' — starts making sense." },
+    },
+    {
+      type: 'heading',
+      id: 'what-is-context',
+      data: { level: 2, text: 'What is the context window?', anchor: 'what-is-context' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'The context window is the total amount of text an AI model can process in one session. Everything within that window — your messages, its replies, uploaded documents, a system prompt — counts toward the limit. When you exceed it, the oldest content is quietly dropped.' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'context-window-filling',
+        caption: 'As a conversation grows, the oldest messages are pushed out of the context window when the limit is reached',
+        definition: `graph LR
+  subgraph WINDOW ["Context Window (e.g. 128K tokens)"]
+    direction TB
+    SP[System Prompt\\n~500 tokens]
+    M1[Your message 1\\n~200 tokens]
+    R1[AI reply 1\\n~400 tokens]
+    M2[Your message 2\\n~300 tokens]
+    R2[AI reply 2\\n~600 tokens]
+    DOC[Uploaded document\\n~8,000 tokens]
+    DOTS[...more messages...]
+    MN[Your latest message\\n~200 tokens]
+  end
+
+  OVERFLOW["❌ Message 1 & 2 dropped\\nwhen window fills up"]
+
+  SP --> M1 --> R1 --> M2 --> R2 --> DOC --> DOTS --> MN
+  M1 -.->|pushed out| OVERFLOW
+
+  style WINDOW fill:#ddf4ff,stroke:#0969da,color:#0550ae
+  style OVERFLOW fill:#ffebe9,stroke:#cf222e,color:#cf222e`,
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'warning',
+        title: 'The AI does not have memory between sessions',
+        text: 'Every new conversation starts completely blank. The context window is working memory for a single session only. It does not remember anything from a previous chat unless you paste it in yourself.',
+      },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Model', 'Context size', 'Approx. words', 'Practical implication'],
+        rows: [
+          ['GPT-4o', '128,000 tokens', '~96,000 words', 'Handles ~80-100 pages comfortably'],
+          ['Claude 3.5 Sonnet', '200,000 tokens', '~150,000 words', 'Can hold an entire novel + your notes'],
+          ['Gemini 1.5 Pro', '1,000,000 tokens', '~750,000 words', 'Entire codebases or document libraries'],
+          ['Smaller/local models', '4,000–32,000 tokens', '3,000–24,000 words', 'Best for short focused tasks only'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'practical-strategies',
+      data: { level: 2, text: 'Practical strategies for managing context', anchor: 'practical-strategies' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'Use these techniques to work effectively within context limits:',
+        items: [
+          'Start a new chat for unrelated tasks — do not let context from different topics mix',
+          'Paste long documents early in the conversation, not at the end',
+          "If the AI seems to 'forget' earlier instructions, the context may be full — summarize and restart",
+          'For very long projects, summarize progress into a single paragraph and paste it into a new chat',
+          'Use Claude (200K) or Gemini (1M) for tasks involving very long documents',
+          'Keep system prompts concise — every token in the system prompt shrinks available space for your work',
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'context-vs-memory',
+      data: { level: 2, text: 'Context window vs. long-term memory', anchor: 'context-vs-memory' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Feature', 'Context window', 'Long-term memory (app feature)'],
+        rows: [
+          ['Scope', 'Current session only', 'Persists across sessions'],
+          ['How it works', 'Everything in one conversation', 'Key facts saved and retrieved later'],
+          ['Who provides it', 'Built into every AI model', 'App-level feature (ChatGPT Memory, Claude Projects)'],
+          ['What happens when full', 'Oldest content dropped silently', 'Older memories may be summarized or expired'],
+          ['Privacy implication', 'Nothing stored after chat ends', 'Facts about you are stored — review settings'],
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        title: 'The "summary handoff" technique',
+        text: 'When a long conversation is getting close to the context limit, ask: "Please write a brief summary of our conversation so far that I can paste into a new chat to continue." This preserves continuity without wasting your context window.',
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Remember',
+        points: [
+          "Context window = the AI's working memory for one session",
+          'When it fills up, the oldest content is quietly dropped',
+          'No memory persists between separate conversations (unless the app has a memory feature)',
+          'Larger context windows are better for long documents and extended projects',
+          'Use the "summary handoff" when a long conversation nears its limit',
+        ],
+      },
+    },
   ],
   relatedLessons: ['tokens-explained', 'ai-hallucination-deep-dive'],
 };
@@ -661,13 +1546,135 @@ const aiHallucinationDeepDive: Lesson = {
   tags: ['hallucination', 'accuracy', 'reliability', 'safety'],
   relatedGlossaryTerms: ['hallucination', 'large-language-model'],
   blocks: [
-    { type: 'paragraph', data: { text: 'Hallucination is not a bug that will be patched in the next update. It is a fundamental property of how language models work. Understanding this changes how you use AI tools.' } },
-    { type: 'heading', id: 'why-it-happens', data: { level: 2, text: 'Why hallucination happens', anchor: 'why-it-happens' } },
-    { type: 'paragraph', data: { text: "LLMs generate the statistically most likely next token — they do not retrieve facts from a verified database. When the model encounters a gap in its knowledge, it fills it with a plausible-sounding guess. It cannot say 'I don't know' because that is rarely the highest-probability token." } },
-    { type: 'table', data: { headers: ['Type', 'Example', 'Risk level'], rows: [['Factual confabulation', 'Inventing a book title or author', 'High — easily missed'], ['Date errors', 'Wrong year for a historical event', 'Medium'], ['Citation fabrication', 'Making up a study with real-sounding authors', 'Very high'], ['Logical inconsistency', 'Contradicting itself in the same response', 'Medium'], ['Subtle distortion', 'Getting a statistic 10% wrong', 'Very high — nearly impossible to spot']] } },
-    { type: 'callout', data: { variant: 'warning', title: 'Subtle hallucination is the most dangerous', text: 'Completely fabricated facts are easy to notice. Numbers that are slightly off, dates that are a year wrong, or quotes with the wrong wording are far harder to catch.' } },
-    { type: 'bullet-list', data: { title: 'Hallucination risk is highest when asking about:', items: ['Specific statistics, dates, names, URLs, or citations', 'Niche topics the model was less trained on', 'Recent events after the model training cutoff', 'Mathematical calculations (use a calculator tool instead)', 'Very long responses — more tokens means more opportunities to drift'] } },
-    { type: 'summary-box', data: { title: 'The defense', points: ['Treat all specific facts from AI as unverified until checked', 'Use Perplexity or web search for anything needing sources', "Ask 'are you confident?' — a good model will flag uncertainty", 'Never paste AI-generated facts into formal documents without verification'] } },
+    {
+      type: 'paragraph',
+      data: { text: 'Hallucination is not a bug that will be patched in the next update. It is a fundamental property of how language models work. Understanding this changes how you use AI tools — and helps you avoid the situations where it is most dangerous.' },
+    },
+    {
+      type: 'heading',
+      id: 'why-it-happens',
+      data: { level: 2, text: 'Why hallucination happens', anchor: 'why-it-happens' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: "LLMs generate the statistically most likely next token — they do not retrieve facts from a verified database. When the model encounters a gap in its knowledge, it fills it with a plausible-sounding sequence of tokens. There's no separate 'fact checker' built into the model. The same mechanism that makes it brilliant at writing also makes it capable of confidently inventing things." },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'hallucination-mechanism',
+        caption: 'The hallucination mechanism: the model predicts plausible tokens with no built-in truth verification',
+        definition: `flowchart TD
+  Q["User asks: 'Who wrote the 2019 study on X?'"]
+  Q --> P[LLM predicts next tokens]
+  P --> KN{Does training data\\ncontain the answer?}
+  KN -->|Yes, clearly| C[Correct answer output]
+  KN -->|Partially / ambiguously| H[Plausible-sounding answer\\n— may be wrong]
+  KN -->|Not at all| HH[Fabricated answer\\nwith confident tone]
+
+  style KN fill:#fff8c5,stroke:#9a6700
+  style C fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37
+  style H fill:#ffe1cc,stroke:#bc4c00,color:#bc4c00
+  style HH fill:#ffebe9,stroke:#cf222e,color:#cf222e`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'types-of-hallucination',
+      data: { level: 2, text: 'Types of hallucination', anchor: 'types-of-hallucination' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Type', 'Example', 'Risk level'],
+        rows: [
+          ['Factual confabulation', 'Inventing a book title or author name that sounds real', 'High — easy to miss'],
+          ['Date errors', 'Getting a historical event wrong by a year or decade', 'Medium'],
+          ['Citation fabrication', 'Making up a scientific study with legitimate-sounding authors and journals', 'Very high'],
+          ['Logical inconsistency', 'Contradicting itself within the same response', 'Medium'],
+          ['Subtle number distortion', 'Getting a statistic 10-15% wrong', 'Very high — nearly impossible to spot'],
+          ['URL invention', 'Providing a URL that looks real but does not exist', 'High'],
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'warning',
+        title: 'Subtle hallucination is the most dangerous kind',
+        text: 'A completely fabricated fact is easy to notice — it sounds absurd. But a number that is slightly off, a date that is one year wrong, or a quote with slightly altered wording is nearly impossible to catch without checking the source. The model sounds equally confident in both cases.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'high-risk-situations',
+      data: { level: 2, text: 'When hallucination is most likely', anchor: 'high-risk-situations' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'Hallucination risk is highest when asking about:',
+        items: [
+          'Specific statistics, percentages, or data points',
+          'Names of authors, researchers, or public figures in niche fields',
+          'Specific URLs, DOIs, or publication details',
+          'Events or data from after the model\'s training cutoff',
+          'Niche topics the model has less training data on',
+          'Very long responses — more tokens = more opportunities to drift',
+          'Anything requiring multi-step mathematical reasoning',
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'real-examples',
+      data: { level: 2, text: 'Real examples to learn from', anchor: 'real-examples' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Citation hallucination in practice',
+        content: 'If you ask: "Can you cite a peer-reviewed study showing X?"\n\nAI may produce: "Smith et al. (2021). \'Title that sounds exactly right\'. Journal of Credible-Sounding Research, 14(3), 87–102."\n\nThe journal may exist. The volume and page numbers look correct. The author name and year are plausible. But the study itself may never have existed. This is extremely common — and extremely dangerous if you copy it into a report.',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'The safer approach',
+        content: 'Instead of: "Cite a study on X"\nAsk: "I want to find research on X. What search terms should I use on Google Scholar or PubMed?"\n\nThis uses AI for strategy (finding research) rather than asking it to produce specific citations it may fabricate.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'defense-strategies',
+      data: { level: 2, text: 'Your defenses against hallucination', anchor: 'defense-strategies' },
+    },
+    {
+      type: 'checklist',
+      data: {
+        title: 'Hallucination defense checklist',
+        items: [
+          { text: 'Treat any specific statistic, date, or citation from AI as unverified', hint: 'Check it before using in any formal context' },
+          { text: 'Use Perplexity or browsing-enabled tools for fact-sensitive queries', hint: 'These retrieve live web pages and cite sources' },
+          { text: 'Ask "how confident are you about this, and can you verify it?"', hint: 'A well-calibrated model will flag uncertainty it has' },
+          { text: 'Never paste AI-generated citations into a paper without checking each one', hint: 'Use Google Scholar / DOI lookup to verify they exist' },
+          { text: 'For numbers and statistics, ask the AI to show its reasoning step by step', hint: 'Chain-of-thought reduces arithmetic errors' },
+        ],
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'The defense mindset',
+        points: [
+          'Hallucination is fundamental — it will not disappear from LLMs',
+          'The model sounds equally confident whether it\'s right or wrong',
+          'Subtle errors (wrong number, wrong year) are more dangerous than obvious fabrications',
+          'Use Perplexity for facts needing sources; verify all specific claims before publishing',
+          "Ask 'can you verify this?' — a well-calibrated model will signal its own uncertainty",
+        ],
+      },
+    },
   ],
   relatedLessons: ['evaluating-ai-output', 'what-ai-can-and-cannot-do'],
 };
@@ -683,23 +1690,112 @@ const evaluatingAiOutput: Lesson = {
   estimatedMinutes: 10,
   tags: ['evaluation', 'quality-check', 'verification', 'habits'],
   blocks: [
-    { type: 'paragraph', data: { text: 'The skill of evaluating AI output is as important as the skill of prompting. A good habit here protects you from the biggest risks of AI use.' } },
-    { type: 'heading', id: 'review-framework', data: { level: 2, text: 'The SIFT review framework', anchor: 'review-framework' } },
-    { type: 'key-terms', data: { terms: [
-      { term: 'S — Specific facts', definition: 'Check any specific names, numbers, dates, or citations. These are where AI most often gets things wrong.' },
-      { term: 'I — Internal consistency', definition: 'Does the response contradict itself? Does the conclusion follow from the reasoning?' },
-      { term: 'F — Fit for purpose', definition: 'Does this actually answer your question? Is the format right? Is the tone appropriate?' },
-      { term: 'T — Tone and bias', definition: 'Is the tone appropriate for your audience? Does the AI have unintended slant or framing?' },
-    ] } },
-    { type: 'checklist', data: { title: 'Quick output review checklist', items: [
-      { text: 'Did the AI actually answer my question?', hint: 'Sometimes it answers a related but different question' },
-      { text: 'Are there specific facts I should verify?', hint: 'Dates, names, numbers, URLs, citations' },
-      { text: 'Is the format and length right for my use case?' },
-      { text: 'Does the tone match what I need?' },
-      { text: 'Would a knowledgeable person in this area agree with this?', hint: 'Your own domain knowledge is the first filter' },
-    ] } },
-    { type: 'callout', data: { variant: 'note', text: 'You do not need to verify everything. For creative writing or brainstorming, verification is rarely needed. For factual claims in formal documents — always check.' } },
-    { type: 'summary-box', data: { title: 'Takeaway', points: ['Apply SIFT: Specific facts, Internal consistency, Fit for purpose, Tone', 'Match your verification effort to the stakes', 'Your own expertise is the first and best filter'] } },
+    {
+      type: 'paragraph',
+      data: { text: 'The skill of evaluating AI output is as important as the skill of prompting. A good habit here protects you from the biggest risks of AI use — and takes only seconds once you build the reflex.' },
+    },
+    {
+      type: 'heading',
+      id: 'review-framework',
+      data: { level: 2, text: 'The SIFT review framework', anchor: 'review-framework' },
+    },
+    {
+      type: 'key-terms',
+      data: {
+        terms: [
+          { term: 'S — Specific facts', definition: 'Check any specific names, numbers, dates, or citations. These are where AI most often gets things wrong.' },
+          { term: 'I — Internal consistency', definition: 'Does the response contradict itself? Does the conclusion follow from the reasoning it presented?' },
+          { term: 'F — Fit for purpose', definition: 'Does this actually answer the question you asked? Is the format right? Is the length appropriate?' },
+          { term: 'T — Tone and bias', definition: 'Is the tone right for your audience? Does the AI have unintended slant or framing you should correct?' },
+        ],
+      },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'sift-flow',
+        caption: 'The SIFT evaluation flow — apply this to every AI response before using it',
+        definition: `flowchart TD
+  R[Received AI response]
+  R --> S{Specific facts?\\nNames, numbers, dates, URLs}
+  S -->|Yes, present| SV[Verify those facts\\nwith a primary source]
+  S -->|No specific facts| I
+
+  SV --> I{Internal consistency?\\nDoes it contradict itself?}
+  I -->|Contradiction found| FIX1[Ask AI to reconcile/correct]
+  I -->|Consistent| F
+
+  FIX1 --> F{Fit for purpose?\\nAnswers the actual question?}
+  F -->|Off-target| FIX2[Refine your prompt\\nand regenerate]
+  F -->|On target| T
+
+  FIX2 --> T{Tone & bias?\\nRight voice for audience?}
+  T -->|Needs adjustment| FIX3[Ask AI to adjust tone]
+  T -->|Appropriate| USE[✅ Safe to use or publish]
+
+  style USE fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37
+  style FIX1 fill:#fff8c5,stroke:#9a6700
+  style FIX2 fill:#fff8c5,stroke:#9a6700
+  style FIX3 fill:#fff8c5,stroke:#9a6700`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'stakes-based-verification',
+      data: { level: 2, text: 'Matching verification effort to stakes', anchor: 'stakes-based-verification' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Use case', 'Stakes', 'Verification approach'],
+        rows: [
+          ['Brainstorming, creative ideas', 'Low', 'Use freely — no verification needed'],
+          ['Internal first draft', 'Low-medium', 'Quick read through for obvious errors'],
+          ['Email to important stakeholder', 'Medium', 'Read and edit carefully; check any claims'],
+          ['Factual article or research note', 'High', 'Verify all specific facts against primary sources'],
+          ['Legal, medical, or financial use', 'Very high', 'Never rely on AI alone — consult qualified professional'],
+        ],
+      },
+    },
+    {
+      type: 'checklist',
+      data: {
+        title: 'Quick output review checklist',
+        items: [
+          { text: 'Did the AI actually answer the question I asked?', hint: 'Sometimes it answers a related but slightly different question' },
+          { text: 'Are there specific facts I should verify?', hint: 'Dates, names, statistics, citations, URLs' },
+          { text: 'Is the format and length right for my use case?' },
+          { text: 'Does the tone match what I need for my audience?' },
+          { text: 'Would a knowledgeable person in this area agree with this output?', hint: 'Your domain knowledge is the first and best filter' },
+        ],
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'SIFT in action: evaluating a business email draft',
+        content: 'AI-drafted email says: "As per the Q3 results showing a 23% YoY growth, we should..."\n\nS: Is the 23% YoY figure accurate? → Check with your actual data.\nI: Does the recommendation logically follow from that growth rate? → Read through carefully.\nF: Does this address the specific conversation thread the client had? → Make sure it matches context.\nT: Is the tone appropriately professional without being stiff? → Adjust as needed.\n\nThis 30-second check prevents the embarrassment of sending wrong data to a client.',
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'note',
+        text: 'You do not need to verify everything. For creative writing or brainstorming, verification is rarely needed. For factual claims in formal documents, public communications, or high-stakes decisions — always verify.',
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Build the SIFT habit',
+        points: [
+          'SIFT: Specific facts → Internal consistency → Fit for purpose → Tone',
+          'Match verification effort to the stakes and consequences',
+          'Your own domain expertise is the first and best filter',
+          'A 30-second review catches most problems before they matter',
+        ],
+      },
+    },
   ],
   relatedLessons: ['ai-hallucination-deep-dive', 'critical-evaluation'],
 };
@@ -715,12 +1811,145 @@ const chatgptGuide: Lesson = {
   estimatedMinutes: 15,
   tags: ['chatgpt', 'openai', 'gpt-4o', 'practical'],
   blocks: [
-    { type: 'paragraph', data: { text: 'ChatGPT is the most-used AI tool in the world. Here is a practical guide to using it well — including what the free tier actually gives you and how to avoid common frustrations.' } },
-    { type: 'table', data: { headers: ['Tier', 'Model', 'Best for'], rows: [['Free', 'GPT-4o mini / GPT-4o (limited)', 'General chat, writing, simple analysis'], ['Plus ($20/mo)', 'GPT-4o, o1, image generation', 'Complex reasoning, images, file analysis'], ['Pro ($200/mo)', 'o1 Pro, all features', 'Advanced research and reasoning']] } },
-    { type: 'bullet-list', data: { title: 'Key features to know:', items: ['Custom GPTs — saved personas/instructions for specific use cases', 'Memory — ChatGPT can remember facts about you across sessions (opt-in)', 'Canvas — a collaborative document editor for long writing projects', 'Voice mode — hands-free conversation with real-time responses', 'File upload — analyze PDFs, spreadsheets, images', 'Code interpreter — runs actual Python in your chat'] } },
-    { type: 'callout', data: { variant: 'tip', title: 'Most underused feature', text: "Custom GPTs let you skip repeating your context every time. Set up one Custom GPT for your work style and another for writing — you'll save hours." } },
-    { type: 'table', data: { headers: ['Problem', 'Fix'], rows: [['Response cut off', 'Type "continue" or ask for a shorter format'], ['AI ignores instructions', 'Put the most important instruction at the START and END'], ['Too verbose', 'Add "be concise, under 150 words"'], ['Wrong tone', 'Specify tone explicitly: "professional but warm"'], ['Forgot context', 'Start each new chat with a brief project summary']] } },
-    { type: 'summary-box', data: { title: 'ChatGPT essentials', points: ['Free tier is genuinely useful for most everyday tasks', 'Custom GPTs save repetitive context setup', 'Memory feature is worth enabling for regular users', 'Code interpreter and file analysis are the best paid differentiators'] } },
+    {
+      type: 'paragraph',
+      data: { text: 'ChatGPT is the most-used AI tool in the world. Here is a practical guide to using it well — including what the free tier actually gives you, the features most people miss, and how to avoid the most common frustrations.' },
+    },
+    {
+      type: 'heading',
+      id: 'chatgpt-tiers',
+      data: { level: 2, text: 'ChatGPT plans at a glance', anchor: 'chatgpt-tiers' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Tier', 'Model', 'Best for', 'Worth it?'],
+        rows: [
+          ['Free', 'GPT-4o mini / GPT-4o (rate-limited)', 'General chat, writing, simple analysis', 'Yes — excellent starting point'],
+          ['Plus ($20/mo)', 'GPT-4o, o1, image generation, file analysis', 'Complex reasoning, images, large files', 'Yes if you use AI daily'],
+          ['Team ($30/user/mo)', 'All Plus features, no training on data', 'Business use where data privacy matters', 'Yes for business users'],
+          ['Enterprise (custom)', 'All models, SOC 2, admin controls', 'Large organizations with compliance needs', 'Yes for enterprise'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'key-features',
+      data: { level: 2, text: 'Key features most people miss', anchor: 'key-features' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'chatgpt-features',
+        caption: 'ChatGPT feature overview — most users only use a fraction of what\'s available',
+        definition: `mindmap
+  root((ChatGPT))
+    Text & Chat
+      Writing & editing
+      Brainstorming
+      Q&A
+      Summaries
+    Files & Data
+      PDF analysis
+      CSV/spreadsheet analysis
+      Code interpreter
+      Image analysis
+    Media
+      DALL-E image generation
+      Voice mode
+      Canvas document editor
+    Customization
+      Custom GPTs
+      Memory
+      System instructions
+      Projects`,
+      },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'Key features worth knowing:',
+        items: [
+          'Custom GPTs — saved personas/instructions you build once and reuse. Skip repeating context every time.',
+          'Memory — ChatGPT can remember facts about you across sessions (opt-in). Saves you from re-explaining yourself.',
+          'Canvas — a collaborative document editor for long writing and coding projects with inline editing.',
+          'Voice mode — hands-free conversation with real-time audio responses. Useful for thinking out loud.',
+          'File upload — analyze PDFs, spreadsheets, images. Can read charts, extract data, and answer questions about documents.',
+          'Code interpreter — runs real Python code in your chat. Use this for all math, data analysis, and chart generation.',
+          'Projects — organize conversations, files, and a shared custom instruction set for ongoing work.',
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        title: 'Most underused feature: Custom GPTs',
+        text: "Custom GPTs let you skip setting up context every time. Create one with your job title, preferred communication style, and key background facts — then start every work session with that GPT instead of ChatGPT default. You'll save 2-3 sentences of context-setting on every single prompt.",
+      },
+    },
+    {
+      type: 'heading',
+      id: 'common-problems',
+      data: { level: 2, text: 'Solving common problems', anchor: 'common-problems' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Problem', 'What\'s happening', 'Fix'],
+        rows: [
+          ['Response was cut off', 'Hit output token limit mid-response', 'Type "continue" or ask for a shorter format upfront'],
+          ['AI ignores my instructions', 'Important instruction is buried in the middle', 'Put the most critical instruction at the START of your prompt'],
+          ['Response is too verbose', 'Default style tends toward comprehensiveness', 'Add "be concise, max 150 words" to your prompt'],
+          ['Wrong tone', 'AI defaults to a neutral-professional voice', 'Specify tone explicitly: "write in a warm, direct tone"'],
+          ['Forgot earlier context', 'Context window filling up in a long conversation', 'Start each new topic with a brief situation summary'],
+          ['Outdated information', 'Model\'s training cutoff is in the past', 'Enable web browsing or switch to Perplexity for current info'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'chatgpt-vs-others',
+      data: { level: 2, text: 'When to use ChatGPT vs other tools', anchor: 'chatgpt-vs-others' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'ChatGPT excels at:',
+        items: [
+          'General writing, editing, and brainstorming across all domains',
+          'Coding (Python, JavaScript, SQL, and most other languages)',
+          'Image generation via DALL-E integration (paid)',
+          'Data analysis with code interpreter (paid)',
+          'Building custom AI tools via GPTs',
+        ],
+      },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'Consider switching to another tool when:',
+        items: [
+          'You need cited, sourced facts → Perplexity is more reliable',
+          'You have a very long document (200+ pages) → Claude handles more context',
+          'You live in Google Workspace (Docs, Gmail) → Gemini has native integration',
+          'Sensitive business data is involved → use an enterprise tier or local model',
+        ],
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'ChatGPT essentials',
+        points: [
+          'Free tier is genuinely excellent for everyday writing, coding, and analysis',
+          'Custom GPTs and Memory are the most impactful features for regular users',
+          'Code interpreter (paid) is the right tool for all math and data tasks',
+          'File analysis lets you "talk to" any PDF, spreadsheet, or image',
+          'Put critical instructions at the start of your prompt for best results',
+        ],
+      },
+    },
   ],
   relatedLessons: ['model-comparison', 'chatbot-landscape'],
 };
@@ -738,21 +1967,120 @@ const modelComparison: Lesson = {
   estimatedMinutes: 12,
   tags: ['model-comparison', 'chatgpt', 'claude', 'gemini', 'decision'],
   blocks: [
-    { type: 'paragraph', data: { text: 'Rather than declaring a "best" model, this lesson gives you the information to make smart choices based on your actual task.' } },
-    { type: 'table', data: { headers: ['Criterion', 'ChatGPT', 'Claude', 'Gemini'], rows: [
-      ['Context window', '128K tokens', '200K tokens', '1M tokens (Pro)'],
-      ['Writing quality', 'Excellent', 'Excellent (more nuanced)', 'Good'],
-      ['Long document analysis', 'Good', 'Excellent', 'Good'],
-      ['Code', 'Excellent', 'Excellent', 'Good'],
-      ['Image generation', 'Yes (DALL-E, paid)', 'No', 'Yes (Imagen, paid)'],
-      ['Real-time web search', 'Yes', 'Limited', 'Yes'],
-      ['Google Workspace integration', 'Via plugins', 'No', 'Native'],
-      ['Free tier quality', 'Very good', 'Good', 'Good'],
-    ] } },
-    { type: 'callout', data: { variant: 'info', text: 'Models are updated frequently. This comparison reflects general strengths as of early 2025. Always test the current version for your specific use case.' } },
-    { type: 'heading', id: 'when-to-switch', data: { level: 2, text: 'When to switch models', anchor: 'when-to-switch' } },
-    { type: 'bullet-list', data: { items: ['Switch to Claude when you need careful, nuanced writing or very long context', 'Switch to Perplexity when you need sourced facts', 'Switch to Gemini when working inside Google Workspace', 'Use ChatGPT as the default and switch when you hit its limits'] } },
-    { type: 'summary-box', data: { title: 'Model selection in one sentence', points: ['No model is best at everything — build the habit of choosing based on the task', 'Your prompt quality matters more than your model choice for most everyday tasks', 'Start with one tool, learn it well, then expand to a second'] } },
+    {
+      type: 'paragraph',
+      data: { text: 'Rather than declaring a "best" model — which changes every few months as models improve — this lesson gives you a stable decision framework you can apply to any task to pick the right model in under 30 seconds.' },
+    },
+    {
+      type: 'heading',
+      id: 'model-decision-tree',
+      data: { level: 2, text: 'Model selection decision tree', anchor: 'model-decision-tree' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'model-decision-flow',
+        caption: 'Use this decision tree to pick the right AI model for any task',
+        definition: `flowchart TD
+  START[What is your task?]
+  START --> Q1{Need real-time facts\\nor cited sources?}
+  Q1 -->|Yes| PERP[Perplexity\\nBest for research]
+  Q1 -->|No| Q2{Document very long\\nor needs careful writing?}
+  Q2 -->|Yes| CLAUDE[Claude\\n200K context, thoughtful]
+  Q2 -->|No| Q3{Working in Google\\nDocs/Gmail/Drive?}
+  Q3 -->|Yes| GEMINI[Gemini\\nNative Google Workspace]
+  Q3 -->|No| Q4{Need image generation\\nor code interpreter?}
+  Q4 -->|Yes| CGPT_PAID[ChatGPT Plus\\nDALL-E + Code Interpreter]
+  Q4 -->|No| CGPT[ChatGPT Free\\nExcellent for most tasks]
+
+  style PERP fill:#ddf4ff,stroke:#0969da,color:#0550ae
+  style CLAUDE fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37
+  style GEMINI fill:#fff8c5,stroke:#9a6700,color:#9a6700
+  style CGPT fill:#ffe1cc,stroke:#bc4c00,color:#bc4c00
+  style CGPT_PAID fill:#eddff8,stroke:#8250df,color:#6639ba`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'head-to-head',
+      data: { level: 2, text: 'Head-to-head comparison', anchor: 'head-to-head' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Criterion', 'ChatGPT', 'Claude', 'Gemini', 'Perplexity'],
+        rows: [
+          ['Context window', '128K tokens', '200K tokens', '1M tokens (Pro)', '~32K / web retrieval'],
+          ['Writing quality', 'Excellent', 'Excellent (more nuanced tone)', 'Good', 'Good'],
+          ['Long document analysis', 'Good', 'Excellent', 'Excellent (1M context)', 'Limited'],
+          ['Code generation', 'Excellent', 'Excellent', 'Good', 'Not primary use'],
+          ['Image generation', 'Yes (DALL-E, paid)', 'No', 'Yes (Imagen, paid)', 'No'],
+          ['Real-time web search', 'Yes (with browse)', 'Limited', 'Yes (native)', 'Yes — core feature'],
+          ['Cited sources', 'Rarely', 'Rarely', 'Occasionally', 'Always'],
+          ['Google Workspace integration', 'Via plugins', 'No', 'Native (Gemini sidebar)', 'No'],
+          ['Free tier quality', 'Very good', 'Good', 'Good', 'Good'],
+          ['Best for', 'General use + coding', 'Long docs + writing', 'Google ecosystem', 'Research + facts'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'specific-tasks',
+      data: { level: 2, text: 'Task-to-model mapping', anchor: 'specific-tasks' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Task', 'Best choice', 'Why'],
+        rows: [
+          ['Research with citations', 'Perplexity', 'Retrieves and cites sources for every claim'],
+          ['Editing a long document', 'Claude', 'Best at holding large context intact and precise edits'],
+          ['Writing a first draft', 'Claude or ChatGPT', 'Both excellent — try both for your style'],
+          ['Code writing & debugging', 'ChatGPT or Claude', 'Both excellent; ChatGPT has code interpreter for running it'],
+          ['Gmail/Docs integrated tasks', 'Gemini', 'Sits inside Google products natively'],
+          ['Quick general questions', 'ChatGPT (free)', 'Fast, reliable, no extra setup'],
+          ['Analyzing a 100-page PDF', 'Claude', '200K context handles large files more reliably'],
+          ['Creative brainstorming', 'Claude or ChatGPT', 'Both excel; Claude tends toward more original angles'],
+          ['Image generation', 'ChatGPT (DALL-E, paid) or Midjourney', 'Integrated vs. highest artistic quality'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'when-to-switch',
+      data: { level: 2, text: 'When to switch models', anchor: 'when-to-switch' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        items: [
+          'Switch to Claude when ChatGPT loses track in a long conversation or you need very careful writing',
+          'Switch to Perplexity any time you need a specific fact with a source you can verify',
+          'Switch to Gemini when working directly inside a Google tool',
+          'Use ChatGPT as the default — switch when you hit its specific limits',
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'info',
+        text: 'Models are updated frequently. This comparison reflects general strengths. Always test the current version for your specific use case — capabilities shift significantly with each major release.',
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Model selection principles',
+        points: [
+          'No model is best at everything — build the reflex to choose based on task type',
+          'Your prompt quality matters more than model choice for most everyday tasks',
+          'Start with ChatGPT (free), switch to Claude for long documents or careful writing',
+          'Perplexity for any fact that needs a source; Gemini for Google Workspace',
+          'Master one tool before expanding — depth beats breadth',
+        ],
+      },
+    },
   ],
   relatedLessons: ['chatbot-landscape', 'choosing-the-right-tool'],
 };
@@ -768,21 +2096,119 @@ const aiForResearch: Lesson = {
   estimatedMinutes: 14,
   tags: ['research', 'perplexity', 'sources', 'fact-checking'],
   blocks: [
-    { type: 'paragraph', data: { text: 'AI can dramatically speed up your research — but only if you know how to use it safely. The key is combining AI synthesis with verified sources.' } },
-    { type: 'heading', id: 'research-workflow', data: { level: 2, text: 'A reliable AI research workflow', anchor: 'research-workflow' } },
-    { type: 'numbered-list', data: { items: [
-      'Start with Perplexity to get a sourced overview — note which claims have citations',
-      'Use Claude or ChatGPT to synthesize and simplify the overview',
-      'Ask: "What are the most common misconceptions about [topic]?"',
-      'Ask: "What questions should I be asking that I haven\'t thought of yet?"',
-      'Identify 2-3 specific claims to verify via primary sources',
-      'Document your sources alongside the AI synthesis',
-    ] } },
-    { type: 'callout', data: { variant: 'tip', title: 'Perplexity is your fact-check ally', text: 'Perplexity retrieves live web pages and cites every claim. Use it any time you need to trust a specific fact. Do not use ChatGPT alone for empirical research.' } },
-    { type: 'heading', id: 'research-prompts', data: { level: 2, text: 'Research prompts that work', anchor: 'research-prompts' } },
-    { type: 'example', data: { title: 'Overview prompt', content: '"Give me a structured overview of [TOPIC]. Include: key concepts, current state of knowledge, main debates or open questions, and 3 important things a non-expert often gets wrong."' } },
-    { type: 'example', data: { title: 'Perspective prompt', content: '"What would a skeptic say about [CLAIM]? What evidence exists on both sides?"' } },
-    { type: 'summary-box', data: { title: 'Research rules', points: ['Perplexity first for factual topics with citations needed', 'Claude or ChatGPT for synthesis, explanation, and perspective', "Never trust a statistic, date, or citation from AI without verifying it", 'AI is an accelerator, not a replacement for primary sources'] } },
+    {
+      type: 'paragraph',
+      data: { text: 'AI can dramatically accelerate your research — but only if you know how to use it safely. The core mistake is treating AI output as a source. The right approach is using AI as a thinking partner that helps you find, synthesize, and evaluate real sources.' },
+    },
+    {
+      type: 'heading',
+      id: 'research-workflow',
+      data: { level: 2, text: 'A reliable AI research workflow', anchor: 'research-workflow' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'research-flow',
+        caption: 'A reliable AI-assisted research process — AI accelerates each step but real sources remain the foundation',
+        definition: `flowchart TD
+  START[Research Question]
+  START --> PERP["1️⃣ Perplexity\\nGet a sourced overview\\nof the topic"]
+  PERP --> SYNTH["2️⃣ Claude / ChatGPT\\nSynthesize and simplify\\nthe overview"]
+  SYNTH --> GAP["3️⃣ Ask: What am I missing?\\n'What are the main debates?'\\n'What do skeptics say?'"]
+  GAP --> IDENTIFY["4️⃣ Identify 2-3 specific claims\\nto verify in primary sources"]
+  IDENTIFY --> VERIFY["5️⃣ Verify via primary sources\\nGoogle Scholar, official data,\\npeer-reviewed studies"]
+  VERIFY --> DOCUMENT["6️⃣ Document sources\\nalongside your AI synthesis"]
+
+  style PERP fill:#ddf4ff,stroke:#0969da
+  style SYNTH fill:#d1f3d8,stroke:#1a7f37
+  style GAP fill:#fff8c5,stroke:#9a6700
+  style VERIFY fill:#ffe1cc,stroke:#bc4c00
+  style DOCUMENT fill:#eddff8,stroke:#8250df`,
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        title: 'Perplexity is your fact-check ally',
+        text: 'Perplexity retrieves live web pages and cites every claim with a source link. Use it as your starting point for any topic where specific facts matter. Do not use ChatGPT or Claude alone for empirical research — they will hallucinate citations.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'research-prompts',
+      data: { level: 2, text: 'Research prompts that work', anchor: 'research-prompts' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Structured overview prompt',
+        content: '"Give me a structured overview of [TOPIC]. Include:\n1. The key concepts someone new to this topic needs to understand\n2. The current state of knowledge (what is established vs. debated)\n3. Major perspectives or camps in this area\n4. 3 common misconceptions that non-experts often have\n5. The best questions I should be researching further"',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Critical perspective prompt',
+        content: '"What would a thoughtful skeptic say about [CLAIM]? What is the strongest evidence for it, and what is the strongest evidence against it? What are the key assumptions I should examine?"',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Gap-finding prompt',
+        content: '"Based on what we have discussed about [TOPIC], what important angles or perspectives have I not asked about yet? What would a domain expert consider essential context that I might be missing?"',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'research-safety',
+      data: { level: 2, text: 'Research safety rules', anchor: 'research-safety' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Risky behaviour', 'Safe practice'],
+        rows: [
+          ['Using AI-generated citations without checking', 'Verify every citation on Google Scholar or DOI lookup'],
+          ['Relying on one AI tool for all research', 'Use Perplexity for facts, ChatGPT/Claude for synthesis'],
+          ['Treating AI synthesis as a primary source', 'Cite the underlying sources Perplexity found, not "AI"'],
+          ['Using AI for medical/legal/financial research without expert review', 'Use AI to learn the landscape, then consult a professional'],
+          ['Asking AI for the latest data without checking the training cutoff', 'Use web-search tools for any data that might have changed recently'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'research-use-cases',
+      data: { level: 2, text: 'Where AI research genuinely helps', anchor: 'research-use-cases' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        items: [
+          'Getting up to speed on an unfamiliar topic quickly (10 minutes instead of 2 hours)',
+          'Finding the key terminology of a field (so your Google Scholar searches work better)',
+          'Identifying the major experts, papers, and debates in a domain',
+          'Generating a list of search terms and research angles you have not thought of',
+          'Synthesizing multiple sources you have already found and read',
+          'Playing devil\'s advocate to stress-test your conclusions',
+        ],
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Research with AI: the rules',
+        points: [
+          'Perplexity first for any factual topic that needs cited sources',
+          'Claude or ChatGPT for synthesis, explanation, and identifying gaps',
+          'Never trust a specific statistic, date, or citation from AI without verifying it',
+          'AI accelerates getting to the starting line — the research itself still requires primary sources',
+          'Always document your actual sources, not just "I asked AI"',
+        ],
+      },
+    },
   ],
   relatedLessons: ['ai-hallucination-deep-dive', 'evaluating-ai-output'],
 };
@@ -799,20 +2225,62 @@ const chainOfThoughtPrompting: Lesson = {
   tags: ['chain-of-thought', 'reasoning', 'step-by-step', 'advanced-prompting'],
   relatedGlossaryTerms: ['prompt', 'large-language-model'],
   blocks: [
-    { type: 'paragraph', data: { text: 'Chain-of-thought prompting is one of the most well-researched improvements in prompt engineering. It works by asking the AI to show its reasoning before giving an answer — and this dramatically reduces errors on complex tasks.' } },
+    { type: 'paragraph', data: { text: 'Chain-of-thought prompting is one of the most well-researched improvements in prompt engineering. It works by asking the AI to show its reasoning before giving an answer — and this dramatically reduces errors on complex tasks. The simple phrase "think step by step" can double accuracy on reasoning problems.' } },
     { type: 'heading', id: 'why-it-works', data: { level: 2, text: 'Why it works', anchor: 'why-it-works' } },
-    { type: 'paragraph', data: { text: 'When an LLM generates a long chain of reasoning tokens before its final answer, each step conditions the next step — making the final answer far more likely to follow logically. It is like the difference between blurting out an answer versus thinking out loud first.' } },
-    { type: 'heading', id: 'how-to-use', data: { level: 2, text: 'How to use it', anchor: 'how-to-use' } },
+    { type: 'paragraph', data: { text: 'When an LLM generates a reasoning chain before its final answer, each step conditions the next step. The model is essentially writing its working notes, and those notes guide it toward a more logical conclusion. Without this, it jumps straight to an answer — often missing intermediate reasoning that would have corrected an error.' } },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'cot-reasoning-chain',
+        caption: 'Without chain-of-thought, the AI jumps to an answer. With it, reasoning becomes a visible chain where each step grounds the next',
+        definition: `graph LR
+  subgraph WITHOUT ["Without chain-of-thought"]
+    Q1["Q: Should I\nlawn?"] --> A1["A: Yes! Great\nfor curb appeal.\n(Wrong context)"]
+  end
+  subgraph WITH ["With chain-of-thought"]
+    Q2["Q: Should I\nlawn? Think step by step."] --> S1["Step 1: What season\nis it? → Late November."]
+    S1 --> S2["Step 2: Is it growing\nseason? → No, dormant."]
+    S2 --> S3["Step 3: Will mowing\nhurt the lawn? → Yes."]
+    S3 --> A2["A: No. Wait until\nspring. Mowing now\ncould damage roots."]
+  end
+
+  style WITHOUT fill:#ffebe9,stroke:#cf222e
+  style WITH fill:#d1f3d8,stroke:#1a7f37`,
+      },
+    },
+    { type: 'heading', id: 'how-to-use', data: { level: 2, text: 'How to trigger chain-of-thought', anchor: 'how-to-use' } },
     { type: 'table', data: { headers: ['Approach', 'How to prompt', 'When to use'], rows: [
-      ['Simple trigger', 'Add "think step by step" to any prompt', 'Most analytical tasks'],
-      ['Explicit steps', '"First identify the key factors. Then rank them. Then recommend."', 'Structured decisions'],
-      ['Show your work', '"Explain your reasoning before giving your final answer."', 'High-stakes answers'],
-      ['Devil\'s advocate', '"What is the strongest argument AGAINST this conclusion?"', 'Checking your own reasoning'],
+      ['Simple trigger', '"Think step by step before answering"', 'Most analytical tasks — easiest to use'],
+      ['Explicit structure', '"First identify the key factors. Then rank them. Then recommend."', 'Structured decisions with known criteria'],
+      ['Show your reasoning', '"Walk me through your reasoning, then give your conclusion."', 'High-stakes answers where you want to check the logic'],
+      ['Devil\'s advocate', '"What is the strongest argument AGAINST this conclusion?"', 'Checking reasoning for blind spots'],
+      ['Simulate a debate', '"Argue for the best option from multiple perspectives, then give your verdict."', 'Complex tradeoff decisions'],
     ] } },
-    { type: 'example', data: { title: 'Before chain-of-thought', content: '"Should I accept this job offer?" → Gets a generic pros/cons list' } },
-    { type: 'example', data: { title: 'After chain-of-thought', content: '"Should I accept this job offer? Think through this step by step: first analyze the financial impact, then career development potential, then lifestyle fit, then uncertainty factors. After each section, note what matters most. Then give your weighted recommendation."' } },
-    { type: 'callout', data: { variant: 'tip', text: 'For the most critical decisions, ask the AI to reason both for and against before concluding. This surfaces blind spots you might not have considered.' } },
-    { type: 'summary-box', data: { title: 'Key points', points: ['Adding "think step by step" is the simplest and most powerful prompt upgrade', 'Chain-of-thought improves accuracy on complex reasoning tasks', 'Use it for decisions, analysis, planning, and complex explanations'] } },
+    { type: 'heading', id: 'comparison-examples', data: { level: 2, text: 'Before and after: real examples', anchor: 'comparison-examples' } },
+    { type: 'example', data: { title: 'Job offer — without chain-of-thought', content: '"Should I accept this job offer?"\n\n→ Gets a generic pros/cons list that could apply to anyone. Not personalized, not contextual, probably not useful.' } },
+    { type: 'example', data: { title: 'Job offer — with chain-of-thought', content: '"I have a job offer 20% higher salary, fully remote, at an early-stage startup (Series A). My current role is stable, mid-size company, 5-min commute. I value career growth and financial security equally.\n\nThink through this step by step:\n1. Analyze the financial impact (salary, equity, benefits)\n2. Assess career growth trajectory at each company\n3. Evaluate lifestyle factors (remote vs commute, company culture signals)\n4. Weigh the risks specific to an early-stage startup\n5. Give a recommendation with your reasoning."\n\n→ Returns a genuinely personalized analysis that actually helps you decide.' } },
+    { type: 'example', data: { title: 'Business problem — with chain-of-thought', content: '"My SaaS product\'s monthly churn rate increased from 3% to 7% in the last 60 days. I haven\'t changed pricing. Think step by step through the most likely causes and rank them by probability. Then describe the first diagnostic action I should take for each."' } },
+    {
+      type: 'heading',
+      id: 'when-it-helps-most',
+      data: { level: 2, text: 'When chain-of-thought helps most', anchor: 'when-it-helps-most' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Task type', 'CoT benefit', 'Why'],
+        rows: [
+          ['Decisions with tradeoffs', 'High', 'Forces consideration of all relevant factors before concluding'],
+          ['Root cause analysis', 'Very high', 'Chains through steps prevents jumping to wrong first hypothesis'],
+          ['Strategic planning', 'High', 'Surfaces assumptions and risks systematically'],
+          ['Math/calculation', 'Medium', 'Some help — but for real math use the code interpreter'],
+          ['Simple factual questions', 'Low', 'Unnecessary overhead when the answer is direct'],
+          ['Creative writing', 'Low', 'Less relevant — free generation is usually better here'],
+        ],
+      },
+    },
+    { type: 'callout', data: { variant: 'tip', text: 'For the most critical decisions, ask the AI to first argue FOR the option, then argue AGAINST it, then give a final weighing. This two-sided analysis surfaces blind spots you might not have considered.' } },
+    { type: 'summary-box', data: { title: 'Key points', points: ['Adding "think step by step" is the simplest and most powerful prompt upgrade', 'Chain-of-thought improves accuracy by making reasoning process visible and sequential', 'Most valuable for decisions, analysis, root cause, and planning tasks', 'Combine with role-play for even better results: "As a CFO, think step by step through..."'] } },
   ],
   relatedLessons: ['few-shot-prompting', 'anatomy-of-a-good-prompt'],
 };
@@ -828,16 +2296,58 @@ const fewShotPrompting: Lesson = {
   estimatedMinutes: 11,
   tags: ['few-shot', 'examples', 'consistent-output', 'advanced-prompting'],
   blocks: [
-    { type: 'paragraph', data: { text: 'Telling the AI what you want is sometimes less effective than showing it. Few-shot prompting means including 1-3 examples of the input and desired output format in your prompt.' } },
-    { type: 'heading', id: 'zero-vs-few', data: { level: 2, text: 'Zero-shot vs Few-shot', anchor: 'zero-vs-few' } },
-    { type: 'table', data: { headers: ['Type', 'What it means', 'Best for'], rows: [
-      ['Zero-shot', 'No examples — just instructions', 'Simple, common tasks'],
-      ['One-shot', '1 example included', 'Unusual format requirements'],
-      ['Few-shot', '2-5 examples included', 'Strict formatting, recurring tasks'],
+    { type: 'paragraph', data: { text: 'Telling the AI what you want is sometimes less effective than showing it. Few-shot prompting means including 1-3 examples of the desired input-output format in your prompt. This is especially powerful for recurring tasks where you need consistent, predictable output structure.' } },
+    { type: 'heading', id: 'zero-vs-few', data: { level: 2, text: 'Zero-shot vs One-shot vs Few-shot', anchor: 'zero-vs-few' } },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'few-shot-comparison',
+        caption: 'The more examples you provide, the more reliably the AI matches your desired format — especially for unusual or specific output styles',
+        definition: `graph LR
+  subgraph ZERO ["Zero-shot\n(no examples)"]
+    ZI["Classify: 'The\nonboarding was rough'"] --> ZO["May format\ninconsistently"]
+  end
+  subgraph ONE ["One-shot\n(1 example)"]
+    OI["Example: 'Great\nexperience!' → Positive\n---\nClassify: 'The\nonboarding was rough'"] --> OO["More likely\nto match format"]
+  end
+  subgraph FEW ["Few-shot\n(2-3 examples)"]
+    FI["3 varied examples\ncovering edge cases"] --> FO["Highly consistent\nformat every time"]
+  end
+
+  style ZERO fill:#ffebe9,stroke:#cf222e
+  style ONE fill:#fff8c5,stroke:#9a6700
+  style FEW fill:#d1f3d8,stroke:#1a7f37`,
+      },
+    },
+    { type: 'table', data: { headers: ['Type', 'What it means', 'Best for', 'Example use'], rows: [
+      ['Zero-shot', 'No examples — just instructions', 'Simple, common tasks', 'Summarize this email'],
+      ['One-shot', '1 example included', 'Unusual format requirements', 'Match a specific writing style'],
+      ['Few-shot', '2-5 examples included', 'Strict formatting, recurring tasks, batch processing', 'Classify 100 feedback items consistently'],
     ] } },
-    { type: 'example', data: { title: 'Few-shot prompt', content: 'Classify each customer feedback item as: Positive, Negative, or Neutral.\n\nExamples:\n"The onboarding was smooth and fast." → Positive\n"I waited 3 days for a reply." → Negative\n"I received my order." → Neutral\n\nNow classify these:\n1. "The product works but the instructions were unclear."\n2. "Absolutely love the new dashboard!"\n3. "My invoice was wrong twice in a row."' } },
-    { type: 'callout', data: { variant: 'tip', title: 'When to use few-shot', text: 'Use few-shot when you need consistent formatting, a specific tone the AI keeps missing, or when you are processing a batch of similar items.' } },
-    { type: 'summary-box', data: { title: 'Key points', points: ['Examples in your prompt are often more powerful than long instructions', 'Use 2-3 examples for recurring tasks to get reliable consistency', 'Few-shot works extremely well for classification, formatting, and tone-matching'] } },
+    { type: 'heading', id: 'few-shot-examples', data: { level: 2, text: 'Few-shot in practice', anchor: 'few-shot-examples' } },
+    { type: 'example', data: { title: 'Feedback classification (few-shot)', content: 'Classify each customer feedback item as: Positive, Negative, Mixed, or Neutral.\n\nExamples:\n"The onboarding was smooth and fast." → Positive\n"I waited 3 days for a reply." → Negative\n"I received my order." → Neutral\n"The product is good but setup took forever." → Mixed\n\nNow classify these:\n1. "The product works but the instructions were unclear."\n2. "Absolutely love the new dashboard!"\n3. "My invoice was wrong twice in a row."' } },
+    { type: 'example', data: { title: 'Tone-matching (one-shot)', content: 'Write a product description in this style:\n\nExample: "Introducing the Arc — a bag that disappears when you need it and reappears when you don\'t. Designed for people who hate carrying stuff but can\'t stop going places.\'\n\nNow write one for: [NEW PRODUCT DESCRIPTION]\n\n→ The AI will match the quirky, minimalist brand voice precisely because it has a concrete example to pattern-match against.' } },
+    { type: 'example', data: { title: 'Data extraction template (few-shot)', content: 'Extract company and funding amount from each sentence. Format as JSON.\n\nExamples:\n"Acme Corp raised $5M in Series A." → {"company": "Acme Corp", "amount": "$5M", "round": "Series A"}\n"BrightPath secured $12M from Andreessen Horowitz." → {"company": "BrightPath", "amount": "$12M", "round": "unknown"}\n\nNow extract from:\n1. "Nimble raised $3.5M in seed funding led by Y Combinator."\n2. "DataFlow Inc. closed a $50M Series B round."' } },
+    {
+      type: 'heading',
+      id: 'few-shot-tips',
+      data: { level: 2, text: 'Tips for effective few-shot prompting', anchor: 'few-shot-tips' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Tip', 'Why it matters'],
+        rows: [
+          ['Include edge cases in your examples', 'If you only show clean examples, the AI will fail on messy real-world inputs'],
+          ['Keep example format identical to desired output', 'The AI will replicate the format exactly — use this to your advantage'],
+          ['2-3 good examples beat 10 mediocre ones', 'Quality of examples matters more than quantity'],
+          ['Vary the examples to cover different sub-cases', 'Helps AI understand the classification boundary, not just one instance'],
+          ['Save working few-shot prompts as templates', 'Reuse them for recurring batch tasks without rebuilding each time'],
+        ],
+      },
+    },
+    { type: 'callout', data: { variant: 'tip', title: 'When to use few-shot', text: 'Use few-shot when you need consistent formatting, a specific tone the AI keeps missing, or when you are processing a batch of similar items. It is especially powerful for turning AI into a reliable extraction or classification engine.' } },
+    { type: 'summary-box', data: { title: 'Key points', points: ['Examples in your prompt are often more powerful than long instructions', 'Use 2-3 examples for recurring tasks to get reliable consistency', 'Few-shot works best for: classification, structured extraction, tone-matching, batch tasks', 'Include edge cases in examples so the AI handles messy real-world inputs', 'Save your working few-shot prompts as templates for reuse'] } },
   ],
   relatedLessons: ['chain-of-thought-prompting', 'building-your-first-workflow'],
 };
@@ -853,20 +2363,136 @@ const buildingYourFirstWorkflow: Lesson = {
   estimatedMinutes: 15,
   tags: ['workflows', 'automation', 'templates', 'productivity'],
   blocks: [
-    { type: 'paragraph', data: { text: 'An AI workflow is a repeatable sequence of prompts and steps that reliably produces the output you need. Building one shifts you from "asking AI random questions" to "using AI as a dependable system".' } },
-    { type: 'heading', id: 'anatomy-workflow', data: { level: 2, text: 'Anatomy of an AI workflow', anchor: 'anatomy-workflow' } },
-    { type: 'numbered-list', data: { items: [
-      'Trigger — what starts the workflow? (a meeting, a document, a request)',
-      'Input preparation — what context/data does AI need?',
-      'Prompt chain — what prompts run in sequence?',
-      'Output format — what does the final result look like?',
-      'Review step — what do you check before using the output?',
-    ] } },
-    { type: 'example', data: { title: 'Example: Meeting notes workflow', content: '1. TRIGGER: After a meeting, open recording transcript\n2. INPUT PREP: Paste transcript into Claude\n3. PROMPT 1: "Summarize this meeting: key decisions, open questions, and action items with owners"\n4. PROMPT 2: "Convert the action items into a table: Owner | Task | Due"\n5. OUTPUT: Formatted meeting notes ready to paste into Notion\n6. REVIEW: Check action item owners are correct' } },
-    { type: 'heading', id: 'prompt-chaining', data: { level: 2, text: 'Prompt chaining', anchor: 'prompt-chaining' } },
-    { type: 'paragraph', data: { text: 'Prompt chaining means the output of one prompt becomes the input of the next. This lets you break complex tasks into manageable, accurate steps rather than asking AI to do everything at once.' } },
-    { type: 'callout', data: { variant: 'tip', text: 'Start by documenting a workflow you already do manually. Then identify which steps AI can handle. Build the prompt chain around those steps.' } },
-    { type: 'summary-box', data: { title: 'Workflow building checklist', points: ['Define the trigger and final output before writing a single prompt', 'Break complex tasks into a chain of simpler prompts', 'Include a review step — AI workflows need human checkpoints', 'Save your finished workflow as a template so you can reuse it'] } },
+    {
+      type: 'paragraph',
+      data: { text: 'An AI workflow is a repeatable sequence of prompts and steps that reliably produces the output you need. Building one shifts you from "asking AI random questions" to "using AI as a dependable system that saves you time every week."' },
+    },
+    {
+      type: 'heading',
+      id: 'anatomy-workflow',
+      data: { level: 2, text: 'Anatomy of an AI workflow', anchor: 'anatomy-workflow' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'workflow-anatomy',
+        caption: 'Every effective AI workflow has five components — build all five before considering it complete',
+        definition: `flowchart LR
+  T[1. Trigger\\nWhat starts it?]
+  I[2. Input prep\\nWhat context does AI need?]
+  P[3. Prompt chain\\nWhat prompts run in sequence?]
+  O[4. Output format\\nWhat does the result look like?]
+  R[5. Review step\\nWhat do YOU check?]
+
+  T --> I --> P --> O --> R
+
+  style T fill:#ddf4ff,stroke:#0969da
+  style I fill:#d1f3d8,stroke:#1a7f37
+  style P fill:#fff8c5,stroke:#9a6700
+  style O fill:#ffe1cc,stroke:#bc4c00
+  style R fill:#eddff8,stroke:#8250df`,
+      },
+    },
+    {
+      type: 'key-terms',
+      data: {
+        terms: [
+          { term: 'Trigger', definition: 'What event starts the workflow? A meeting ending, a new email, a document being uploaded, a weekly schedule.' },
+          { term: 'Input preparation', definition: 'What context, data, or text does the AI need to work with? Where does it come from? How do you paste or send it?' },
+          { term: 'Prompt chain', definition: 'Two or more prompts that run in sequence — the output of one becomes the input of the next.' },
+          { term: 'Output format', definition: 'What does the final result look like? Bullet list, markdown table, Notion entry, JSON, email? Define this upfront.' },
+          { term: 'Review step', definition: 'The human checkpoint. What do you verify before the output goes anywhere? Every workflow needs at least one.' },
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'real-workflow-example',
+      data: { level: 2, text: 'A complete workflow example: meeting notes', anchor: 'real-workflow-example' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Meeting Notes → Notion workflow',
+        content: '1. TRIGGER: Meeting ends, recording transcript is available\n\n2. INPUT PREP: Copy the raw transcript and paste into Claude\n\n3. PROMPT 1 (Summary):\n"Here is a meeting transcript. Summarize:\n- Key decisions made (with rationale)\n- Open questions not resolved\n- Action items format: [Owner]: [Task] by [Date]\nKeep the entire summary under 300 words."\n\n4. PROMPT 2 (Table):\n"Convert the action items into a formatted table with columns: Owner | Task | Due Date | Priority"\n\n5. OUTPUT: Paste both into the Notion meeting page\n\n6. REVIEW: Check that action item owners are correctly identified (AI may mix up names)',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'prompt-chaining',
+      data: { level: 2, text: 'Why prompt chaining works better than one big prompt', anchor: 'prompt-chaining' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'Asking AI to do five things at once in a single prompt produces mediocre results across all five. Breaking the task into a chain of focused prompts — where each step gets full attention — produces dramatically better results.' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Big single prompt', 'Chained prompts'],
+        rows: [
+          ['AI splits attention five ways', 'Each step is the full focus of one prompt'],
+          ['Errors in step 1 cascade through everything', 'You can fix step 1 before moving to step 2'],
+          ['Hard to identify what went wrong', 'Easy to pinpoint and fix the weak step'],
+          ['One chance to get it right', 'Iterative — improve each link in the chain'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'more-workflow-templates',
+      data: { level: 2, text: 'More workflow templates to build', anchor: 'more-workflow-templates' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'High-value workflow ideas:',
+        items: [
+          'Weekly review: paste your task list → AI produces a prioritized plan for the week',
+          'Email triage: paste email threads → AI classifies as urgent / FYI / action needed',
+          'Job application: paste job description + your CV → AI writes a tailored cover letter first draft',
+          'Content brief: paste a topic and audience → AI produces an outline with headings and key points',
+          'Research digest: paste 3-5 articles → AI extracts key findings and patterns across them',
+          'Decision memo: describe a decision → AI formats pros/cons/risks/recommendation',
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        text: 'Start by documenting a workflow you already do manually. Then identify which steps require language, judgment, or synthesis. Build your AI prompt chain around exactly those steps.',
+      },
+    },
+    {
+      type: 'exercise',
+      data: {
+        title: 'Build your first workflow',
+        description: 'Choose one of the following templates and build your version this week.',
+        steps: [
+          'Pick a task you do every week that involves writing, summarizing, or analyzing text',
+          'Write down the 3-5 steps of how you currently do it manually',
+          'Identify which steps AI can replace (writing, summarizing, formatting)',
+          'Write a prompt for each AI step',
+          'Test with real data from your actual work',
+          'Refine the prompts until you get output you would actually use',
+        ],
+        expectedOutcome: 'A working prompt chain that saves you 15-30 minutes per week on a recurring task',
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Workflow building checklist',
+        points: [
+          'Define the trigger and final output before writing a single prompt',
+          'Break complex tasks into a chain of focused, simpler prompts',
+          'Include a human review step — AI workflows need checkpoints',
+          'Save your finished workflow as a text template for reuse',
+          'Improve one step at a time when the output is not quite right',
+        ],
+      },
+    },
   ],
   relatedLessons: ['few-shot-prompting', 'what-is-ai-automation'],
 };
@@ -882,24 +2508,125 @@ const whatIsAiAutomation: Lesson = {
   estimatedMinutes: 12,
   tags: ['automation', 'workflows', 'productivity', 'no-code'],
   blocks: [
-    { type: 'paragraph', data: { text: 'Automation has existed for decades — macros, scheduled tasks, scripts. AI automation is different. It handles unstructured tasks that previously required human judgment: reading emails, interpreting documents, making contextual decisions.' } },
-    { type: 'heading', id: 'old-vs-new', data: { level: 2, text: 'Traditional automation vs AI automation', anchor: 'old-vs-new' } },
-    { type: 'table', data: { headers: ['Traditional automation', 'AI automation'], rows: [
-      ['Rule-based: "if X, do Y"', 'Judgment-based: "understand X, decide what to do"'],
-      ['Breaks when input changes format', 'Handles variation and ambiguity'],
-      ['Cannot read or understand text', 'Reads, summarizes, classifies text'],
-      ['Requires coding or low-code', 'Can be configured in natural language'],
-    ] } },
-    { type: 'mermaid', data: { id: 'automation-flow', caption: 'A simple AI automation flow: trigger → AI step → action', definition: `flowchart LR
-  A[Trigger\\ne.g. new email] --> B[AI Step\\nSummarize & classify]
-  B --> C{Category?}
-  C -->|Urgent| D[Send Slack alert]
-  C -->|Info| E[Log to Notion]
-  C -->|Action needed| F[Create task in project tool]` } },
-    { type: 'heading', id: 'great-candidates', data: { level: 2, text: 'Great automation candidates', anchor: 'great-candidates' } },
-    { type: 'bullet-list', data: { items: ['Summarizing long email threads', 'Classifying incoming feedback or support requests', 'Generating first-draft responses to common questions', 'Converting meeting notes into action items', 'Weekly report compilation from multiple sources', 'Routing documents to the right folder based on content'] } },
-    { type: 'callout', data: { variant: 'tip', text: "Start with the task that takes you 20-30 minutes every week and always feels like busywork. That's your first automation target." } },
-    { type: 'summary-box', data: { title: 'Takeaway', points: ['AI automation handles tasks that require judgment, not just rules', 'You do not need to code — no-code tools make this accessible', 'Start with high-frequency, low-stakes tasks before automating critical workflows'] } },
+    {
+      type: 'paragraph',
+      data: { text: 'Automation has existed for decades — macros, scheduled tasks, scripts. AI automation is fundamentally different. It handles unstructured tasks that previously required human judgment: reading and classifying emails, interpreting documents, making contextual decisions, writing first-draft responses.' },
+    },
+    {
+      type: 'heading',
+      id: 'old-vs-new',
+      data: { level: 2, text: 'Traditional automation vs AI automation', anchor: 'old-vs-new' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'automation-comparison',
+        caption: 'The fundamental difference: traditional automation follows strict rules, AI automation understands meaning and context',
+        definition: `graph TD
+  subgraph OLD ["Traditional Automation"]
+    O1["Rule: IF email contains 'invoice'\\nTHEN move to folder 'Invoices'"]
+    O2["Breaks if subject line says\\n'Please find attached bill'"]
+    O3["Cannot handle variation\\nor ambiguous inputs"]
+  end
+
+  subgraph NEW ["AI Automation"]
+    N1["Understands: 'This email is about\\nan invoice needing payment'"]
+    N2["Works regardless of how\\nthe message is phrased"]
+    N3["Can classify, summarize,\\nand decide what to do next"]
+  end
+
+  style OLD fill:#ffebe9,stroke:#cf222e
+  style NEW fill:#d1f3d8,stroke:#1a7f37`,
+      },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Traditional automation', 'AI automation'],
+        rows: [
+          ['Rule-based: "if X, do Y"', 'Judgment-based: "understand X, decide what to do"'],
+          ['Breaks when input format changes', 'Handles variation, ambiguity, and natural language'],
+          ['Cannot read or understand text meaning', 'Reads, summarizes, classifies, and extracts from any text'],
+          ['Requires coding or strict low-code rules', 'Can be configured in plain English instructions'],
+          ['Fast and perfectly consistent on known inputs', 'Flexible and handles novel inputs but needs oversight'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'automation-components',
+      data: { level: 2, text: 'What makes an AI automation', anchor: 'automation-components' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'automation-flow',
+        caption: 'A complete AI automation: trigger → data in → AI processing → action taken → notification',
+        definition: `flowchart LR
+  A["⚡ Trigger\\ne.g. new email arrives"] --> B["📥 Data in\\nEmail content extracted"]
+  B --> C["🤖 AI Step\\nSummarize & classify:\\nUrgent / FYI / Need action"]
+  C --> D{Classification}
+  D -->|Urgent| E["🔴 Slack alert\\nto owner"]
+  D -->|FYI| F["📋 Log to Notion\\ndatabase"]
+  D -->|Action needed| G["✅ Create task\\nin project tool"]`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'great-candidates',
+      data: { level: 2, text: 'Great automation candidates', anchor: 'great-candidates' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Task', 'Why AI automation works', 'Time saved'],
+        rows: [
+          ['Classifying incoming support tickets', 'AI reads meaning, routes accurately', '2-3 hours/week'],
+          ['Generating first drafts of reply emails', 'AI drafts in your tone from context', '1-2 hours/week'],
+          ['Converting meeting notes to action items', 'AI extracts structure from free text', '30-60 min/week'],
+          ['Weekly report compilation', 'AI synthesizes from multiple sources', '1-3 hours/week'],
+          ['Summarizing long email threads', 'AI reads full context, extracts essence', '30-60 min/week'],
+          ['Routing documents by content type', 'AI reads content, not just filename', 'Background automation'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'what-not-to-automate',
+      data: { level: 2, text: 'What NOT to automate right away', anchor: 'what-not-to-automate' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'Avoid automating these until you have experience and safeguards:',
+        items: [
+          'Tasks where a mistake has serious consequences (legal, financial, medical)',
+          'Customer-facing actions without a human review step',
+          'Anything involving personal or sensitive data without compliance review',
+          'Tasks that require context AI does not have (internal politics, relationship history)',
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        text: "Start with the task that takes you 20-30 minutes every week and always feels like busywork. Automate that first, safely. Gain confidence, then expand. Don't start with your most critical workflow.",
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'AI automation fundamentals',
+        points: [
+          'AI automation handles tasks requiring language understanding, not just rigid rules',
+          'Best for: classification, summarization, first-draft generation, data extraction',
+          'You do not need to code — no-code tools like Zapier make this accessible',
+          'Start with high-frequency, low-stakes busywork before automating critical workflows',
+          'Always include a human review step for any automation with real-world consequences',
+        ],
+      },
+    },
   ],
   relatedLessons: ['no-code-automation-tools', 'building-your-first-workflow'],
 };
@@ -915,21 +2642,99 @@ const noCodeAutomationTools: Lesson = {
   estimatedMinutes: 14,
   tags: ['zapier', 'make', 'n8n', 'no-code', 'automation'],
   blocks: [
-    { type: 'paragraph', data: { text: 'You do not need to be a developer to automate work with AI. A new generation of no-code tools has made it possible to build sophisticated AI workflows in a few hours.' } },
+    { type: 'paragraph', data: { text: 'You do not need to be a developer to automate work with AI. A new generation of no-code tools has made it possible to build sophisticated AI workflows in a few hours. This lesson gives you a practical guide to the three platforms that dominate the space and exactly how to build your first automation.' } },
+    {
+      type: 'heading',
+      id: 'platform-comparison',
+      data: { level: 2, text: 'Choosing the right platform', anchor: 'platform-comparison' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'automation-platform-choice',
+        caption: 'Follow this decision tree to find the right automation platform for your situation',
+        definition: `flowchart TD
+  START(["What is your situation?"])
+  Q1{"First time building\nan automation?"}
+  Q2{"Need to save costs\nat high volume?"}
+  Q3{"Privacy-sensitive or\nwant self-hosted?"}
+
+  ZAPIER["⚡ Zapier\nEasiest to learn\n6,000+ app integrations"]
+  MAKE["🌀 Make (Integromat)\nMore powerful\nBetter pricing at scale"]
+  N8N["🛠️ n8n\nSelf-hosted, free\nFull control"]
+
+  START --> Q1
+  Q1 -->|Yes| ZAPIER
+  Q1 -->|No| Q2
+  Q2 -->|Yes| MAKE
+  Q2 -->|No| Q3
+  Q3 -->|Yes| N8N
+  Q3 -->|No| MAKE
+
+  style ZAPIER fill:#ff6b35,color:#fff,stroke:#e55a26
+  style MAKE fill:#7c3aed,color:#fff,stroke:#6d28d9
+  style N8N fill:#ea580c,color:#fff,stroke:#d05a0c`,
+      },
+    },
     { type: 'comparison-cards', data: { cards: [
-      { title: 'Zapier', description: 'The most popular automation platform. Connects 6,000+ apps. Easy drag-and-drop interface. Built-in AI steps for summarization, classification, and extraction.', pros: ['Easiest to learn', 'Most app integrations', 'AI steps built in'], cons: ['Gets expensive at scale', 'Less flexible for complex logic'], tags: ['beginner-friendly', 'paid'] },
-      { title: 'Make (Integromat)', description: 'More powerful and visual than Zapier. Better for complex multi-step workflows. More affordable at scale. Steeper learning curve.', pros: ['Visual flow builder', 'More affordable', 'Very flexible'], cons: ['Steeper learning curve', 'Less intuitive for beginners'], tags: ['intermediate', 'freemium'] },
-      { title: 'n8n', description: 'Open-source automation tool. Can be self-hosted for privacy. Very powerful and developer-friendly but works for non-coders too with some learning.', pros: ['Free self-hosted', 'Privacy-friendly', 'Very powerful'], cons: ['Setup required for self-hosting', 'Less beginner-friendly'], tags: ['advanced', 'open-source'] },
+      {
+        title: 'Zapier',
+        description: 'The most popular automation platform with the largest app library. Their AI steps (Zapier AI) let you add summarization, classification, and extraction right in your workflow. The easiest starting point for non-technical users.',
+        pros: ['Easiest to learn — under 1 hour to first automation', '6,000+ app integrations — connects to almost everything', 'AI steps built in — summarize, classify, extract without code', 'Huge template library — start from proven workflows'],
+        cons: ['Gets expensive at scale (pricing per task)', 'Less flexible for complex branching logic', 'Slower execution vs Make on equivalent tasks'],
+        tags: ['beginner-friendly', 'freemium'],
+      },
+      {
+        title: 'Make (Integromat)',
+        description: 'A more powerful visual automation builder. The canvas-based interface lets you see your entire workflow at once, including complex branching, data transformation, and error handling. More affordable at scale than Zapier.',
+        pros: ['Visual canvas — see the whole automation', 'Far more affordable at high task volumes', 'Very flexible data routing and transformation', 'Better error handling and retry logic'],
+        cons: ['Steeper learning curve — takes a few hours to learn', 'Interface is more complex than Zapier', 'Smaller template library'],
+        tags: ['intermediate', 'freemium'],
+      },
+      {
+        title: 'n8n',
+        description: 'An open-source automation platform you can self-host for complete data privacy. Very powerful for complex workflows. Technical users love it; non-technical users can use the cloud version but it requires more setup.',
+        pros: ['Free self-hosted version — no per-task pricing', 'Privacy-friendly — data never leaves your server', 'Very powerful — supports custom code steps', 'Large community library of shared workflows'],
+        cons: ['Requires setup for self-hosting', 'Less beginner-friendly than Zapier', 'Community support only on free tier'],
+        tags: ['advanced', 'open-source', 'self-hostable'],
+      },
     ] } },
-    { type: 'callout', data: { variant: 'tip', title: 'Start with Zapier', text: 'If you have never built an automation, start with Zapier. Their templates and AI step library make it possible to build your first useful automation in under an hour.' } },
-    { type: 'heading', id: 'first-automation', data: { level: 2, text: 'Your first automation in 4 steps', anchor: 'first-automation' } },
-    { type: 'numbered-list', data: { items: [
-      'Pick a trigger app (e.g. "New email in Gmail with label X")',
-      'Add an AI step: "Summarize this email and classify it as: urgent, FYI, or action-needed"',
-      'Add an action based on classification (e.g. "Action-needed → create Notion task")',
-      'Test with real data, then turn it on',
-    ] } },
-    { type: 'summary-box', data: { title: 'Key takeaways', points: ['Zapier is the easiest starting point — use their AI templates', 'Make offers more power and lower cost at scale', 'n8n is for privacy-conscious users comfortable with setup', 'Your first automation should be one you already do manually every week'] } },
+    {
+      type: 'heading',
+      id: 'first-automation-walkthrough',
+      data: { level: 2, text: 'Build your first automation: step by step', anchor: 'first-automation-walkthrough' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'Here is a complete walkthrough of building an email triage automation in Zapier — one of the highest-value starting automations. It summarizes incoming emails and creates tasks for action items, saving 30-60 minutes per week.' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Email triage automation (Zapier walkthrough)',
+        content: 'WHAT IT DOES:\nWhen a new email arrives with a specific label, Zapier uses AI to classify it (Urgent/FYI/Action needed) and sends a Slack message or creates a Notion task accordingly.\n\nSTEPS:\n1. Trigger: "New email in Gmail" with label "Needs review"\n2. Zapier AI step: "Classify this email as: Urgent, FYI, or Action needed. Also extract: sender name, key request in one sentence."\n3. Router: Split path based on classification\n   - Urgent → Slack DM to yourself with subject + AI summary\n   - Action needed → Create Notion task with AI-extracted details\n   - FYI → Add to a weekly review Notion database\n\nTIME TO BUILD: ~45 minutes\nTIME SAVED: ~30-45 minutes per week',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'ai-steps-to-use',
+      data: { level: 2, text: 'Common AI steps to add to automations', anchor: 'ai-steps-to-use' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['AI step', 'What to prompt', 'Use in'],
+        rows: [
+          ['Summarize', '"Summarize in 2 sentences. Return only the summary."', 'Email digests, meeting notes, ticket summaries'],
+          ['Classify', '"Classify as [X / Y / Z]. Return only the category."', 'Support routing, email triage, content moderation'],
+          ['Extract', '"Extract: [Field1], [Field2]. Return as JSON."', 'Data processing, CRM enrichment, structured parsing'],
+          ['Generate', '"Write a [type] response to this [input]."', 'First-draft replies, notifications, reports'],
+          ['Score', '"Rate this from 1-10 for [criteria]. Return only the number."', 'Lead scoring, priority ranking, sentiment'],
+        ],
+      },
+    },
+    { type: 'callout', data: { variant: 'tip', title: 'Start with Zapier', text: 'If you have never built an automation, start with Zapier. Their templates and AI step library make your first automation possible in under an hour. Once you understand the concept, migrating to Make or n8n for more complex workflows is straightforward.' } },
+    { type: 'summary-box', data: { title: 'Key takeaways', points: ['Zapier: easiest, best for beginners, best app coverage', 'Make: best price at scale, more powerful visual builder', 'n8n: free and privacy-friendly, needs self-hosting setup', 'Your first automation should be one task you already do manually every week', 'Start with classify/summarize AI steps — they are the most reliable and forgiving'] } },
   ],
   relatedLessons: ['what-is-ai-automation', 'what-are-agents'],
 };
@@ -948,31 +2753,47 @@ const whatAreAgents: Lesson = {
   tags: ['agents', 'agentic-ai', 'autonomy', 'tool-calling'],
   relatedGlossaryTerms: ['agent', 'tool-calling', 'orchestration'],
   blocks: [
-    { type: 'paragraph', data: { text: "A regular chatbot answers questions. An AI agent actually does things. It can search the web, write and run code, send emails, fill in forms, and chain together multi-step tasks — with minimal human input." } },
+    { type: 'paragraph', data: { text: "A regular chatbot answers questions. An AI agent actually does things. It can search the web, write and run code, send emails, fill in forms, and chain together multi-step tasks — with minimal human input. Understanding agents helps you use today's most powerful AI tools correctly and safely." } },
     { type: 'heading', id: 'chatbot-vs-agent', data: { level: 2, text: 'Chatbot vs Agent', anchor: 'chatbot-vs-agent' } },
     { type: 'table', data: { headers: ['Chatbot', 'Agent'], rows: [
-      ['Responds to one message', 'Plans and executes a sequence of steps'],
-      ['Produces text only', 'Can use tools (search, code, APIs, files)'],
-      ['Waits for your next message', 'Can act autonomously until goal is reached'],
-      ['No memory between sessions (typically)', 'May have persistent memory and state'],
-      ['You provide all context', 'Agent gathers context itself via tools'],
+      ['Responds to one message at a time', 'Plans and executes a whole sequence of steps'],
+      ['Produces text output only', 'Can use tools: search, code, APIs, files, email'],
+      ['Waits for your next message', 'Acts autonomously until goal is achieved or stuck'],
+      ['No persistent memory between sessions', 'May have persistent memory and task state'],
+      ['You provide all context', 'Agent gathers additional context itself via tools'],
+      ['Mistakes are contained to one message', 'Mistakes can cascade across multiple steps'],
     ] } },
-    { type: 'mermaid', data: { id: 'agent-loop', caption: 'The agent loop: observe, plan, act, observe again', definition: `flowchart TD
-  G[Goal given by user] --> O[Observe current state]
-  O --> P[Plan next action]
-  P --> A[Use a tool\\nsearch / code / API / file]
-  A --> E{Goal achieved?}
+    { type: 'heading', id: 'the-agent-loop', data: { level: 2, text: 'The agent loop', anchor: 'the-agent-loop' } },
+    { type: 'mermaid', data: { id: 'agent-loop', caption: 'The observe-plan-act cycle every AI agent runs — it loops until the goal is achieved', definition: `flowchart TD
+  G["Goal given by user\\ne.g. 'Research top 5 CRMs\\nand compare in a table'"] --> O
+  O["Observe: What do I know?\\nWhat info is missing?"] --> P
+  P["Plan: What tool next?"] --> A
+  A["Act: Use a tool\\n(search / code / file / API)"] --> R
+  R["Read result"] --> E
+  E{"Goal achieved?"}
   E -->|No| O
-  E -->|Yes| R[Return result to user]` } },
-    { type: 'heading', id: 'agent-examples', data: { level: 2, text: 'Real-world agent examples', anchor: 'agent-examples' } },
-    { type: 'bullet-list', data: { items: [
-      'Research agent: given a topic, searches 10 sources, synthesizes findings, formats a report',
-      'Coding agent (e.g. Cursor, Devin): reads your codebase, writes and tests new features',
-      'Personal assistant agent: checks your calendar, drafts emails, schedules meetings',
-      'Data agent: pulls data from a spreadsheet, runs analysis, creates a chart',
+  E -->|Yes| DONE["Return result\\nto user"]
+  style G fill:#ddf4ff,stroke:#0969da
+  style DONE fill:#d1f3d8,stroke:#1a7f37` } },
+    { type: 'heading', id: 'agent-tools-available', data: { level: 2, text: 'Tools agents use', anchor: 'agent-tools-available' } },
+    { type: 'table', data: { headers: ['Tool type', 'What it does', 'Example'], rows: [
+      ['Web search', 'Retrieves current information from the web', 'Find the latest pricing for Salesforce'],
+      ['Code execution', 'Writes and runs Python/JavaScript code', 'Analyze a CSV, run a calculation'],
+      ['File access', 'Reads, writes, and creates files', 'Read your PDF, create a report'],
+      ['Browser automation', 'Controls a web browser', 'Fill out forms, extract data from pages'],
+      ['Email/calendar access', 'Reads and sends messages, creates events', 'Draft a reply, schedule a meeting'],
+      ['API calls', 'Connects to external services', 'Post to Slack, create a Notion page'],
     ] } },
-    { type: 'callout', data: { variant: 'warning', title: 'Agents can make mistakes autonomously', text: 'Because agents act without confirmation at each step, a mistake can compound into multiple unwanted actions. Always set up guardrails and review agent output before it reaches your real systems.' } },
-    { type: 'summary-box', data: { title: 'Key concepts', points: ['Agents plan, use tools, and execute steps — chatbots only respond', 'The agent loop: observe → plan → act → check → repeat', 'Agents are powerful but require careful oversight', 'You do not need to code to use most agent-based tools today'] } },
+    { type: 'heading', id: 'agent-examples', data: { level: 2, text: 'Real-world agent examples (tools you can use now)', anchor: 'agent-examples' } },
+    { type: 'table', data: { headers: ['Agent / tool', 'What it can do autonomously', 'Risk level'], rows: [
+      ['ChatGPT (with tools)', 'Search web + analyze data + run code in sequence', 'Low — requires you to approve each step'],
+      ['Perplexity Deep Research', 'Autonomous multi-step web research, cited report', 'Low — read-only, no external actions'],
+      ['Claude Projects', 'Work with your documents persistently across sessions', 'Low — no external actions'],
+      ['Microsoft 365 Copilot', 'Draft emails, schedule meetings, create Docs from notes', 'Medium — can take real actions in your workspace'],
+      ['Cursor / GitHub Copilot Workspace', 'Read codebase, write new features, run tests', 'Medium-high — makes real code changes'],
+    ] } },
+    { type: 'callout', data: { variant: 'warning', title: 'Agents require more oversight, not less', text: 'Because agents act autonomously across multiple steps, mistakes compound. Always: (1) review before sensitive actions, (2) grant minimum permissions, (3) test on non-critical tasks first, (4) keep humans in the loop for anything irreversible.' } },
+    { type: 'summary-box', data: { title: 'Key concepts', points: ['Agents plan and execute multi-step tasks using tools — chatbots only respond', 'The agent loop: observe → plan → act → check goal → repeat', 'Agents use web search, code execution, file access, browser, and API tools', 'Higher capability means higher oversight responsibility', 'You do not need to code to use most agent tools available today'] } },
   ],
   relatedLessons: ['how-agents-work', 'what-is-tool-calling'],
 };
@@ -988,23 +2809,67 @@ const howAgentsWork: Lesson = {
   estimatedMinutes: 12,
   tags: ['agents', 'memory', 'planning', 'tools'],
   blocks: [
-    { type: 'paragraph', data: { text: 'Under the hood, AI agents combine three capabilities that simple chatbots lack: a planning loop, access to tools, and some form of memory.' } },
+    { type: 'paragraph', data: { text: 'Under the hood, AI agents combine three capabilities that simple chatbots lack: a planning loop, access to tools, and some form of memory. Understanding these components helps you evaluate any agent tool and know when to trust its output.' } },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'agent-architecture',
+        caption: 'The four building blocks of every AI agent: the LLM core, memory, tools, and an execution loop',
+        definition: `graph TD
+  subgraph AGENT ["AI Agent Architecture"]
+    LLM["LLM Core\n(Planning + Reasoning)"]
+    MEM["Memory\nShort-term: context window\nLong-term: vector DB / files"]
+    TOOLS["Tools\nSearch / Code / Files / APIs"]
+    LOOP["Execution Loop\nObserve → Plan → Act → Check"]
+  end
+
+  USER["User Goal"] --> LOOP
+  LOOP --> LLM
+  LLM --> MEM
+  LLM --> TOOLS
+  TOOLS --> LOOP
+  LOOP --> OUTPUT["Result"]
+
+  style LLM fill:#ddf4ff,stroke:#0969da
+  style MEM fill:#d1f3d8,stroke:#1a7f37
+  style TOOLS fill:#fff8c5,stroke:#9a6700
+  style LOOP fill:#eddff8,stroke:#8250df`,
+      },
+    },
     { type: 'key-terms', data: { terms: [
-      { term: 'Planning', definition: 'The agent breaks a complex goal into sub-tasks and sequences them logically before acting.' },
-      { term: 'Tool use', definition: 'The agent can call external tools: web search, code execution, file access, API calls, database queries.' },
-      { term: 'Memory', definition: 'Short-term memory is the context window. Long-term memory is stored externally (vector DB, files) and retrieved when needed.' },
-      { term: 'Reflection', definition: 'Some agents evaluate their own output and retry if the result is not satisfactory.' },
+      { term: 'Planning', definition: 'The agent breaks a complex goal into sub-tasks and sequences them logically before acting. It decides: what do I need first? What tool achieves that? What should I do with the result?' },
+      { term: 'Tool use', definition: 'The agent can invoke external tools: web search, code execution, file access, API calls, database queries. Each tool call extends what the agent can know and do.' },
+      { term: 'Short-term memory', definition: 'The active context window. Holds the conversation, instructions, tool results, and current progress. Cleared when the session ends.' },
+      { term: 'Long-term memory', definition: 'Stored externally in files, databases, or vector stores. Persists across sessions and can be retrieved when relevant.' },
+      { term: 'Reflection', definition: 'Some advanced agents evaluate their own output and self-correct if the result doesn\'t meet the goal. This is what separates basic agents from more reliable ones.' },
     ] } },
+    {
+      type: 'heading',
+      id: 'memory-types-explained',
+      data: { level: 2, text: 'Memory types in depth', anchor: 'memory-types-explained' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Memory type', 'What it stores', 'Duration', 'Enabled by'],
+        rows: [
+          ['Short-term (context)', 'Current conversation, recent tool results', 'Current session only', 'Built-in context window'],
+          ['Long-term (external)', 'Past task summaries, user preferences, knowledge', 'Persists across sessions', 'Vector DB, files, database'],
+          ['Episodic', 'Memory of past similar tasks and their outcomes', 'Persists, retrieved by relevance', 'RAG over task history'],
+          ['Procedural', 'How to perform specific types of tasks', 'Embedded in system prompt or fine-tuning', 'System instructions'],
+        ],
+      },
+    },
     { type: 'heading', id: 'popular-agents', data: { level: 2, text: 'Agents you can use today (no code)', anchor: 'popular-agents' } },
     { type: 'bullet-list', data: { items: [
-      'ChatGPT with tools enabled — can search, run code, and analyze files in sequence',
-      'Claude Projects — persistent memory and files for ongoing work',
-      'Perplexity Deep Research — autonomous multi-step research that cites every source',
-      'Notion AI — acts as an agent within your Notion workspace',
-      'Microsoft Copilot — agent-like behavior across Office 365 apps',
+      'ChatGPT with tools enabled — can search, run code, and analyze files in sequence within one conversation',
+      'Claude Projects — persistent files and instructions that the agent uses across all your conversations in a project',
+      'Perplexity Deep Research — autonomous multi-step web research that cites every source',
+      'Notion AI — an agent within your Notion workspace that can read, create, and edit pages',
+      'Microsoft 365 Copilot — agent-like behavior across Outlook, Teams, Word, and Excel',
     ] } },
-    { type: 'callout', data: { variant: 'note', title: 'Do I need to use agents right now?', text: 'Not necessarily. For most everyday tasks, a good prompt workflow gets you 90% of the value. Agents add the most value for repetitive multi-step tasks that span multiple tools or data sources.' } },
-    { type: 'summary-box', data: { title: 'Agent components', points: ['Planning: break goals into steps', 'Tools: external capabilities the agent can call', 'Memory: context window (short-term) + external store (long-term)', 'Agents are most valuable for multi-step tasks across multiple systems'] } },
+    { type: 'callout', data: { variant: 'note', title: 'Do I need to use agents right now?', text: 'Not necessarily. For most everyday tasks, a good prompt workflow gets you 90% of the value. Agents add the most value for: multi-step tasks that span multiple tools, tasks requiring current web information, and repetitive processes that you want to run with minimal involvement.' } },
+    { type: 'summary-box', data: { title: 'Agent components', points: ['Planning: the LLM breaks the goal into steps and decides what to do next', 'Tools: external capabilities the agent invokes (search, code, files, APIs)', 'Short-term memory: the context window for the current session', 'Long-term memory: external storage that persists and can be retrieved', 'Reflection: self-evaluation that improves multi-step reliability', 'Agents are most valuable for multi-step tasks across multiple systems'] } },
   ],
   relatedLessons: ['what-are-agents', 'what-is-tool-calling'],
 };
@@ -1021,30 +2886,63 @@ const whatIsToolCalling: Lesson = {
   tags: ['tool-calling', 'skills', 'plugins', 'function-calling'],
   relatedGlossaryTerms: ['tool-calling', 'plugin', 'agent'],
   blocks: [
-    { type: 'paragraph', data: { text: 'By default, an LLM only produces text. Tool calling is the mechanism that lets an AI model reach outside its text generation to interact with the real world.' } },
+    { type: 'paragraph', data: { text: 'By default, an LLM only produces text. Tool calling is the mechanism that lets an AI model reach outside its text generation to interact with the real world — searching the web, running code, reading files, and taking actions in external systems.' } },
     { type: 'heading', id: 'how-tool-calling-works', data: { level: 2, text: 'How tool calling works', anchor: 'how-tool-calling-works' } },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'tool-calling-sequence',
+        caption: 'Tool calling: the AI generates a structured call, the tool runs in the real world, and the result flows back to the AI as new context',
+        definition: `sequenceDiagram
+  participant U as User
+  participant LLM as Language Model
+  participant T as Tool (e.g. Search)
+
+  U->>LLM: "What is the current price of AAPL?"
+  Note over LLM: Decides: I need\ncurrent data → use search tool
+  LLM->>T: search("AAPL stock price today")
+  T->>LLM: {result: "AAPL: $213.42 as of 2:03pm"}
+  Note over LLM: Now has real data
+  LLM->>U: "Apple (AAPL) is currently trading at $213.42."`,
+      },
+    },
     { type: 'numbered-list', data: { items: [
-      'The AI receives your message and decides a tool would help',
-      'It generates a structured "tool call" — specifying which tool and with what inputs',
-      'The tool runs (e.g. web search runs, code executes, API is called)',
-      'The tool result is returned to the AI as context',
-      'The AI uses the result to continue generating its response',
+      'You send a message to the AI',
+      'The AI decides whether a tool would help answer better',
+      'If yes: it generates a structured \'tool call\' — specifying which tool and with what inputs',
+      'The tool runs independently (web search, code execution, API call)...',
+      'The tool result is inserted back into the conversation as new context',
+      'The AI reads the result and continues generating its response with that knowledge',
     ] } },
-    { type: 'table', data: { headers: ['Tool type', 'Example', 'What it enables'], rows: [
-      ['Web search', 'Bing / Brave Search API', 'Access to current information'],
-      ['Code execution', 'Python interpreter', 'Math, data analysis, file manipulation'],
-      ['File access', 'Read/write local files', 'Persistent data, document analysis'],
-      ['API call', 'Weather, calendar, CRM', 'Real-world data and actions'],
-      ['Browser', 'Navigate web pages', 'Interact with any website'],
+    { type: 'table', data: { headers: ['Tool type', 'What it does', 'Example action', 'You can see this in...'], rows: [
+      ['Web search', 'Retrieves current web information', 'Search for today\'s news', 'ChatGPT Browse, Perplexity'],
+      ['Code execution', 'Runs code in a sandboxed environment', 'Analyze a spreadsheet, plot a chart', 'ChatGPT Code Interpreter'],
+      ['File access', 'Reads or creates files', 'Summarize a PDF, create an Excel file', 'Claude Projects, ChatGPT file upload'],
+      ['API call', 'Calls an external service', 'Get weather, book meeting, post to Slack', 'Zapier AI steps, custom GPTs'],
+      ['Browser', 'Controls a headless browser', 'Fill in a form, navigate a webpage', 'Advanced agents, Operator'],
     ] } },
-    { type: 'heading', id: 'skills-vs-tools', data: { level: 2, text: 'Skills vs plugins vs tools', anchor: 'skills-vs-tools' } },
-    { type: 'table', data: { headers: ['Term', 'What it means in practice'], rows: [
-      ['Tool', 'A specific function an agent can call (search, code, file read)'],
-      ['Plugin', 'A packaged integration — e.g. a ChatGPT Plugin adds a new tool set'],
-      ['Skill', 'A pre-configured capability an agent can invoke (more common in Microsoft Copilot terminology)'],
-      ['MCP Server', 'A protocol for securely exposing a set of tools to an AI agent'],
+    { type: 'heading', id: 'skills-vs-tools', data: { level: 2, text: 'Skills, plugins, tools: decoded', anchor: 'skills-vs-tools' } },
+    {
+      type: 'paragraph',
+      data: { text: 'Different platforms use different vocabulary for the same underlying concept. Here\'s a unified decoder:' },
+    },
+    { type: 'table', data: { headers: ['Term', 'Platform', 'What it means in practice'], rows: [
+      ['Tool', 'OpenAI API, general AI', 'A specific function an agent can call — search, code run, file read'],
+      ['Plugin', 'ChatGPT (legacy, replaced by GPT Store)', 'A packaged tool set that extended ChatGPT\'s capabilities'],
+      ['Action', 'Custom GPTs, Copilot Studio', 'An HTTP API call configured as a tool the GPT can use'],
+      ['Skill', 'Microsoft Copilot, AutoGen', 'A named capability — maps to one or more tools under the hood'],
+      ['MCP Server', 'Anthropic Claude, industry-wide', 'A standardized server that exposes a set of tools via the MCP protocol'],
+      ['Function calling', 'OpenAI API', 'The technical mechanism for defining tools in the API'],
     ] } },
-    { type: 'summary-box', data: { title: 'Key ideas', points: ['Tool calling lets AI reach outside text generation to take real actions', 'Every AI agent is built on tool calling under the hood', 'Skills and plugins are packaged collections of tools', "You use tool calling every time ChatGPT 'searches the web' for you"] } },
+    {
+      type: 'callout',
+      data: {
+        variant: 'info',
+        title: 'What to remember',
+        text: 'All of these terms describe the same concept: giving an AI model a way to invoke an external capability. Tool calling is the mechanism; skills/plugins/actions are the packaging. Whenever AI "searches the web" or "runs code", tool calling is what\'s happening.',
+      },
+    },
+    { type: 'summary-box', data: { title: 'Key ideas', points: ['Tool calling lets AI reach outside text generation to take real-world actions', 'Every AI agent is built on tool calling under the hood', 'The flow: model decides → calls tool → tool runs → result returned → model continues', 'Skills, plugins, actions, and MCP servers are all packaged collections of tools', 'You use tool calling every time ChatGPT searches the web or runs code for you'] } },
   ],
   relatedLessons: ['what-are-agents', 'what-is-mcp'],
 };
@@ -1060,18 +2958,127 @@ const aiLimitations: Lesson = {
   estimatedMinutes: 14,
   tags: ['limitations', 'safety', 'expectations', 'responsible-use'],
   blocks: [
-    { type: 'paragraph', data: { text: "Hallucination gets all the attention. But there are several other important limitations that affect how you should use AI tools. Understanding these isn't pessimistic — it makes you a smarter, safer user." } },
-    { type: 'table', data: { headers: ['Limitation', 'What it means in practice', 'How to mitigate'], rows: [
-      ['Training cutoff', 'AI does not know about events after its training data ends', 'Use tools with web search for recent info'],
-      ['No real-time data', 'AI cannot check live prices, weather, current news', 'Use Perplexity or a browsing-enabled tool'],
-      ['Context window loss', 'Very long conversations lose early context', 'Summarize and restart for long projects'],
-      ['Arithmetic errors', 'LLMs are not calculators — they approximate numbers', 'Use code interpreter or a calculator for maths'],
-      ['Inconsistent reasoning', 'Same prompt can yield different answers on different tries', 'Use chain-of-thought, verify important conclusions'],
-      ['Bias from training data', 'AI reflects biases present in the text it was trained on', 'Apply critical judgment, especially on social topics'],
-      ['No real understanding', 'AI processes patterns, not concepts — it does not truly "understand"', 'Do not assume depth it does not have'],
-    ] } },
-    { type: 'callout', data: { variant: 'important', title: 'The core mental model', text: 'AI is a pattern-completion engine trained on text. It is extraordinarily useful — but it cannot reason, verify facts, update itself in real-time, or guarantee precision. Use it accordingly.' } },
-    { type: 'summary-box', data: { title: 'Safe use rules', points: ['Verify before acting on specific facts, numbers, or citations', 'Use web-enabled tools for current information', 'Never use AI alone for high-stakes medical, legal, or financial decisions', 'Apply your domain expertise as the final filter on all AI output'] } },
+    {
+      type: 'paragraph',
+      data: { text: "Hallucination gets all the attention. But there are several other important limitations that affect how you should use AI tools. Understanding them isn't pessimistic — it makes you a smarter, safer user who knows when to trust, when to verify, and when to look elsewhere." },
+    },
+    {
+      type: 'heading',
+      id: 'limitations-map',
+      data: { level: 2, text: 'The full landscape of AI limitations', anchor: 'limitations-map' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'ai-limitations-map',
+        caption: 'AI limitations fall into four categories — each with practical mitigations',
+        definition: `graph TD
+  L[AI Limitations]
+
+  L --> K[Knowledge Limits]
+  L --> R[Reasoning Limits]
+  L --> T[Trust Limits]
+  L --> C[Context Limits]
+
+  K --> K1[Training cutoff date]
+  K --> K2[No real-time data]
+  K --> K3[Hallucination]
+
+  R --> R1[Arithmetic errors]
+  R --> R2[Inconsistent logic]
+  R --> R3[No genuine understanding]
+
+  T --> T1[Bias from training data]
+  T --> T2[Confident when wrong]
+  T --> T3[Cannot self-verify]
+
+  C --> C1[Context window limits]
+  C --> C2[No cross-session memory]
+  C --> C3[System prompt overrides]
+
+  style L fill:#ddf4ff,stroke:#0969da
+  style K fill:#ffe1cc,stroke:#bc4c00
+  style R fill:#ffebe9,stroke:#cf222e
+  style T fill:#fff8c5,stroke:#9a6700
+  style C fill:#eddff8,stroke:#8250df`,
+      },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Limitation', 'What it means in practice', 'How to mitigate'],
+        rows: [
+          ['Training cutoff', 'AI does not know about events after its training data ends', 'Use tools with web search for recent info (Perplexity, ChatGPT with browse)'],
+          ['No real-time data', 'Cannot check live prices, current weather, or breaking news', 'Use Perplexity or a browsing-enabled model for current facts'],
+          ['Hallucination', 'Invents plausible-sounding facts confidently', 'Verify specific claims; use Perplexity for sourced research'],
+          ['Context window loss', 'Very long conversations lose early context silently', 'Summarize and restart for long projects'],
+          ['Arithmetic errors', 'LLMs approximate numbers rather than calculate', 'Use code interpreter or a real calculator for all math'],
+          ['Inconsistent reasoning', 'Same prompt can yield different answers in different sessions', 'Use chain-of-thought; verify important conclusions independently'],
+          ['Bias from training data', 'AI reflects biases present in text it was trained on', 'Apply critical judgment, especially on social and political topics'],
+          ['No real understanding', 'AI processes patterns, not concepts — it cannot truly "reason"', 'Do not assume depth it does not have; verify any complex reasoning'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'training-cutoff-explained',
+      data: { level: 2, text: 'The training cutoff problem', anchor: 'training-cutoff-explained' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: "Every AI model has a knowledge cutoff — a date after which it knows nothing about the world. Events, products, research, and people that emerged after this date simply don't exist in the model's knowledge. The cutoff for major models is typically 6-18 months behind the current date." },
+      },
+    {
+      type: 'example',
+      data: {
+        title: 'Practical impact of the training cutoff',
+        content: 'You ask: "What are the latest ChatGPT features?"\n\nThe model\'s answer will be accurate up to its training cutoff — but newer features released after that date will be completely missing from its response. It will not tell you it doesn\'t know about the latest features; it will just give you outdated information with the same confident tone.\n\nFix: Use Perplexity or check OpenAI\'s official release notes for anything time-sensitive.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'bias-nuance',
+      data: { level: 2, text: 'Understanding AI bias', anchor: 'bias-nuance' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'AI models are trained on text written by humans — which contains human biases. The model learns these patterns and can reproduce or amplify them. This appears as: over-representing certain demographics in descriptions, leaning politically in subtle ways, reflecting cultural assumptions from whichever culture dominated the training data, or describing certain jobs in gendered terms.' },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'important',
+        title: 'The core mental model',
+        text: 'AI is a pattern-completion engine trained on text. It is extraordinarily useful — but it cannot reason, verify facts, update itself in real-time, or guarantee precision. Match the task to the tool, and apply your own expertise as the final filter.',
+      },
+    },
+    {
+      type: 'checklist',
+      data: {
+        title: 'Safe AI use rules',
+        items: [
+          { text: 'Verify specific facts, numbers, and citations before acting on them' },
+          { text: 'Use web-enabled tools for anything requiring current information' },
+          { text: 'Never use AI as the sole source for high-stakes medical, legal, or financial decisions' },
+          { text: 'Apply your domain expertise as the final filter on all AI output' },
+          { text: 'For math and data — always use the code interpreter, not free-form text generation' },
+          { text: 'Check for bias on sensitive topics — read critically, not passively' },
+        ],
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'The four limitation categories to remember',
+        points: [
+          'Knowledge limits: cutoff date, no real-time data, hallucination',
+          'Reasoning limits: arithmetic errors, inconsistent logic, no genuine understanding',
+          'Trust limits: training bias, equal confidence in right and wrong answers',
+          'Context limits: window size, no cross-session memory',
+          'None of these make AI useless — they make understanding them essential',
+        ],
+      },
+    },
   ],
   relatedLessons: ['critical-evaluation', 'ai-hallucination-deep-dive'],
 };
@@ -1087,25 +3094,112 @@ const criticalEvaluation: Lesson = {
   estimatedMinutes: 12,
   tags: ['evaluation', 'critical-thinking', 'verification', 'habits'],
   blocks: [
-    { type: 'paragraph', data: { text: 'The most dangerous AI user is one who never questions the output. The most effective AI user has a fast, reliable habit for deciding when to trust, verify, or discard an AI response.' } },
-    { type: 'heading', id: 'trust-levels', data: { level: 2, text: 'A trust tiering system', anchor: 'trust-levels' } },
-    { type: 'table', data: { headers: ['Task type', 'Trust level', 'Action'], rows: [
-      ['Brainstorming, creative ideas', 'Use freely', 'No verification needed'],
-      ['First draft of writing', 'Use with review', 'Read and edit before sending'],
-      ['Factual summary of a topic', 'Verify key claims', 'Check 1-2 specific facts'],
-      ['Specific numbers, dates, citations', 'Verify before using', 'Always check primary source'],
-      ['Medical, legal, financial advice', 'Do not rely on AI alone', 'Consult qualified human professional'],
-    ] } },
-    { type: 'heading', id: 'five-questions', data: { level: 2, text: 'Five questions to ask every AI response', anchor: 'five-questions' } },
-    { type: 'numbered-list', data: { items: [
-      'Did it actually answer the question I asked?',
-      'Are there any specific facts I should verify before acting on this?',
-      'Is the reasoning internally consistent?',
-      'Is this missing something obvious my knowledge tells me should be here?',
-      'Would a qualified person in this domain agree with this conclusion?',
-    ] } },
-    { type: 'callout', data: { variant: 'tip', text: 'Use this rule of thumb: the more consequential the action downstream, the more verification you need upstream. Adjust your verification effort to the stakes.' } },
-    { type: 'summary-box', data: { title: 'Build this habit', points: ['Not every AI output needs verification — match effort to stakes', 'Specific facts (numbers, citations, names) always need a second check', 'Your domain expertise is a signal that AI output needs scrutiny', 'Treat AI as a smart first draft, not a final answer'] } },
+    {
+      type: 'paragraph',
+      data: { text: 'The most dangerous AI user is one who never questions the output. The most effective AI user has a fast, reliable habit for deciding when to trust, when to verify, and when to discard an AI response. This lesson builds that habit.' },
+    },
+    {
+      type: 'heading',
+      id: 'trust-levels',
+      data: { level: 2, text: 'The trust tiering system', anchor: 'trust-levels' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'trust-ladder',
+        caption: 'Match your verification effort to the stakes — not every AI output needs the same level of scrutiny',
+        definition: `graph BT
+  T1["🟢 Brainstorming & creative ideas\\nUse freely, no verification needed"]
+  T2["🟡 First draft of internal document\\nRead through, edit as needed"]
+  T3["🟠 Client-facing or public content\\nVerify claims, review tone carefully"]
+  T4["🔴 Specific facts, stats, citations\\nAlways check primary source"]
+  T5["⛔ Medical, legal, financial decisions\\nNever rely solely on AI"]
+
+  T1 --> T2 --> T3 --> T4 --> T5
+
+  style T1 fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37
+  style T2 fill:#fff8c5,stroke:#9a6700,color:#9a6700
+  style T3 fill:#ffe1cc,stroke:#bc4c00,color:#bc4c00
+  style T4 fill:#ffebe9,stroke:#cf222e,color:#cf222e
+  style T5 fill:#f6f8fa,stroke:#57606a,color:#57606a`,
+      },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Task type', 'Trust level', 'Required action'],
+        rows: [
+          ['Brainstorming, creative ideas', '✅ Use freely', 'No verification needed'],
+          ['First draft of writing', '✅ Use with review', 'Read and edit before sending'],
+          ['Factual summary of a topic', '⚠️ Verify key claims', 'Check 1-2 specific facts against sources'],
+          ['Specific numbers, dates, citations', '🔴 Verify before using', 'Always check the primary source'],
+          ['Medical, legal, financial advice', '⛔ Do not rely on AI alone', 'Consult a qualified human professional'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'five-questions',
+      data: { level: 2, text: 'Five questions to ask every AI response', anchor: 'five-questions' },
+    },
+    {
+      type: 'numbered-list',
+      data: {
+        items: [
+          'Did it actually answer the question I asked? (AI often answers a related but slightly different question)',
+          'Are there any specific facts I should verify before acting on this? (dates, names, numbers, citations, URLs)',
+          'Is the reasoning internally consistent? (does the conclusion follow from the logic presented?)',
+          'Is this missing something my own knowledge tells me should be here?',
+          'Would a qualified person in this domain agree with this conclusion?',
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'red-flags',
+      data: { level: 2, text: 'Red flags that always warrant verification', anchor: 'red-flags' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        items: [
+          'Any specific percentage, statistic, or data point',
+          'Author names, study names, or journal citations',
+          'Exact dates, especially for recent or historical events',
+          'URLs or links to external resources',
+          'Quotes attributed to specific people',
+          'Claims about current market prices, stock values, or live data',
+          'Any legal or medical statement you plan to rely on',
+        ],
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Critical evaluation in practice',
+        content: 'You ask AI: "What percentage of people work remotely in the US?"\n\nAI answers: "According to a 2023 McKinsey study, approximately 58% of American workers have the option to work remotely at least part of the time, with 35% working remotely full time."\n\n🔍 Critical evaluation:\n✅ This sounds plausible and McKinsey does publish this research\n⚠️ But — did this specific study say exactly 58%? And 35% full time? Those numbers need checking.\n📋 Action: Search "McKinsey remote work 2023" and verify the exact figures before quoting them.\n\nThis takes 60 seconds and protects your credibility.',
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        text: 'Rule of thumb: the more consequential the downstream action, the more upstream verification you need. Calibrate verification effort to stakes, not paranoia.',
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Build this habit',
+        points: [
+          'Not every AI output needs verification — match effort to stakes',
+          'Specific facts (numbers, citations, names, dates) always need a second check',
+          'Your domain expertise is your best first filter for quality',
+          'Five questions: Did it answer? Verify facts? Consistent? Missing anything? Expert agreement?',
+          'Treat AI as a brilliant first draft — your judgment is still the final step',
+        ],
+      },
+    },
   ],
   relatedLessons: ['evaluating-ai-output', 'protecting-your-data'],
 };
@@ -1122,24 +3216,101 @@ const protectingYourData: Lesson = {
   tags: ['privacy', 'data', 'security', 'enterprise', 'sensitive'],
   relatedGlossaryTerms: ['training-data', 'prompt'],
   blocks: [
-    { type: 'paragraph', data: { text: 'Using AI tools freely without thinking about data is one of the biggest mistakes people make. Here is a clear picture of the risks and a practical policy you can apply immediately.' } },
-    { type: 'heading', id: 'what-is-collected', data: { level: 2, text: 'What AI tools collect', anchor: 'what-is-collected' } },
-    { type: 'table', data: { headers: ['Tool', 'Default data use', 'How to opt out'], rows: [
-      ['ChatGPT (free)', 'Conversations may be used for training', 'Settings → Data controls → Disable training'],
-      ['ChatGPT (Plus/Teams)', 'Training off by default on Plus', 'Verify in settings'],
-      ['Claude', 'Conversations may be reviewed for safety', 'Anthropic privacy settings'],
-      ['Gemini', 'Conversations used to improve Google products', 'Activity controls in Google account'],
-      ['Perplexity', 'Queries logged, settings vary by account', 'Review privacy settings'],
+    { type: 'paragraph', data: { text: 'Using AI tools freely without thinking about data privacy is one of the most common and consequential mistakes people make. Here is a clear picture of the risks, and a practical data policy you can apply immediately — starting today.' } },
+    {
+      type: 'heading',
+      id: 'risk-tiers',
+      data: { level: 2, text: 'Data risk tiers: a practical framework', anchor: 'risk-tiers' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'data-risk-tiers',
+        caption: 'Three tiers of data risk — your protection strategy should match the tier of data you are working with',
+        definition: `graph TD
+  subgraph SAFE ["\u2705 Tier 1: Safe to share"]
+    S1["Public information\n(from the web)"]
+    S2["Generic requests\n(no personal context)"]
+    S3["Non-sensitive drafts\n(non-confidential topics)"]
+  end
+
+  subgraph CAREFUL ["\u26a0\ufe0f Tier 2: Share with caution"]
+    C1["Your own writing\n(anonymize if sensitive)"]
+    C2["Work documents\n(check company policy)"]
+    C3["Past customer interactions\n(remove names/IDs first)"]
+  end
+
+  subgraph NEVER ["\u274c Tier 3: Never share"]
+    N1["Passwords / API keys"]
+    N2["Social Security / ID numbers"]
+    N3["Patient health records"]
+    N4["Confidential legal/financial/M&A"]
+    N5["Client PII without consent"]
+  end
+
+  style SAFE fill:#d1f3d8,stroke:#1a7f37
+  style CAREFUL fill:#fff8c5,stroke:#9a6700
+  style NEVER fill:#ffebe9,stroke:#cf222e`,
+      },
+    },
+    { type: 'heading', id: 'what-is-collected', data: { level: 2, text: 'What AI tools actually collect', anchor: 'what-is-collected' } },
+    { type: 'table', data: { headers: ['Tool', 'Default data use', 'How to opt out / protect yourself'], rows: [
+      ['ChatGPT Free', 'Conversations may be used for training by default', 'Settings → Data controls → Disable \'Improve the model for everyone\''],
+      ['ChatGPT Plus/Teams', 'Training opt-out available, not default', 'Verify training is off in your account settings'],
+      ['ChatGPT Enterprise', 'Not used for training, data isolated per org', 'Required for all business-sensitive work'],
+      ['Claude (free/Pro)', 'Conversations may be reviewed for safety', 'Anthropic privacy policy applies; enterprise tier available'],
+      ['Gemini', 'Used to improve Google products by default', 'Google Account → Activity Controls → Gemini Apps Activity'],
+      ['Perplexity', 'Queries are logged; varies by account type', 'Review privacy settings; Pro tier has better controls'],
+      ['Microsoft 365 Copilot', 'Stays within your Microsoft tenant', 'Best enterprise option for existing Microsoft customers'],
     ] } },
-    { type: 'callout', data: { variant: 'warning', title: 'Never paste these into a public AI chatbot', text: 'Passwords or API keys | Social Security numbers | Patient health data | Confidential business strategy | Client personal information | Financial data with account numbers' } },
+    {
+      type: 'callout',
+      data: {
+        variant: 'warning',
+        title: 'Never paste these into a public AI chatbot',
+        text: 'Passwords, API keys, or auth tokens | Social Security, passport, or national ID numbers | Patient health or medical records | Confidential M&A or legal strategy | Client names, emails, or financial account numbers | Any data your organization classifies as Confidential or Restricted',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'anonymization-techniques',
+      data: { level: 2, text: 'How to anonymize data before using AI', anchor: 'anonymization-techniques' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'Often you can get the AI help you need by removing identifying details first. Here is a systematic approach:' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Data type', 'Replace with', 'Example'],
+        rows: [
+          ['Person names', '[PERSON A], [PERSON B]', '"John Smith" → [PERSON A]'],
+          ['Company names', '[COMPANY]', '"Acme Corp" → [COMPANY]'],
+          ['Specific dollar amounts', 'rounded or %', '"$847,329" → "approximately $850K"'],
+          ['Account numbers', '[ACCOUNT]', '"ACC-4872" → [ACCOUNT]'],
+          ['Dates that reveal projects', 'relative dates', '"March 14, 2024" → "Q1 of this year"'],
+          ['Email addresses', '[EMAIL]', '"user@company.com" → [EMAIL]'],
+        ],
+      },
+    },
     { type: 'heading', id: 'safe-options', data: { level: 2, text: 'Safer options for sensitive work', anchor: 'safe-options' } },
     { type: 'bullet-list', data: { items: [
-      'Enterprise tiers of ChatGPT, Claude, and Gemini — data is not used for training and is isolated',
-      'Microsoft 365 Copilot — your data stays within your Microsoft tenant',
-      'Local AI models (Ollama, LM Studio) — nothing leaves your machine',
-      'Anonymize data before pasting — remove names, account numbers, and identifying details',
+      'Enterprise tiers of ChatGPT, Claude, and Gemini — data is not used for training and is isolated per organization',
+      'Microsoft 365 Copilot — your data stays within your Microsoft tenant with enterprise controls',
+      'Google Workspace Gemini — enterprise version with data in your Google tenant',
+      'Local AI models (Ollama, LM Studio) — everything runs on your machine, nothing ever leaves',
+      'Anonymize data first — remove names, account numbers, and identifying details before pasting',
     ] } },
-    { type: 'summary-box', data: { title: 'Personal data policy', points: ['Check privacy settings on every AI tool you use regularly', 'Never paste PII, credentials, or confidential business data into public chatbots', 'For business-sensitive work, use enterprise or local AI options', 'When in doubt, anonymize data before using AI on it'] } },
+    {
+      type: 'callout',
+      data: {
+        variant: 'note',
+        title: 'Company policy first',
+        text: 'Check your organization\'s AI use policy before using any AI tool for work data. Many organizations have restrictions on which tools can process company data. When in doubt, ask your IT or legal team.',
+      },
+    },
+    { type: 'summary-box', data: { title: 'Your personal data policy', points: ['Check default privacy settings on every AI tool you use regularly — training is often on by default', 'Tier your data: public is fine, sensitive needs care, confidential never goes into public AI', 'Anonymize before sharing: replace names, IDs, and specific numbers with placeholders', 'For business-sensitive work, use enterprise or local AI options', 'Follow your organization\'s AI policy and when in doubt, ask IT or legal'] } },
   ],
   relatedLessons: ['critical-evaluation', 'local-ai-options'],
 };
@@ -1156,35 +3327,102 @@ const ragExplained: Lesson = {
   tags: ['rag', 'retrieval', 'knowledge-base', 'grounding'],
   relatedGlossaryTerms: ['rag', 'embedding', 'vector-database', 'hallucination'],
   blocks: [
-    { type: 'paragraph', data: { text: 'When you ask ChatGPT a question, it answers based only on what it learned during training. RAG changes this — it lets AI search your own documents before answering, grounding responses in your actual data.' } },
+    { type: 'paragraph', data: { text: 'When you ask ChatGPT a question, it answers based only on what it learned during training — which has a knowledge cutoff and can miss specifics. RAG changes this: it lets AI search your own documents or a real-time knowledge source before answering, grounding responses in actual data rather than patterns.' } },
     { type: 'heading', id: 'rag-vs-base', data: { level: 2, text: 'Without RAG vs With RAG', anchor: 'rag-vs-base' } },
     { type: 'comparison-cards', data: { cards: [
-      { title: 'Without RAG', description: 'AI answers based only on training data. Knowledge has a cutoff date. Cannot access your internal documents. More likely to hallucinate on specific questions.', cons: ['No access to your data', 'Hallucination risk on specific topics', 'Training data cutoff'] },
-      { title: 'With RAG', description: 'AI first searches your knowledge base for relevant documents, then answers using those retrieved documents as context. Answers are grounded in your real data.', pros: ['Answers sourced from your actual documents', 'Much lower hallucination rate on specific topics', 'Always up-to-date with your knowledge base'] },
+      {
+        title: 'Base LLM (no RAG)',
+        description: 'The AI answers from its training data alone. Knowledge cuts off at its training date. Cannot access your internal documents. Must rely on patterns learned during training for anything domain-specific.',
+        cons: ['No access to your organization\'s data', 'Higher hallucination rate on specific facts', 'Training data cutoff means outdated information', 'Cannot cite the source it used to answer'],
+      },
+      {
+        title: 'RAG-enabled AI',
+        description: 'Before generating an answer, the AI first retrieves relevant documents from your knowledge base. It then uses those documents as context when generating the response. The answer is grounded in real, up-to-date, specific information.',
+        pros: ['Answers sourced from your actual documents', 'Far lower hallucination rate on domain-specific questions', 'Can cite exactly which document it used', 'Knowledge base stays current as you update it'],
+      },
     ] } },
-    { type: 'mermaid', data: { id: 'rag-flow', caption: 'How RAG works: retrieve first, then generate', definition: `sequenceDiagram
+    {
+      type: 'heading',
+      id: 'how-rag-works',
+      data: { level: 2, text: 'How RAG works step by step', anchor: 'how-rag-works' },
+    },
+    { type: 'mermaid', data: { id: 'rag-flow', caption: 'The RAG pipeline: your documents are indexed as vectors, then retrieved at query time to ground the AI\'s response', definition: `sequenceDiagram
   participant U as User
-  participant R as Retriever
-  participant KB as Knowledge Base
+  participant EM as Embedding Model
+  participant VDB as Vector Database
   participant LLM as Language Model
 
-  U->>R: "What is our refund policy?"
-  R->>KB: Search for relevant docs
-  KB->>R: Return top 3 matching passages
-  R->>LLM: Question + retrieved passages
-  LLM->>U: Answer grounded in real policy doc` } },
+  Note over VDB: Pre-step: All docs indexed as vectors
+  U->>EM: "What is our refund policy?"
+  EM->>VDB: Convert to vector [0.23, -0.87, 0.45...]
+  VDB->>LLM: Top 3 matching document chunks
+  Note over VDB,LLM: Chunks whose meaning is most\nsimilar to the query vector
+  LLM->>U: Answer grounded in actual policy doc\nwith citation: [Source: refund-policy-v3.pdf]` } },
+    {
+      type: 'heading',
+      id: 'rag-building-blocks',
+      data: { level: 2, text: 'The building blocks of a RAG system', anchor: 'rag-building-blocks' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Component', 'What it does', 'Example tool'],
+        rows: [
+          ['Document ingestion', 'Loads and splits documents into chunks', 'LangChain, LlamaIndex, custom scripts'],
+          ['Embedding model', 'Converts text chunks to vectors (numbers)', 'OpenAI text-embedding-3, Cohere Embed'],
+          ['Vector database', 'Stores vectors and enables similarity search', 'Pinecone, Weaviate, pgvector, Chroma'],
+          ['Retriever', 'Finds the most relevant chunks for a query', 'Cosine similarity search over vectors'],
+          ['LLM', 'Generates the answer using retrieved context', 'GPT-4o, Claude, Gemini'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'when-rag-fails',
+      data: { level: 2, text: 'When RAG fails — and what to do', anchor: 'when-rag-fails' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Failure mode', 'Why it happens', 'Fix'],
+        rows: [
+          ['Retrieves wrong chunks', 'Poor chunking strategy or documents too long', 'Smaller chunks, better metadata, re-ranking'],
+          ['Ignores retrieved context', 'Prompt doesn\'t tell the model to use retrieved content', 'Explicitly instruct: "Use ONLY the provided context"'],
+          ['Hallucination persists', 'Model fills gaps not in retrieved docs with training data', 'Add: "Say you don\'t know if the info isn\'t in the context"'],
+          ['Wrong answer but cites correctly', 'Chunk contains the answer but model misreads it', 'Shorter chunks, cleaner document formatting'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'rag-vs-finetuning',
+      data: { level: 2, text: 'RAG vs fine-tuning: which do you need?', anchor: 'rag-vs-finetuning' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['RAG', 'Fine-tuning'],
+        rows: [
+          ['Adds knowledge from new documents', 'Teaches the model new behaviors or styles'],
+          ['Updatable without retraining', 'Requires expensive re-training to update'],
+          ['Good when answer is in a document', 'Good when you need a specific response style or persona'],
+          ['Cites sources directly', 'Cannot cite sources — knowledge is baked in'],
+          ['Best for most enterprise use cases', 'Better for specialized models and products'],
+        ],
+      },
+    },
     { type: 'heading', id: 'rag-in-practice', data: { level: 2, text: 'RAG in tools you might already use', anchor: 'rag-in-practice' } },
     { type: 'bullet-list', data: { items: [
-      'Notion AI — asks questions about your Notion workspace documents',
-      'Perplexity — retrieves web pages, then generates a cited answer',
-      'Microsoft 365 Copilot — searches across your email, files, and Teams',
+      'Perplexity — retrieves web pages, generates a cited answer (essentially RAG over the live web)',
+      'Notion AI — asks questions about your Notion workspace using RAG over your pages',
+      'Microsoft 365 Copilot — searches across your email, files, and Teams with RAG',
       'Claude Projects — chat with your uploaded document collections',
-      'Custom chatbots (e.g., a company FAQ bot) — almost always RAG-based',
+      'Custom chatbots (company FAQ bots, support assistants) — almost always RAG-based',
     ] } },
-    { type: 'callout', data: { variant: 'note', title: 'When does RAG matter to you?', text: "RAG matters most when you want to ask AI about your own documents, data, or knowledge base. If you're just asking general questions, RAG is less relevant." } },
-    { type: 'summary-box', data: { title: 'RAG in one sentence', points: ['RAG = retrieve first, then generate — grounding AI answers in real documents', 'It dramatically reduces hallucination on specific knowledge domains', 'Tools like Perplexity, Notion AI, and Microsoft 365 Copilot all use RAG', 'It is the technology behind "talking to your documents" workflows'] } },
+    { type: 'callout', data: { variant: 'note', title: 'When does RAG matter to you?', text: 'RAG matters most when you want AI to answer questions about YOUR specific documents, company data, or a knowledge base. If you\'re asking general questions, plain LLM responses are fine. If you need AI to \'know\' your company\'s policies, products, or procedures accurately — you need RAG.' } },
+    { type: 'summary-box', data: { title: 'RAG core concepts', points: ['RAG = retrieve first, then generate — grounding AI answers in real documents', 'It dramatically reduces hallucination on domain-specific questions', 'The pipeline: embed docs into vectors → retrieve relevant chunks → LLM generates grounded answer', 'RAG updates without retraining; fine-tuning is for teaching the model new behaviors', 'Perplexity, Notion AI, and Microsoft 365 Copilot all use RAG under the hood'] } },
   ],
-  relatedLessons: ['embeddings-simply', 'protectingYourData'],
+  relatedLessons: ['embeddings-simply', 'protecting-your-data'],
 };
 
 // ─── Chunk 5: Advanced Systems + Capstone ────────────────────────────────────
@@ -1201,21 +3439,148 @@ const embeddingsSimply: Lesson = {
   tags: ['embeddings', 'vectors', 'semantic-search', 'meaning'],
   relatedGlossaryTerms: ['embedding', 'vector-database', 'rag'],
   blocks: [
-    { type: 'paragraph', data: { text: 'How does a search engine know that "car" and "automobile" are the same thing? Or that "happy" and "joyful" are more similar than "happy" and "sad"? The answer is embeddings.' } },
-    { type: 'heading', id: 'what-is-embedding', data: { level: 2, text: 'What is an embedding?', anchor: 'what-is-embedding' } },
-    { type: 'paragraph', data: { text: 'An embedding is a list of hundreds of numbers (a vector) that represents the meaning of a piece of text. The amazing property: texts with similar meanings will have similar (close together) vectors. This turns meaning into math.' } },
-    { type: 'callout', data: { variant: 'info', title: 'The map analogy', text: 'Imagine placing every word on a giant map. Words with similar meanings are placed near each other. "King" is near "queen" is near "monarch". "Happy" is near "joyful" but far from "sad". An embedding is the map coordinate for a piece of text.' } },
-    { type: 'heading', id: 'why-it-matters', data: { level: 2, text: 'Why embeddings matter for you', anchor: 'why-it-matters' } },
-    { type: 'bullet-list', data: { items: [
-      'Semantic search — searching by meaning instead of exact keywords',
-      'RAG systems — finding the right document to feed to an AI before it answers',
-      'Recommendations — finding similar items without rule-based matching',
-      'Duplicate detection — finding near-identical content even with different wording',
-    ] } },
-    { type: 'example', data: { title: 'Semantic search vs keyword search', content: 'Keyword search: "affordable car" finds documents containing those exact words.\nSemantic search with embeddings: "affordable car" also finds documents about "cheap vehicles", "budget automobiles", and "low-cost transportation" — because their meaning-vectors are close.' } },
-    { type: 'heading', id: 'vector-database', data: { level: 2, text: 'Vector databases', anchor: 'vector-database' } },
-    { type: 'paragraph', data: { text: 'A vector database stores embeddings and lets you find the most similar ones quickly — even across millions of documents. This is the engine that powers RAG. Tools like Pinecone, Weaviate, and Qdrant are purpose-built for this.' } },
-    { type: 'summary-box', data: { title: 'Key ideas', points: ['Embeddings convert meaning into numbers (vectors)', 'Similar meaning = similar vectors = close on the meaning map', 'Semantic search uses embeddings to find relevant content by meaning', 'Vector databases store and search embeddings — the engine behind RAG'] } },
+    {
+      type: 'paragraph',
+      data: { text: 'How does a search engine know that "car" and "automobile" are the same thing? Or that "happy" and "joyful" are more similar than "happy" and "sad"? The answer is embeddings — the technology that gives AI a mathematical representation of meaning.' },
+    },
+    {
+      type: 'heading',
+      id: 'what-is-embedding',
+      data: { level: 2, text: 'What is an embedding?', anchor: 'what-is-embedding' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'An embedding is a list of hundreds or thousands of numbers (a vector) that represents the meaning of a piece of text. The remarkable property: texts with similar meanings will have similar (mathematically close) vectors. This converts meaning into arithmetic.' },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'info',
+        title: 'The map analogy',
+        text: 'Imagine placing every word on a giant map. Words with similar meanings cluster near each other. "King" is near "queen" and "monarch". "Happy" is near "joyful" but far from "sad". "Car" clusters with "vehicle", "automobile", "truck". An embedding is the precise coordinate of a piece of text on this meaning map.',
+      },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'vector-space',
+        caption: 'Embeddings place words with similar meanings close together in "vector space" — enabling semantic search',
+        definition: `graph LR
+  subgraph ROYALTY ["Royalty cluster"]
+    KING["king"]
+    QUEEN["queen"]
+    MONARCH["monarch"]
+  end
+  subgraph EMOTION ["Emotion cluster"]
+    HAPPY["happy"]
+    JOYFUL["joyful"]
+    ELATED["elated"]
+  end
+  subgraph VEHICLES ["Vehicle cluster"]
+    CAR["car"]
+    AUTO["automobile"]
+    TRUCK["truck"]
+    VEHICLE["vehicle"]
+  end
+
+  KING ---|similar| QUEEN
+  QUEEN ---|similar| MONARCH
+  HAPPY ---|similar| JOYFUL
+  JOYFUL ---|similar| ELATED
+  CAR ---|similar| AUTO
+  AUTO ---|similar| TRUCK
+
+  style ROYALTY fill:#ddf4ff,stroke:#0969da
+  style EMOTION fill:#d1f3d8,stroke:#1a7f37
+  style VEHICLES fill:#fff8c5,stroke:#9a6700`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'semantic-search',
+      data: { level: 2, text: 'How embeddings power semantic search', anchor: 'semantic-search' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'Traditional keyword search requires exact word matches. Semantic search uses embeddings to find content that means the same thing — even if it uses different words.' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Keyword search vs semantic search',
+        content: 'Keyword search for "affordable car":\n→ Only finds documents containing exactly "affordable" AND "car"\n→ Misses: "budget vehicle", "cheap automobile", "low-cost transportation"\n\nSemantic search for "affordable car":\n→ Converts "affordable car" to its embedding vector\n→ Finds all documents whose meaning-vector is close\n→ Returns "budget vehicles", "cheap automobiles", "economical transport" — because their vectors are similar\n\nThis is why Perplexity can find relevant results even when you ask in your own words.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'why-it-matters',
+      data: { level: 2, text: 'Why embeddings matter for everyday AI users', anchor: 'why-it-matters' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        items: [
+          'Semantic search — searching your documents by meaning instead of exact keywords (Notion AI, Obsidian AI)',
+          'RAG systems — finding the right document to feed to an AI before it answers your question',
+          'Recommendations — finding similar items without rule-based matching (Netflix, Spotify both use this)',
+          'Duplicate detection — identifying near-identical content even with different wording',
+          'Classification — grouping similar documents or feedback automatically',
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'vector-database',
+      data: { level: 2, text: 'Vector databases: the engine behind RAG', anchor: 'vector-database' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'A vector database stores embeddings and lets you find the most similar ones instantly — even across millions of documents. When you ask Perplexity a question or chat with a company\'s AI support bot, a vector database is doing the retrieval step behind the scenes.' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'embedding-rag-flow',
+        caption: 'How embeddings power RAG: your question is converted to a vector, matched against stored document vectors, and the closest matches are sent to the AI',
+        definition: `sequenceDiagram
+  participant U as User
+  participant EM as Embedding Model
+  participant VDB as Vector Database
+  participant LLM as Language Model
+
+  U->>EM: "What is our refund policy?"
+  EM->>VDB: [0.23, -0.87, 0.45, ...] (query vector)
+  VDB->>LLM: Top 3 most similar document chunks
+  Note over VDB,LLM: Documents whose vectors are\nclosest to the query vector
+  LLM->>U: Answer grounded in actual policy docs`,
+      },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Vector database tool', 'Type', 'Common use case'],
+        rows: [
+          ['Pinecone', 'Cloud, managed', 'Production RAG systems, search'],
+          ['Weaviate', 'Open-source or cloud', 'Document search, semantic retrieval'],
+          ['Qdrant', 'Open-source', 'High-performance similarity search'],
+          ['Chroma', 'Open-source, local-friendly', 'Development and small-scale RAG'],
+          ['pgvector (PostgreSQL extension)', 'Embedded in your DB', 'If you already use PostgreSQL'],
+        ],
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Embeddings: the key ideas',
+        points: [
+          'Embeddings convert meaning into numbers (vectors) — similar meaning = similar vectors',
+          'They enable semantic search: find content by meaning, not just exact keywords',
+          'Vector databases store and search millions of embeddings instantly',
+          'RAG, recommendations, duplicate detection, and semantic search all run on embeddings',
+          'You use embeddings every time Perplexity finds relevant pages for your question',
+        ],
+      },
+    },
   ],
   relatedLessons: ['rag-explained', 'what-is-mcp'],
 };
@@ -1265,23 +3630,72 @@ const aiSkillsExplained: Lesson = {
   estimatedMinutes: 10,
   tags: ['skills', 'plugins', 'tool-calling', 'copilot'],
   blocks: [
-    { type: 'paragraph', data: { text: 'The terminology around AI extensibility is confusing — skills, plugins, tools, and functions are often used interchangeably. Here is a clear breakdown.' } },
-    { type: 'table', data: { headers: ['Term', 'Platform', 'What it means'], rows: [
-      ['Plugin', 'ChatGPT (legacy), OpenAI', 'A packaged integration that adds a new capability to ChatGPT'],
-      ['Tool', 'OpenAI API, general', 'A function an AI can call — web search, code execution, file access'],
-      ['Skill', 'Microsoft Copilot, AutoGen', 'A named capability the agent can invoke — maps to a tool or set of tools'],
-      ['Action', 'GPTs, Copilot Studio', 'An API call the AI can make to an external service'],
-      ['MCP Server', 'Anthropic Claude, industry', 'A standardized server exposing tools via the MCP protocol'],
+    { type: 'paragraph', data: { text: 'The terminology around AI extensibility is confusing — skills, plugins, tools, and functions are often used interchangeably across different platforms. This lesson gives you a clear decoder so you understand what each term means in practice, and how these concepts make AI tools more powerful.' } },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'skills-terminology-map',
+        caption: 'All these terms describe the same fundamental concept: giving an AI model a way to call an external capability. The vocabulary differs by platform.',
+        definition: `graph LR
+  CORE["Core concept:\nAI calls an external capability"]
+
+  CORE --> TOOL["Tool\n(OpenAI API, general)"]
+  CORE --> PLUGIN["Plugin\n(ChatGPT legacy)"]
+  CORE --> SKILL["Skill\n(Microsoft Copilot)"]
+  CORE --> ACTION["Action\n(Custom GPTs)"]
+  CORE --> MCP["MCP Server\n(Claude, industry-wide)"]
+  CORE --> FUNC["Function Calling\n(OpenAI API technical)"]
+
+  style CORE fill:#ddf4ff,stroke:#0969da
+  style TOOL fill:#d1f3d8,stroke:#1a7f37
+  style PLUGIN fill:#fff8c5,stroke:#9a6700
+  style SKILL fill:#eddff8,stroke:#8250df
+  style ACTION fill:#ffe1cc,stroke:#bc4c00
+  style MCP fill:#d1f3d8,stroke:#1a7f37
+  style FUNC fill:#ffd8d3,stroke:#cf222e`,
+      },
+    },
+    { type: 'table', data: { headers: ['Term', 'Platform', 'What it means', 'Example'], rows: [
+      ['Tool', 'OpenAI API, general AI', 'A specific function the AI can call', 'web_search(), run_code(), read_file()'],
+      ['Plugin', 'ChatGPT (legacy, now GPT Store)', 'A packaged integration that added a new capability', 'Expedia plugin for flight booking'],
+      ['Action', 'Custom GPTs, Copilot Studio', 'An HTTP API call the AI can make to an external service', 'POST to your company\'s internal API'],
+      ['Skill', 'Microsoft Copilot, AutoGen', 'A named capability — maps to tools under the hood', 'Email skill, Calendar skill'],
+      ['MCP Server', 'Anthropic Claude, industry', 'A standardized server exposing a set of tools', 'GitHub MCP server, Filesystem MCP'],
+      ['Function calling', 'OpenAI API', 'The technical API mechanism for defining tools', 'The underlying implementation format'],
     ] } },
-    { type: 'callout', data: { variant: 'info', text: 'These terms all describe the same fundamental concept: giving an AI model a way to call an external capability. The terminology varies by platform.' } },
+    { type: 'callout', data: { variant: 'info', text: 'These terms all describe the same fundamental concept: giving an AI model a way to call an external capability. The terminology varies by platform but the concept is identical.' } },
     { type: 'heading', id: 'practical-view', data: { level: 2, text: 'What this means for you as a user', anchor: 'practical-view' } },
-    { type: 'bullet-list', data: { items: [
-      'When ChatGPT "searches the web" — it is using a tool/skill',
-      'When Microsoft 365 Copilot reads your email — it is using a skill',
-      'When Claude Desktop accesses your local files — it is using an MCP server',
-      'When a GPT has custom actions — it is using function calling under the hood',
+    {
+      type: 'paragraph',
+      data: { text: 'You are already using skills and tools any time you use AI with built-in capabilities. Here is how each concept maps to things you do every day:' },
+    },
+    { type: 'table', data: { headers: ['When you see or do this...', 'What\'s actually happening'], rows: [
+      ['ChatGPT searches the web for you', 'Tool call: web_search() is invoked'],
+      ['ChatGPT runs Python code on your data', 'Tool call: code_interpreter() runs in a sandbox'],
+      ['Microsoft 365 Copilot reads your calendar', 'Skill invocation: Calendar skill queries Graph API'],
+      ['Claude Desktop reads a local file', 'MCP Server: filesystem MCP handles the request'],
+      ['A custom GPT calls your company API', 'Action invocation: configured HTTP POST request'],
+      ['Perplexity retrieves web pages before answering', 'Tool call: search tool retrieves results'],
     ] } },
-    { type: 'summary-box', data: { title: 'Bottom line', points: ['Different words, same concept: giving AI access to external capabilities', 'As a user, what matters is: what can this tool do, and is it safe?', 'MCP is becoming the standard way to build these integrations', 'The richer the tool ecosystem an AI has, the more useful it becomes as an agent'] } },
+    {
+      type: 'heading',
+      id: 'what-to-look-for',
+      data: { level: 2, text: 'What to look for when evaluating AI tools', anchor: 'what-to-look-for' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'As an AI user, these are the questions that matter more than the terminology:',
+        items: [
+          'What tools does this AI have access to? (Search, code, files, APIs)',
+          'Can it take actions in the real world, or is it read-only?',
+          'What permissions does it need? (Principle of least privilege applies)',
+          'Is there a human review step before irreversible actions?',
+          'Does the platform support MCP? (More MCP compatibility = more future integrations)',
+        ],
+      },
+    },
+    { type: 'summary-box', data: { title: 'Bottom line', points: ['Different words, same concept: giving AI access to external capabilities', 'Tools, skills, plugins, actions, MCP servers = all ways to give AI real-world access', 'As a user: focus on WHAT the tool can do, and whether it\'s safe', 'MCP is becoming the standard that will make these integrations universal', 'The richer the tool ecosystem, the more useful the AI becomes as an agent'] } },
   ],
   relatedLessons: ['what-is-mcp', 'what-are-agents'],
 };
@@ -1297,25 +3711,155 @@ const imagesAndAi: Lesson = {
   estimatedMinutes: 12,
   tags: ['images', 'multimodal', 'dall-e', 'midjourney', 'vision'],
   blocks: [
-    { type: 'paragraph', data: { text: "AI is no longer text-only. Today's AI tools can see images, generate them, describe them, and edit them. Here's a practical guide to what works and when." } },
-    { type: 'heading', id: 'image-generation', data: { level: 2, text: 'Image generation', anchor: 'image-generation' } },
-    { type: 'comparison-cards', data: { cards: [
-      { title: 'DALL-E 3 (OpenAI)', description: 'Built into ChatGPT (paid). Best for quick practical images — social media, presentations, mockups. Excellent at following detailed text descriptions.', tags: ['paid', 'integrated'] },
-      { title: 'Midjourney', description: 'The creative standard for artistic and aesthetic quality. Best for beautiful or stylized imagery. Runs via Discord. Requires a paid subscription.', tags: ['paid', 'artistic'] },
-      { title: 'Adobe Firefly', description: 'Commercially safe image generation integrated into Adobe products. Best for professional design workflows with copyright-clear images.', tags: ['paid', 'commercial-safe'] },
-      { title: 'Flux / SDXL (open)', description: 'Open-source image models you can run locally or via third-party apps. Free and highly customizable but require more setup.', tags: ['free', 'open-source'] },
-    ] } },
-    { type: 'heading', id: 'image-analysis', data: { level: 2, text: 'Image analysis (vision)', anchor: 'image-analysis' } },
-    { type: 'bullet-list', data: { title: 'What AI can do with images you upload:', items: [
-      'Describe and caption what is in a photo',
-      'Extract text from screenshots, photos, and documents (OCR)',
-      'Analyze charts, graphs, and diagrams',
-      'Identify objects, people, logos, and scenes',
-      'Answer questions about an image',
-      'Compare two images and describe differences',
-    ] } },
-    { type: 'callout', data: { variant: 'tip', text: 'Upload a screenshot of a complex chart to Claude or ChatGPT and ask "summarize the key trends in this data." It saves minutes of manual reading.' } },
-    { type: 'summary-box', data: { title: 'Image AI quick guide', points: ['Generation: DALL-E (quick/integrated), Midjourney (quality), Firefly (commercial)', 'Analysis: ChatGPT and Claude both support vision — upload any image and ask questions', 'OCR: AI can read text from photos and screenshots reliably', 'Always check generated images for artifacts, extra fingers, wrong text'] } },
+    {
+      type: 'paragraph',
+      data: { text: "AI is no longer text-only. Today's AI tools can see images, generate them, describe what's in them, and edit them. This lesson gives you a practical map of what each type of image AI can do — and when to use each one." },
+    },
+    {
+      type: 'heading',
+      id: 'image-ai-overview',
+      data: { level: 2, text: 'The three types of image AI', anchor: 'image-ai-overview' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'image-ai-modes',
+        caption: 'Three distinct AI image capabilities — generation, analysis, and editing — each uses different underlying technology',
+        definition: `graph TD
+  IMG[Image AI]
+  IMG --> GEN[Generation\\nCreate new images\\nfrom text prompts]
+  IMG --> ANA[Analysis / Vision\\nUnderstand and describe\\nimages you upload]
+  IMG --> EDIT[Editing\\nModify existing images\\nwith AI instructions]
+
+  GEN --> G1[DALL-E 3]
+  GEN --> G2[Midjourney]
+  GEN --> G3[Adobe Firefly]
+  GEN --> G4[Flux / SDXL]
+
+  ANA --> A1[ChatGPT Vision]
+  ANA --> A2[Claude Vision]
+  ANA --> A3[Gemini Vision]
+
+  EDIT --> E1[Adobe Firefly Edit]
+  EDIT --> E2[DALL-E in-painting]
+  EDIT --> E3[Canva AI]
+
+  style GEN fill:#ddf4ff,stroke:#0969da
+  style ANA fill:#d1f3d8,stroke:#1a7f37
+  style EDIT fill:#fff8c5,stroke:#9a6700`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'image-generation',
+      data: { level: 2, text: 'Image generation: create from text', anchor: 'image-generation' },
+    },
+    {
+      type: 'comparison-cards',
+      data: {
+        cards: [
+          {
+            title: 'DALL-E 3 (OpenAI)',
+            description: 'Built directly into ChatGPT (paid tier). Best for quick, practical images: social media headers, presentation slides, mockups, and illustrations. Excellent at following detailed text descriptions precisely.',
+            pros: ['Integrated in ChatGPT — no extra tool', 'Great at following complex text prompts', 'Good for practical/commercial visuals'],
+            cons: ['Artist quality below Midjourney', 'Requires ChatGPT Plus subscription'],
+            tags: ['paid', 'integrated'],
+          },
+          {
+            title: 'Midjourney',
+            description: 'The gold standard for artistic and aesthetic quality. Best for beautiful, stylized, or mood-rich imagery. Used by designers and creative professionals. Requires a paid subscription and runs through Discord.',
+            pros: ['Highest artistic quality', 'Unmatched style control', 'Active creative community'],
+            cons: ['Requires Discord', 'Paid subscription required', 'Less precise at specific details'],
+            tags: ['paid', 'artistic'],
+          },
+          {
+            title: 'Adobe Firefly',
+            description: 'Commercially safe image generation integrated into Adobe Creative Cloud. All training data was licensed — making it the safest choice for commercial use. Best for professional design workflows.',
+            pros: ['Fully commercial safe', 'Integrated with Photoshop and Illustrator', 'Professional design focus'],
+            cons: ['Requires Adobe subscription', 'Less community/tutorial resources'],
+            tags: ['paid', 'commercial-safe'],
+          },
+          {
+            title: 'Flux / Stable Diffusion (open)',
+            description: 'Open-source image models you can run locally or via third-party apps (Fal.ai, Replicate, RunDiffusion). Free and highly customizable but require more technical setup.',
+            pros: ['Free or very cheap per image', 'Fully customizable', 'Privacy-friendly (run locally)'],
+            cons: ['More technical setup required', 'Quality varies by configuration'],
+            tags: ['free', 'open-source'],
+          },
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'image-analysis',
+      data: { level: 2, text: 'Image analysis: understanding images you upload', anchor: 'image-analysis' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'All major AI chatbots now support "vision" — you can upload any image and ask questions about it. This is one of the most immediately useful and underused AI capabilities.' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'What AI can do with images you upload:',
+        items: [
+          'Describe and caption what is in a photo in natural language',
+          'Extract all text from screenshots, business cards, photos, and PDFs (OCR)',
+          'Analyze charts, graphs, and dashboards — describe trends and key numbers',
+          'Identify objects, products, logos, and scenes',
+          'Answer specific questions about the image ("How many items are on the shelf?")',
+          'Compare two images and describe their differences',
+          'Read handwritten notes and diagrams',
+          'Review a UI mockup or wireframe and give design feedback',
+        ],
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Practical vision use cases',
+        content: '1. Business card photo → "Extract all contact information as structured JSON"\n2. Complex slide from a presentation → "Summarize the key message of this chart"\n3. Screenshot of an error message → "What is causing this error and how do I fix it?"\n4. Photo of a restaurant menu in another language → "Translate and describe the dishes"\n5. Handwritten meeting notes → "Convert these notes to a typed summary"',
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        text: 'Upload a screenshot of any complex chart to Claude or ChatGPT and ask "What are the 3 most important trends visible in this data?" It saves minutes of manual reading and often surfaces patterns you would miss.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'image-prompting',
+      data: { level: 2, text: 'Writing effective image generation prompts', anchor: 'image-prompting' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Prompt element', 'What to include', 'Example'],
+        rows: [
+          ['Subject', 'What is in the image', '"A woman working at a standing desk"'],
+          ['Style', 'Art style or photography style', '"photorealistic", "watercolor", "flat illustration"'],
+          ['Lighting', 'Light quality and direction', '"golden hour sunlight", "overcast diffused light"'],
+          ['Mood', 'Atmosphere and feeling', '"peaceful", "dramatic", "playful"'],
+          ['Composition', 'Framing and perspective', '"wide shot", "close-up", "overhead view"'],
+          ['Technical specs', 'Resolution or format hints', '"4K", "16:9 aspect ratio"'],
+        ],
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Image AI quick reference',
+        points: [
+          'Generation: DALL-E (quick + integrated), Midjourney (highest quality), Firefly (commercial safe)',
+          'Analysis (vision): ChatGPT, Claude, and Gemini all support it — upload and ask questions',
+          'OCR: AI reliably reads text from photos, screenshots, and even messy handwriting',
+          'Editing: Adobe Firefly, Canva AI, and DALL-E in-painting for modifying existing images',
+          'Always check generated images for artifacts — extra fingers, garbled text, merged faces',
+        ],
+      },
+    },
   ],
   relatedLessons: ['local-ai-options', 'model-comparison'],
 };
@@ -1332,33 +3876,147 @@ const localAiOptions: Lesson = {
   tags: ['local-ai', 'ollama', 'privacy', 'open-weights', 'offline'],
   relatedGlossaryTerms: ['local-model', 'open-weights'],
   blocks: [
-    { type: 'paragraph', data: { text: 'Most people use cloud AI tools — ChatGPT, Claude, Gemini. But a growing number of users run AI models locally on their own machines. Here is an honest look at when that makes sense.' } },
-    { type: 'heading', id: 'why-local', data: { level: 2, text: 'Reasons to use local AI', anchor: 'why-local' } },
-    { type: 'bullet-list', data: { items: [
-      'Complete data privacy — nothing leaves your machine',
-      'Works offline — no internet required',
-      'No usage limits or subscription cost',
-      'Ability to customize and fine-tune models',
-      'Consistent responses (no model updates without your consent)',
-    ] } },
-    { type: 'heading', id: 'trade-offs', data: { level: 2, text: 'The trade-offs', anchor: 'trade-offs' } },
-    { type: 'table', data: { headers: ['Aspect', 'Local AI', 'Cloud AI'], rows: [
-      ['Privacy', 'Complete — data stays on device', 'Depends on provider policy'],
-      ['Capability', 'Good but behind frontier models', 'Access to the best models'],
-      ['Speed', 'Depends on your hardware', 'Very fast on good internet'],
-      ['Cost', 'Free after hardware', 'Subscription or pay-per-use'],
-      ['Setup', 'Requires some setup', 'Instant in browser'],
-      ['Internet', 'Works offline', 'Requires internet'],
-    ] } },
-    { type: 'heading', id: 'tools', data: { level: 2, text: 'Tools for running local AI', anchor: 'tools' } },
-    { type: 'bullet-list', data: { items: [
-      'Ollama — the easiest way to run open models locally (Mac, Linux, Windows). Free. Runs Llama3, Mistral, Gemma, and more in one command.',
-      'LM Studio — polished desktop app for downloading and chatting with local models. Great for beginners to local AI.',
-      'Jan.ai — open-source ChatGPT-like interface for local models.',
-      "Open WebUI — a self-hosted web dashboard that connects to Ollama. Looks and feels like ChatGPT but runs on your machine.",
-    ] } },
-    { type: 'callout', data: { variant: 'note', title: 'Hardware requirements', text: 'Small models (1B-7B parameters) run acceptably on most modern MacBooks and mid-range PCs with 16GB RAM. Larger models (13B-70B) need 32-64GB RAM or a gaming GPU.' } },
-    { type: 'summary-box', data: { title: 'Is local AI right for you?', points: ['Yes, if: privacy is critical and you have a capable machine', 'Yes, if: you work offline frequently', "No, if: you need the best model quality and cloud privacy policies work for you", 'Start with: Ollama + LM Studio — takes 10 minutes to set up'] } },
+    {
+      type: 'paragraph',
+      data: { text: 'Most people use cloud AI tools — ChatGPT, Claude, Gemini. But a growing number of users run AI models locally on their own machines. Here is an honest look at when that makes sense, how to do it, and the real trade-offs.' },
+    },
+    {
+      type: 'heading',
+      id: 'local-vs-cloud-decision',
+      data: { level: 2, text: 'Should you use local AI?', anchor: 'local-vs-cloud-decision' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'local-ai-decision-tree',
+        caption: 'Use this decision tree to decide whether local AI makes sense for your situation',
+        definition: `flowchart TD
+  START[Are you considering local AI?]
+  START --> Q1{Is data privacy\\ncritical for your use case?}
+  Q1 -->|Yes| Q2{Are you comfortable\\nwith basic software setup?}
+  Q2 -->|Yes| Q3{Do you have a modern\\ncomputer with 16GB+ RAM?}
+  Q3 -->|Yes| LOCAL[Local AI is a great fit\\nTry Ollama + LM Studio]
+  Q3 -->|No| UPGRADE[Consider upgrading RAM\\nor use enterprise cloud tier]
+  Q2 -->|No| CLOUD_ENT[Use enterprise cloud tier\\ne.g. ChatGPT Team / Claude Team]
+  Q1 -->|No | Q4{Do you need to\\nwork offline?}
+  Q4 -->|Yes| LOCAL
+  Q4 -->|No| CLOUD[Cloud AI is fine\\nChatGPT / Claude / Gemini]
+
+  style LOCAL fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37
+  style CLOUD fill:#ddf4ff,stroke:#0969da,color:#0550ae
+  style CLOUD_ENT fill:#ddf4ff,stroke:#0969da,color:#0550ae`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'why-local',
+      data: { level: 2, text: 'Reasons to run AI locally', anchor: 'why-local' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        items: [
+          'Complete data privacy — nothing leaves your machine, ever. Critical for confidential business data, client information, or sensitive personal use.',
+          'Works fully offline — no internet required, no downtime from service outages',
+          'No usage limits or subscription cost after hardware (run as many queries as you want)',
+          'Consistent behavior — model stays the same until you choose to update it',
+          'Ability to customize, fine-tune, and swap models freely',
+          'No terms of service concerns about what you paste in',
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'trade-offs',
+      data: { level: 2, text: 'The honest trade-offs', anchor: 'trade-offs' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Aspect', 'Local AI', 'Cloud AI'],
+        rows: [
+          ['Privacy', '✅ Complete — stays on your device', '⚠️ Depends on provider policy'],
+          ['Capability', '⚠️ Good but behind frontier models', '✅ Access to GPT-4o, Claude 3.5, etc.'],
+          ['Speed', '⚠️ Depends on your hardware', '✅ Very fast on good internet'],
+          ['Cost', '✅ Free after hardware cost', '⚠️ Subscription or pay-per-use'],
+          ['Setup', '⚠️ Requires some initial setup', '✅ Instant in browser'],
+          ['Offline use', '✅ Works anywhere', '❌ Requires internet'],
+          ['Context window', '⚠️ Smaller (4K-32K typically)', '✅ 128K-1M tokens'],
+          ['Multimodal', '⚠️ Limited options', '✅ Full image, voice, file support'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'tools',
+      data: { level: 2, text: 'The best tools for running local AI', anchor: 'tools' },
+    },
+    {
+      type: 'comparison-cards',
+      data: {
+        cards: [
+          {
+            title: 'Ollama',
+            description: 'The easiest way to run open models locally (Mac, Linux, Windows). Free. Download and run Llama 3, Mistral, Gemma, Phi, and dozens more with a single terminal command.',
+            pros: ['Easiest setup (one command)', 'Works on all platforms', 'Huge model library', 'API compatible with OpenAI format'],
+            cons: ['Command-line interface only (no GUI built-in)', 'Requires some comfort with a terminal'],
+            tags: ['free', 'beginner-friendly'],
+          },
+          {
+            title: 'LM Studio',
+            description: 'Polished desktop app for discovering, downloading, and chatting with local AI models. Looks and feels like a chatbot interface. The best starting point if you have never run local AI before.',
+            pros: ['Beautiful GUI — no terminal needed', 'Built-in model browser', 'Easy model comparison'],
+            cons: ['Less flexible than Ollama for programming use', 'Larger app footprint'],
+            tags: ['free', 'gui', 'beginner'],
+          },
+          {
+            title: 'Open WebUI',
+            description: 'A self-hosted web dashboard that connects to Ollama. Looks and feels like ChatGPT but runs entirely on your machine. Great for households or small teams sharing a local AI.',
+            pros: ['ChatGPT-like interface', 'Multi-user support', 'Plugin system'],
+            cons: ['Requires Ollama running locally', 'More advanced setup'],
+            tags: ['free', 'self-hosted'],
+          },
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'hardware-guide',
+      data: { level: 2, text: 'Hardware requirements', anchor: 'hardware-guide' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Model size', 'RAM required', 'Performance', 'Good for'],
+        rows: [
+          ['1B–3B params (Phi-3 Mini, Gemma 2B)', '8GB RAM minimum', 'Fast even on older hardware', 'Quick answers, simple drafting'],
+          ['7B params (Mistral 7B, Llama 3.1 8B)', '16GB RAM recommended', 'Good speed on modern hardware', 'General use — best quality/speed balance'],
+          ['13B params', '32GB RAM recommended', 'Slower on consumer hardware', 'More capable reasoning'],
+          ['70B params (Llama 3 70B)', '64GB RAM or GPU with 40GB VRAM', 'Slow on consumer hardware', 'Near-GPT-4 quality, high hardware cost'],
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'note',
+        title: 'Best starting point for most people',
+        text: 'Download LM Studio → browse for "Llama 3.1 8B" or "Mistral 7B" → click download → start chatting. Takes about 10-15 minutes including download time. No terminal required.',
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Is local AI right for you?',
+        points: [
+          '✅ Yes, if: complete data privacy is required and you have 16GB+ RAM',
+          '✅ Yes, if: you work offline frequently or need a consistent model version',
+          '⚠️ Maybe, if: you want to experiment with AI without subscription costs',
+          '❌ No, if: you need the best model quality and cloud privacy policies work for you',
+          'Start with: LM Studio + Llama 3.1 8B — 15-minute setup, no terminal required',
+        ],
+      },
+    },
   ],
   relatedLessons: ['protecting-your-data', 'building-your-ai-stack'],
 };
