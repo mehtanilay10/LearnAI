@@ -4,6 +4,7 @@ import { HeroSection } from '@/components/sections/HeroSection';
 import { SectionHeader } from '@/components/sections/SectionHeader';
 import { ModuleCard } from '@/components/course/ModuleCard';
 import { getCourseStats, getAllModules, getAllPhases } from '@/lib/content';
+import Head from 'next/head';
 
 export default function HomePage() {
   const stats = getCourseStats();
@@ -45,6 +46,12 @@ export default function HomePage() {
 
   return (
     <>
+      <Head>
+        <title>LearnAI - AI Literacy for Everyone</title>
+        <meta name="description" content="LearnAI is an educational platform designed to teach AI literacy to everyone, from professionals to students." />
+        <meta name="keywords" content="AI literacy, AI tools, Learn AI, AI education" />
+      </Head>
+
       <HeroSection
         totalLessons={stats.totalLessons}
         totalHours={stats.totalHours}
@@ -52,7 +59,7 @@ export default function HomePage() {
       />
 
       {/* Who is this for */}
-      <section className="border-b border-border bg-canvas-subtle py-12">
+      <section className="border-b border-border bg-canvas-subtle py-12" role="list">
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
           <SectionHeader
             eyebrow="Who this is for"
@@ -69,16 +76,17 @@ export default function HomePage() {
               { emoji: '🎓', label: 'Students', desc: 'Learn how AI is changing education, work, and every field.' },
               { emoji: '🤔', label: 'The Curious', desc: 'Understand what AI actually is — not just the hype.' },
             ].map((item) => (
-              <div
+              <article
                 key={item.label}
                 className="flex items-start gap-3 rounded-xl border border-border bg-canvas p-4 dark:bg-canvas-subtle"
+                role="listitem"
               >
                 <span className="text-2xl leading-none mt-0.5" aria-hidden="true">{item.emoji}</span>
                 <div>
                   <p className="font-semibold text-fg-default text-sm">{item.label}</p>
                   <p className="text-sm text-fg-muted mt-0.5">{item.desc}</p>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
