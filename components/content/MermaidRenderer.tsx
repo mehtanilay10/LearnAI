@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { MermaidModal } from './MermaidModal';
 
 interface MermaidRendererProps {
   definition: string;
@@ -15,6 +17,8 @@ export function MermaidRenderer({ definition, caption, className }: MermaidRende
   const containerRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'rendered' | 'error'>('loading');
   const [error, setError] = useState<string>('');
+  const [svgHtml, setSvgHtml] = useState<string>('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -39,6 +43,7 @@ export function MermaidRenderer({ definition, caption, className }: MermaidRende
 
         if (!cancelled && containerRef.current) {
           containerRef.current.innerHTML = svg;
+          setSvgHtml(svg);
           setStatus('rendered');
         }
       } catch (err) {
@@ -55,6 +60,8 @@ export function MermaidRenderer({ definition, caption, className }: MermaidRende
     };
   }, [definition]);
 
+  const handleClose = useCallback(() => setIsModalOpen(false), []);
+
   if (status === 'error') {
     return (
       <div className={cn('my-4 rounded-lg border border-danger-muted bg-danger-subtle p-4', className)}>
@@ -65,25 +72,43 @@ export function MermaidRenderer({ definition, caption, className }: MermaidRende
   }
 
   return (
-    <figure className={cn('my-6', className)}>
-      <div
-        className={cn(
-          'rounded-xl border border-border bg-canvas-subtle p-4 overflow-x-auto',
-          status === 'loading' && 'min-h-[120px] animate-pulse',
-          'flex items-center justify-center'
-        )}
-      >
+    <>
+      <figure className={cn('my-6', className)}>
         <div
-          ref={containerRef}
-          className="mermaid max-w-full"
-          aria-label={caption ?? 'Diagram'}
-        />
-      </div>
-      {caption && (
-        <figcaption className="mt-2 text-center text-xs text-fg-subtle">
-          {caption}
-        </figcaption>
+          className={cn(
+            'relative rounded-xl border border-border bg-canvas-subtle p-4 overflow-x-auto',
+            status === 'loading' && 'min-h-[120px] animate-pulse',
+            'flex items-center justify-center'
+          )}
+        >
+          <div
+            ref={containerRef}
+            className="mermaid max-w-full"
+            aria-label={caption ?? 'Diagram'}
+          />
+
+          {status === 'rendered' && (
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-md border border-border bg-canvas text-fg-muted transition-colors hover:bg-canvas-subtle hover:text-fg-default"
+              aria-label="View diagram fullscreen"
+              title="View fullscreen"
+            >
+              <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          )}
+        </div>
+        {caption && (
+          <figcaption className="mt-2 text-center text-xs text-fg-subtle">
+            {caption}
+          </figcaption>
+        )}
+      </figure>
+
+      {isModalOpen && (
+        <MermaidModal svgHtml={svgHtml} caption={caption} onClose={handleClose} />
       )}
-    </figure>
+    </>
   );
 }
