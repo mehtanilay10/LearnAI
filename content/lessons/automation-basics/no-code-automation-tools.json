@@ -1,0 +1,216 @@
+{
+  "id": "lesson-021",
+  "slug": "no-code-automation-tools",
+  "moduleSlug": "automation-basics",
+  "title": "No-Code AI Automation Tools",
+  "description": "A guide to Zapier, Make (Integromat), n8n, and other no-code platforms that let you build AI workflows without writing code.",
+  "order": 2,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 14,
+  "tags": [
+    "zapier",
+    "make",
+    "n8n",
+    "no-code",
+    "automation"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "You do not need to be a developer to automate work with AI. A new generation of no-code tools has made it possible to build sophisticated AI workflows in a few hours. This lesson gives you a practical guide to the three platforms that dominate the space and exactly how to build your first automation."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "platform-comparison",
+      "data": {
+        "level": 2,
+        "text": "Choosing the right platform",
+        "anchor": "platform-comparison"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "automation-platform-choice",
+        "caption": "Follow this decision tree to find the right automation platform for your situation",
+        "definition": "flowchart TD\n  START([\"What is your situation?\"])\n  Q1{\"First time building\nan automation?\"}\n  Q2{\"Need to save costs\nat high volume?\"}\n  Q3{\"Privacy-sensitive or\nwant self-hosted?\"}\n\n  ZAPIER[\"⚡ Zapier\nEasiest to learn\n6,000+ app integrations\"]\n  MAKE[\"🌀 Make (Integromat)\nMore powerful\nBetter pricing at scale\"]\n  N8N[\"🛠️ n8n\nSelf-hosted, free\nFull control\"]\n\n  START --> Q1\n  Q1 -->|Yes| ZAPIER\n  Q1 -->|No| Q2\n  Q2 -->|Yes| MAKE\n  Q2 -->|No| Q3\n  Q3 -->|Yes| N8N\n  Q3 -->|No| MAKE\n\n  style ZAPIER fill:#ff6b35,color:#fff,stroke:#e55a26\n  style MAKE fill:#7c3aed,color:#fff,stroke:#6d28d9\n  style N8N fill:#ea580c,color:#fff,stroke:#d05a0c"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "cards": [
+          {
+            "title": "Zapier",
+            "description": "The most popular automation platform with the largest app library. Their AI steps (Zapier AI) let you add summarization, classification, and extraction right in your workflow. The easiest starting point for non-technical users.",
+            "pros": [
+              "Easiest to learn — under 1 hour to first automation",
+              "6,000+ app integrations — connects to almost everything",
+              "AI steps built in — summarize, classify, extract without code",
+              "Huge template library — start from proven workflows"
+            ],
+            "cons": [
+              "Gets expensive at scale (pricing per task)",
+              "Less flexible for complex branching logic",
+              "Slower execution vs Make on equivalent tasks"
+            ],
+            "tags": [
+              "beginner-friendly",
+              "freemium"
+            ]
+          },
+          {
+            "title": "Make (Integromat)",
+            "description": "A more powerful visual automation builder. The canvas-based interface lets you see your entire workflow at once, including complex branching, data transformation, and error handling. More affordable at scale than Zapier.",
+            "pros": [
+              "Visual canvas — see the whole automation",
+              "Far more affordable at high task volumes",
+              "Very flexible data routing and transformation",
+              "Better error handling and retry logic"
+            ],
+            "cons": [
+              "Steeper learning curve — takes a few hours to learn",
+              "Interface is more complex than Zapier",
+              "Smaller template library"
+            ],
+            "tags": [
+              "intermediate",
+              "freemium"
+            ]
+          },
+          {
+            "title": "n8n",
+            "description": "An open-source automation platform you can self-host for complete data privacy. Very powerful for complex workflows. Technical users love it; non-technical users can use the cloud version but it requires more setup.",
+            "pros": [
+              "Free self-hosted version — no per-task pricing",
+              "Privacy-friendly — data never leaves your server",
+              "Very powerful — supports custom code steps",
+              "Large community library of shared workflows"
+            ],
+            "cons": [
+              "Requires setup for self-hosting",
+              "Less beginner-friendly than Zapier",
+              "Community support only on free tier"
+            ],
+            "tags": [
+              "advanced",
+              "open-source",
+              "self-hostable"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "first-automation-walkthrough",
+      "data": {
+        "level": 2,
+        "text": "Build your first automation: step by step",
+        "anchor": "first-automation-walkthrough"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Here is a complete walkthrough of building an email triage automation in Zapier — one of the highest-value starting automations. It summarizes incoming emails and creates tasks for action items, saving 30-60 minutes per week."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Email triage automation (Zapier walkthrough)",
+        "content": "WHAT IT DOES:\nWhen a new email arrives with a specific label, Zapier uses AI to classify it (Urgent/FYI/Action needed) and sends a Slack message or creates a Notion task accordingly.\n\nSTEPS:\n1. Trigger: \"New email in Gmail\" with label \"Needs review\"\n2. Zapier AI step: \"Classify this email as: Urgent, FYI, or Action needed. Also extract: sender name, key request in one sentence.\"\n3. Router: Split path based on classification\n   - Urgent → Slack DM to yourself with subject + AI summary\n   - Action needed → Create Notion task with AI-extracted details\n   - FYI → Add to a weekly review Notion database\n\nTIME TO BUILD: ~45 minutes\nTIME SAVED: ~30-45 minutes per week"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "ai-steps-to-use",
+      "data": {
+        "level": 2,
+        "text": "Common AI steps to add to automations",
+        "anchor": "ai-steps-to-use"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "AI step",
+          "What to prompt",
+          "Use in"
+        ],
+        "rows": [
+          [
+            "Summarize",
+            "\"Summarize in 2 sentences. Return only the summary.\"",
+            "Email digests, meeting notes, ticket summaries"
+          ],
+          [
+            "Classify",
+            "\"Classify as [X / Y / Z]. Return only the category.\"",
+            "Support routing, email triage, content moderation"
+          ],
+          [
+            "Extract",
+            "\"Extract: [Field1], [Field2]. Return as JSON.\"",
+            "Data processing, CRM enrichment, structured parsing"
+          ],
+          [
+            "Generate",
+            "\"Write a [type] response to this [input].\"",
+            "First-draft replies, notifications, reports"
+          ],
+          [
+            "Score",
+            "\"Rate this from 1-10 for [criteria]. Return only the number.\"",
+            "Lead scoring, priority ranking, sentiment"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Start with Zapier",
+        "text": "If you have never built an automation, start with Zapier. Their templates and AI step library make your first automation possible in under an hour. Once you understand the concept, migrating to Make or n8n for more complex workflows is straightforward."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key takeaways",
+        "points": [
+          "Zapier: easiest, best for beginners, best app coverage",
+          "Make: best price at scale, more powerful visual builder",
+          "n8n: free and privacy-friendly, needs self-hosting setup",
+          "Your first automation should be one task you already do manually every week",
+          "Start with classify/summarize AI steps — they are the most reliable and forgiving"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "what-is-ai-automation",
+    "what-are-agents"
+  ],
+  "furtherReading": [
+    {
+      "title": "Zapier University",
+      "url": "https://zapier.com/learn/",
+      "type": "course",
+      "author": "Zapier",
+      "description": "Free tutorials and guides covering Zapier from beginner to advanced — build your first Zap in 5 minutes."
+    },
+    {
+      "title": "Make Help Centre",
+      "url": "https://www.make.com/en/help/tutorials",
+      "type": "article",
+      "author": "Make",
+      "description": "Official tutorials for building complex multi-step automation scenarios in Make."
+    }
+  ]
+}

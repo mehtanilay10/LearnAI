@@ -1,0 +1,263 @@
+{
+  "id": "lesson-032",
+  "slug": "images-and-ai",
+  "moduleSlug": "multimodal-ai",
+  "title": "Images and AI",
+  "description": "How AI tools work with images — generation, analysis, editing, and practical use cases.",
+  "order": 1,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 12,
+  "tags": [
+    "images",
+    "multimodal",
+    "dall-e",
+    "midjourney",
+    "vision"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI is no longer text-only. Today's AI tools can see images, generate them, describe what's in them, and edit them. This lesson gives you a practical map of what each type of image AI can do — and when to use each one."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "image-ai-overview",
+      "data": {
+        "level": 2,
+        "text": "The three types of image AI",
+        "anchor": "image-ai-overview"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "image-ai-modes",
+        "caption": "Three distinct AI image capabilities — generation, analysis, and editing — each uses different underlying technology",
+        "definition": "graph TD\n  IMG[Image AI]\n  IMG --> GEN[Generation\\nCreate new images\\nfrom text prompts]\n  IMG --> ANA[Analysis / Vision\\nUnderstand and describe\\nimages you upload]\n  IMG --> EDIT[Editing\\nModify existing images\\nwith AI instructions]\n\n  GEN --> G1[DALL-E 3]\n  GEN --> G2[Midjourney]\n  GEN --> G3[Adobe Firefly]\n  GEN --> G4[Flux / SDXL]\n\n  ANA --> A1[ChatGPT Vision]\n  ANA --> A2[Claude Vision]\n  ANA --> A3[Gemini Vision]\n\n  EDIT --> E1[Adobe Firefly Edit]\n  EDIT --> E2[DALL-E in-painting]\n  EDIT --> E3[Canva AI]\n\n  style GEN fill:#ddf4ff,stroke:#0969da\n  style ANA fill:#d1f3d8,stroke:#1a7f37\n  style EDIT fill:#fff8c5,stroke:#9a6700"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "image-generation",
+      "data": {
+        "level": 2,
+        "text": "Image generation: create from text",
+        "anchor": "image-generation"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "cards": [
+          {
+            "title": "DALL-E 3 (OpenAI)",
+            "description": "Built directly into ChatGPT (paid tier). Best for quick, practical images: social media headers, presentation slides, mockups, and illustrations. Excellent at following detailed text descriptions precisely.",
+            "pros": [
+              "Integrated in ChatGPT — no extra tool",
+              "Great at following complex text prompts",
+              "Good for practical/commercial visuals"
+            ],
+            "cons": [
+              "Artist quality below Midjourney",
+              "Requires ChatGPT Plus subscription"
+            ],
+            "tags": [
+              "paid",
+              "integrated"
+            ]
+          },
+          {
+            "title": "Midjourney",
+            "description": "The gold standard for artistic and aesthetic quality. Best for beautiful, stylized, or mood-rich imagery. Used by designers and creative professionals. Requires a paid subscription and runs through Discord.",
+            "pros": [
+              "Highest artistic quality",
+              "Unmatched style control",
+              "Active creative community"
+            ],
+            "cons": [
+              "Requires Discord",
+              "Paid subscription required",
+              "Less precise at specific details"
+            ],
+            "tags": [
+              "paid",
+              "artistic"
+            ]
+          },
+          {
+            "title": "Adobe Firefly",
+            "description": "Commercially safe image generation integrated into Adobe Creative Cloud. All training data was licensed — making it the safest choice for commercial use. Best for professional design workflows.",
+            "pros": [
+              "Fully commercial safe",
+              "Integrated with Photoshop and Illustrator",
+              "Professional design focus"
+            ],
+            "cons": [
+              "Requires Adobe subscription",
+              "Less community/tutorial resources"
+            ],
+            "tags": [
+              "paid",
+              "commercial-safe"
+            ]
+          },
+          {
+            "title": "Flux / Stable Diffusion (open)",
+            "description": "Open-source image models you can run locally or via third-party apps (Fal.ai, Replicate, RunDiffusion). Free and highly customizable but require more technical setup.",
+            "pros": [
+              "Free or very cheap per image",
+              "Fully customizable",
+              "Privacy-friendly (run locally)"
+            ],
+            "cons": [
+              "More technical setup required",
+              "Quality varies by configuration"
+            ],
+            "tags": [
+              "free",
+              "open-source"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "image-analysis",
+      "data": {
+        "level": 2,
+        "text": "Image analysis: understanding images you upload",
+        "anchor": "image-analysis"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "All major AI chatbots now support \"vision\" — you can upload any image and ask questions about it. This is one of the most immediately useful and underused AI capabilities."
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "What AI can do with images you upload:",
+        "items": [
+          "Describe and caption what is in a photo in natural language",
+          "Extract all text from screenshots, business cards, photos, and PDFs (OCR)",
+          "Analyze charts, graphs, and dashboards — describe trends and key numbers",
+          "Identify objects, products, logos, and scenes",
+          "Answer specific questions about the image (\"How many items are on the shelf?\")",
+          "Compare two images and describe their differences",
+          "Read handwritten notes and diagrams",
+          "Review a UI mockup or wireframe and give design feedback"
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Practical vision use cases",
+        "content": "1. Business card photo → \"Extract all contact information as structured JSON\"\n2. Complex slide from a presentation → \"Summarize the key message of this chart\"\n3. Screenshot of an error message → \"What is causing this error and how do I fix it?\"\n4. Photo of a restaurant menu in another language → \"Translate and describe the dishes\"\n5. Handwritten meeting notes → \"Convert these notes to a typed summary\""
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Upload a screenshot of any complex chart to Claude or ChatGPT and ask \"What are the 3 most important trends visible in this data?\" It saves minutes of manual reading and often surfaces patterns you would miss."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "image-prompting",
+      "data": {
+        "level": 2,
+        "text": "Writing effective image generation prompts",
+        "anchor": "image-prompting"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Prompt element",
+          "What to include",
+          "Example"
+        ],
+        "rows": [
+          [
+            "Subject",
+            "What is in the image",
+            "\"A woman working at a standing desk\""
+          ],
+          [
+            "Style",
+            "Art style or photography style",
+            "\"photorealistic\", \"watercolor\", \"flat illustration\""
+          ],
+          [
+            "Lighting",
+            "Light quality and direction",
+            "\"golden hour sunlight\", \"overcast diffused light\""
+          ],
+          [
+            "Mood",
+            "Atmosphere and feeling",
+            "\"peaceful\", \"dramatic\", \"playful\""
+          ],
+          [
+            "Composition",
+            "Framing and perspective",
+            "\"wide shot\", \"close-up\", \"overhead view\""
+          ],
+          [
+            "Technical specs",
+            "Resolution or format hints",
+            "\"4K\", \"16:9 aspect ratio\""
+          ]
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Image AI quick reference",
+        "points": [
+          "Generation: DALL-E (quick + integrated), Midjourney (highest quality), Firefly (commercial safe)",
+          "Analysis (vision): ChatGPT, Claude, and Gemini all support it — upload and ask questions",
+          "OCR: AI reliably reads text from photos, screenshots, and even messy handwriting",
+          "Editing: Adobe Firefly, Canva AI, and DALL-E in-painting for modifying existing images",
+          "Always check generated images for artifacts — extra fingers, garbled text, merged faces"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "local-ai-options",
+    "model-comparison"
+  ],
+  "furtherReading": [
+    {
+      "title": "DALL-E 3 Overview",
+      "url": "https://openai.com/dall-e-3",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "OpenAI's overview of DALL-E 3 — how it works, what makes it different, and how to use it effectively."
+    },
+    {
+      "title": "Midjourney Documentation",
+      "url": "https://docs.midjourney.com",
+      "type": "article",
+      "author": "Midjourney",
+      "description": "Official guide to Midjourney prompting — parameters, style modifiers, and how to craft effective image prompts."
+    },
+    {
+      "title": "Stable Diffusion Guide",
+      "url": "https://huggingface.co/blog/stable_diffusion",
+      "type": "article",
+      "author": "Hugging Face",
+      "description": "Introduction to how Stable Diffusion works and how to run it yourself — visual and accessible."
+    }
+  ]
+}

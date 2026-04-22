@@ -1,0 +1,235 @@
+{
+  "id": "lesson-014",
+  "slug": "chatgpt-guide",
+  "moduleSlug": "chatbots-in-depth",
+  "title": "ChatGPT: A Practical Guide",
+  "description": "Everything a non-technical user needs to get the most out of ChatGPT — features, tips, and what to expect.",
+  "order": 1,
+  "difficulty": "beginner",
+  "estimatedMinutes": 15,
+  "tags": [
+    "chatgpt",
+    "openai",
+    "gpt-4o",
+    "practical"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "ChatGPT is the most-used AI tool in the world. Here is a practical guide to using it well — including what the free tier actually gives you, the features most people miss, and how to avoid the most common frustrations."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "chatgpt-tiers",
+      "data": {
+        "level": 2,
+        "text": "ChatGPT plans at a glance",
+        "anchor": "chatgpt-tiers"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Tier",
+          "Model",
+          "Best for",
+          "Worth it?"
+        ],
+        "rows": [
+          [
+            "Free",
+            "GPT-4o mini / GPT-4o (rate-limited)",
+            "General chat, writing, simple analysis",
+            "Yes — excellent starting point"
+          ],
+          [
+            "Plus ($20/mo)",
+            "GPT-4o, o1, image generation, file analysis",
+            "Complex reasoning, images, large files",
+            "Yes if you use AI daily"
+          ],
+          [
+            "Team ($30/user/mo)",
+            "All Plus features, no training on data",
+            "Business use where data privacy matters",
+            "Yes for business users"
+          ],
+          [
+            "Enterprise (custom)",
+            "All models, SOC 2, admin controls",
+            "Large organizations with compliance needs",
+            "Yes for enterprise"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "key-features",
+      "data": {
+        "level": 2,
+        "text": "Key features most people miss",
+        "anchor": "key-features"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "chatgpt-features",
+        "caption": "ChatGPT feature overview — most users only use a fraction of what's available",
+        "definition": "mindmap\n  root((ChatGPT))\n    Text & Chat\n      Writing & editing\n      Brainstorming\n      Q&A\n      Summaries\n    Files & Data\n      PDF analysis\n      CSV/spreadsheet analysis\n      Code interpreter\n      Image analysis\n    Media\n      DALL-E image generation\n      Voice mode\n      Canvas document editor\n    Customization\n      Custom GPTs\n      Memory\n      System instructions\n      Projects"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Key features worth knowing:",
+        "items": [
+          "Custom GPTs — saved personas/instructions you build once and reuse. Skip repeating context every time.",
+          "Memory — ChatGPT can remember facts about you across sessions (opt-in). Saves you from re-explaining yourself.",
+          "Canvas — a collaborative document editor for long writing and coding projects with inline editing.",
+          "Voice mode — hands-free conversation with real-time audio responses. Useful for thinking out loud.",
+          "File upload — analyze PDFs, spreadsheets, images. Can read charts, extract data, and answer questions about documents.",
+          "Code interpreter — runs real Python code in your chat. Use this for all math, data analysis, and chart generation.",
+          "Projects — organize conversations, files, and a shared custom instruction set for ongoing work."
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Most underused feature: Custom GPTs",
+        "text": "Custom GPTs let you skip setting up context every time. Create one with your job title, preferred communication style, and key background facts — then start every work session with that GPT instead of ChatGPT default. You'll save 2-3 sentences of context-setting on every single prompt."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "common-problems",
+      "data": {
+        "level": 2,
+        "text": "Solving common problems",
+        "anchor": "common-problems"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Problem",
+          "What's happening",
+          "Fix"
+        ],
+        "rows": [
+          [
+            "Response was cut off",
+            "Hit output token limit mid-response",
+            "Type \"continue\" or ask for a shorter format upfront"
+          ],
+          [
+            "AI ignores my instructions",
+            "Important instruction is buried in the middle",
+            "Put the most critical instruction at the START of your prompt"
+          ],
+          [
+            "Response is too verbose",
+            "Default style tends toward comprehensiveness",
+            "Add \"be concise, max 150 words\" to your prompt"
+          ],
+          [
+            "Wrong tone",
+            "AI defaults to a neutral-professional voice",
+            "Specify tone explicitly: \"write in a warm, direct tone\""
+          ],
+          [
+            "Forgot earlier context",
+            "Context window filling up in a long conversation",
+            "Start each new topic with a brief situation summary"
+          ],
+          [
+            "Outdated information",
+            "Model's training cutoff is in the past",
+            "Enable web browsing or switch to Perplexity for current info"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "chatgpt-vs-others",
+      "data": {
+        "level": 2,
+        "text": "When to use ChatGPT vs other tools",
+        "anchor": "chatgpt-vs-others"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "ChatGPT excels at:",
+        "items": [
+          "General writing, editing, and brainstorming across all domains",
+          "Coding (Python, JavaScript, SQL, and most other languages)",
+          "Image generation via DALL-E integration (paid)",
+          "Data analysis with code interpreter (paid)",
+          "Building custom AI tools via GPTs"
+        ]
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Consider switching to another tool when:",
+        "items": [
+          "You need cited, sourced facts → Perplexity is more reliable",
+          "You have a very long document (200+ pages) → Claude handles more context",
+          "You live in Google Workspace (Docs, Gmail) → Gemini has native integration",
+          "Sensitive business data is involved → use an enterprise tier or local model"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "ChatGPT essentials",
+        "points": [
+          "Free tier is genuinely excellent for everyday writing, coding, and analysis",
+          "Custom GPTs and Memory are the most impactful features for regular users",
+          "Code interpreter (paid) is the right tool for all math and data tasks",
+          "File analysis lets you \"talk to\" any PDF, spreadsheet, or image",
+          "Put critical instructions at the start of your prompt for best results"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "model-comparison",
+    "chatbot-landscape"
+  ],
+  "furtherReading": [
+    {
+      "title": "ChatGPT Prompt Engineering for Developers",
+      "url": "https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/",
+      "type": "course",
+      "author": "OpenAI / DeepLearning.AI",
+      "description": "Free 1-hour course taught by OpenAI researchers on getting the most out of ChatGPT."
+    },
+    {
+      "title": "OpenAI Platform Overview",
+      "url": "https://platform.openai.com/docs/overview",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Full reference for ChatGPT capabilities, model differences, and advanced features like code interpreter and plugins."
+    },
+    {
+      "title": "Building Systems with ChatGPT",
+      "url": "https://www.deeplearning.ai/short-courses/building-systems-with-chatgpt/",
+      "type": "course",
+      "author": "OpenAI / DeepLearning.AI",
+      "description": "Follow-up course on chaining multiple prompts to build multi-step AI workflows in ChatGPT."
+    }
+  ]
+}

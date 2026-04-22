@@ -1,0 +1,234 @@
+{
+  "id": "lesson-012",
+  "slug": "ai-hallucination-deep-dive",
+  "moduleSlug": "hallucinations-and-accuracy",
+  "title": "AI Hallucination: A Deep Dive",
+  "description": "Understand why AI invents facts, the different types of hallucinations, and when it is most dangerous.",
+  "order": 1,
+  "difficulty": "beginner",
+  "estimatedMinutes": 14,
+  "tags": [
+    "hallucination",
+    "accuracy",
+    "reliability",
+    "safety"
+  ],
+  "relatedGlossaryTerms": [
+    "hallucination",
+    "large-language-model"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Hallucination is not a bug that will be patched in the next update. It is a fundamental property of how language models work. Understanding this changes how you use AI tools — and helps you avoid the situations where it is most dangerous."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "why-it-happens",
+      "data": {
+        "level": 2,
+        "text": "Why hallucination happens",
+        "anchor": "why-it-happens"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "LLMs generate the statistically most likely next token — they do not retrieve facts from a verified database. When the model encounters a gap in its knowledge, it fills it with a plausible-sounding sequence of tokens. There's no separate 'fact checker' built into the model. The same mechanism that makes it brilliant at writing also makes it capable of confidently inventing things."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "hallucination-mechanism",
+        "caption": "The hallucination mechanism: the model predicts plausible tokens with no built-in truth verification",
+        "definition": "flowchart TD\n  Q[\"User asks: 'Who wrote the 2019 study on X?'\"]\n  Q --> P[LLM predicts next tokens]\n  P --> KN{Does training data\\ncontain the answer?}\n  KN -->|Yes, clearly| C[Correct answer output]\n  KN -->|Partially / ambiguously| H[Plausible-sounding answer\\n— may be wrong]\n  KN -->|Not at all| HH[Fabricated answer\\nwith confident tone]\n\n  style KN fill:#fff8c5,stroke:#9a6700\n  style C fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37\n  style H fill:#ffe1cc,stroke:#bc4c00,color:#bc4c00\n  style HH fill:#ffebe9,stroke:#cf222e,color:#cf222e"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "types-of-hallucination",
+      "data": {
+        "level": 2,
+        "text": "Types of hallucination",
+        "anchor": "types-of-hallucination"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Type",
+          "Example",
+          "Risk level"
+        ],
+        "rows": [
+          [
+            "Factual confabulation",
+            "Inventing a book title or author name that sounds real",
+            "High — easy to miss"
+          ],
+          [
+            "Date errors",
+            "Getting a historical event wrong by a year or decade",
+            "Medium"
+          ],
+          [
+            "Citation fabrication",
+            "Making up a scientific study with legitimate-sounding authors and journals",
+            "Very high"
+          ],
+          [
+            "Logical inconsistency",
+            "Contradicting itself within the same response",
+            "Medium"
+          ],
+          [
+            "Subtle number distortion",
+            "Getting a statistic 10-15% wrong",
+            "Very high — nearly impossible to spot"
+          ],
+          [
+            "URL invention",
+            "Providing a URL that looks real but does not exist",
+            "High"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Subtle hallucination is the most dangerous kind",
+        "text": "A completely fabricated fact is easy to notice — it sounds absurd. But a number that is slightly off, a date that is one year wrong, or a quote with slightly altered wording is nearly impossible to catch without checking the source. The model sounds equally confident in both cases."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "high-risk-situations",
+      "data": {
+        "level": 2,
+        "text": "When hallucination is most likely",
+        "anchor": "high-risk-situations"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Hallucination risk is highest when asking about:",
+        "items": [
+          "Specific statistics, percentages, or data points",
+          "Names of authors, researchers, or public figures in niche fields",
+          "Specific URLs, DOIs, or publication details",
+          "Events or data from after the model's training cutoff",
+          "Niche topics the model has less training data on",
+          "Very long responses — more tokens = more opportunities to drift",
+          "Anything requiring multi-step mathematical reasoning"
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "real-examples",
+      "data": {
+        "level": 2,
+        "text": "Real examples to learn from",
+        "anchor": "real-examples"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Citation hallucination in practice",
+        "content": "If you ask: \"Can you cite a peer-reviewed study showing X?\"\n\nAI may produce: \"Smith et al. (2021). 'Title that sounds exactly right'. Journal of Credible-Sounding Research, 14(3), 87–102.\"\n\nThe journal may exist. The volume and page numbers look correct. The author name and year are plausible. But the study itself may never have existed. This is extremely common — and extremely dangerous if you copy it into a report."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "The safer approach",
+        "content": "Instead of: \"Cite a study on X\"\nAsk: \"I want to find research on X. What search terms should I use on Google Scholar or PubMed?\"\n\nThis uses AI for strategy (finding research) rather than asking it to produce specific citations it may fabricate."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "defense-strategies",
+      "data": {
+        "level": 2,
+        "text": "Your defenses against hallucination",
+        "anchor": "defense-strategies"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Hallucination defense checklist",
+        "items": [
+          {
+            "text": "Treat any specific statistic, date, or citation from AI as unverified",
+            "hint": "Check it before using in any formal context"
+          },
+          {
+            "text": "Use Perplexity or browsing-enabled tools for fact-sensitive queries",
+            "hint": "These retrieve live web pages and cite sources"
+          },
+          {
+            "text": "Ask \"how confident are you about this, and can you verify it?\"",
+            "hint": "A well-calibrated model will flag uncertainty it has"
+          },
+          {
+            "text": "Never paste AI-generated citations into a paper without checking each one",
+            "hint": "Use Google Scholar / DOI lookup to verify they exist"
+          },
+          {
+            "text": "For numbers and statistics, ask the AI to show its reasoning step by step",
+            "hint": "Chain-of-thought reduces arithmetic errors"
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "The defense mindset",
+        "points": [
+          "Hallucination is fundamental — it will not disappear from LLMs",
+          "The model sounds equally confident whether it's right or wrong",
+          "Subtle errors (wrong number, wrong year) are more dangerous than obvious fabrications",
+          "Use Perplexity for facts needing sources; verify all specific claims before publishing",
+          "Ask 'can you verify this?' — a well-calibrated model will signal its own uncertainty"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "evaluating-ai-output",
+    "what-ai-can-and-cannot-do"
+  ],
+  "furtherReading": [
+    {
+      "title": "Hallucination (Artificial Intelligence)",
+      "url": "https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence)",
+      "type": "article",
+      "author": "Wikipedia",
+      "description": "Comprehensive overview of AI hallucination: causes, types, and the research being done to reduce it."
+    },
+    {
+      "title": "AI Hallucinations — What They Are and Why They Happen",
+      "url": "https://www.ibm.com/think/topics/ai-hallucinations",
+      "type": "article",
+      "author": "IBM",
+      "description": "Practical explanation of hallucination causes, real-world consequences, and mitigation strategies for business users."
+    },
+    {
+      "title": "Intro to Large Language Models",
+      "url": "https://www.youtube.com/watch?v=zjkBMFhNj_g",
+      "type": "video",
+      "author": "Andrej Karpathy",
+      "description": "Explains hallucination at the model level — why it's structural, not a simple bug you can patch."
+    }
+  ]
+}

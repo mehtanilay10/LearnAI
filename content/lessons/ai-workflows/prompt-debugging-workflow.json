@@ -1,0 +1,155 @@
+{
+  "id": "lesson-043",
+  "slug": "prompt-debugging-workflow",
+  "moduleSlug": "ai-workflows",
+  "title": "Prompt Debugging Workflow",
+  "description": "When a prompt fails, do not restart blindly. Learn a systematic debugging workflow that turns weak prompts into reliable, reusable workflows.",
+  "order": 2,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 16,
+  "tags": [
+    "prompt-debugging",
+    "workflows",
+    "iteration",
+    "quality-control"
+  ],
+  "relatedGlossaryTerms": [
+    "prompt",
+    "temperature",
+    "context-window"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Most people treat bad AI output as a random event. It is rarely random. Prompt failure usually comes from missing context, ambiguous task definitions, weak constraints, or no verification step. If you learn to debug prompts like engineers debug software, your output quality and consistency improve dramatically."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "debug-loop",
+      "data": {
+        "level": 2,
+        "text": "The 5-step prompt debugging loop",
+        "anchor": "debug-loop"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "prompt-debug-loop",
+        "caption": "A reliable loop for diagnosing and improving weak prompts.",
+        "definition": "flowchart TD\n  A[Run prompt] --> B[Classify failure type]\n  B --> C[Apply one targeted fix]\n  C --> D[Re-run and compare output]\n  D --> E[Document winning pattern]\n  E --> A\n\n  style A fill:#ddf4ff,stroke:#0969da,color:#0550ae\n  style B fill:#fff8c5,stroke:#9a6700,color:#9a6700\n  style C fill:#ffe1cc,stroke:#bc4c00,color:#bc4c00\n  style D fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37\n  style E fill:#eddff8,stroke:#8250df,color:#6639ba"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Failure symptom",
+          "Likely cause",
+          "Best fix"
+        ],
+        "rows": [
+          [
+            "Too generic",
+            "Missing audience + intent context",
+            "Add role, audience, and desired outcome"
+          ],
+          [
+            "Wrong format",
+            "No output schema",
+            "Specify exact format: table, bullets, JSON, max length"
+          ],
+          [
+            "Too verbose",
+            "No brevity constraint",
+            "Add word limits and section structure"
+          ],
+          [
+            "Hallucinated facts",
+            "No evidence requirement",
+            "Require citations + verification checklist"
+          ],
+          [
+            "Inconsistent quality",
+            "Prompt too broad",
+            "Split into multi-step workflow with checkpoints"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Prompt debugging checklist",
+        "items": [
+          {
+            "text": "Did I define the audience and context clearly?"
+          },
+          {
+            "text": "Did I define one clear task (not 3 tasks in one)?"
+          },
+          {
+            "text": "Did I constrain format, length, and tone?"
+          },
+          {
+            "text": "Did I include a verification requirement for facts?"
+          },
+          {
+            "text": "Did I save the improved prompt as a reusable template?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "title": "Debug one broken prompt from your real work",
+        "description": "Choose a recent prompt that produced weak output and apply the 5-step loop.",
+        "steps": [
+          "Paste your original prompt and output into a document.",
+          "Classify the failure type from the table above.",
+          "Apply one fix only and re-run.",
+          "Compare old vs new output on clarity, accuracy, usefulness.",
+          "Save the final version as Prompt v1.0 with notes."
+        ],
+        "expectedOutcome": "You end with one production-ready prompt template and a repeatable debugging method."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Prompt debugging essentials",
+        "points": [
+          "Prompt failures are diagnosable, not random",
+          "Fix one variable at a time to isolate what improved output",
+          "Structure and constraints usually matter more than prompt length",
+          "Verification is mandatory for fact-sensitive workflows",
+          "Save successful patterns as reusable templates"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "building-your-first-workflow",
+    "common-prompting-mistakes",
+    "anatomy-of-a-good-prompt"
+  ],
+  "furtherReading": [
+    {
+      "title": "Prompt Engineering Guide",
+      "url": "https://platform.openai.com/docs/guides/prompt-engineering",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Official troubleshooting patterns and prompt improvement strategies."
+    },
+    {
+      "title": "Learn Prompting - Reliability",
+      "url": "https://learnprompting.org/docs/reliability/intro",
+      "type": "article",
+      "author": "Learn Prompting",
+      "description": "Systematic methods to improve reliability of AI outputs."
+    }
+  ]
+}

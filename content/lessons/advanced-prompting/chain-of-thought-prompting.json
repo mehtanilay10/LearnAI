@@ -1,0 +1,224 @@
+{
+  "id": "lesson-017",
+  "slug": "chain-of-thought-prompting",
+  "moduleSlug": "advanced-prompting",
+  "title": "Chain-of-Thought Prompting",
+  "description": "Make AI reason step by step — the technique that produces dramatically better results on complex problems.",
+  "order": 1,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 12,
+  "tags": [
+    "chain-of-thought",
+    "reasoning",
+    "step-by-step",
+    "advanced-prompting"
+  ],
+  "relatedGlossaryTerms": [
+    "prompt",
+    "large-language-model"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Chain-of-thought prompting is one of the most well-researched improvements in prompt engineering. It works by asking the AI to show its reasoning before giving an answer — and this dramatically reduces errors on complex tasks. The simple phrase \"think step by step\" can double accuracy on reasoning problems."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "why-it-works",
+      "data": {
+        "level": 2,
+        "text": "Why it works",
+        "anchor": "why-it-works"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When an LLM generates a reasoning chain before its final answer, each step conditions the next step. The model is essentially writing its working notes, and those notes guide it toward a more logical conclusion. Without this, it jumps straight to an answer — often missing intermediate reasoning that would have corrected an error."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "cot-reasoning-chain",
+        "caption": "Without chain-of-thought, the AI jumps to an answer. With it, reasoning becomes a visible chain where each step grounds the next",
+        "definition": "graph LR\n  subgraph WITHOUT [\"Without chain-of-thought\"]\n    Q1[\"Q: Should I\nlawn?\"] --> A1[\"A: Yes! Great\nfor curb appeal.\n(Wrong context)\"]\n  end\n  subgraph WITH [\"With chain-of-thought\"]\n    Q2[\"Q: Should I\nlawn? Think step by step.\"] --> S1[\"Step 1: What season\nis it? → Late November.\"]\n    S1 --> S2[\"Step 2: Is it growing\nseason? → No, dormant.\"]\n    S2 --> S3[\"Step 3: Will mowing\nhurt the lawn? → Yes.\"]\n    S3 --> A2[\"A: No. Wait until\nspring. Mowing now\ncould damage roots.\"]\n  end\n\n  style WITHOUT fill:#ffebe9,stroke:#cf222e\n  style WITH fill:#d1f3d8,stroke:#1a7f37"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "how-to-use",
+      "data": {
+        "level": 2,
+        "text": "How to trigger chain-of-thought",
+        "anchor": "how-to-use"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Approach",
+          "How to prompt",
+          "When to use"
+        ],
+        "rows": [
+          [
+            "Simple trigger",
+            "\"Think step by step before answering\"",
+            "Most analytical tasks — easiest to use"
+          ],
+          [
+            "Explicit structure",
+            "\"First identify the key factors. Then rank them. Then recommend.\"",
+            "Structured decisions with known criteria"
+          ],
+          [
+            "Show your reasoning",
+            "\"Walk me through your reasoning, then give your conclusion.\"",
+            "High-stakes answers where you want to check the logic"
+          ],
+          [
+            "Devil's advocate",
+            "\"What is the strongest argument AGAINST this conclusion?\"",
+            "Checking reasoning for blind spots"
+          ],
+          [
+            "Simulate a debate",
+            "\"Argue for the best option from multiple perspectives, then give your verdict.\"",
+            "Complex tradeoff decisions"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "comparison-examples",
+      "data": {
+        "level": 2,
+        "text": "Before and after: real examples",
+        "anchor": "comparison-examples"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Job offer — without chain-of-thought",
+        "content": "\"Should I accept this job offer?\"\n\n→ Gets a generic pros/cons list that could apply to anyone. Not personalized, not contextual, probably not useful."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Job offer — with chain-of-thought",
+        "content": "\"I have a job offer 20% higher salary, fully remote, at an early-stage startup (Series A). My current role is stable, mid-size company, 5-min commute. I value career growth and financial security equally.\n\nThink through this step by step:\n1. Analyze the financial impact (salary, equity, benefits)\n2. Assess career growth trajectory at each company\n3. Evaluate lifestyle factors (remote vs commute, company culture signals)\n4. Weigh the risks specific to an early-stage startup\n5. Give a recommendation with your reasoning.\"\n\n→ Returns a genuinely personalized analysis that actually helps you decide."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Business problem — with chain-of-thought",
+        "content": "\"My SaaS product's monthly churn rate increased from 3% to 7% in the last 60 days. I haven't changed pricing. Think step by step through the most likely causes and rank them by probability. Then describe the first diagnostic action I should take for each.\""
+      }
+    },
+    {
+      "type": "heading",
+      "id": "when-it-helps-most",
+      "data": {
+        "level": 2,
+        "text": "When chain-of-thought helps most",
+        "anchor": "when-it-helps-most"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Task type",
+          "CoT benefit",
+          "Why"
+        ],
+        "rows": [
+          [
+            "Decisions with tradeoffs",
+            "High",
+            "Forces consideration of all relevant factors before concluding"
+          ],
+          [
+            "Root cause analysis",
+            "Very high",
+            "Chains through steps prevents jumping to wrong first hypothesis"
+          ],
+          [
+            "Strategic planning",
+            "High",
+            "Surfaces assumptions and risks systematically"
+          ],
+          [
+            "Math/calculation",
+            "Medium",
+            "Some help — but for real math use the code interpreter"
+          ],
+          [
+            "Simple factual questions",
+            "Low",
+            "Unnecessary overhead when the answer is direct"
+          ],
+          [
+            "Creative writing",
+            "Low",
+            "Less relevant — free generation is usually better here"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "For the most critical decisions, ask the AI to first argue FOR the option, then argue AGAINST it, then give a final weighing. This two-sided analysis surfaces blind spots you might not have considered."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key points",
+        "points": [
+          "Adding \"think step by step\" is the simplest and most powerful prompt upgrade",
+          "Chain-of-thought improves accuracy by making reasoning process visible and sequential",
+          "Most valuable for decisions, analysis, root cause, and planning tasks",
+          "Combine with role-play for even better results: \"As a CFO, think step by step through...\""
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "few-shot-prompting",
+    "anatomy-of-a-good-prompt"
+  ],
+  "furtherReading": [
+    {
+      "title": "Chain-of-Thought Prompting Elicits Reasoning",
+      "url": "https://arxiv.org/abs/2201.11903",
+      "type": "article",
+      "author": "Wei et al. / Google Research",
+      "description": "The original research paper that introduced chain-of-thought prompting. The abstract is readable even without an ML background."
+    },
+    {
+      "title": "Learn Prompting — Chain of Thought",
+      "url": "https://learnprompting.org/docs/intermediate/chain_of_thought",
+      "type": "article",
+      "author": "Learn Prompting",
+      "description": "Practical guide to chain-of-thought prompting with real examples across reasoning, math, and planning tasks."
+    },
+    {
+      "title": "ChatGPT Prompt Engineering for Developers",
+      "url": "https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/",
+      "type": "course",
+      "author": "OpenAI / DeepLearning.AI",
+      "description": "Includes hands-on demonstrations of step-by-step reasoning prompts — free to enroll."
+    }
+  ]
+}

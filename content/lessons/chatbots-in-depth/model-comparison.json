@@ -1,0 +1,268 @@
+{
+  "id": "lesson-015",
+  "slug": "model-comparison",
+  "moduleSlug": "chatbots-in-depth",
+  "title": "Comparing AI Models",
+  "description": "A practical side-by-side comparison of the major AI models to help you decide which to use for each task.",
+  "order": 2,
+  "difficulty": "beginner",
+  "estimatedMinutes": 12,
+  "tags": [
+    "model-comparison",
+    "chatgpt",
+    "claude",
+    "gemini",
+    "decision"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Rather than declaring a \"best\" model — which changes every few months as models improve — this lesson gives you a stable decision framework you can apply to any task to pick the right model in under 30 seconds."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "model-decision-tree",
+      "data": {
+        "level": 2,
+        "text": "Model selection decision tree",
+        "anchor": "model-decision-tree"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "model-decision-flow",
+        "caption": "Use this decision tree to pick the right AI model for any task",
+        "definition": "flowchart TD\n  START[What is your task?]\n  START --> Q1{Need real-time facts\\nor cited sources?}\n  Q1 -->|Yes| PERP[Perplexity\\nBest for research]\n  Q1 -->|No| Q2{Document very long\\nor needs careful writing?}\n  Q2 -->|Yes| CLAUDE[Claude\\n200K context, thoughtful]\n  Q2 -->|No| Q3{Working in Google\\nDocs/Gmail/Drive?}\n  Q3 -->|Yes| GEMINI[Gemini\\nNative Google Workspace]\n  Q3 -->|No| Q4{Need image generation\\nor code interpreter?}\n  Q4 -->|Yes| CGPT_PAID[ChatGPT Plus\\nDALL-E + Code Interpreter]\n  Q4 -->|No| CGPT[ChatGPT Free\\nExcellent for most tasks]\n\n  style PERP fill:#ddf4ff,stroke:#0969da,color:#0550ae\n  style CLAUDE fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37\n  style GEMINI fill:#fff8c5,stroke:#9a6700,color:#9a6700\n  style CGPT fill:#ffe1cc,stroke:#bc4c00,color:#bc4c00\n  style CGPT_PAID fill:#eddff8,stroke:#8250df,color:#6639ba"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "head-to-head",
+      "data": {
+        "level": 2,
+        "text": "Head-to-head comparison",
+        "anchor": "head-to-head"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Criterion",
+          "ChatGPT",
+          "Claude",
+          "Gemini",
+          "Perplexity"
+        ],
+        "rows": [
+          [
+            "Context window",
+            "128K tokens",
+            "200K tokens",
+            "1M tokens (Pro)",
+            "~32K / web retrieval"
+          ],
+          [
+            "Writing quality",
+            "Excellent",
+            "Excellent (more nuanced tone)",
+            "Good",
+            "Good"
+          ],
+          [
+            "Long document analysis",
+            "Good",
+            "Excellent",
+            "Excellent (1M context)",
+            "Limited"
+          ],
+          [
+            "Code generation",
+            "Excellent",
+            "Excellent",
+            "Good",
+            "Not primary use"
+          ],
+          [
+            "Image generation",
+            "Yes (DALL-E, paid)",
+            "No",
+            "Yes (Imagen, paid)",
+            "No"
+          ],
+          [
+            "Real-time web search",
+            "Yes (with browse)",
+            "Limited",
+            "Yes (native)",
+            "Yes — core feature"
+          ],
+          [
+            "Cited sources",
+            "Rarely",
+            "Rarely",
+            "Occasionally",
+            "Always"
+          ],
+          [
+            "Google Workspace integration",
+            "Via plugins",
+            "No",
+            "Native (Gemini sidebar)",
+            "No"
+          ],
+          [
+            "Free tier quality",
+            "Very good",
+            "Good",
+            "Good",
+            "Good"
+          ],
+          [
+            "Best for",
+            "General use + coding",
+            "Long docs + writing",
+            "Google ecosystem",
+            "Research + facts"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "specific-tasks",
+      "data": {
+        "level": 2,
+        "text": "Task-to-model mapping",
+        "anchor": "specific-tasks"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Task",
+          "Best choice",
+          "Why"
+        ],
+        "rows": [
+          [
+            "Research with citations",
+            "Perplexity",
+            "Retrieves and cites sources for every claim"
+          ],
+          [
+            "Editing a long document",
+            "Claude",
+            "Best at holding large context intact and precise edits"
+          ],
+          [
+            "Writing a first draft",
+            "Claude or ChatGPT",
+            "Both excellent — try both for your style"
+          ],
+          [
+            "Code writing & debugging",
+            "ChatGPT or Claude",
+            "Both excellent; ChatGPT has code interpreter for running it"
+          ],
+          [
+            "Gmail/Docs integrated tasks",
+            "Gemini",
+            "Sits inside Google products natively"
+          ],
+          [
+            "Quick general questions",
+            "ChatGPT (free)",
+            "Fast, reliable, no extra setup"
+          ],
+          [
+            "Analyzing a 100-page PDF",
+            "Claude",
+            "200K context handles large files more reliably"
+          ],
+          [
+            "Creative brainstorming",
+            "Claude or ChatGPT",
+            "Both excel; Claude tends toward more original angles"
+          ],
+          [
+            "Image generation",
+            "ChatGPT (DALL-E, paid) or Midjourney",
+            "Integrated vs. highest artistic quality"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "when-to-switch",
+      "data": {
+        "level": 2,
+        "text": "When to switch models",
+        "anchor": "when-to-switch"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "items": [
+          "Switch to Claude when ChatGPT loses track in a long conversation or you need very careful writing",
+          "Switch to Perplexity any time you need a specific fact with a source you can verify",
+          "Switch to Gemini when working directly inside a Google tool",
+          "Use ChatGPT as the default — switch when you hit its specific limits"
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "text": "Models are updated frequently. This comparison reflects general strengths. Always test the current version for your specific use case — capabilities shift significantly with each major release."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Model selection principles",
+        "points": [
+          "No model is best at everything — build the reflex to choose based on task type",
+          "Your prompt quality matters more than model choice for most everyday tasks",
+          "Start with ChatGPT (free), switch to Claude for long documents or careful writing",
+          "Perplexity for any fact that needs a source; Gemini for Google Workspace",
+          "Master one tool before expanding — depth beats breadth"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "chatbot-landscape",
+    "choosing-the-right-tool"
+  ],
+  "furtherReading": [
+    {
+      "title": "LMSYS Chatbot Arena Leaderboard",
+      "url": "https://lmarena.ai/",
+      "type": "tool",
+      "author": "LMSYS / UC Berkeley",
+      "description": "Live crowdsourced benchmark where users rate AI models side-by-side. The most trusted real-world model ranking available."
+    },
+    {
+      "title": "Claude Model Overview",
+      "url": "https://docs.anthropic.com/en/docs/about-claude/models/overview",
+      "type": "article",
+      "author": "Anthropic",
+      "description": "Current Claude model specifications, context window sizes, and recommended use cases."
+    },
+    {
+      "title": "OpenAI Models Documentation",
+      "url": "https://platform.openai.com/docs/models",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Official documentation of current GPT models with capability comparisons and pricing details."
+    }
+  ]
+}

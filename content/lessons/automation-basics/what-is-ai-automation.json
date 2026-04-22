@@ -1,0 +1,201 @@
+{
+  "id": "lesson-020",
+  "slug": "what-is-ai-automation",
+  "moduleSlug": "automation-basics",
+  "title": "What Is AI Automation?",
+  "description": "Understand what AI automation means, how it differs from traditional automation, and why it is a game-changer for individuals.",
+  "order": 1,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 12,
+  "tags": [
+    "automation",
+    "workflows",
+    "productivity",
+    "no-code"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Automation has existed for decades — macros, scheduled tasks, scripts. AI automation is fundamentally different. It handles unstructured tasks that previously required human judgment: reading and classifying emails, interpreting documents, making contextual decisions, writing first-draft responses."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "old-vs-new",
+      "data": {
+        "level": 2,
+        "text": "Traditional automation vs AI automation",
+        "anchor": "old-vs-new"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "automation-comparison",
+        "caption": "The fundamental difference: traditional automation follows strict rules, AI automation understands meaning and context",
+        "definition": "graph TD\n  subgraph OLD [\"Traditional Automation\"]\n    O1[\"Rule: IF email contains 'invoice'\\nTHEN move to folder 'Invoices'\"]\n    O2[\"Breaks if subject line says\\n'Please find attached bill'\"]\n    O3[\"Cannot handle variation\\nor ambiguous inputs\"]\n  end\n\n  subgraph NEW [\"AI Automation\"]\n    N1[\"Understands: 'This email is about\\nan invoice needing payment'\"]\n    N2[\"Works regardless of how\\nthe message is phrased\"]\n    N3[\"Can classify, summarize,\\nand decide what to do next\"]\n  end\n\n  style OLD fill:#ffebe9,stroke:#cf222e\n  style NEW fill:#d1f3d8,stroke:#1a7f37"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Traditional automation",
+          "AI automation"
+        ],
+        "rows": [
+          [
+            "Rule-based: \"if X, do Y\"",
+            "Judgment-based: \"understand X, decide what to do\""
+          ],
+          [
+            "Breaks when input format changes",
+            "Handles variation, ambiguity, and natural language"
+          ],
+          [
+            "Cannot read or understand text meaning",
+            "Reads, summarizes, classifies, and extracts from any text"
+          ],
+          [
+            "Requires coding or strict low-code rules",
+            "Can be configured in plain English instructions"
+          ],
+          [
+            "Fast and perfectly consistent on known inputs",
+            "Flexible and handles novel inputs but needs oversight"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "automation-components",
+      "data": {
+        "level": 2,
+        "text": "What makes an AI automation",
+        "anchor": "automation-components"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "automation-flow",
+        "caption": "A complete AI automation: trigger → data in → AI processing → action taken → notification",
+        "definition": "flowchart LR\n  A[\"⚡ Trigger\\ne.g. new email arrives\"] --> B[\"📥 Data in\\nEmail content extracted\"]\n  B --> C[\"🤖 AI Step\\nSummarize & classify:\\nUrgent / FYI / Need action\"]\n  C --> D{Classification}\n  D -->|Urgent| E[\"🔴 Slack alert\\nto owner\"]\n  D -->|FYI| F[\"📋 Log to Notion\\ndatabase\"]\n  D -->|Action needed| G[\"✅ Create task\\nin project tool\"]"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "great-candidates",
+      "data": {
+        "level": 2,
+        "text": "Great automation candidates",
+        "anchor": "great-candidates"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Task",
+          "Why AI automation works",
+          "Time saved"
+        ],
+        "rows": [
+          [
+            "Classifying incoming support tickets",
+            "AI reads meaning, routes accurately",
+            "2-3 hours/week"
+          ],
+          [
+            "Generating first drafts of reply emails",
+            "AI drafts in your tone from context",
+            "1-2 hours/week"
+          ],
+          [
+            "Converting meeting notes to action items",
+            "AI extracts structure from free text",
+            "30-60 min/week"
+          ],
+          [
+            "Weekly report compilation",
+            "AI synthesizes from multiple sources",
+            "1-3 hours/week"
+          ],
+          [
+            "Summarizing long email threads",
+            "AI reads full context, extracts essence",
+            "30-60 min/week"
+          ],
+          [
+            "Routing documents by content type",
+            "AI reads content, not just filename",
+            "Background automation"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "what-not-to-automate",
+      "data": {
+        "level": 2,
+        "text": "What NOT to automate right away",
+        "anchor": "what-not-to-automate"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Avoid automating these until you have experience and safeguards:",
+        "items": [
+          "Tasks where a mistake has serious consequences (legal, financial, medical)",
+          "Customer-facing actions without a human review step",
+          "Anything involving personal or sensitive data without compliance review",
+          "Tasks that require context AI does not have (internal politics, relationship history)"
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Start with the task that takes you 20-30 minutes every week and always feels like busywork. Automate that first, safely. Gain confidence, then expand. Don't start with your most critical workflow."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "AI automation fundamentals",
+        "points": [
+          "AI automation handles tasks requiring language understanding, not just rigid rules",
+          "Best for: classification, summarization, first-draft generation, data extraction",
+          "You do not need to code — no-code tools like Zapier make this accessible",
+          "Start with high-frequency, low-stakes busywork before automating critical workflows",
+          "Always include a human review step for any automation with real-world consequences"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "no-code-automation-tools",
+    "building-your-first-workflow"
+  ],
+  "furtherReading": [
+    {
+      "title": "What Is AI Automation?",
+      "url": "https://www.ibm.com/think/topics/ai-automation",
+      "type": "article",
+      "author": "IBM",
+      "description": "Overview of AI automation types, use cases, and key technologies including RPA, ML pipelines, and intelligent workflows."
+    },
+    {
+      "title": "AI for Everyone",
+      "url": "https://www.coursera.org/learn/ai-for-everyone",
+      "type": "course",
+      "author": "Andrew Ng / DeepLearning.AI",
+      "description": "Week 1 helps you identify high-value automation opportunities in your own workflow."
+    }
+  ]
+}

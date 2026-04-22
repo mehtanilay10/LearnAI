@@ -1,0 +1,193 @@
+{
+  "id": "lesson-031",
+  "slug": "ai-skills-explained",
+  "moduleSlug": "mcp-and-skills",
+  "title": "AI Skills and Plugins Explained",
+  "description": "Understand what skills and plugins are, how they differ from tools, and what they mean for everyday AI users.",
+  "order": 2,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 10,
+  "tags": [
+    "skills",
+    "plugins",
+    "tool-calling",
+    "copilot"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The terminology around AI extensibility is confusing — skills, plugins, tools, and functions are often used interchangeably across different platforms. This lesson gives you a clear decoder so you understand what each term means in practice, and how these concepts make AI tools more powerful."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "skills-terminology-map",
+        "caption": "All these terms describe the same fundamental concept: giving an AI model a way to call an external capability. The vocabulary differs by platform.",
+        "definition": "graph LR\n  CORE[\"Core concept:\nAI calls an external capability\"]\n\n  CORE --> TOOL[\"Tool\n(OpenAI API, general)\"]\n  CORE --> PLUGIN[\"Plugin\n(ChatGPT legacy)\"]\n  CORE --> SKILL[\"Skill\n(Microsoft Copilot)\"]\n  CORE --> ACTION[\"Action\n(Custom GPTs)\"]\n  CORE --> MCP[\"MCP Server\n(Claude, industry-wide)\"]\n  CORE --> FUNC[\"Function Calling\n(OpenAI API technical)\"]\n\n  style CORE fill:#ddf4ff,stroke:#0969da\n  style TOOL fill:#d1f3d8,stroke:#1a7f37\n  style PLUGIN fill:#fff8c5,stroke:#9a6700\n  style SKILL fill:#eddff8,stroke:#8250df\n  style ACTION fill:#ffe1cc,stroke:#bc4c00\n  style MCP fill:#d1f3d8,stroke:#1a7f37\n  style FUNC fill:#ffd8d3,stroke:#cf222e"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Term",
+          "Platform",
+          "What it means",
+          "Example"
+        ],
+        "rows": [
+          [
+            "Tool",
+            "OpenAI API, general AI",
+            "A specific function the AI can call",
+            "web_search(), run_code(), read_file()"
+          ],
+          [
+            "Plugin",
+            "ChatGPT (legacy, now GPT Store)",
+            "A packaged integration that added a new capability",
+            "Expedia plugin for flight booking"
+          ],
+          [
+            "Action",
+            "Custom GPTs, Copilot Studio",
+            "An HTTP API call the AI can make to an external service",
+            "POST to your company's internal API"
+          ],
+          [
+            "Skill",
+            "Microsoft Copilot, AutoGen",
+            "A named capability — maps to tools under the hood",
+            "Email skill, Calendar skill"
+          ],
+          [
+            "MCP Server",
+            "Anthropic Claude, industry",
+            "A standardized server exposing a set of tools",
+            "GitHub MCP server, Filesystem MCP"
+          ],
+          [
+            "Function calling",
+            "OpenAI API",
+            "The technical API mechanism for defining tools",
+            "The underlying implementation format"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "text": "These terms all describe the same fundamental concept: giving an AI model a way to call an external capability. The terminology varies by platform but the concept is identical."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "practical-view",
+      "data": {
+        "level": 2,
+        "text": "What this means for you as a user",
+        "anchor": "practical-view"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "You are already using skills and tools any time you use AI with built-in capabilities. Here is how each concept maps to things you do every day:"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "When you see or do this...",
+          "What's actually happening"
+        ],
+        "rows": [
+          [
+            "ChatGPT searches the web for you",
+            "Tool call: web_search() is invoked"
+          ],
+          [
+            "ChatGPT runs Python code on your data",
+            "Tool call: code_interpreter() runs in a sandbox"
+          ],
+          [
+            "Microsoft 365 Copilot reads your calendar",
+            "Skill invocation: Calendar skill queries Graph API"
+          ],
+          [
+            "Claude Desktop reads a local file",
+            "MCP Server: filesystem MCP handles the request"
+          ],
+          [
+            "A custom GPT calls your company API",
+            "Action invocation: configured HTTP POST request"
+          ],
+          [
+            "Perplexity retrieves web pages before answering",
+            "Tool call: search tool retrieves results"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "what-to-look-for",
+      "data": {
+        "level": 2,
+        "text": "What to look for when evaluating AI tools",
+        "anchor": "what-to-look-for"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "As an AI user, these are the questions that matter more than the terminology:",
+        "items": [
+          "What tools does this AI have access to? (Search, code, files, APIs)",
+          "Can it take actions in the real world, or is it read-only?",
+          "What permissions does it need? (Principle of least privilege applies)",
+          "Is there a human review step before irreversible actions?",
+          "Does the platform support MCP? (More MCP compatibility = more future integrations)"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Bottom line",
+        "points": [
+          "Different words, same concept: giving AI access to external capabilities",
+          "Tools, skills, plugins, actions, MCP servers = all ways to give AI real-world access",
+          "As a user: focus on WHAT the tool can do, and whether it's safe",
+          "MCP is becoming the standard that will make these integrations universal",
+          "The richer the tool ecosystem, the more useful the AI becomes as an agent"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "what-is-mcp",
+    "what-are-agents"
+  ],
+  "furtherReading": [
+    {
+      "title": "Function Calling Guide",
+      "url": "https://platform.openai.com/docs/guides/function-calling",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Official documentation on how to give AI models access to external tools and APIs via function calling."
+    },
+    {
+      "title": "AI Agents in LangGraph",
+      "url": "https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/",
+      "type": "course",
+      "author": "LangChain / DeepLearning.AI",
+      "description": "Practical course on building agentic systems with tool calling and memory — free to enroll."
+    }
+  ]
+}

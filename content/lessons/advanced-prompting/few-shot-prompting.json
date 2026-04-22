@@ -1,0 +1,183 @@
+{
+  "id": "lesson-018",
+  "slug": "few-shot-prompting",
+  "moduleSlug": "advanced-prompting",
+  "title": "Few-Shot Prompting",
+  "description": "Show the AI exactly what you want by providing examples — one of the most reliable techniques for consistent output.",
+  "order": 2,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 11,
+  "tags": [
+    "few-shot",
+    "examples",
+    "consistent-output",
+    "advanced-prompting"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Telling the AI what you want is sometimes less effective than showing it. Few-shot prompting means including 1-3 examples of the desired input-output format in your prompt. This is especially powerful for recurring tasks where you need consistent, predictable output structure."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "zero-vs-few",
+      "data": {
+        "level": 2,
+        "text": "Zero-shot vs One-shot vs Few-shot",
+        "anchor": "zero-vs-few"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "few-shot-comparison",
+        "caption": "The more examples you provide, the more reliably the AI matches your desired format — especially for unusual or specific output styles",
+        "definition": "graph LR\n  subgraph ZERO [\"Zero-shot\n(no examples)\"]\n    ZI[\"Classify: 'The\nonboarding was rough'\"] --> ZO[\"May format\ninconsistently\"]\n  end\n  subgraph ONE [\"One-shot\n(1 example)\"]\n    OI[\"Example: 'Great\nexperience!' → Positive\n---\nClassify: 'The\nonboarding was rough'\"] --> OO[\"More likely\nto match format\"]\n  end\n  subgraph FEW [\"Few-shot\n(2-3 examples)\"]\n    FI[\"3 varied examples\ncovering edge cases\"] --> FO[\"Highly consistent\nformat every time\"]\n  end\n\n  style ZERO fill:#ffebe9,stroke:#cf222e\n  style ONE fill:#fff8c5,stroke:#9a6700\n  style FEW fill:#d1f3d8,stroke:#1a7f37"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Type",
+          "What it means",
+          "Best for",
+          "Example use"
+        ],
+        "rows": [
+          [
+            "Zero-shot",
+            "No examples — just instructions",
+            "Simple, common tasks",
+            "Summarize this email"
+          ],
+          [
+            "One-shot",
+            "1 example included",
+            "Unusual format requirements",
+            "Match a specific writing style"
+          ],
+          [
+            "Few-shot",
+            "2-5 examples included",
+            "Strict formatting, recurring tasks, batch processing",
+            "Classify 100 feedback items consistently"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "few-shot-examples",
+      "data": {
+        "level": 2,
+        "text": "Few-shot in practice",
+        "anchor": "few-shot-examples"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Feedback classification (few-shot)",
+        "content": "Classify each customer feedback item as: Positive, Negative, Mixed, or Neutral.\n\nExamples:\n\"The onboarding was smooth and fast.\" → Positive\n\"I waited 3 days for a reply.\" → Negative\n\"I received my order.\" → Neutral\n\"The product is good but setup took forever.\" → Mixed\n\nNow classify these:\n1. \"The product works but the instructions were unclear.\"\n2. \"Absolutely love the new dashboard!\"\n3. \"My invoice was wrong twice in a row.\""
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Tone-matching (one-shot)",
+        "content": "Write a product description in this style:\n\nExample: \"Introducing the Arc — a bag that disappears when you need it and reappears when you don't. Designed for people who hate carrying stuff but can't stop going places.'\n\nNow write one for: [NEW PRODUCT DESCRIPTION]\n\n→ The AI will match the quirky, minimalist brand voice precisely because it has a concrete example to pattern-match against."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Data extraction template (few-shot)",
+        "content": "Extract company and funding amount from each sentence. Format as JSON.\n\nExamples:\n\"Acme Corp raised $5M in Series A.\" → {\"company\": \"Acme Corp\", \"amount\": \"$5M\", \"round\": \"Series A\"}\n\"BrightPath secured $12M from Andreessen Horowitz.\" → {\"company\": \"BrightPath\", \"amount\": \"$12M\", \"round\": \"unknown\"}\n\nNow extract from:\n1. \"Nimble raised $3.5M in seed funding led by Y Combinator.\"\n2. \"DataFlow Inc. closed a $50M Series B round.\""
+      }
+    },
+    {
+      "type": "heading",
+      "id": "few-shot-tips",
+      "data": {
+        "level": 2,
+        "text": "Tips for effective few-shot prompting",
+        "anchor": "few-shot-tips"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Tip",
+          "Why it matters"
+        ],
+        "rows": [
+          [
+            "Include edge cases in your examples",
+            "If you only show clean examples, the AI will fail on messy real-world inputs"
+          ],
+          [
+            "Keep example format identical to desired output",
+            "The AI will replicate the format exactly — use this to your advantage"
+          ],
+          [
+            "2-3 good examples beat 10 mediocre ones",
+            "Quality of examples matters more than quantity"
+          ],
+          [
+            "Vary the examples to cover different sub-cases",
+            "Helps AI understand the classification boundary, not just one instance"
+          ],
+          [
+            "Save working few-shot prompts as templates",
+            "Reuse them for recurring batch tasks without rebuilding each time"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "When to use few-shot",
+        "text": "Use few-shot when you need consistent formatting, a specific tone the AI keeps missing, or when you are processing a batch of similar items. It is especially powerful for turning AI into a reliable extraction or classification engine."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key points",
+        "points": [
+          "Examples in your prompt are often more powerful than long instructions",
+          "Use 2-3 examples for recurring tasks to get reliable consistency",
+          "Few-shot works best for: classification, structured extraction, tone-matching, batch tasks",
+          "Include edge cases in examples so the AI handles messy real-world inputs",
+          "Save your working few-shot prompts as templates for reuse"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "chain-of-thought-prompting",
+    "building-your-first-workflow"
+  ],
+  "furtherReading": [
+    {
+      "title": "Learn Prompting — Few-Shot",
+      "url": "https://learnprompting.org/docs/basics/few_shot",
+      "type": "article",
+      "author": "Learn Prompting",
+      "description": "Clear explanation of few-shot prompting with examples across classification, writing, and reasoning tasks."
+    },
+    {
+      "title": "Prompt Engineering Guide",
+      "url": "https://platform.openai.com/docs/guides/prompt-engineering",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Covers few-shot examples as part of OpenAI's six core prompting strategies — with annotated examples."
+    }
+  ]
+}

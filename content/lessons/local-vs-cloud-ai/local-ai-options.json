@@ -1,0 +1,292 @@
+{
+  "id": "lesson-033",
+  "slug": "local-ai-options",
+  "moduleSlug": "local-vs-cloud-ai",
+  "title": "Local AI Options",
+  "description": "When and how to run AI models on your own computer — and whether it makes sense for you.",
+  "order": 1,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 14,
+  "tags": [
+    "local-ai",
+    "ollama",
+    "privacy",
+    "open-weights",
+    "offline"
+  ],
+  "relatedGlossaryTerms": [
+    "local-model",
+    "open-weights"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Most people use cloud AI tools — ChatGPT, Claude, Gemini. But a growing number of users run AI models locally on their own machines. Here is an honest look at when that makes sense, how to do it, and the real trade-offs."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "local-vs-cloud-decision",
+      "data": {
+        "level": 2,
+        "text": "Should you use local AI?",
+        "anchor": "local-vs-cloud-decision"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "local-ai-decision-tree",
+        "caption": "Use this decision tree to decide whether local AI makes sense for your situation",
+        "definition": "flowchart TD\n  START[Are you considering local AI?]\n  START --> Q1{Is data privacy\\ncritical for your use case?}\n  Q1 -->|Yes| Q2{Are you comfortable\\nwith basic software setup?}\n  Q2 -->|Yes| Q3{Do you have a modern\\ncomputer with 16GB+ RAM?}\n  Q3 -->|Yes| LOCAL[Local AI is a great fit\\nTry Ollama + LM Studio]\n  Q3 -->|No| UPGRADE[Consider upgrading RAM\\nor use enterprise cloud tier]\n  Q2 -->|No| CLOUD_ENT[Use enterprise cloud tier\\ne.g. ChatGPT Team / Claude Team]\n  Q1 -->|No | Q4{Do you need to\\nwork offline?}\n  Q4 -->|Yes| LOCAL\n  Q4 -->|No| CLOUD[Cloud AI is fine\\nChatGPT / Claude / Gemini]\n\n  style LOCAL fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37\n  style CLOUD fill:#ddf4ff,stroke:#0969da,color:#0550ae\n  style CLOUD_ENT fill:#ddf4ff,stroke:#0969da,color:#0550ae"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "why-local",
+      "data": {
+        "level": 2,
+        "text": "Reasons to run AI locally",
+        "anchor": "why-local"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "items": [
+          "Complete data privacy — nothing leaves your machine, ever. Critical for confidential business data, client information, or sensitive personal use.",
+          "Works fully offline — no internet required, no downtime from service outages",
+          "No usage limits or subscription cost after hardware (run as many queries as you want)",
+          "Consistent behavior — model stays the same until you choose to update it",
+          "Ability to customize, fine-tune, and swap models freely",
+          "No terms of service concerns about what you paste in"
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "trade-offs",
+      "data": {
+        "level": 2,
+        "text": "The honest trade-offs",
+        "anchor": "trade-offs"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Aspect",
+          "Local AI",
+          "Cloud AI"
+        ],
+        "rows": [
+          [
+            "Privacy",
+            "✅ Complete — stays on your device",
+            "⚠️ Depends on provider policy"
+          ],
+          [
+            "Capability",
+            "⚠️ Good but behind frontier models",
+            "✅ Access to GPT-4o, Claude 3.5, etc."
+          ],
+          [
+            "Speed",
+            "⚠️ Depends on your hardware",
+            "✅ Very fast on good internet"
+          ],
+          [
+            "Cost",
+            "✅ Free after hardware cost",
+            "⚠️ Subscription or pay-per-use"
+          ],
+          [
+            "Setup",
+            "⚠️ Requires some initial setup",
+            "✅ Instant in browser"
+          ],
+          [
+            "Offline use",
+            "✅ Works anywhere",
+            "❌ Requires internet"
+          ],
+          [
+            "Context window",
+            "⚠️ Smaller (4K-32K typically)",
+            "✅ 128K-1M tokens"
+          ],
+          [
+            "Multimodal",
+            "⚠️ Limited options",
+            "✅ Full image, voice, file support"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "tools",
+      "data": {
+        "level": 2,
+        "text": "The best tools for running local AI",
+        "anchor": "tools"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "cards": [
+          {
+            "title": "Ollama",
+            "description": "The easiest way to run open models locally (Mac, Linux, Windows). Free. Download and run Llama 3, Mistral, Gemma, Phi, and dozens more with a single terminal command.",
+            "pros": [
+              "Easiest setup (one command)",
+              "Works on all platforms",
+              "Huge model library",
+              "API compatible with OpenAI format"
+            ],
+            "cons": [
+              "Command-line interface only (no GUI built-in)",
+              "Requires some comfort with a terminal"
+            ],
+            "tags": [
+              "free",
+              "beginner-friendly"
+            ]
+          },
+          {
+            "title": "LM Studio",
+            "description": "Polished desktop app for discovering, downloading, and chatting with local AI models. Looks and feels like a chatbot interface. The best starting point if you have never run local AI before.",
+            "pros": [
+              "Beautiful GUI — no terminal needed",
+              "Built-in model browser",
+              "Easy model comparison"
+            ],
+            "cons": [
+              "Less flexible than Ollama for programming use",
+              "Larger app footprint"
+            ],
+            "tags": [
+              "free",
+              "gui",
+              "beginner"
+            ]
+          },
+          {
+            "title": "Open WebUI",
+            "description": "A self-hosted web dashboard that connects to Ollama. Looks and feels like ChatGPT but runs entirely on your machine. Great for households or small teams sharing a local AI.",
+            "pros": [
+              "ChatGPT-like interface",
+              "Multi-user support",
+              "Plugin system"
+            ],
+            "cons": [
+              "Requires Ollama running locally",
+              "More advanced setup"
+            ],
+            "tags": [
+              "free",
+              "self-hosted"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "hardware-guide",
+      "data": {
+        "level": 2,
+        "text": "Hardware requirements",
+        "anchor": "hardware-guide"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Model size",
+          "RAM required",
+          "Performance",
+          "Good for"
+        ],
+        "rows": [
+          [
+            "1B–3B params (Phi-3 Mini, Gemma 2B)",
+            "8GB RAM minimum",
+            "Fast even on older hardware",
+            "Quick answers, simple drafting"
+          ],
+          [
+            "7B params (Mistral 7B, Llama 3.1 8B)",
+            "16GB RAM recommended",
+            "Good speed on modern hardware",
+            "General use — best quality/speed balance"
+          ],
+          [
+            "13B params",
+            "32GB RAM recommended",
+            "Slower on consumer hardware",
+            "More capable reasoning"
+          ],
+          [
+            "70B params (Llama 3 70B)",
+            "64GB RAM or GPU with 40GB VRAM",
+            "Slow on consumer hardware",
+            "Near-GPT-4 quality, high hardware cost"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "title": "Best starting point for most people",
+        "text": "Download LM Studio → browse for \"Llama 3.1 8B\" or \"Mistral 7B\" → click download → start chatting. Takes about 10-15 minutes including download time. No terminal required."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Is local AI right for you?",
+        "points": [
+          "✅ Yes, if: complete data privacy is required and you have 16GB+ RAM",
+          "✅ Yes, if: you work offline frequently or need a consistent model version",
+          "⚠️ Maybe, if: you want to experiment with AI without subscription costs",
+          "❌ No, if: you need the best model quality and cloud privacy policies work for you",
+          "Start with: LM Studio + Llama 3.1 8B — 15-minute setup, no terminal required"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "protecting-your-data",
+    "building-your-ai-stack"
+  ],
+  "furtherReading": [
+    {
+      "title": "Ollama — Run LLMs Locally",
+      "url": "https://ollama.com",
+      "type": "tool",
+      "author": "Ollama",
+      "description": "The simplest way to run open-source AI models on your own computer — one-command install, no cloud required."
+    },
+    {
+      "title": "Hugging Face Model Hub",
+      "url": "https://huggingface.co/models",
+      "type": "tool",
+      "author": "Hugging Face",
+      "description": "Repository of thousands of open-source AI models — browse, filter by task, and run in the browser or locally."
+    },
+    {
+      "title": "LM Studio",
+      "url": "https://lmstudio.ai",
+      "type": "tool",
+      "author": "LM Studio",
+      "description": "Visual desktop app for discovering and running local AI models — no command line required."
+    }
+  ]
+}

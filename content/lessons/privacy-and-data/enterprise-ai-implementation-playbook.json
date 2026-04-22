@@ -1,0 +1,112 @@
+{
+  "id": "lesson-052",
+  "slug": "enterprise-ai-implementation-playbook",
+  "moduleSlug": "privacy-and-data",
+  "title": "Enterprise AI Implementation Playbook",
+  "description": "A practical rollout playbook for teams: pilot selection, governance, measurement, and scaling AI safely across the organization.",
+  "order": 4,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 18,
+  "tags": [
+    "enterprise-ai",
+    "rollout",
+    "governance",
+    "change-management",
+    "implementation"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Enterprise AI success is rarely a tooling problem. It is usually an implementation problem: unclear ownership, weak governance, no quality metrics, and no adoption plan. This playbook helps teams roll out AI in a structured way."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "rollout-phases",
+      "data": {
+        "level": 2,
+        "text": "Enterprise rollout phases",
+        "anchor": "rollout-phases"
+      }
+    },
+    {
+      "type": "numbered-list",
+      "data": {
+        "items": [
+          "Pick 2-3 pilot workflows with clear ROI and low regulatory risk.",
+          "Define policy, data controls, and approval boundaries before launch.",
+          "Train pilot users on prompt quality and verification habits.",
+          "Measure outcomes: time saved, quality score, incident rate.",
+          "Scale only successful pilots with documented playbooks."
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Role",
+          "Responsibility",
+          "Success metric"
+        ],
+        "rows": [
+          [
+            "Executive sponsor",
+            "Defines business goals and adoption mandate",
+            "Pilot ROI and adoption rate"
+          ],
+          [
+            "Ops / PM owner",
+            "Workflow design and rollout execution",
+            "Cycle time reduction"
+          ],
+          [
+            "Security / Legal",
+            "Policy guardrails and compliance review",
+            "Incident and compliance score"
+          ],
+          [
+            "Team leads",
+            "Coaching and weekly workflow quality review",
+            "Output quality consistency"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Implementation success factors",
+        "points": [
+          "Start with measurable pilots, not company-wide rollout",
+          "Define governance and data policy early",
+          "Invest in user training and workflow documentation",
+          "Track both productivity gains and risk incidents",
+          "Scale proven patterns, retire weak pilots quickly"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "team-ai-governance",
+    "protecting-your-data",
+    "ai-evaluation-metrics"
+  ],
+  "furtherReading": [
+    {
+      "title": "NIST AI Risk Management Framework",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "type": "article",
+      "author": "NIST",
+      "description": "Framework for operationalizing AI risk management."
+    },
+    {
+      "title": "AI for Everyone",
+      "url": "https://www.coursera.org/learn/ai-for-everyone",
+      "type": "course",
+      "author": "Andrew Ng / DeepLearning.AI",
+      "description": "Non-technical strategic framework for AI adoption in organizations."
+    }
+  ]
+}

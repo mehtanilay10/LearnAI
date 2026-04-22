@@ -1,0 +1,298 @@
+{
+  "id": "lesson-038",
+  "slug": "voice-and-video-ai",
+  "moduleSlug": "multimodal-ai",
+  "title": "Voice and Video AI",
+  "description": "Explore AI tools for audio transcription, voice generation, video processing, and the practical — and ethical — implications of each.",
+  "order": 2,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 14,
+  "tags": [
+    "voice",
+    "audio",
+    "video",
+    "transcription",
+    "synthesis",
+    "multimodal"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Audio and video AI tools have quietly become some of the most practically useful AI capabilities available today. From instant meeting transcription to turning a podcast into a blog post, this category delivers real-world time savings most people are not yet using."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "the-landscape",
+      "data": {
+        "level": 2,
+        "text": "The voice and video AI landscape",
+        "anchor": "the-landscape"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "voice-video-landscape",
+        "caption": "Voice and video AI falls into four capability areas — each with distinct tools and use cases",
+        "definition": "graph TD\n  VV[\"Voice and Video AI\"]\n  VV --> TR[\"🎙️ Transcription\\nSpeech to Text\"]\n  VV --> SYN[\"🔊 Voice Synthesis\\nText to Speech\"]\n  VV --> VID[\"🎬 Video AI\\nGeneration and Processing\"]\n  VV --> ANL[\"🔍 Audio Analysis\\nSearch and Summarize\"]\n\n  TR --> TR1[\"Whisper (OpenAI)\"]\n  TR --> TR2[\"Otter.ai\"]\n  TR --> TR3[\"Fireflies.ai\"]\n\n  SYN --> SYN1[\"ElevenLabs\"]\n  SYN --> SYN2[\"OpenAI TTS\"]\n  SYN --> SYN3[\"Murf.ai\"]\n\n  VID --> VID1[\"Runway Gen-3\"]\n  VID --> VID2[\"Descript (editing)\"]\n  VID --> VID3[\"Opus Clip (highlights)\"]\n\n  ANL --> ANL1[\"Meeting summaries\"]\n  ANL --> ANL2[\"Speaker identification\"]\n  ANL --> ANL3[\"Podcast to blog post\"]\n\n  style VV fill:#ddf4ff,stroke:#0969da\n  style TR fill:#d1f3d8,stroke:#1a7f37\n  style SYN fill:#fff8c5,stroke:#9a6700\n  style VID fill:#eddff8,stroke:#8250df\n  style ANL fill:#ffe1cc,stroke:#bc4c00"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "transcription",
+      "data": {
+        "level": 2,
+        "text": "Transcription: turning speech to text",
+        "anchor": "transcription"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI transcription has become remarkably accurate — often exceeding 95% word-level accuracy on clear audio. Modern tools add speaker identification, timestamps, and searchable transcripts automatically, turning hours of audio into structured, searchable text in minutes."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Tool",
+          "Best for",
+          "Free tier",
+          "Key feature"
+        ],
+        "rows": [
+          [
+            "Whisper (OpenAI)",
+            "Offline use, developer integration",
+            "Free open-source model",
+            "Highest accuracy, 100 languages, runs locally"
+          ],
+          [
+            "Otter.ai",
+            "Live meeting transcription",
+            "Limited minutes/month",
+            "Real-time transcription + speaker labels + summaries"
+          ],
+          [
+            "Fireflies.ai",
+            "Meeting recording + CRM sync",
+            "Limited storage",
+            "Auto-joins meetings, creates searchable archive"
+          ],
+          [
+            "Riverside.fm",
+            "Podcast recording + transcription",
+            "Free basic",
+            "High-quality remote recording with transcript"
+          ],
+          [
+            "Zoom / Teams",
+            "Built-in meeting transcription",
+            "Included in subscriptions",
+            "Native integration, no add-on required"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "transcription-workflows",
+      "data": {
+        "level": 2,
+        "text": "High-value transcription workflows",
+        "anchor": "transcription-workflows"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Podcast to blog post workflow",
+        "content": "1. Record podcast episode\n2. Transcribe with Whisper or Otter.ai\n3. Paste transcript into Claude or ChatGPT\n4. Prompt: \"This is a podcast transcript. Create a structured blog post (~800 words) covering the main points. Use the speaker's voice and examples. Add an intro and conclusion. Do not invent facts not in the transcript.\"\n5. Edit the draft — add your analysis and links\n\nTime saved: 2-3 hours of manual note-taking and writing per episode"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Meeting to action items workflow",
+        "content": "1. Record meeting via Fireflies, Otter, or built-in Zoom/Teams transcription\n2. Feed transcript to AI\n3. Prompt: \"From this meeting transcript extract: (1) key decisions made with rationale, (2) action items as [Owner: Task by Date], (3) open questions not resolved. Keep under 300 words.\"\n\nTime saved: 30-45 minutes of manual meeting notes per session"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "voice-synthesis",
+      "data": {
+        "level": 2,
+        "text": "Voice synthesis: text to speech",
+        "anchor": "voice-synthesis"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI voice synthesis has crossed the threshold of believability. Tools like ElevenLabs generate speech indistinguishable from a real person. The practical uses are widespread — narration, accessibility, explainer videos — and the ethical risks are equally real."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Tool",
+          "Quality",
+          "Best use case",
+          "Cost"
+        ],
+        "rows": [
+          [
+            "ElevenLabs",
+            "Best-in-class",
+            "Narration, podcast voices, voice cloning",
+            "Free tier limited; paid from $5/month"
+          ],
+          [
+            "OpenAI TTS",
+            "Excellent",
+            "API integration, developer use",
+            "API pricing per character"
+          ],
+          [
+            "Murf.ai",
+            "Very good",
+            "Explainer videos, presentations",
+            "Subscription from $19/month"
+          ],
+          [
+            "Speechify",
+            "Good",
+            "Listen to articles and documents",
+            "Freemium"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "video-ai",
+      "data": {
+        "level": 2,
+        "text": "Video AI: what is useful today",
+        "anchor": "video-ai"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Capability",
+          "Top tools",
+          "Maturity",
+          "Practical use"
+        ],
+        "rows": [
+          [
+            "Auto-transcription and captions",
+            "CapCut, Descript, Adobe Premiere",
+            "Mature",
+            "Subtitles in minutes, not hours"
+          ],
+          [
+            "Edit video by editing the transcript",
+            "Descript",
+            "Very good",
+            "Delete filler words by deleting text"
+          ],
+          [
+            "Short clips from long video",
+            "Opus Clip, Munch",
+            "Very good",
+            "Turn a 1-hour recording into 5 highlight clips automatically"
+          ],
+          [
+            "Text-to-video generation",
+            "Runway Gen-3, Sora, Kling",
+            "Improving fast",
+            "Short B-roll clips and concept visualization"
+          ],
+          [
+            "AI avatar (talking head) videos",
+            "HeyGen, Synthesia",
+            "Good",
+            "Explainer videos without filming yourself"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "ethics-section",
+      "data": {
+        "level": 2,
+        "text": "Voice and video AI ethics",
+        "anchor": "ethics-section"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Deepfakes and non-consensual use",
+        "text": "Voice cloning and video generation can be misused to create fake audio or video of real people without consent. This technology is used in fraud, disinformation, and social manipulation. When evaluating media: verify the source independently, check with reverse image/audio search tools, and be especially skeptical of surprising or sensational audio/video of public figures."
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Ethical use principles:",
+        "items": [
+          "Only clone or replicate a voice with explicit, documented consent from that person",
+          "Label AI-generated audio and video clearly in any published content",
+          "Do not use AI-generated voices to impersonate real people for deception",
+          "Check your platform terms — most video platforms prohibit undisclosed AI avatars for monetized content"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Voice and video AI essentials",
+        "points": [
+          "Transcription: Whisper (free, accurate), Otter.ai (live meetings), Fireflies (auto-join + archive)",
+          "Best workflows: podcast to blog post, meeting to action items, video to highlights",
+          "Voice synthesis: ElevenLabs and OpenAI TTS are best-in-class for realistic speech",
+          "Video AI most useful today: auto-captions, transcript-based editing, clip generation",
+          "Text-to-video is maturing fast — useful for B-roll and short concepts, not yet for complex scenes",
+          "Always label AI-generated audio/video and only clone voices with explicit consent"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "images-and-ai",
+    "ai-writing-assistant"
+  ],
+  "furtherReading": [
+    {
+      "title": "ElevenLabs Voice AI",
+      "url": "https://elevenlabs.io",
+      "type": "tool",
+      "author": "ElevenLabs",
+      "description": "Leading AI voice synthesis platform — text to speech, voice cloning, and audio generation with natural-sounding results."
+    },
+    {
+      "title": "OpenAI Whisper",
+      "url": "https://openai.com/research/whisper",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Overview of Whisper, the open-source speech recognition model powering many transcription tools."
+    },
+    {
+      "title": "RunwayML",
+      "url": "https://runwayml.com",
+      "type": "tool",
+      "author": "Runway",
+      "description": "AI-powered video editing and generation tool — remove backgrounds, add effects, and generate video clips."
+    }
+  ]
+}

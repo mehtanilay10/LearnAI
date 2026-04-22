@@ -1,0 +1,120 @@
+{
+  "id": "lesson-047",
+  "slug": "vector-databases-in-practice",
+  "moduleSlug": "embeddings-and-vectors",
+  "title": "Vector Databases in Practice",
+  "description": "Go from concept to implementation mindset: chunking, metadata, retrieval settings, and evaluation for real semantic search systems.",
+  "order": 2,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 18,
+  "tags": [
+    "vector-database",
+    "rag",
+    "semantic-search",
+    "retrieval",
+    "embeddings"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Understanding vectors conceptually is useful, but practical quality depends on implementation details. Most poor RAG systems fail due to weak chunking, missing metadata, and no retrieval evaluation. This lesson gives you a practical blueprint."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "practical-pipeline",
+      "data": {
+        "level": 2,
+        "text": "Practical semantic search pipeline",
+        "anchor": "practical-pipeline"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "vector-pipeline-practice",
+        "caption": "Production-style retrieval pipeline from raw docs to grounded answer.",
+        "definition": "flowchart LR\n  A[Source documents] --> B[Chunking strategy]\n  B --> C[Embed each chunk]\n  C --> D[Store vectors + metadata]\n  D --> E[User query embedding]\n  E --> F[Similarity search + filters]\n  F --> G[Top-k retrieved chunks]\n  G --> H[LLM grounded response]\n  H --> I[Evaluation + feedback loop]\n\n  style D fill:#ddf4ff,stroke:#0969da,color:#0550ae\n  style F fill:#fff8c5,stroke:#9a6700,color:#9a6700\n  style H fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37\n  style I fill:#eddff8,stroke:#8250df,color:#6639ba"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Design choice",
+          "Common mistake",
+          "Recommended baseline"
+        ],
+        "rows": [
+          [
+            "Chunk size",
+            "Too large; loses precision",
+            "300-800 tokens, with overlap"
+          ],
+          [
+            "Metadata",
+            "No filters for source type/date",
+            "Store title, section, date, owner, sensitivity"
+          ],
+          [
+            "Top-k retrieval",
+            "Using fixed k everywhere",
+            "Start with k=5 and tune by task"
+          ],
+          [
+            "Re-ranking",
+            "Skipping relevance refinement",
+            "Use lightweight re-ranker for quality-critical tasks"
+          ],
+          [
+            "Evaluation",
+            "No benchmark queries",
+            "Maintain query set with expected evidence chunks"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Start simple, then tune",
+        "text": "Ship a baseline first, then improve one parameter at a time: chunk size, overlap, top-k, metadata filters, reranking. Measure each change against the same benchmark queries."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Vector DB implementation essentials",
+        "points": [
+          "Retrieval quality matters as much as model quality",
+          "Chunking and metadata are the two highest-impact levers",
+          "Use benchmark queries to tune settings objectively",
+          "Grounded responses need retrieved evidence, not just fluent text",
+          "Continuous evaluation prevents silent quality drift"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "embeddings-simply",
+    "rag-explained"
+  ],
+  "furtherReading": [
+    {
+      "title": "Building and Evaluating Advanced RAG",
+      "url": "https://www.deeplearning.ai/short-courses/building-and-evaluating-advanced-rag/",
+      "type": "course",
+      "author": "DeepLearning.AI",
+      "description": "Practical course on real RAG pipelines and evaluation."
+    },
+    {
+      "title": "Pinecone Learn",
+      "url": "https://www.pinecone.io/learn/",
+      "type": "article",
+      "author": "Pinecone",
+      "description": "Practical guides on vector search, retrieval design, and production considerations."
+    }
+  ]
+}

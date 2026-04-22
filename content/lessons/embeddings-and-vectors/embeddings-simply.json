@@ -1,0 +1,196 @@
+{
+  "id": "lesson-029",
+  "slug": "embeddings-simply",
+  "moduleSlug": "embeddings-and-vectors",
+  "title": "Embeddings Simply Explained",
+  "description": "What embeddings are, why they are foundational to modern AI, and how they make semantic search feel like magic.",
+  "order": 1,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 14,
+  "tags": [
+    "embeddings",
+    "vectors",
+    "semantic-search",
+    "meaning"
+  ],
+  "relatedGlossaryTerms": [
+    "embedding",
+    "vector-database",
+    "rag"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "How does a search engine know that \"car\" and \"automobile\" are the same thing? Or that \"happy\" and \"joyful\" are more similar than \"happy\" and \"sad\"? The answer is embeddings — the technology that gives AI a mathematical representation of meaning."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "what-is-embedding",
+      "data": {
+        "level": 2,
+        "text": "What is an embedding?",
+        "anchor": "what-is-embedding"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "An embedding is a list of hundreds or thousands of numbers (a vector) that represents the meaning of a piece of text. The remarkable property: texts with similar meanings will have similar (mathematically close) vectors. This converts meaning into arithmetic."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "title": "The map analogy",
+        "text": "Imagine placing every word on a giant map. Words with similar meanings cluster near each other. \"King\" is near \"queen\" and \"monarch\". \"Happy\" is near \"joyful\" but far from \"sad\". \"Car\" clusters with \"vehicle\", \"automobile\", \"truck\". An embedding is the precise coordinate of a piece of text on this meaning map."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "vector-space",
+        "caption": "Embeddings place words with similar meanings close together in \"vector space\" — enabling semantic search",
+        "definition": "graph LR\n  subgraph ROYALTY [\"Royalty cluster\"]\n    KING[\"king\"]\n    QUEEN[\"queen\"]\n    MONARCH[\"monarch\"]\n  end\n  subgraph EMOTION [\"Emotion cluster\"]\n    HAPPY[\"happy\"]\n    JOYFUL[\"joyful\"]\n    ELATED[\"elated\"]\n  end\n  subgraph VEHICLES [\"Vehicle cluster\"]\n    CAR[\"car\"]\n    AUTO[\"automobile\"]\n    TRUCK[\"truck\"]\n    VEHICLE[\"vehicle\"]\n  end\n\n  KING ---|similar| QUEEN\n  QUEEN ---|similar| MONARCH\n  HAPPY ---|similar| JOYFUL\n  JOYFUL ---|similar| ELATED\n  CAR ---|similar| AUTO\n  AUTO ---|similar| TRUCK\n\n  style ROYALTY fill:#ddf4ff,stroke:#0969da\n  style EMOTION fill:#d1f3d8,stroke:#1a7f37\n  style VEHICLES fill:#fff8c5,stroke:#9a6700"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "semantic-search",
+      "data": {
+        "level": 2,
+        "text": "How embeddings power semantic search",
+        "anchor": "semantic-search"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Traditional keyword search requires exact word matches. Semantic search uses embeddings to find content that means the same thing — even if it uses different words."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Keyword search vs semantic search",
+        "content": "Keyword search for \"affordable car\":\n→ Only finds documents containing exactly \"affordable\" AND \"car\"\n→ Misses: \"budget vehicle\", \"cheap automobile\", \"low-cost transportation\"\n\nSemantic search for \"affordable car\":\n→ Converts \"affordable car\" to its embedding vector\n→ Finds all documents whose meaning-vector is close\n→ Returns \"budget vehicles\", \"cheap automobiles\", \"economical transport\" — because their vectors are similar\n\nThis is why Perplexity can find relevant results even when you ask in your own words."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "why-it-matters",
+      "data": {
+        "level": 2,
+        "text": "Why embeddings matter for everyday AI users",
+        "anchor": "why-it-matters"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "items": [
+          "Semantic search — searching your documents by meaning instead of exact keywords (Notion AI, Obsidian AI)",
+          "RAG systems — finding the right document to feed to an AI before it answers your question",
+          "Recommendations — finding similar items without rule-based matching (Netflix, Spotify both use this)",
+          "Duplicate detection — identifying near-identical content even with different wording",
+          "Classification — grouping similar documents or feedback automatically"
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "vector-database",
+      "data": {
+        "level": 2,
+        "text": "Vector databases: the engine behind RAG",
+        "anchor": "vector-database"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A vector database stores embeddings and lets you find the most similar ones instantly — even across millions of documents. When you ask Perplexity a question or chat with a company's AI support bot, a vector database is doing the retrieval step behind the scenes."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "embedding-rag-flow",
+        "caption": "How embeddings power RAG: your question is converted to a vector, matched against stored document vectors, and the closest matches are sent to the AI",
+        "definition": "sequenceDiagram\n  participant U as User\n  participant EM as Embedding Model\n  participant VDB as Vector Database\n  participant LLM as Language Model\n\n  U->>EM: \"What is our refund policy?\"\n  EM->>VDB: [0.23, -0.87, 0.45, ...] (query vector)\n  VDB->>LLM: Top 3 most similar document chunks\n  Note over VDB,LLM: Documents whose vectors are\nclosest to the query vector\n  LLM->>U: Answer grounded in actual policy docs"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Vector database tool",
+          "Type",
+          "Common use case"
+        ],
+        "rows": [
+          [
+            "Pinecone",
+            "Cloud, managed",
+            "Production RAG systems, search"
+          ],
+          [
+            "Weaviate",
+            "Open-source or cloud",
+            "Document search, semantic retrieval"
+          ],
+          [
+            "Qdrant",
+            "Open-source",
+            "High-performance similarity search"
+          ],
+          [
+            "Chroma",
+            "Open-source, local-friendly",
+            "Development and small-scale RAG"
+          ],
+          [
+            "pgvector (PostgreSQL extension)",
+            "Embedded in your DB",
+            "If you already use PostgreSQL"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Embeddings: the key ideas",
+        "points": [
+          "Embeddings convert meaning into numbers (vectors) — similar meaning = similar vectors",
+          "They enable semantic search: find content by meaning, not just exact keywords",
+          "Vector databases store and search millions of embeddings instantly",
+          "RAG, recommendations, duplicate detection, and semantic search all run on embeddings",
+          "You use embeddings every time Perplexity finds relevant pages for your question"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "rag-explained",
+    "what-is-mcp"
+  ],
+  "furtherReading": [
+    {
+      "title": "The Illustrated Word2Vec",
+      "url": "https://jalammar.github.io/illustrated-word2vec/",
+      "type": "article",
+      "author": "Jay Alammar",
+      "description": "Visual walkthrough of word embeddings — the conceptual foundation behind all modern text embedding models."
+    },
+    {
+      "title": "What Are Embeddings?",
+      "url": "https://vickiboykis.com/what_are_embeddings/",
+      "type": "article",
+      "author": "Vicki Boykis",
+      "description": "Accessible deep-dive into how embeddings work, what they represent, and how they power modern AI systems."
+    }
+  ]
+}

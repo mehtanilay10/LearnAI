@@ -1,0 +1,168 @@
+{
+  "id": "lesson-023",
+  "slug": "how-agents-work",
+  "moduleSlug": "agents-introduction",
+  "title": "How Agents Work",
+  "description": "A deeper look at how AI agents use planning, memory, and tools to complete multi-step tasks.",
+  "order": 2,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 12,
+  "tags": [
+    "agents",
+    "memory",
+    "planning",
+    "tools"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Under the hood, AI agents combine three capabilities that simple chatbots lack: a planning loop, access to tools, and some form of memory. Understanding these components helps you evaluate any agent tool and know when to trust its output."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "agent-architecture",
+        "caption": "The four building blocks of every AI agent: the LLM core, memory, tools, and an execution loop",
+        "definition": "graph TD\n  subgraph AGENT [\"AI Agent Architecture\"]\n    LLM[\"LLM Core\n(Planning + Reasoning)\"]\n    MEM[\"Memory\nShort-term: context window\nLong-term: vector DB / files\"]\n    TOOLS[\"Tools\nSearch / Code / Files / APIs\"]\n    LOOP[\"Execution Loop\nObserve → Plan → Act → Check\"]\n  end\n\n  USER[\"User Goal\"] --> LOOP\n  LOOP --> LLM\n  LLM --> MEM\n  LLM --> TOOLS\n  TOOLS --> LOOP\n  LOOP --> OUTPUT[\"Result\"]\n\n  style LLM fill:#ddf4ff,stroke:#0969da\n  style MEM fill:#d1f3d8,stroke:#1a7f37\n  style TOOLS fill:#fff8c5,stroke:#9a6700\n  style LOOP fill:#eddff8,stroke:#8250df"
+      }
+    },
+    {
+      "type": "key-terms",
+      "data": {
+        "terms": [
+          {
+            "term": "Planning",
+            "definition": "The agent breaks a complex goal into sub-tasks and sequences them logically before acting. It decides: what do I need first? What tool achieves that? What should I do with the result?"
+          },
+          {
+            "term": "Tool use",
+            "definition": "The agent can invoke external tools: web search, code execution, file access, API calls, database queries. Each tool call extends what the agent can know and do."
+          },
+          {
+            "term": "Short-term memory",
+            "definition": "The active context window. Holds the conversation, instructions, tool results, and current progress. Cleared when the session ends."
+          },
+          {
+            "term": "Long-term memory",
+            "definition": "Stored externally in files, databases, or vector stores. Persists across sessions and can be retrieved when relevant."
+          },
+          {
+            "term": "Reflection",
+            "definition": "Some advanced agents evaluate their own output and self-correct if the result doesn't meet the goal. This is what separates basic agents from more reliable ones."
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "memory-types-explained",
+      "data": {
+        "level": 2,
+        "text": "Memory types in depth",
+        "anchor": "memory-types-explained"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Memory type",
+          "What it stores",
+          "Duration",
+          "Enabled by"
+        ],
+        "rows": [
+          [
+            "Short-term (context)",
+            "Current conversation, recent tool results",
+            "Current session only",
+            "Built-in context window"
+          ],
+          [
+            "Long-term (external)",
+            "Past task summaries, user preferences, knowledge",
+            "Persists across sessions",
+            "Vector DB, files, database"
+          ],
+          [
+            "Episodic",
+            "Memory of past similar tasks and their outcomes",
+            "Persists, retrieved by relevance",
+            "RAG over task history"
+          ],
+          [
+            "Procedural",
+            "How to perform specific types of tasks",
+            "Embedded in system prompt or fine-tuning",
+            "System instructions"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "popular-agents",
+      "data": {
+        "level": 2,
+        "text": "Agents you can use today (no code)",
+        "anchor": "popular-agents"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "items": [
+          "ChatGPT with tools enabled — can search, run code, and analyze files in sequence within one conversation",
+          "Claude Projects — persistent files and instructions that the agent uses across all your conversations in a project",
+          "Perplexity Deep Research — autonomous multi-step web research that cites every source",
+          "Notion AI — an agent within your Notion workspace that can read, create, and edit pages",
+          "Microsoft 365 Copilot — agent-like behavior across Outlook, Teams, Word, and Excel"
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "title": "Do I need to use agents right now?",
+        "text": "Not necessarily. For most everyday tasks, a good prompt workflow gets you 90% of the value. Agents add the most value for: multi-step tasks that span multiple tools, tasks requiring current web information, and repetitive processes that you want to run with minimal involvement."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Agent components",
+        "points": [
+          "Planning: the LLM breaks the goal into steps and decides what to do next",
+          "Tools: external capabilities the agent invokes (search, code, files, APIs)",
+          "Short-term memory: the context window for the current session",
+          "Long-term memory: external storage that persists and can be retrieved",
+          "Reflection: self-evaluation that improves multi-step reliability",
+          "Agents are most valuable for multi-step tasks across multiple systems"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "what-are-agents",
+    "what-is-tool-calling"
+  ],
+  "furtherReading": [
+    {
+      "title": "LLM-Powered Autonomous Agents",
+      "url": "https://lilianweng.github.io/posts/2023-06-23-agent/",
+      "type": "article",
+      "author": "Lilian Weng / OpenAI",
+      "description": "Technical but accessible breakdown of agent architectures — planning loops, memory types, and tool use explained with examples."
+    },
+    {
+      "title": "AI Agents in LangGraph",
+      "url": "https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/",
+      "type": "course",
+      "author": "LangChain / DeepLearning.AI",
+      "description": "Hands-on short course on building agents — free to enroll, no prior ML knowledge required."
+    }
+  ]
+}

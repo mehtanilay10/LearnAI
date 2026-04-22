@@ -1,0 +1,120 @@
+{
+  "id": "lesson-030",
+  "slug": "what-is-mcp",
+  "moduleSlug": "mcp-and-skills",
+  "title": "What Is MCP?",
+  "description": "Understand the Model Context Protocol — the open standard that connects AI models to tools, databases, and services.",
+  "order": 1,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 14,
+  "tags": [
+    "mcp",
+    "protocol",
+    "tool-calling",
+    "integration"
+  ],
+  "relatedGlossaryTerms": [
+    "mcp",
+    "tool-calling",
+    "agent"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "MCP — the Model Context Protocol — is an open standard introduced by Anthropic in 2024 that is quickly becoming the universal language for connecting AI models to external tools and data sources."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "why-mcp",
+      "data": {
+        "level": 2,
+        "text": "Why MCP was created",
+        "anchor": "why-mcp"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Before MCP, every AI tool had its own custom integration with every service. If you wanted your AI to access your database, your calendar, and your code editor, each required a custom one-off implementation. MCP creates a standard API that works once and works everywhere."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "title": "The USB analogy",
+        "text": "Before USB, every device needed a different, incompatible cable. USB created one standard plug that works everywhere. MCP does the same for AI tools → external tools."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "mcp-diagram",
+        "caption": "MCP: a standard protocol connecting AI models to tools via MCP Servers",
+        "definition": "flowchart LR\n  A[AI Model\\ne.g. Claude] -->|MCP protocol| B[MCP Server A\\nFile system]\n  A -->|MCP protocol| C[MCP Server B\\nGitHub]\n  A -->|MCP protocol| D[MCP Server C\\nDatabase]\n  A -->|MCP protocol| E[MCP Server D\\nCalendar]"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "mcp-today",
+      "data": {
+        "level": 2,
+        "text": "MCP today",
+        "anchor": "mcp-today"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "items": [
+          "Hundreds of MCP servers now exist for tools like GitHub, Slack, Notion, Postgres, filesystem access, and more",
+          "Claude Desktop supports MCP natively — you can connect it to your local files, databases, and apps",
+          "Many AI coding tools (Cursor, Cline, Windsurf) use MCP to give agents access to development tools",
+          "MCP is now supported by OpenAI and other major providers — it is becoming the industry standard"
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "title": "Do I need to understand MCP deeply?",
+        "text": "Not right now. What matters: MCP is why AI tools can increasingly connect to everything else you use. As more tools adopt it, AI agents will become dramatically more useful for everyday workflows."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "MCP in brief",
+        "points": [
+          "MCP = a standard protocol for AI models to connect to external tools",
+          "Created by Anthropic, now adopted industry-wide",
+          "Like USB for AI integrations — build once, works everywhere",
+          "The foundation for increasingly capable AI agents in your workflow"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "ai-skills-explained",
+    "what-are-agents"
+  ],
+  "furtherReading": [
+    {
+      "title": "Model Context Protocol — Official Docs",
+      "url": "https://modelcontextprotocol.io",
+      "type": "article",
+      "author": "Anthropic",
+      "description": "The official MCP specification — covers the protocol design, how to build MCP servers, and the growing ecosystem."
+    },
+    {
+      "title": "Introducing the Model Context Protocol",
+      "url": "https://www.anthropic.com/news/model-context-protocol",
+      "type": "article",
+      "author": "Anthropic",
+      "description": "Anthropic's announcement post explaining why MCP was created and how it changes the AI tools landscape."
+    }
+  ]
+}

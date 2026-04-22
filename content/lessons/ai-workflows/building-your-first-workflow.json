@@ -1,0 +1,212 @@
+{
+  "id": "lesson-019",
+  "slug": "building-your-first-workflow",
+  "moduleSlug": "ai-workflows",
+  "title": "Building Your First AI Workflow",
+  "description": "Turn a repetitive AI task into a reusable, reliable workflow you can run in minutes.",
+  "order": 1,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 15,
+  "tags": [
+    "workflows",
+    "automation",
+    "templates",
+    "productivity"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "An AI workflow is a repeatable sequence of prompts and steps that reliably produces the output you need. Building one shifts you from \"asking AI random questions\" to \"using AI as a dependable system that saves you time every week.\""
+      }
+    },
+    {
+      "type": "heading",
+      "id": "anatomy-workflow",
+      "data": {
+        "level": 2,
+        "text": "Anatomy of an AI workflow",
+        "anchor": "anatomy-workflow"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "workflow-anatomy",
+        "caption": "Every effective AI workflow has five components — build all five before considering it complete",
+        "definition": "flowchart LR\n  T[1. Trigger\\nWhat starts it?]\n  I[2. Input prep\\nWhat context does AI need?]\n  P[3. Prompt chain\\nWhat prompts run in sequence?]\n  O[4. Output format\\nWhat does the result look like?]\n  R[5. Review step\\nWhat do YOU check?]\n\n  T --> I --> P --> O --> R\n\n  style T fill:#ddf4ff,stroke:#0969da\n  style I fill:#d1f3d8,stroke:#1a7f37\n  style P fill:#fff8c5,stroke:#9a6700\n  style O fill:#ffe1cc,stroke:#bc4c00\n  style R fill:#eddff8,stroke:#8250df"
+      }
+    },
+    {
+      "type": "key-terms",
+      "data": {
+        "terms": [
+          {
+            "term": "Trigger",
+            "definition": "What event starts the workflow? A meeting ending, a new email, a document being uploaded, a weekly schedule."
+          },
+          {
+            "term": "Input preparation",
+            "definition": "What context, data, or text does the AI need to work with? Where does it come from? How do you paste or send it?"
+          },
+          {
+            "term": "Prompt chain",
+            "definition": "Two or more prompts that run in sequence — the output of one becomes the input of the next."
+          },
+          {
+            "term": "Output format",
+            "definition": "What does the final result look like? Bullet list, markdown table, Notion entry, JSON, email? Define this upfront."
+          },
+          {
+            "term": "Review step",
+            "definition": "The human checkpoint. What do you verify before the output goes anywhere? Every workflow needs at least one."
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "real-workflow-example",
+      "data": {
+        "level": 2,
+        "text": "A complete workflow example: meeting notes",
+        "anchor": "real-workflow-example"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Meeting Notes → Notion workflow",
+        "content": "1. TRIGGER: Meeting ends, recording transcript is available\n\n2. INPUT PREP: Copy the raw transcript and paste into Claude\n\n3. PROMPT 1 (Summary):\n\"Here is a meeting transcript. Summarize:\n- Key decisions made (with rationale)\n- Open questions not resolved\n- Action items format: [Owner]: [Task] by [Date]\nKeep the entire summary under 300 words.\"\n\n4. PROMPT 2 (Table):\n\"Convert the action items into a formatted table with columns: Owner | Task | Due Date | Priority\"\n\n5. OUTPUT: Paste both into the Notion meeting page\n\n6. REVIEW: Check that action item owners are correctly identified (AI may mix up names)"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "prompt-chaining",
+      "data": {
+        "level": 2,
+        "text": "Why prompt chaining works better than one big prompt",
+        "anchor": "prompt-chaining"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Asking AI to do five things at once in a single prompt produces mediocre results across all five. Breaking the task into a chain of focused prompts — where each step gets full attention — produces dramatically better results."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Big single prompt",
+          "Chained prompts"
+        ],
+        "rows": [
+          [
+            "AI splits attention five ways",
+            "Each step is the full focus of one prompt"
+          ],
+          [
+            "Errors in step 1 cascade through everything",
+            "You can fix step 1 before moving to step 2"
+          ],
+          [
+            "Hard to identify what went wrong",
+            "Easy to pinpoint and fix the weak step"
+          ],
+          [
+            "One chance to get it right",
+            "Iterative — improve each link in the chain"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "more-workflow-templates",
+      "data": {
+        "level": 2,
+        "text": "More workflow templates to build",
+        "anchor": "more-workflow-templates"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "High-value workflow ideas:",
+        "items": [
+          "Weekly review: paste your task list → AI produces a prioritized plan for the week",
+          "Email triage: paste email threads → AI classifies as urgent / FYI / action needed",
+          "Job application: paste job description + your CV → AI writes a tailored cover letter first draft",
+          "Content brief: paste a topic and audience → AI produces an outline with headings and key points",
+          "Research digest: paste 3-5 articles → AI extracts key findings and patterns across them",
+          "Decision memo: describe a decision → AI formats pros/cons/risks/recommendation"
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Start by documenting a workflow you already do manually. Then identify which steps require language, judgment, or synthesis. Build your AI prompt chain around exactly those steps."
+      }
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "title": "Build your first workflow",
+        "description": "Choose one of the following templates and build your version this week.",
+        "steps": [
+          "Pick a task you do every week that involves writing, summarizing, or analyzing text",
+          "Write down the 3-5 steps of how you currently do it manually",
+          "Identify which steps AI can replace (writing, summarizing, formatting)",
+          "Write a prompt for each AI step",
+          "Test with real data from your actual work",
+          "Refine the prompts until you get output you would actually use"
+        ],
+        "expectedOutcome": "A working prompt chain that saves you 15-30 minutes per week on a recurring task"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Workflow building checklist",
+        "points": [
+          "Define the trigger and final output before writing a single prompt",
+          "Break complex tasks into a chain of focused, simpler prompts",
+          "Include a human review step — AI workflows need checkpoints",
+          "Save your finished workflow as a text template for reuse",
+          "Improve one step at a time when the output is not quite right"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "few-shot-prompting",
+    "what-is-ai-automation"
+  ],
+  "furtherReading": [
+    {
+      "title": "Zapier Getting Started",
+      "url": "https://zapier.com/learn/automation/zapier-getting-started/",
+      "type": "article",
+      "author": "Zapier",
+      "description": "Official beginner guide to building your first automated workflow with Zapier — no code required."
+    },
+    {
+      "title": "Make Tutorials",
+      "url": "https://www.make.com/en/help/tutorials",
+      "type": "article",
+      "author": "Make",
+      "description": "Step-by-step tutorials for building advanced automation scenarios in Make (formerly Integromat)."
+    },
+    {
+      "title": "ChatGPT Prompt Engineering for Developers",
+      "url": "https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/",
+      "type": "course",
+      "author": "OpenAI / DeepLearning.AI",
+      "description": "Covers prompt techniques that power AI-driven automation workflows from simple to complex."
+    }
+  ]
+}

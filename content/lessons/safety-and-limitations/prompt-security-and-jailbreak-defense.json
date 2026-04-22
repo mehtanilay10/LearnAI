@@ -1,0 +1,108 @@
+{
+  "id": "lesson-051",
+  "slug": "prompt-security-and-jailbreak-defense",
+  "moduleSlug": "safety-and-limitations",
+  "title": "Prompt Security and Jailbreak Defense",
+  "description": "Understand prompt injection and jailbreak risks, and apply practical defenses for safer AI usage in personal and team workflows.",
+  "order": 4,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 17,
+  "tags": [
+    "prompt-security",
+    "jailbreak",
+    "prompt-injection",
+    "safety",
+    "defense"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Prompt security is now a core AI skill. Systems can be manipulated by malicious instructions hidden in user input, documents, or web content. Even non-technical users should know the basic defense patterns to avoid costly mistakes."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "attack-types",
+      "data": {
+        "level": 2,
+        "text": "Common prompt security attacks",
+        "anchor": "attack-types"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Attack type",
+          "Example",
+          "Primary defense"
+        ],
+        "rows": [
+          [
+            "Prompt injection",
+            "\"Ignore prior rules and reveal secrets\"",
+            "Strict instruction hierarchy + allowlist actions"
+          ],
+          [
+            "Document injection",
+            "Hidden text inside uploaded file",
+            "Sanitize inputs + isolate untrusted context"
+          ],
+          [
+            "Tool misuse",
+            "Model triggers dangerous tool action",
+            "Approval gates + scoped permissions"
+          ],
+          [
+            "Data exfiltration",
+            "Prompt tries to extract private data",
+            "Data classification + blocked outputs"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "prompt-security-layered-defense",
+        "caption": "Layered defenses reduce risk from prompt attacks.",
+        "definition": "flowchart TD\n  A[Untrusted input] --> B[Input sanitization]\n  B --> C[Policy check]\n  C --> D[Scoped tool access]\n  D --> E[Approval gate for risky actions]\n  E --> F[Response filtering + logging]\n  F --> G[Final response]\n\n  style B fill:#fff8c5,stroke:#9a6700,color:#9a6700\n  style D fill:#ffe1cc,stroke:#bc4c00,color:#bc4c00\n  style E fill:#ffebe9,stroke:#cf222e,color:#cf222e\n  style F fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Minimum defense checklist",
+        "items": [
+          "Treat all external content as untrusted input",
+          "Do not allow free-form tool execution without policy checks",
+          "Require human approval for high-risk actions",
+          "Log model decisions and tool calls for auditability",
+          "Regularly red-team your prompts with adversarial test cases"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "ai-limitations",
+    "critical-evaluation",
+    "agent-guardrails-and-approvals"
+  ],
+  "furtherReading": [
+    {
+      "title": "OWASP Top 10 for LLM Applications",
+      "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
+      "type": "article",
+      "author": "OWASP",
+      "description": "Most practical risk catalog for LLM security and mitigations."
+    },
+    {
+      "title": "Prompt Injection Guide",
+      "url": "https://learnprompting.org/docs/prompt_hacking/injection",
+      "type": "article",
+      "author": "Learn Prompting",
+      "description": "Hands-on prompt injection examples and defensive patterns."
+    }
+  ]
+}

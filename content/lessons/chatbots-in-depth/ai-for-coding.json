@@ -1,0 +1,240 @@
+{
+  "id": "lesson-040",
+  "slug": "ai-for-coding",
+  "moduleSlug": "chatbots-in-depth",
+  "title": "AI for Coding and Technical Tasks",
+  "description": "How to use AI for coding — from writing your first script to reviewing complex code — even if you have never programmed before.",
+  "order": 3,
+  "difficulty": "beginner",
+  "estimatedMinutes": 14,
+  "tags": [
+    "coding",
+    "github-copilot",
+    "cursor",
+    "debugging",
+    "technical",
+    "non-coders"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI has transformed coding more than almost any other knowledge domain. Developers ship features faster. And non-developers — for the first time — can create working scripts, formulas, and automation snippets without years of programming experience. This lesson covers both cases."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "coding-ai-modes",
+      "data": {
+        "level": 2,
+        "text": "Four ways AI assists with code",
+        "anchor": "coding-ai-modes"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "ai-coding-assistance",
+        "caption": "AI coding assistance spans four modes — write, explain, debug, and review — all available even without coding experience",
+        "definition": "graph TD\n  AI[\"AI Coding Assistant\"]\n\n  AI --> WRITE[\"✍️ Write new code\\nDescribe what you want\\nin plain English\"]\n  AI --> EXPLAIN[\"📖 Explain code\\n'What does this do?'\\n'Why is it written this way?'\"]\n  AI --> DEBUG[\"🐛 Debug problems\\n'This throws an error.\\nWhat is wrong?'\"]\n  AI --> REVIEW[\"🔍 Review and improve\\n'Is there a better way?\\nWhat are the edge cases?'\"]\n\n  WRITE --> USE1[\"Scripts / automation\"]\n  WRITE --> USE2[\"Excel / Sheets formulas\"]\n  WRITE --> USE3[\"SQL queries\"]\n  WRITE --> USE4[\"HTML / CSS\"]\n\n  style AI fill:#ddf4ff,stroke:#0969da\n  style WRITE fill:#d1f3d8,stroke:#1a7f37\n  style EXPLAIN fill:#fff8c5,stroke:#9a6700\n  style DEBUG fill:#ffe1cc,stroke:#bc4c00\n  style REVIEW fill:#eddff8,stroke:#8250df"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "non-coders",
+      "data": {
+        "level": 2,
+        "text": "For non-coders: what you can build with AI",
+        "anchor": "non-coders"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Task",
+          "What to ask AI",
+          "Tools needed"
+        ],
+        "rows": [
+          [
+            "Advanced Excel/Sheets formula",
+            "\"Write a formula that [describes logic]. I use Excel 365.\"",
+            "ChatGPT or Claude — free"
+          ],
+          [
+            "Simple Python script",
+            "\"Write a Python script that reads a CSV, filters rows where [condition], and saves the result\"",
+            "ChatGPT + Python (free)"
+          ],
+          [
+            "SQL query",
+            "\"Write a SQL query to find all customers who signed up last month and made at least 2 purchases\"",
+            "ChatGPT or Claude"
+          ],
+          [
+            "Regex pattern",
+            "\"Write a regex that matches UK phone numbers in all common formats\"",
+            "Any AI chatbot"
+          ],
+          [
+            "HTML/CSS snippet",
+            "\"Create a simple HTML email template with a header, two columns, and CTA button\"",
+            "ChatGPT"
+          ],
+          [
+            "Automate a file task",
+            "\"Write a script that renames all .jpg files in a folder to include today's date\"",
+            "ChatGPT + terminal"
+          ],
+          [
+            "Explain confusing code",
+            "\"Explain this function line by line in plain English: [paste]\"",
+            "Any AI chatbot"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "coding-tools",
+      "data": {
+        "level": 2,
+        "text": "AI coding tools compared",
+        "anchor": "coding-tools"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Tool",
+          "Best for",
+          "Where it runs",
+          "Free?"
+        ],
+        "rows": [
+          [
+            "ChatGPT (GPT-4o)",
+            "General coding help, explanations, debugging",
+            "Browser",
+            "Yes with limits"
+          ],
+          [
+            "Claude (Sonnet)",
+            "Complex code, long files, architectural decisions",
+            "Browser",
+            "Yes with limits"
+          ],
+          [
+            "GitHub Copilot",
+            "Code suggestions as you type inside your editor",
+            "VS Code, JetBrains, Vim",
+            "Free for individuals with GitHub account"
+          ],
+          [
+            "Cursor",
+            "Full codebase understanding, agent-mode coding",
+            "Standalone IDE",
+            "Free tier; $20/month paid"
+          ],
+          [
+            "Replit AI",
+            "Beginners learning to code, quick scripting",
+            "Browser (runs code too)",
+            "Free tier available"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "effective-coding-prompts",
+      "data": {
+        "level": 2,
+        "text": "Writing effective coding prompts",
+        "anchor": "effective-coding-prompts"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Write new code — complete prompt template",
+        "content": "\"Write a [language] [function / script / class] that:\n- Takes [input description] as input\n- Does [behavior, step by step]\n- Returns [output description]\n- Handles the edge case where [edge case]\n\nAdd comments explaining each major step. Use [specific library if known].\""
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Debug a problem",
+        "content": "\"This [language] code is supposed to [describe goal] but instead it [describe behavior or error message].\n\nCode:\n[paste code]\n\nError message:\n[paste error]\n\nWhat is wrong, and how do I fix it? Explain why the error occurs.\""
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Ask for improvements",
+        "content": "\"Review this code for: (1) bugs or edge cases it does not handle, (2) performance issues if it runs on large data, (3) readability — could it be easier to understand? Show specific suggestions with the improved code.\n\n[paste code]\""
+      }
+    },
+    {
+      "type": "heading",
+      "id": "security",
+      "data": {
+        "level": 2,
+        "text": "Security considerations",
+        "anchor": "security"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Never paste sensitive credentials into AI",
+        "text": "Never paste API keys, passwords, database connection strings, or authentication tokens into any AI chatbot. Remove them before pasting and replace with placeholders like YOUR_API_KEY. AI-generated code can also introduce security vulnerabilities — always review code that handles user input, file access, or authentication."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Always test AI-generated code before using it in production. It can look correct and still have subtle bugs on edge cases. For anything handling money, authentication, or user data — have a developer review it."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "AI for coding essentials",
+        "points": [
+          "Non-coders: AI can write Excel formulas, Python scripts, SQL queries, regex, and HTML — just describe what you need",
+          "The four modes: write, explain, debug, and review — all in natural language",
+          "For in-editor use: GitHub Copilot (free) or Cursor (more powerful)",
+          "For one-off tasks: ChatGPT or Claude in the browser",
+          "Never paste credentials into AI — use placeholders",
+          "Test and review all AI-generated code before using it in real systems"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "chatgpt-guide",
+    "model-comparison",
+    "what-is-tool-calling"
+  ],
+  "furtherReading": [
+    {
+      "title": "GitHub Copilot Documentation",
+      "url": "https://docs.github.com/en/copilot",
+      "type": "article",
+      "author": "GitHub",
+      "description": "Official guide to using GitHub Copilot — prompting patterns, keyboard shortcuts, and IDE integration tips."
+    },
+    {
+      "title": "Pair Programming with an LLM",
+      "url": "https://www.deeplearning.ai/short-courses/pair-programming-llm/",
+      "type": "course",
+      "author": "Google / DeepLearning.AI",
+      "description": "Free short course on using AI as a coding partner — prompting techniques for code generation, debugging, and explanation."
+    }
+  ]
+}

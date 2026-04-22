@@ -1,0 +1,113 @@
+{
+  "id": "lesson-050",
+  "slug": "ai-product-design-lifecycle",
+  "moduleSlug": "ai-workflows",
+  "title": "AI Product Design Lifecycle",
+  "description": "Learn how to design AI-powered workflows and products from idea to deployment with validation, safety checks, and iteration loops.",
+  "order": 3,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 17,
+  "tags": [
+    "ai-product",
+    "workflow-design",
+    "iteration",
+    "validation",
+    "deployment"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Building one good prompt is not product design. AI product design means defining user outcomes, quality criteria, failure handling, and continuous improvement. This lesson helps you move from one-off experiments to reliable systems."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "lifecycle",
+      "data": {
+        "level": 2,
+        "text": "The AI product lifecycle",
+        "anchor": "lifecycle"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "ai-product-lifecycle",
+        "caption": "AI product quality comes from iterative lifecycle discipline, not one-shot prompts.",
+        "definition": "flowchart LR\n  A[Problem definition] --> B[Workflow design]\n  B --> C[Prototype prompts/tools]\n  C --> D[Evaluate quality + risk]\n  D --> E[Deploy with guardrails]\n  E --> F[Monitor feedback + failures]\n  F --> G[Improve prompts/routing/policy]\n  G --> C\n\n  style A fill:#ddf4ff,stroke:#0969da,color:#0550ae\n  style D fill:#fff8c5,stroke:#9a6700,color:#9a6700\n  style E fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37\n  style F fill:#ffe1cc,stroke:#bc4c00,color:#bc4c00"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Stage",
+          "Key question",
+          "Deliverable"
+        ],
+        "rows": [
+          [
+            "Define",
+            "What exact user pain are we solving?",
+            "Problem statement + success metric"
+          ],
+          [
+            "Design",
+            "What is the minimal useful workflow?",
+            "Prompt/tool flow diagram"
+          ],
+          [
+            "Validate",
+            "Does it meet quality thresholds?",
+            "Scorecard on benchmark tasks"
+          ],
+          [
+            "Deploy",
+            "What guardrails are needed?",
+            "Approval rules + fallback behavior"
+          ],
+          [
+            "Improve",
+            "What failed in production and why?",
+            "Iteration backlog with prioritized fixes"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "AI product design principles",
+        "points": [
+          "Start with user outcome, not model capability",
+          "Ship minimal workflow first, then layer sophistication",
+          "Define quality metrics before deployment",
+          "Add guardrails for high-risk actions",
+          "Treat failures as data for iterative improvement"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "building-your-first-workflow",
+    "prompt-debugging-workflow",
+    "ai-evaluation-metrics"
+  ],
+  "furtherReading": [
+    {
+      "title": "Designing AI Products",
+      "url": "https://www.oreilly.com/library/view/designing-machine-learning/9781098107956/",
+      "type": "article",
+      "author": "O'Reilly",
+      "description": "Practical lifecycle mindset for ML/AI product design and operations."
+    },
+    {
+      "title": "OpenAI Cookbook",
+      "url": "https://cookbook.openai.com",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Practical implementation patterns for robust AI workflows."
+    }
+  ]
+}

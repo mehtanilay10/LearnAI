@@ -1,0 +1,128 @@
+{
+  "id": "lesson-046",
+  "slug": "team-ai-governance",
+  "moduleSlug": "privacy-and-data",
+  "title": "Team AI Governance Without Bureaucracy",
+  "description": "Create practical team rules for AI usage: what is allowed, what requires approval, and how to protect data while still moving fast.",
+  "order": 3,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 16,
+  "tags": [
+    "governance",
+    "privacy",
+    "enterprise",
+    "policy",
+    "compliance"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Most organizations need AI guardrails, but heavy policy documents fail in practice. Effective governance is short, clear, and directly tied to daily decisions: what data can be pasted, which tools are approved, and when human sign-off is mandatory."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "minimum-policy",
+      "data": {
+        "level": 2,
+        "text": "The minimum viable AI policy",
+        "anchor": "minimum-policy"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "5 policy sections every team needs",
+        "items": [
+          {
+            "text": "Approved tools list (and tools explicitly not approved)"
+          },
+          {
+            "text": "Data classification rules (public / internal / sensitive / restricted)"
+          },
+          {
+            "text": "Allowed and disallowed AI use cases by risk level"
+          },
+          {
+            "text": "Human review requirements for high-impact outputs"
+          },
+          {
+            "text": "Incident reporting path for AI mistakes or leaks"
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Scenario",
+          "Policy decision",
+          "Why"
+        ],
+        "rows": [
+          [
+            "Drafting public blog post",
+            "Allowed",
+            "Low risk; human editor still reviews"
+          ],
+          [
+            "Client contract drafting",
+            "Allowed with legal review",
+            "Legal and compliance impact"
+          ],
+          [
+            "Uploading customer PII to free chatbot",
+            "Disallowed",
+            "Data privacy risk"
+          ],
+          [
+            "Internal policy summary",
+            "Allowed in enterprise tier only",
+            "Controlled data handling"
+          ],
+          [
+            "Automated outbound messages to customers",
+            "Approval required",
+            "Brand and legal exposure"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Governance that works",
+        "points": [
+          "Keep policy short and operational (1-2 pages)",
+          "Focus on decisions people make daily",
+          "Classify data first, then decide tool usage",
+          "Add mandatory review for high-impact outputs",
+          "Revisit policy monthly as tools and risks evolve"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "protecting-your-data",
+    "ai-and-copyright",
+    "critical-evaluation"
+  ],
+  "furtherReading": [
+    {
+      "title": "NIST AI Risk Management Framework",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "type": "article",
+      "author": "NIST",
+      "description": "Practical framework for identifying and managing AI-related risks."
+    },
+    {
+      "title": "OWASP Top 10 for LLM Applications",
+      "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
+      "type": "article",
+      "author": "OWASP",
+      "description": "Security risks and mitigation patterns for LLM systems."
+    }
+  ]
+}

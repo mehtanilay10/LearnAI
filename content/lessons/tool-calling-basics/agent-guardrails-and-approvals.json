@@ -1,0 +1,126 @@
+{
+  "id": "lesson-044",
+  "slug": "agent-guardrails-and-approvals",
+  "moduleSlug": "tool-calling-basics",
+  "title": "Agent Guardrails and Human Approvals",
+  "description": "Learn how to safely run agents with tools by defining clear boundaries, approval gates, and fallback behavior before deployment.",
+  "order": 2,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 15,
+  "tags": [
+    "agents",
+    "guardrails",
+    "approval-flows",
+    "tool-calling",
+    "risk-management"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Agentic systems are powerful because they can act, not just answer. That power raises risk. A good agent setup starts with boundaries: what tools it can use, what actions require human approval, and what should happen when confidence is low."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "approval-architecture",
+      "data": {
+        "level": 2,
+        "text": "Safe agent architecture",
+        "anchor": "approval-architecture"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "agent-approval-flow",
+        "caption": "Use approval gates for medium/high-risk actions before execution.",
+        "definition": "flowchart TD\n  A[User request] --> B[Agent plans steps]\n  B --> C{Action risk level}\n  C -->|Low| D[Execute automatically]\n  C -->|Medium| E[Show preview + require click approval]\n  C -->|High| F[Escalate to human reviewer]\n  D --> G[Log action + result]\n  E --> G\n  F --> G\n  G --> H[Return final response]\n\n  style D fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37\n  style E fill:#fff8c5,stroke:#9a6700,color:#9a6700\n  style F fill:#ffebe9,stroke:#cf222e,color:#cf222e"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Action type",
+          "Risk level",
+          "Recommended control"
+        ],
+        "rows": [
+          [
+            "Fetch public data",
+            "Low",
+            "Allow auto-run + log"
+          ],
+          [
+            "Send draft email",
+            "Medium",
+            "Preview + one-click user approval"
+          ],
+          [
+            "Delete records / publish externally",
+            "High",
+            "Mandatory human approval + 2-step confirm"
+          ],
+          [
+            "Financial or policy decision",
+            "High",
+            "Human decision owner only"
+          ],
+          [
+            "Write to production systems",
+            "High",
+            "Role-based access + audit logs + rollback"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Minimum guardrails before launch",
+        "items": [
+          "Tool allowlist (only approved tools can be called)",
+          "Scope constraints (which data sources and actions are allowed)",
+          "Approval policy by risk category",
+          "Audit logging for every tool call",
+          "Fallback behavior when confidence is low or tool fails"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Guardrail principles",
+        "points": [
+          "Autonomy should be proportional to risk",
+          "High-risk actions always need human approval",
+          "Clear tool boundaries prevent accidental misuse",
+          "Audit logs are essential for accountability and debugging",
+          "Safe defaults matter more than maximum autonomy"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "what-is-tool-calling",
+    "what-are-agents",
+    "how-agents-work"
+  ],
+  "furtherReading": [
+    {
+      "title": "Function Calling Guide",
+      "url": "https://platform.openai.com/docs/guides/function-calling",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Design patterns for safe and robust tool invocation."
+    },
+    {
+      "title": "Tool Use with Claude",
+      "url": "https://docs.anthropic.com/en/docs/build-with-claude/tool-use",
+      "type": "article",
+      "author": "Anthropic",
+      "description": "Practical guidance for constrained tool access and safe execution."
+    }
+  ]
+}

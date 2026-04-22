@@ -1,0 +1,128 @@
+{
+  "id": "lesson-049",
+  "slug": "model-selection-and-cost-optimization",
+  "moduleSlug": "chatbots-in-depth",
+  "title": "Model Selection and Cost Optimization",
+  "description": "Learn how to choose the right model for each task and control costs without sacrificing quality or safety.",
+  "order": 4,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 18,
+  "tags": [
+    "model-selection",
+    "cost-optimization",
+    "latency",
+    "quality",
+    "routing"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Most teams overpay for AI by using one expensive model for every request. A better strategy is model routing: choose model size and capability based on task risk, complexity, and required quality. This lesson gives you a practical system for that."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "selection-framework",
+      "data": {
+        "level": 2,
+        "text": "A practical model selection framework",
+        "anchor": "selection-framework"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Task type",
+          "Recommended model tier",
+          "Reason"
+        ],
+        "rows": [
+          [
+            "Simple rewriting or summarization",
+            "Small/fast model",
+            "Lowest cost, enough quality for routine tasks"
+          ],
+          [
+            "General analysis and drafting",
+            "Mid-tier model",
+            "Good quality/cost balance"
+          ],
+          [
+            "Complex reasoning or high-stakes output",
+            "Frontier model",
+            "Best reliability and nuanced reasoning"
+          ],
+          [
+            "Fact-sensitive output with citations",
+            "Mid/high model + retrieval tools",
+            "Model alone is not enough; evidence needed"
+          ],
+          [
+            "Code generation for production systems",
+            "Higher-tier model + tests",
+            "Better code quality and fewer critical mistakes"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "model-routing-funnel",
+        "caption": "Route requests by risk and complexity to optimize both cost and quality.",
+        "definition": "flowchart TD\n  A[Incoming request] --> B{Risk level?}\n  B -->|Low| C[Use fast low-cost model]\n  B -->|Medium| D[Use balanced mid-tier model]\n  B -->|High| E[Use strongest model + verification]\n  C --> F{Quality acceptable?}\n  D --> F\n  E --> G[Human review for critical outputs]\n  F -->|Yes| H[Deliver]\n  F -->|No| I[Escalate to higher-tier model]\n  I --> H\n  G --> H\n\n  style C fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37\n  style D fill:#fff8c5,stroke:#9a6700,color:#9a6700\n  style E fill:#ffebe9,stroke:#cf222e,color:#cf222e"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "High-impact cost levers",
+        "items": [
+          "Shorten prompts: remove repeated context and unnecessary verbosity",
+          "Constrain output length when full detail is not needed",
+          "Cache repeated prompts and standard responses",
+          "Use two-stage workflows: cheap first pass, expensive final pass only when needed",
+          "Track cost per workflow, not just cost per request"
+        ]
+      }
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "title": "Build your model routing policy",
+        "description": "Create a simple internal routing matrix for your top 10 AI tasks.",
+        "steps": [
+          "List your top 10 recurring AI tasks.",
+          "Assign each task a risk level (low/medium/high).",
+          "Set a default model tier per task.",
+          "Define escalation criteria when output quality is low.",
+          "Run for one week and compare cost and quality outcomes."
+        ],
+        "expectedOutcome": "A repeatable routing policy that reduces spend while maintaining quality."
+      }
+    }
+  ],
+  "relatedLessons": [
+    "model-comparison",
+    "chatbot-landscape",
+    "ai-evaluation-metrics"
+  ],
+  "furtherReading": [
+    {
+      "title": "OpenAI Models",
+      "url": "https://platform.openai.com/docs/models",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Capability and pricing references for model tiers."
+    },
+    {
+      "title": "LMSYS Chatbot Arena",
+      "url": "https://lmarena.ai",
+      "type": "tool",
+      "author": "LMSYS",
+      "description": "Live, crowdsourced model quality comparisons."
+    }
+  ]
+}

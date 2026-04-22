@@ -1,0 +1,125 @@
+{
+  "id": "lesson-053",
+  "slug": "ai-project-portfolio-and-capstone-assessments",
+  "moduleSlug": "personal-ai-stack",
+  "title": "AI Project Portfolio and Capstone Assessments",
+  "description": "Consolidate your learning into a real project portfolio and assess your AI maturity with practical capstone rubrics.",
+  "order": 3,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 16,
+  "tags": [
+    "capstone",
+    "portfolio",
+    "assessment",
+    "ai-maturity",
+    "projects"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Real AI fluency is demonstrated by shipped outcomes, not course completion. This lesson shows how to build a practical portfolio of AI-assisted workflows and assess your maturity using objective criteria."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "portfolio-structure",
+      "data": {
+        "level": 2,
+        "text": "Portfolio structure that proves skill",
+        "anchor": "portfolio-structure"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Portfolio artifact",
+          "What to include",
+          "What it proves"
+        ],
+        "rows": [
+          [
+            "Workflow case study",
+            "Task, prompt flow, output samples, before/after impact",
+            "Practical workflow design ability"
+          ],
+          [
+            "Reliability report",
+            "Evaluation scorecard and iteration history",
+            "Quality discipline and critical thinking"
+          ],
+          [
+            "Safety/governance note",
+            "Risk controls and data handling decisions",
+            "Responsible AI usage"
+          ],
+          [
+            "Reusable template library",
+            "Top prompts and operating instructions",
+            "System-building and scalability mindset"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Capstone assessment rubric",
+        "items": [
+          {
+            "text": "Can you explain your workflow to a beginner clearly?"
+          },
+          {
+            "text": "Did you demonstrate measurable impact (time, quality, accuracy)?"
+          },
+          {
+            "text": "Did you include safety and verification controls?"
+          },
+          {
+            "text": "Can someone else reuse your templates successfully?"
+          },
+          {
+            "text": "Did you document failures and improvements honestly?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "title": "Build your capstone submission",
+        "description": "Create one polished case study from a real AI workflow you use weekly.",
+        "steps": [
+          "Choose one high-impact workflow from your role.",
+          "Document baseline process before AI support.",
+          "Show your final prompt/workflow and output examples.",
+          "Add quality and safety checks you applied.",
+          "Quantify impact and list next improvements."
+        ],
+        "expectedOutcome": "A portfolio-ready capstone artifact demonstrating real AI fluency."
+      }
+    }
+  ],
+  "relatedLessons": [
+    "building-your-ai-stack",
+    "ai-roadmap-by-role",
+    "staying-current-in-ai"
+  ],
+  "furtherReading": [
+    {
+      "title": "DeepLearning.AI Short Courses",
+      "url": "https://www.deeplearning.ai/short-courses/",
+      "type": "course",
+      "author": "DeepLearning.AI",
+      "description": "Use topic-specific short courses to strengthen weak capstone areas."
+    },
+    {
+      "title": "OpenAI Cookbook",
+      "url": "https://cookbook.openai.com",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Reference implementation patterns for production-style AI workflows."
+    }
+  ]
+}

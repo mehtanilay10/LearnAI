@@ -1,0 +1,137 @@
+{
+  "id": "lesson-045",
+  "slug": "ai-evaluation-metrics",
+  "moduleSlug": "safety-and-limitations",
+  "title": "AI Evaluation Metrics for Real Work",
+  "description": "Move beyond \"looks good\". Learn concrete evaluation metrics to score AI outputs for accuracy, usefulness, consistency, and safety.",
+  "order": 3,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 18,
+  "tags": [
+    "evaluation",
+    "metrics",
+    "quality",
+    "safety",
+    "hallucination"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Teams often deploy AI workflows without measurable quality standards. That creates hidden risk. A simple evaluation framework lets you compare prompts, models, and workflows objectively instead of relying on intuition."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "core-metrics",
+      "data": {
+        "level": 2,
+        "text": "Core metrics every team should track",
+        "anchor": "core-metrics"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Metric",
+          "Question it answers",
+          "Simple scoring method (1-5)"
+        ],
+        "rows": [
+          [
+            "Factual accuracy",
+            "Is it correct?",
+            "1 = mostly wrong, 5 = fully correct and verifiable"
+          ],
+          [
+            "Task completion",
+            "Did it actually do what was requested?",
+            "1 = missed task, 5 = complete and precise"
+          ],
+          [
+            "Clarity",
+            "Is output easy to understand and act on?",
+            "1 = confusing, 5 = clear and structured"
+          ],
+          [
+            "Consistency",
+            "Does quality stay stable across runs?",
+            "1 = highly variable, 5 = highly stable"
+          ],
+          [
+            "Safety/compliance",
+            "Does it avoid risky or disallowed output?",
+            "1 = frequent violations, 5 = compliant"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "evaluation-workflow",
+      "data": {
+        "level": 2,
+        "text": "Lightweight evaluation workflow",
+        "anchor": "evaluation-workflow"
+      }
+    },
+    {
+      "type": "numbered-list",
+      "data": {
+        "items": [
+          "Create a benchmark set of 20 representative prompts/tasks.",
+          "Run current prompt/model version and save outputs.",
+          "Score each output against the 5 metrics above.",
+          "Calculate average score per metric and total quality score.",
+          "Test one change at a time (prompt tweak, model swap, tool addition).",
+          "Promote only changes that improve score without increasing risk."
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Avoid vanity metrics",
+        "text": "Fast response time and long answers can look impressive while quality is poor. Prioritize correctness and task completion first, then optimize speed and style."
+      }
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "title": "Build your first AI scorecard",
+        "description": "Evaluate one existing AI workflow in your work using a simple scorecard.",
+        "steps": [
+          "Pick a recurring workflow (research summary, email drafting, data analysis, etc.).",
+          "Define 10-20 benchmark tasks.",
+          "Score each output from 1-5 on all five metrics.",
+          "Identify the weakest metric and improve that first.",
+          "Re-run and compare before/after average scores."
+        ],
+        "expectedOutcome": "You end with a measurable quality baseline and a repeatable improvement loop."
+      }
+    }
+  ],
+  "relatedLessons": [
+    "critical-evaluation",
+    "evaluating-ai-output",
+    "ai-hallucination-deep-dive"
+  ],
+  "furtherReading": [
+    {
+      "title": "Evaluating and Debugging Generative AI",
+      "url": "https://www.deeplearning.ai/short-courses/evaluating-debugging-generative-ai/",
+      "type": "course",
+      "author": "DeepLearning.AI",
+      "description": "Hands-on methods for robust LLM evaluation."
+    },
+    {
+      "title": "OpenAI Evals",
+      "url": "https://github.com/openai/evals",
+      "type": "tool",
+      "author": "OpenAI",
+      "description": "Open-source framework for evaluating model behavior on structured benchmarks."
+    }
+  ]
+}

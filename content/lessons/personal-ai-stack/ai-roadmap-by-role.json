@@ -1,0 +1,125 @@
+{
+  "id": "lesson-048",
+  "slug": "ai-roadmap-by-role",
+  "moduleSlug": "personal-ai-stack",
+  "title": "AI Learning Roadmap by Role",
+  "description": "Build a realistic 90-day AI roadmap tailored to your role: student, manager, marketer, analyst, founder, or developer.",
+  "order": 2,
+  "difficulty": "beginner",
+  "estimatedMinutes": 14,
+  "tags": [
+    "roadmap",
+    "career",
+    "learning-plan",
+    "personal-strategy"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI mastery is role-dependent. A marketer, analyst, and software engineer should not follow the same plan. The fastest path is to prioritize workflows you run every week, then build depth where the return is highest."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "role-roadmap",
+      "data": {
+        "level": 2,
+        "text": "90-day roadmap template by role",
+        "anchor": "role-roadmap"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Role",
+          "Days 1-30",
+          "Days 31-60",
+          "Days 61-90"
+        ],
+        "rows": [
+          [
+            "Manager",
+            "Meeting notes + summaries",
+            "Decision memo drafting + risk checks",
+            "Team policy + AI workflow governance"
+          ],
+          [
+            "Marketer",
+            "Idea generation + briefs",
+            "Channel-specific content workflows",
+            "Performance analysis + campaign automation"
+          ],
+          [
+            "Analyst",
+            "Data cleanup + summaries",
+            "KPI analysis + chart generation",
+            "Automated reporting + quality scorecards"
+          ],
+          [
+            "Founder",
+            "Research + strategy synthesis",
+            "Sales/email/copy workflows",
+            "Automated ops and playbook documentation"
+          ],
+          [
+            "Developer",
+            "Code explanation + refactor",
+            "Test generation + debugging loops",
+            "Agent/tool-calling pipelines with guardrails"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "title": "Create your personal 12-week AI plan",
+        "description": "Design a practical roadmap grounded in your actual weekly work.",
+        "steps": [
+          "List your top 5 repetitive tasks by time spent.",
+          "Map each task to one AI use case and one tool.",
+          "Prioritize by impact x ease and pick top 2 for month one.",
+          "Define quality checks so output remains trustworthy.",
+          "Schedule a weekly 30-minute review to refine your stack."
+        ],
+        "expectedOutcome": "You leave with a realistic, role-specific AI execution roadmap."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Roadmap principles",
+        "points": [
+          "Role context determines the right AI stack",
+          "Start with weekly tasks, not shiny new tools",
+          "Measure value in hours saved and quality improved",
+          "Add complexity only after baseline workflows are stable",
+          "Review and adapt monthly as tools evolve"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "building-your-ai-stack",
+    "staying-current-in-ai",
+    "choosing-the-right-tool"
+  ],
+  "furtherReading": [
+    {
+      "title": "AI for Everyone",
+      "url": "https://www.coursera.org/learn/ai-for-everyone",
+      "type": "course",
+      "author": "Andrew Ng / DeepLearning.AI",
+      "description": "Strong strategic foundation for applying AI in career and business contexts."
+    },
+    {
+      "title": "DeepLearning.AI Short Courses",
+      "url": "https://www.deeplearning.ai/short-courses/",
+      "type": "course",
+      "author": "DeepLearning.AI",
+      "description": "Role-specific practical courses to build depth fast."
+    }
+  ]
+}

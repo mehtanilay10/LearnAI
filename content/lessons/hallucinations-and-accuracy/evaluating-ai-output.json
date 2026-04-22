@@ -1,0 +1,182 @@
+{
+  "id": "lesson-013",
+  "slug": "evaluating-ai-output",
+  "moduleSlug": "hallucinations-and-accuracy",
+  "title": "Evaluating AI Output",
+  "description": "A practical framework for reviewing AI responses before using them — so you catch problems before they cause trouble.",
+  "order": 2,
+  "difficulty": "beginner",
+  "estimatedMinutes": 10,
+  "tags": [
+    "evaluation",
+    "quality-check",
+    "verification",
+    "habits"
+  ],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The skill of evaluating AI output is as important as the skill of prompting. A good habit here protects you from the biggest risks of AI use — and takes only seconds once you build the reflex."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "review-framework",
+      "data": {
+        "level": 2,
+        "text": "The SIFT review framework",
+        "anchor": "review-framework"
+      }
+    },
+    {
+      "type": "key-terms",
+      "data": {
+        "terms": [
+          {
+            "term": "S — Specific facts",
+            "definition": "Check any specific names, numbers, dates, or citations. These are where AI most often gets things wrong."
+          },
+          {
+            "term": "I — Internal consistency",
+            "definition": "Does the response contradict itself? Does the conclusion follow from the reasoning it presented?"
+          },
+          {
+            "term": "F — Fit for purpose",
+            "definition": "Does this actually answer the question you asked? Is the format right? Is the length appropriate?"
+          },
+          {
+            "term": "T — Tone and bias",
+            "definition": "Is the tone right for your audience? Does the AI have unintended slant or framing you should correct?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "sift-flow",
+        "caption": "The SIFT evaluation flow — apply this to every AI response before using it",
+        "definition": "flowchart TD\n  R[Received AI response]\n  R --> S{Specific facts?\\nNames, numbers, dates, URLs}\n  S -->|Yes, present| SV[Verify those facts\\nwith a primary source]\n  S -->|No specific facts| I\n\n  SV --> I{Internal consistency?\\nDoes it contradict itself?}\n  I -->|Contradiction found| FIX1[Ask AI to reconcile/correct]\n  I -->|Consistent| F\n\n  FIX1 --> F{Fit for purpose?\\nAnswers the actual question?}\n  F -->|Off-target| FIX2[Refine your prompt\\nand regenerate]\n  F -->|On target| T\n\n  FIX2 --> T{Tone & bias?\\nRight voice for audience?}\n  T -->|Needs adjustment| FIX3[Ask AI to adjust tone]\n  T -->|Appropriate| USE[✅ Safe to use or publish]\n\n  style USE fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37\n  style FIX1 fill:#fff8c5,stroke:#9a6700\n  style FIX2 fill:#fff8c5,stroke:#9a6700\n  style FIX3 fill:#fff8c5,stroke:#9a6700"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "stakes-based-verification",
+      "data": {
+        "level": 2,
+        "text": "Matching verification effort to stakes",
+        "anchor": "stakes-based-verification"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Use case",
+          "Stakes",
+          "Verification approach"
+        ],
+        "rows": [
+          [
+            "Brainstorming, creative ideas",
+            "Low",
+            "Use freely — no verification needed"
+          ],
+          [
+            "Internal first draft",
+            "Low-medium",
+            "Quick read through for obvious errors"
+          ],
+          [
+            "Email to important stakeholder",
+            "Medium",
+            "Read and edit carefully; check any claims"
+          ],
+          [
+            "Factual article or research note",
+            "High",
+            "Verify all specific facts against primary sources"
+          ],
+          [
+            "Legal, medical, or financial use",
+            "Very high",
+            "Never rely on AI alone — consult qualified professional"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Quick output review checklist",
+        "items": [
+          {
+            "text": "Did the AI actually answer the question I asked?",
+            "hint": "Sometimes it answers a related but slightly different question"
+          },
+          {
+            "text": "Are there specific facts I should verify?",
+            "hint": "Dates, names, statistics, citations, URLs"
+          },
+          {
+            "text": "Is the format and length right for my use case?"
+          },
+          {
+            "text": "Does the tone match what I need for my audience?"
+          },
+          {
+            "text": "Would a knowledgeable person in this area agree with this output?",
+            "hint": "Your domain knowledge is the first and best filter"
+          }
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "SIFT in action: evaluating a business email draft",
+        "content": "AI-drafted email says: \"As per the Q3 results showing a 23% YoY growth, we should...\"\n\nS: Is the 23% YoY figure accurate? → Check with your actual data.\nI: Does the recommendation logically follow from that growth rate? → Read through carefully.\nF: Does this address the specific conversation thread the client had? → Make sure it matches context.\nT: Is the tone appropriately professional without being stiff? → Adjust as needed.\n\nThis 30-second check prevents the embarrassment of sending wrong data to a client."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "text": "You do not need to verify everything. For creative writing or brainstorming, verification is rarely needed. For factual claims in formal documents, public communications, or high-stakes decisions — always verify."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Build the SIFT habit",
+        "points": [
+          "SIFT: Specific facts → Internal consistency → Fit for purpose → Tone",
+          "Match verification effort to the stakes and consequences",
+          "Your own domain expertise is the first and best filter",
+          "A 30-second review catches most problems before they matter"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": [
+    "ai-hallucination-deep-dive",
+    "critical-evaluation"
+  ],
+  "furtherReading": [
+    {
+      "title": "Evaluating and Debugging Generative AI",
+      "url": "https://www.deeplearning.ai/short-courses/evaluating-debugging-generative-ai/",
+      "type": "course",
+      "author": "DeepLearning.AI / Weights & Biases",
+      "description": "Free short course on systematic methods for evaluating AI output quality and tracking model behaviour."
+    },
+    {
+      "title": "Learn Prompting — Reliability",
+      "url": "https://learnprompting.org/docs/reliability/intro",
+      "type": "article",
+      "author": "Learn Prompting",
+      "description": "Techniques for making AI outputs more reliable, consistent, and verifiable — with practical examples."
+    }
+  ]
+}
