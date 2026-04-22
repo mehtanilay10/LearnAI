@@ -31,6 +31,12 @@ const TYPE_CONFIG: Record<
   },
 };
 
+const FALLBACK_CONFIG: { label: string; Icon: React.ElementType; className: string } = {
+  label: 'Resource',
+  Icon: BookOpen,
+  className: 'text-fg-subtle bg-canvas-subtle border-border',
+};
+
 export function FurtherReading({ items }: FurtherReadingProps) {
   if (!items || items.length === 0) return null;
 
@@ -43,7 +49,7 @@ export function FurtherReading({ items }: FurtherReadingProps) {
 
       <ul className="space-y-3" role="list">
         {items.map((item) => {
-          const config = TYPE_CONFIG[item.type];
+          const config = TYPE_CONFIG[item.type as FurtherReadingType] ?? FALLBACK_CONFIG;
           const { Icon } = config;
 
           return (
