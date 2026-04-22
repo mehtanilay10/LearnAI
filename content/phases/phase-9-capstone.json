@@ -1,0 +1,15 @@
+{
+  "id": "phase-9",
+  "slug": "phase-9-capstone",
+  "title": "Phase 9: Capstone & Confident AI Use",
+  "subtitle": "Build your personal AI strategy and keep growing",
+  "description": "Pull everything together. Build a personal AI stack, learn how to evaluate outputs critically, and develop the habits to keep pace with AI without overwhelm.",
+  "order": 9,
+  "icon": "🎯",
+  "color": "accent",
+  "moduleSlug": [
+    "personal-ai-stack",
+    "staying-current"
+  ],
+  "estimatedWeeks": 2
+}

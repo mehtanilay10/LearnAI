@@ -1,0 +1,18 @@
+{
+  "id": "term-027",
+  "slug": "orchestration",
+  "term": "Orchestration",
+  "shortDefinition": "The coordination of multiple AI agents or tools to complete a larger task.",
+  "fullDefinition": "Orchestration in AI refers to managing and coordinating multiple components — models, agents, tools, APIs — to complete complex tasks. An orchestrator system receives a high-level goal, breaks it into sub-tasks, assigns them to appropriate agents or tools, manages dependencies, and assembles the final result. Frameworks like LangChain, AutoGen, and CrewAI are orchestration tools.",
+  "category": "agents-and-automation",
+  "difficulty": "advanced",
+  "relatedTerms": [
+    "agent",
+    "tool-calling",
+    "mcp"
+  ],
+  "examples": [
+    "A research pipeline that orchestrates web search, summarization, and report formatting agents",
+    "Microsoft AutoGen coordinating multiple specialized AI agents on a software project"
+  ]
+}

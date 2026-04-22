@@ -1,0 +1,16 @@
+{
+  "id": "phase-1",
+  "slug": "phase-1-foundations",
+  "title": "Phase 1: Foundations",
+  "subtitle": "Understand what AI is and how to work with it",
+  "description": "Build your core mental model of AI. Learn what AI tools actually do, why they behave the way they do, and how to start using them confidently in daily life.",
+  "order": 1,
+  "icon": "🧠",
+  "color": "accent",
+  "moduleSlug": [
+    "what-is-ai",
+    "ai-tools-overview",
+    "prompting-basics"
+  ],
+  "estimatedWeeks": 3
+}

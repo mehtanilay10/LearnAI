@@ -1,0 +1,14 @@
+{
+  "id": "term-034",
+  "slug": "chain-of-thought",
+  "term": "Chain-of-Thought Prompting",
+  "shortDefinition": "A prompting technique that asks AI to reason step-by-step before answering, improving accuracy on complex tasks.",
+  "fullDefinition": "Chain-of-thought (CoT) prompting instructs an AI model to show its reasoning process step-by-step before giving a final answer. This dramatically improves performance on complex reasoning, math, and analytical tasks because each reasoning step conditions the next, reducing cumulative errors. The simplest CoT trigger is adding 'think step by step' to a prompt.",
+  "category": "prompting",
+  "difficulty": "intermediate",
+  "relatedTerms": [
+    "prompt",
+    "few-shot-prompting"
+  ],
+  "learnMoreSlug": "chain-of-thought-prompting"
+}

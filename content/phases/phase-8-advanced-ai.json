@@ -1,0 +1,16 @@
+{
+  "id": "phase-8",
+  "slug": "phase-8-advanced-ai",
+  "title": "Phase 8: Advanced Modern AI",
+  "subtitle": "Navigate the frontier of AI capabilities",
+  "description": "Understand the modern AI landscape — MCP protocols, skills and plugins, multimodal capabilities, and local AI options. These are the concepts shaping AI in 2025 and beyond.",
+  "order": 8,
+  "icon": "🚀",
+  "color": "success",
+  "moduleSlug": [
+    "mcp-and-skills",
+    "multimodal-ai",
+    "local-vs-cloud-ai"
+  ],
+  "estimatedWeeks": 3
+}

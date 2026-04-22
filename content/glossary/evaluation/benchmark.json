@@ -1,0 +1,17 @@
+{
+  "id": "term-031",
+  "slug": "benchmark",
+  "term": "Benchmark",
+  "shortDefinition": "A standardized test used to compare performance between AI models.",
+  "fullDefinition": "An AI benchmark is a standardized dataset and evaluation protocol used to measure and compare model capabilities. Benchmarks test specific skills like reading comprehension (MMLU), coding (HumanEval), reasoning (ARC), and math (MATH). Benchmark scores appear in press releases and model cards. However, benchmark performance does not always predict real-world usefulness — models can be optimized to score well on benchmarks without being more capable.",
+  "category": "evaluation",
+  "difficulty": "intermediate",
+  "relatedTerms": [
+    "evaluation",
+    "large-language-model"
+  ],
+  "examples": [
+    "MMLU: a test of broad knowledge across 57 academic subjects",
+    "HumanEval: measures code generation accuracy"
+  ]
+}

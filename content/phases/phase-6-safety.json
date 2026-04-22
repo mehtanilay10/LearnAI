@@ -1,0 +1,15 @@
+{
+  "id": "phase-6",
+  "slug": "phase-6-safety",
+  "title": "Phase 6: Safety & Responsible Use",
+  "subtitle": "Use AI wisely — protect yourself and your work",
+  "description": "Understand the real risks of AI: hallucination, privacy exposure, data leakage, and overreliance. Build the habits and mental models to use AI responsibly.",
+  "order": 6,
+  "icon": "🛡️",
+  "color": "success",
+  "moduleSlug": [
+    "safety-and-limitations",
+    "privacy-and-data"
+  ],
+  "estimatedWeeks": 2
+}

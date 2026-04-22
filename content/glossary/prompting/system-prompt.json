@@ -1,0 +1,18 @@
+{
+  "id": "term-014",
+  "slug": "system-prompt",
+  "term": "System Prompt",
+  "shortDefinition": "Instructions given to an AI model before the conversation starts that set its behavior and persona.",
+  "fullDefinition": "A system prompt is a set of instructions provided to an LLM at the start of a session (before any user messages) that defines how the model should behave. It can set a persona ('You are a helpful legal assistant'), restrict topics, define output format, provide background context, or encode specific rules. Many AI products are built primarily through carefully engineered system prompts.",
+  "category": "prompting",
+  "difficulty": "intermediate",
+  "relatedTerms": [
+    "prompt",
+    "context-window",
+    "temperature"
+  ],
+  "examples": [
+    "Custom GPTs in ChatGPT are built with a custom system prompt",
+    "Claude Projects use system prompts to define the assistant behavior"
+  ]
+}

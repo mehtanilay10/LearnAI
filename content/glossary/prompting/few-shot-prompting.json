@@ -1,0 +1,14 @@
+{
+  "id": "term-033",
+  "slug": "few-shot-prompting",
+  "term": "Few-Shot Prompting",
+  "shortDefinition": "Including example inputs and outputs in a prompt to guide AI toward the desired response format.",
+  "fullDefinition": "Few-shot prompting is a prompting technique where you include 1-5 examples of the desired input-output format directly in your prompt. This guides the model's behavior more precisely than instructions alone. It is particularly useful for consistent formatting, classification tasks, and unusual output structures. Zero-shot uses no examples; one-shot uses one; few-shot uses multiple.",
+  "category": "prompting",
+  "difficulty": "intermediate",
+  "relatedTerms": [
+    "prompt",
+    "chain-of-thought"
+  ],
+  "learnMoreSlug": "few-shot-prompting"
+}

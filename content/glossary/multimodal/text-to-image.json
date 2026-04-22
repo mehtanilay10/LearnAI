@@ -1,0 +1,22 @@
+{
+  "id": "term-025",
+  "slug": "text-to-image",
+  "term": "Text-to-Image",
+  "shortDefinition": "AI systems that generate images from text descriptions.",
+  "fullDefinition": "Text-to-image models take a text description (prompt) as input and generate a corresponding image. They use a different architecture from LLMs — typically diffusion models. Major text-to-image tools include DALL-E (OpenAI), Midjourney, Stable Diffusion (open), Adobe Firefly, and Imagen (Google). Quality varies dramatically between tools for different types of images.",
+  "category": "multimodal",
+  "difficulty": "beginner",
+  "relatedTerms": [
+    "multimodal",
+    "generative-ai",
+    "prompt"
+  ],
+  "examples": [
+    "DALL-E 3: \"a photorealistic image of a red fox in autumn forest\"",
+    "Midjourney: known for artistic, aesthetic high-quality images"
+  ],
+  "alsoKnownAs": [
+    "Image Generation",
+    "AI Image Generation"
+  ]
+}

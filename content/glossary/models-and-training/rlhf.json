@@ -1,0 +1,17 @@
+{
+  "id": "term-028",
+  "slug": "rlhf",
+  "term": "RLHF (Reinforcement Learning from Human Feedback)",
+  "shortDefinition": "A training technique that uses human preferences to make AI models more helpful and safe.",
+  "fullDefinition": "RLHF is a training technique where human raters evaluate model outputs and their preferences are used to improve the model via reinforcement learning. It is the key technology behind making raw LLMs into practical assistants — it teaches the model to give helpful, harmless, and honest responses. All major commercial AI assistants (ChatGPT, Claude, Gemini) use RLHF or similar techniques.",
+  "category": "models-and-training",
+  "difficulty": "advanced",
+  "relatedTerms": [
+    "large-language-model",
+    "fine-tuning"
+  ],
+  "alsoKnownAs": [
+    "RLHF",
+    "Human Feedback Training"
+  ]
+}

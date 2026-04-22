@@ -1,0 +1,22 @@
+{
+  "id": "term-019",
+  "slug": "vector-database",
+  "term": "Vector Database",
+  "shortDefinition": "A database that stores and searches embeddings — enabling semantic, meaning-based search.",
+  "fullDefinition": "A vector database is a specialized database designed to store and efficiently query embeddings (numerical representations of meaning). Unlike traditional databases that search for exact matches, vector databases find the most similar items by computing distances between vectors. They are the storage layer that makes RAG and semantic search possible. Examples include Pinecone, Weaviate, Qdrant, and Chroma.",
+  "category": "architecture",
+  "difficulty": "intermediate",
+  "relatedTerms": [
+    "embedding",
+    "rag",
+    "semantic-search"
+  ],
+  "examples": [
+    "A RAG system stores document embeddings in a vector database",
+    "Semantic search in Notion uses a vector database under the hood"
+  ],
+  "alsoKnownAs": [
+    "Vector Store",
+    "Embedding Database"
+  ]
+}

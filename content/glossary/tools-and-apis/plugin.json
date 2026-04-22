@@ -1,0 +1,18 @@
+{
+  "id": "term-021",
+  "slug": "plugin",
+  "term": "Plugin",
+  "shortDefinition": "A packaged integration that adds new capabilities to an AI model or chatbot.",
+  "fullDefinition": "A plugin is a pre-built integration that extends an AI model's capabilities by giving it access to a specific external service or tool. ChatGPT pioneered the plugin ecosystem (now called GPT Actions). Plugins typically involve a set of defined functions the AI can call, plus authentication to the external service. The concept overlaps with 'skills' (Microsoft) and 'tools' (general API terminology).",
+  "category": "tools-and-apis",
+  "difficulty": "intermediate",
+  "relatedTerms": [
+    "tool-calling",
+    "mcp",
+    "agent"
+  ],
+  "alsoKnownAs": [
+    "GPT Plugin",
+    "Extension"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "phase-3",
+  "slug": "phase-3-tools-in-depth",
+  "title": "Phase 3: AI Tools in Depth",
+  "subtitle": "Get fluent with the tools that matter most",
+  "description": "Go beyond first impressions. Learn how each major AI tool works, what it is genuinely best at, and how to build a practical toolkit you will actually use every week.",
+  "order": 3,
+  "icon": "🛠️",
+  "color": "accent",
+  "moduleSlug": [
+    "chatbots-in-depth",
+    "research-and-search-tools",
+    "writing-and-content-tools"
+  ],
+  "estimatedWeeks": 3
+}

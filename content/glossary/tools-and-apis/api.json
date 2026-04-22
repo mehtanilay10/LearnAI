@@ -1,0 +1,22 @@
+{
+  "id": "term-035",
+  "slug": "api",
+  "term": "API (Application Programming Interface)",
+  "shortDefinition": "A way for software applications to communicate with each other — including AI models.",
+  "fullDefinition": "An API is a defined interface that lets software systems communicate. AI APIs (like OpenAI's API, Anthropic's API, or Google's Gemini API) allow developers to send queries to AI models programmatically and receive responses. APIs enable businesses to build AI-powered products without hosting their own models. Understanding APIs is not required for everyday AI use but becomes relevant if you want to build automations or custom integrations.",
+  "category": "tools-and-apis",
+  "difficulty": "intermediate",
+  "relatedTerms": [
+    "tool-calling",
+    "agent",
+    "mcp"
+  ],
+  "examples": [
+    "Zapier calling the OpenAI API to add AI steps to workflows",
+    "A company building a customer service bot using Claude via the Anthropic API"
+  ],
+  "alsoKnownAs": [
+    "REST API",
+    "Model API"
+  ]
+}
