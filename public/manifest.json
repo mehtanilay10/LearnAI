@@ -1,21 +1,28 @@
-{
-  "name": "LearnAI",
+﻿{
+  "name": "LearnAI - Practical AI Literacy Course",
   "short_name": "LearnAI",
   "description": "An educational web app for teaching AI literacy to everyday users.",
+  "id": "/",
+  "scope": "/",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000"
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "prefer_related_applications": false,
+  "categories": ["education", "productivity"]
 }

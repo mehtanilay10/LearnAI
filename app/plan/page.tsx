@@ -118,16 +118,6 @@ export default function PlanPage() {
             )}
           </div>
         ))}
-
-        {/* Weeks 4-12 placeholder */}
-        <div className="rounded-xl border border-dashed border-border p-8 text-center">
-          <p className="text-sm font-medium text-fg-default mb-2">Weeks 4–12 coming soon</p>
-          <p className="text-sm text-fg-muted">
-            The full 90-day plan is being populated. Check back soon, or follow the{' '}
-            <Link href="/roadmap" className="text-accent-fg hover:underline">course roadmap</Link>{' '}
-            to continue at your own pace.
-          </p>
-        </div>
       </div>
     </div>
   );

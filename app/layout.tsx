@@ -14,6 +14,12 @@ export const metadata: Metadata = {
   keywords: ['AI', 'artificial intelligence', 'prompting', 'ChatGPT', 'learning', 'course', 'automation'],
   authors: [{ name: 'LearnAI' }],
   robots: { index: true, follow: true },
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'LearnAI',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',

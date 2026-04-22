@@ -1,4 +1,5 @@
-import Link from 'next/link';
+'use client';
+
 import { Clock, Wrench, Star } from 'lucide-react';
 import { DifficultyBadge } from '@/components/ui/DifficultyBadge';
 import { cn, formatHours } from '@/lib/utils';
@@ -7,14 +8,16 @@ import type { MiniProject } from '@/types';
 interface ProjectCardProps {
   project: MiniProject;
   className?: string;
+  onClick: () => void;
 }
 
-export function ProjectCard({ project, className }: ProjectCardProps) {
+export function ProjectCard({ project, className, onClick }: ProjectCardProps) {
   return (
-    <Link
-      href={`/projects#${project.slug}`}
+    <button
+      type="button"
+      onClick={onClick}
       className={cn(
-        'group flex flex-col rounded-xl border border-border bg-canvas p-5 transition-all',
+        'group flex w-full flex-col rounded-xl border border-border bg-canvas p-5 text-left transition-all',
         'hover:border-accent-fg hover:shadow-md dark:bg-canvas-subtle',
         className
       )}
@@ -61,6 +64,6 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
           {project.bonusChallenges.length} bonus challenge{project.bonusChallenges.length !== 1 && 's'}
         </div>
       )}
-    </Link>
+    </button>
   );
 }
