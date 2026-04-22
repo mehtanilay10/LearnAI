@@ -14,6 +14,7 @@ import {
 } from '@/lib/content';
 import { buildLessonMetadata } from '@/lib/seo';
 import { ContentBlockRenderer } from '@/components/content/ContentBlockRenderer';
+import { FurtherReading } from '@/components/content/FurtherReading';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { LessonSidebar } from '@/components/layout/LessonSidebar';
 import { TableOfContents } from '@/components/course/TableOfContents';
@@ -143,6 +144,11 @@ export default async function LessonDetailPage({ params }: Params) {
 
           {/* Content blocks */}
           <ContentBlockRenderer blocks={lesson.blocks} />
+
+          {/* Further reading */}
+          {lesson.furtherReading && lesson.furtherReading.length > 0 && (
+            <FurtherReading items={lesson.furtherReading} />
+          )}
 
           {/* Lesson navigation */}
           <div className="mt-10 flex items-center justify-between gap-4 border-t border-border pt-6">

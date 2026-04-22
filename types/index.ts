@@ -179,6 +179,18 @@ export interface Module {
   whatYouLearn?: string[];
 }
 
+// ── Further Reading ──────────────────────────────────────────────────────────
+
+export type FurtherReadingType = 'article' | 'video' | 'course' | 'tool';
+
+export interface FurtherReadingItem {
+  title: string;
+  url: string;
+  type: FurtherReadingType;
+  author?: string;
+  description?: string;
+}
+
 // ── Lesson ───────────────────────────────────────────────────────────────────
 
 export interface Lesson {
@@ -197,6 +209,7 @@ export interface Lesson {
   blocks: ContentBlock[];
   relatedLessons?: string[]; // lesson slugs
   relatedGlossaryTerms?: string[]; // glossary term slugs
+  furtherReading?: FurtherReadingItem[];
 }
 
 // ── Glossary ─────────────────────────────────────────────────────────────────

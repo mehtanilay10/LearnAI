@@ -221,6 +221,11 @@ const aiVsMlVsGenerativeAi: Lesson = {
     },
   ],
   relatedLessons: ['how-llms-work-simply', 'what-ai-can-and-cannot-do'],
+  furtherReading: [
+    { title: 'AI for Everyone', url: 'https://www.coursera.org/learn/ai-for-everyone', type: 'course', author: 'Andrew Ng / DeepLearning.AI', description: 'The definitive non-technical intro to AI — covers terminology, capabilities, and real-world applications in plain language.' },
+    { title: 'But What Is a Neural Network?', url: 'https://www.youtube.com/watch?v=aircAruvnKk', type: 'video', author: '3Blue1Brown', description: 'Visually stunning primer on how neural networks learn — no math prerequisites required.' },
+    { title: 'What Is Machine Learning?', url: 'https://www.ibm.com/think/topics/machine-learning', type: 'article', author: 'IBM', description: 'Concise overview of machine learning: types, techniques, and real-world examples across industries.' },
+  ],
 };
 
 // ─── Lesson: How LLMs Work Simply ────────────────────────────────────────────
@@ -413,6 +418,11 @@ const howLlmsWorkSimply: Lesson = {
     },
   ],
   relatedLessons: ['ai-vs-ml-vs-generative-ai', 'what-ai-can-and-cannot-do'],
+  furtherReading: [
+    { title: 'Intro to Large Language Models', url: 'https://www.youtube.com/watch?v=zjkBMFhNj_g', type: 'video', author: 'Andrej Karpathy', description: '1-hour talk walking through what LLMs are, how they are built, and where the field is going. The best accessible technical overview available.' },
+    { title: 'The Illustrated Transformer', url: 'https://jalammar.github.io/illustrated-transformer/', type: 'article', author: 'Jay Alammar', description: 'Visual, step-by-step walkthrough of the transformer architecture that powers every major LLM — no prior ML knowledge needed.' },
+    { title: 'Visualising Attention in Transformers', url: 'https://www.youtube.com/watch?v=eMlx5fFNoYc', type: 'video', author: '3Blue1Brown', description: 'Animation-first explanation of how the attention mechanism lets LLMs focus on the right parts of text.' },
+  ],
 };
 
 // ─── Lesson: What AI Can and Cannot Do ───────────────────────────────────────
@@ -566,6 +576,11 @@ const whatAiCanAndCannotDo: Lesson = {
     },
   ],
   relatedLessons: ['how-llms-work-simply', 'anatomy-of-a-good-prompt'],
+  furtherReading: [
+    { title: 'AI for Everyone — AI and Society', url: 'https://www.coursera.org/learn/ai-for-everyone', type: 'course', author: 'Andrew Ng / DeepLearning.AI', description: 'Week 2 covers realistic AI expectations: what can truly be automated, where AI falls short, and how to evaluate AI projects.' },
+    { title: 'Hallucination (Artificial Intelligence)', url: 'https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence)', type: 'article', author: 'Wikipedia', description: 'Overview of what AI hallucination is, why it happens, and the research landscape around mitigating it.' },
+    { title: 'What Is Artificial Intelligence?', url: 'https://www.ibm.com/think/topics/artificial-intelligence', type: 'article', author: 'IBM', description: "IBM's grounded overview of AI capabilities and limitations across different problem types and industries." },
+  ],
 };
 
 // ─── Lesson: Anatomy of a Good Prompt ────────────────────────────────────────
@@ -742,6 +757,11 @@ const anatomyOfAGoodPrompt: Lesson = {
     },
   ],
   relatedLessons: ['prompt-patterns', 'what-ai-can-and-cannot-do'],
+  furtherReading: [
+    { title: 'Prompt Engineering Guide', url: 'https://platform.openai.com/docs/guides/prompt-engineering', type: 'article', author: 'OpenAI', description: 'Official OpenAI guidance covering six core strategies for writing better prompts — with concrete examples for each.' },
+    { title: 'Prompt Engineering Overview', url: 'https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview', type: 'article', author: 'Anthropic', description: "Anthropic's practical guide to writing effective prompts for Claude, with real before-and-after examples." },
+    { title: 'Prompt Engineering for ChatGPT', url: 'https://www.coursera.org/learn/prompt-engineering', type: 'course', author: 'Vanderbilt University / Coursera', description: 'Hands-on course covering prompt patterns and real-world applications — free to audit.' },
+  ],
 };
 
 // ─── Lesson: AI in Everyday Life ─────────────────────────────────────────────
@@ -870,6 +890,10 @@ const aiInEverydayLife: Lesson = {
     },
   ],
   relatedLessons: ['ai-vs-ml-vs-generative-ai', 'chatbot-landscape'],
+  furtherReading: [
+    { title: 'AI for Everyone', url: 'https://www.coursera.org/learn/ai-for-everyone', type: 'course', author: 'Andrew Ng / DeepLearning.AI', description: 'Practical introduction to AI in business and everyday life — no technical background needed.' },
+    { title: 'The AI Canon', url: 'https://a16z.com/ai-canon/', type: 'article', author: 'Andreessen Horowitz', description: 'Curated reading list of the most important AI papers, articles, and resources — organised by topic and depth.' },
+  ],
 };
 
 // ─── Lesson: Chatbot Landscape ────────────────────────────────────────────────
@@ -981,6 +1005,11 @@ const chatbotLandscape: Lesson = {
     { type: 'summary-box', data: { title: 'Quick reference', points: ['ChatGPT — best overall, largest ecosystem, best free tier features', 'Claude — best for long documents, careful writing, complex instructions', 'Gemini — best with Google Workspace and for real-time web', 'Perplexity — best for factual research that needs cited sources', 'Most professionals use 2-3 tools — not one for everything'] } },
   ],
   relatedLessons: ['choosing-the-right-tool', 'ai-vs-ml-vs-generative-ai'],
+  furtherReading: [
+    { title: 'Intro to Claude', url: 'https://docs.anthropic.com/en/docs/intro-to-claude', type: 'article', author: 'Anthropic', description: "Official introduction to Claude — what it can do, how it differs from other chatbots, and how to get started." },
+    { title: 'OpenAI Platform Overview', url: 'https://platform.openai.com/docs/overview', type: 'article', author: 'OpenAI', description: 'Comprehensive ChatGPT and GPT-4 documentation covering capabilities, model differences, and best practices.' },
+    { title: 'ChatGPT Prompt Engineering for Developers', url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/', type: 'course', author: 'OpenAI / DeepLearning.AI', description: 'Free 1-hour course on working effectively with ChatGPT — useful for both technical and non-technical users.' },
+  ],
 };
 
 // ─── Lesson: Choosing the Right Tool ─────────────────────────────────────────
@@ -1073,6 +1102,10 @@ const choosingTheRightTool: Lesson = {
     { type: 'summary-box', data: { title: 'Decision shortcut', points: ['Facts with sources → Perplexity', 'Long docs and careful writing → Claude', 'Google Workspace tasks → Gemini', 'Images, data analysis, or general tasks → ChatGPT', 'Power users combine 2-3 tools in the same workflow', 'The skill of prompting matters more than the tool you choose'] } },
   ],
   relatedLessons: ['chatbot-landscape', 'anatomy-of-a-good-prompt'],
+  furtherReading: [
+    { title: 'The AI Canon', url: 'https://a16z.com/ai-canon/', type: 'article', author: 'Andreessen Horowitz', description: 'Curated list of essential AI resources organised by topic — great for exploring tools across different domains.' },
+    { title: 'DeepLearning.AI Short Courses', url: 'https://www.deeplearning.ai/short-courses/', type: 'course', author: 'DeepLearning.AI', description: 'Free 1-hour courses on specific AI tools — taught by practitioners. Good way to evaluate tools before committing.' },
+  ],
 };
 
 // ─── Lesson: Prompt Patterns ──────────────────────────────────────────────────
@@ -1145,6 +1178,11 @@ const promptPatterns: Lesson = {
     { type: 'summary-box', data: { title: 'The 5 core patterns', points: ['Role-play — set an expert persona; specify tone and what to avoid', 'Step-by-step — force reasoning on hard problems; dramatically improves accuracy', 'Before/After — show what to transform; most reliable for editing tasks', 'Constraints — force precision with word limits, format rules, and banned terms', 'Output template — give the AI the skeleton; it fills in the detail', 'Combine patterns for complex tasks — role + step-by-step + template = best results'] } },
   ],
   relatedLessons: ['anatomy-of-a-good-prompt', 'common-prompting-mistakes'],
+  furtherReading: [
+    { title: 'Learn Prompting', url: 'https://learnprompting.org/docs/intro', type: 'article', author: 'Learn Prompting (open source)', description: 'Free, comprehensive open-source guide covering dozens of prompting techniques from basic to advanced.' },
+    { title: 'Prompt Engineering Guide', url: 'https://platform.openai.com/docs/guides/prompt-engineering', type: 'article', author: 'OpenAI', description: 'Official OpenAI best practices with concrete examples of each prompting strategy.' },
+    { title: 'ChatGPT Prompt Engineering for Developers', url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/', type: 'course', author: 'OpenAI / DeepLearning.AI', description: 'Free 1-hour course with hands-on examples of key prompting patterns — applicable for all users.' },
+  ],
 };
 
 // ─── Lesson: Common Prompting Mistakes ───────────────────────────────────────
@@ -1264,6 +1302,10 @@ const commonPromptingMistakes: Lesson = {
     { type: 'summary-box', data: { title: 'Remember', points: ['Vagueness is the #1 cause of bad AI output', 'Prompting is a conversation — iterate, do not restart from scratch', 'Adding constraints (format, length, tone, bans) consistently improves quality', 'One task per prompt — chain them if you need multiple outputs', 'AI output is a starting point, not a final product — always review and edit'] } },
   ],
   relatedLessons: ['anatomy-of-a-good-prompt', 'prompt-patterns'],
+  furtherReading: [
+    { title: 'Learn Prompting — Few-Shot', url: 'https://learnprompting.org/docs/basics/few_shot', type: 'article', author: 'Learn Prompting', description: 'Clear explanation of few-shot prompting with examples across classification, writing, and reasoning tasks.' },
+    { title: 'Prompt Engineering Guide', url: 'https://platform.openai.com/docs/guides/prompt-engineering', type: 'article', author: 'OpenAI', description: "Covers few-shot examples as part of OpenAI's six core prompting strategies — with annotated examples." },
+  ],
 };
 
 // ─── Chunk 2: Key Concepts + Tools In Depth ───────────────────────────────────
@@ -1398,6 +1440,11 @@ const tokensExplained: Lesson = {
     },
   ],
   relatedLessons: ['context-window-deep-dive', 'how-llms-work-simply'],
+  furtherReading: [
+    { title: 'OpenAI Tokenizer', url: 'https://platform.openai.com/tokenizer', type: 'tool', author: 'OpenAI', description: 'Interactive tool — paste any text and see exactly how it splits into tokens. Essential for understanding context limits.' },
+    { title: "Let's Build the GPT Tokenizer", url: 'https://www.youtube.com/watch?v=zduSFxRajkE', type: 'video', author: 'Andrej Karpathy', description: 'Deep-dive into how tokenisation actually works, built from scratch. Great for the curious learner who wants the full picture.' },
+    { title: 'Hugging Face NLP Course — Tokenisers', url: 'https://huggingface.co/learn/nlp-course/chapter2/4', type: 'article', author: 'Hugging Face', description: 'Practical explanation of how tokenisers work — free chapter from the comprehensive Hugging Face NLP course.' },
+  ],
 };
 
 const contextWindowDeepDive: Lesson = {
@@ -1532,6 +1579,11 @@ const contextWindowDeepDive: Lesson = {
     },
   ],
   relatedLessons: ['tokens-explained', 'ai-hallucination-deep-dive'],
+  furtherReading: [
+    { title: 'Claude Model Overview', url: 'https://docs.anthropic.com/en/docs/about-claude/models/overview', type: 'article', author: 'Anthropic', description: 'Current Claude model specs including context window sizes — useful reference when working with long documents.' },
+    { title: 'Intro to Large Language Models', url: 'https://www.youtube.com/watch?v=zjkBMFhNj_g', type: 'video', author: 'Andrej Karpathy', description: 'Covers context windows, memory limitations, and other LLM fundamentals in an accessible 1-hour format.' },
+    { title: 'Prompt Engineering for ChatGPT', url: 'https://www.coursera.org/learn/prompt-engineering', type: 'course', author: 'Vanderbilt University / Coursera', description: 'Includes practical techniques for managing context across long, multi-turn conversations.' },
+  ],
 };
 
 const aiHallucinationDeepDive: Lesson = {
@@ -1677,6 +1729,11 @@ const aiHallucinationDeepDive: Lesson = {
     },
   ],
   relatedLessons: ['evaluating-ai-output', 'what-ai-can-and-cannot-do'],
+  furtherReading: [
+    { title: 'Hallucination (Artificial Intelligence)', url: 'https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence)', type: 'article', author: 'Wikipedia', description: 'Comprehensive overview of AI hallucination: causes, types, and the research being done to reduce it.' },
+    { title: 'AI Hallucinations — What They Are and Why They Happen', url: 'https://www.ibm.com/think/topics/ai-hallucinations', type: 'article', author: 'IBM', description: 'Practical explanation of hallucination causes, real-world consequences, and mitigation strategies for business users.' },
+    { title: 'Intro to Large Language Models', url: 'https://www.youtube.com/watch?v=zjkBMFhNj_g', type: 'video', author: 'Andrej Karpathy', description: "Explains hallucination at the model level — why it's structural, not a simple bug you can patch." },
+  ],
 };
 
 const evaluatingAiOutput: Lesson = {
@@ -1798,6 +1855,10 @@ const evaluatingAiOutput: Lesson = {
     },
   ],
   relatedLessons: ['ai-hallucination-deep-dive', 'critical-evaluation'],
+  furtherReading: [
+    { title: 'Evaluating and Debugging Generative AI', url: 'https://www.deeplearning.ai/short-courses/evaluating-debugging-generative-ai/', type: 'course', author: 'DeepLearning.AI / Weights & Biases', description: 'Free short course on systematic methods for evaluating AI output quality and tracking model behaviour.' },
+    { title: 'Learn Prompting — Reliability', url: 'https://learnprompting.org/docs/reliability/intro', type: 'article', author: 'Learn Prompting', description: 'Techniques for making AI outputs more reliable, consistent, and verifiable — with practical examples.' },
+  ],
 };
 
 const chatgptGuide: Lesson = {
@@ -1952,6 +2013,11 @@ const chatgptGuide: Lesson = {
     },
   ],
   relatedLessons: ['model-comparison', 'chatbot-landscape'],
+  furtherReading: [
+    { title: 'ChatGPT Prompt Engineering for Developers', url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/', type: 'course', author: 'OpenAI / DeepLearning.AI', description: 'Free 1-hour course taught by OpenAI researchers on getting the most out of ChatGPT.' },
+    { title: 'OpenAI Platform Overview', url: 'https://platform.openai.com/docs/overview', type: 'article', author: 'OpenAI', description: 'Full reference for ChatGPT capabilities, model differences, and advanced features like code interpreter and plugins.' },
+    { title: 'Building Systems with ChatGPT', url: 'https://www.deeplearning.ai/short-courses/building-systems-with-chatgpt/', type: 'course', author: 'OpenAI / DeepLearning.AI', description: 'Follow-up course on chaining multiple prompts to build multi-step AI workflows in ChatGPT.' },
+  ],
 };
 
 // ─── Chunk 3: Tools, Prompting Advanced, Automation ──────────────────────────
@@ -2083,6 +2149,11 @@ const modelComparison: Lesson = {
     },
   ],
   relatedLessons: ['chatbot-landscape', 'choosing-the-right-tool'],
+  furtherReading: [
+    { title: 'LMSYS Chatbot Arena Leaderboard', url: 'https://lmarena.ai/', type: 'tool', author: 'LMSYS / UC Berkeley', description: 'Live crowdsourced benchmark where users rate AI models side-by-side. The most trusted real-world model ranking available.' },
+    { title: 'Claude Model Overview', url: 'https://docs.anthropic.com/en/docs/about-claude/models/overview', type: 'article', author: 'Anthropic', description: 'Current Claude model specifications, context window sizes, and recommended use cases.' },
+    { title: 'OpenAI Models Documentation', url: 'https://platform.openai.com/docs/models', type: 'article', author: 'OpenAI', description: 'Official documentation of current GPT models with capability comparisons and pricing details.' },
+  ],
 };
 
 const aiForResearch: Lesson = {
@@ -2211,6 +2282,11 @@ const aiForResearch: Lesson = {
     },
   ],
   relatedLessons: ['ai-hallucination-deep-dive', 'evaluating-ai-output'],
+  furtherReading: [
+    { title: 'Perplexity AI', url: 'https://www.perplexity.ai', type: 'tool', author: 'Perplexity', description: 'The AI research tool covered in this lesson — try it directly with a real research question to see citations in action.' },
+    { title: 'Learn Prompting — Reliability', url: 'https://learnprompting.org/docs/reliability/intro', type: 'article', author: 'Learn Prompting', description: 'Techniques for fact-checking and verifying AI output — essential skills for any research task.' },
+    { title: 'The AI Canon', url: 'https://a16z.com/ai-canon/', type: 'article', author: 'Andreessen Horowitz', description: 'Curated reading list of must-read AI resources — ideal starting point for deeper research on any AI topic.' },
+  ],
 };
 
 const chainOfThoughtPrompting: Lesson = {
@@ -2283,6 +2359,11 @@ const chainOfThoughtPrompting: Lesson = {
     { type: 'summary-box', data: { title: 'Key points', points: ['Adding "think step by step" is the simplest and most powerful prompt upgrade', 'Chain-of-thought improves accuracy by making reasoning process visible and sequential', 'Most valuable for decisions, analysis, root cause, and planning tasks', 'Combine with role-play for even better results: "As a CFO, think step by step through..."'] } },
   ],
   relatedLessons: ['few-shot-prompting', 'anatomy-of-a-good-prompt'],
+  furtherReading: [
+    { title: 'Chain-of-Thought Prompting Elicits Reasoning', url: 'https://arxiv.org/abs/2201.11903', type: 'article', author: 'Wei et al. / Google Research', description: 'The original research paper that introduced chain-of-thought prompting. The abstract is readable even without an ML background.' },
+    { title: 'Learn Prompting — Chain of Thought', url: 'https://learnprompting.org/docs/intermediate/chain_of_thought', type: 'article', author: 'Learn Prompting', description: 'Practical guide to chain-of-thought prompting with real examples across reasoning, math, and planning tasks.' },
+    { title: 'ChatGPT Prompt Engineering for Developers', url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/', type: 'course', author: 'OpenAI / DeepLearning.AI', description: 'Includes hands-on demonstrations of step-by-step reasoning prompts — free to enroll.' },
+  ],
 };
 
 const fewShotPrompting: Lesson = {
@@ -2350,6 +2431,10 @@ const fewShotPrompting: Lesson = {
     { type: 'summary-box', data: { title: 'Key points', points: ['Examples in your prompt are often more powerful than long instructions', 'Use 2-3 examples for recurring tasks to get reliable consistency', 'Few-shot works best for: classification, structured extraction, tone-matching, batch tasks', 'Include edge cases in examples so the AI handles messy real-world inputs', 'Save your working few-shot prompts as templates for reuse'] } },
   ],
   relatedLessons: ['chain-of-thought-prompting', 'building-your-first-workflow'],
+  furtherReading: [
+    { title: 'Learn Prompting — Few-Shot', url: 'https://learnprompting.org/docs/basics/few_shot', type: 'article', author: 'Learn Prompting', description: 'Clear explanation of few-shot prompting with examples across classification, writing, and reasoning tasks.' },
+    { title: 'Prompt Engineering Guide', url: 'https://platform.openai.com/docs/guides/prompt-engineering', type: 'article', author: 'OpenAI', description: "Covers few-shot examples as part of OpenAI's six core prompting strategies — with annotated examples." },
+  ],
 };
 
 const buildingYourFirstWorkflow: Lesson = {
@@ -2495,6 +2580,11 @@ const buildingYourFirstWorkflow: Lesson = {
     },
   ],
   relatedLessons: ['few-shot-prompting', 'what-is-ai-automation'],
+  furtherReading: [
+    { title: 'Zapier Getting Started', url: 'https://zapier.com/learn/automation/zapier-getting-started/', type: 'article', author: 'Zapier', description: 'Official beginner guide to building your first automated workflow with Zapier — no code required.' },
+    { title: 'Make Tutorials', url: 'https://www.make.com/en/help/tutorials', type: 'article', author: 'Make', description: 'Step-by-step tutorials for building advanced automation scenarios in Make (formerly Integromat).' },
+    { title: 'ChatGPT Prompt Engineering for Developers', url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/', type: 'course', author: 'OpenAI / DeepLearning.AI', description: 'Covers prompt techniques that power AI-driven automation workflows from simple to complex.' },
+  ],
 };
 
 const whatIsAiAutomation: Lesson = {
@@ -2629,6 +2719,10 @@ const whatIsAiAutomation: Lesson = {
     },
   ],
   relatedLessons: ['no-code-automation-tools', 'building-your-first-workflow'],
+  furtherReading: [
+    { title: 'What Is AI Automation?', url: 'https://www.ibm.com/think/topics/ai-automation', type: 'article', author: 'IBM', description: 'Overview of AI automation types, use cases, and key technologies including RPA, ML pipelines, and intelligent workflows.' },
+    { title: 'AI for Everyone', url: 'https://www.coursera.org/learn/ai-for-everyone', type: 'course', author: 'Andrew Ng / DeepLearning.AI', description: 'Week 1 helps you identify high-value automation opportunities in your own workflow.' },
+  ],
 };
 
 const noCodeAutomationTools: Lesson = {
@@ -2737,6 +2831,10 @@ const noCodeAutomationTools: Lesson = {
     { type: 'summary-box', data: { title: 'Key takeaways', points: ['Zapier: easiest, best for beginners, best app coverage', 'Make: best price at scale, more powerful visual builder', 'n8n: free and privacy-friendly, needs self-hosting setup', 'Your first automation should be one task you already do manually every week', 'Start with classify/summarize AI steps — they are the most reliable and forgiving'] } },
   ],
   relatedLessons: ['what-is-ai-automation', 'what-are-agents'],
+  furtherReading: [
+    { title: 'Zapier University', url: 'https://zapier.com/learn/', type: 'course', author: 'Zapier', description: 'Free tutorials and guides covering Zapier from beginner to advanced — build your first Zap in 5 minutes.' },
+    { title: 'Make Help Centre', url: 'https://www.make.com/en/help/tutorials', type: 'article', author: 'Make', description: 'Official tutorials for building complex multi-step automation scenarios in Make.' },
+  ],
 };
 
 // ─── Chunk 4: Agents, Safety, Privacy, RAG, Embeddings ───────────────────────
@@ -2796,6 +2894,11 @@ const whatAreAgents: Lesson = {
     { type: 'summary-box', data: { title: 'Key concepts', points: ['Agents plan and execute multi-step tasks using tools — chatbots only respond', 'The agent loop: observe → plan → act → check goal → repeat', 'Agents use web search, code execution, file access, browser, and API tools', 'Higher capability means higher oversight responsibility', 'You do not need to code to use most agent tools available today'] } },
   ],
   relatedLessons: ['how-agents-work', 'what-is-tool-calling'],
+  furtherReading: [
+    { title: 'LLM-Powered Autonomous Agents', url: 'https://lilianweng.github.io/posts/2023-06-23-agent/', type: 'article', author: 'Lilian Weng / OpenAI', description: 'Foundational deep-dive into the architecture of AI agents: planning, memory, and tool use — written by an OpenAI researcher.' },
+    { title: 'AI Agents in LangGraph', url: 'https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/', type: 'course', author: 'LangChain / DeepLearning.AI', description: 'Free short course on building multi-step AI agent workflows — taught by the LangChain creators.' },
+    { title: 'Introducing OpenAI Agents', url: 'https://openai.com/index/introducing-openai-agents/', type: 'article', author: 'OpenAI', description: "OpenAI's overview of their Agents SDK and the building blocks of agentic AI systems." },
+  ],
 };
 
 const howAgentsWork: Lesson = {
@@ -2872,6 +2975,10 @@ const howAgentsWork: Lesson = {
     { type: 'summary-box', data: { title: 'Agent components', points: ['Planning: the LLM breaks the goal into steps and decides what to do next', 'Tools: external capabilities the agent invokes (search, code, files, APIs)', 'Short-term memory: the context window for the current session', 'Long-term memory: external storage that persists and can be retrieved', 'Reflection: self-evaluation that improves multi-step reliability', 'Agents are most valuable for multi-step tasks across multiple systems'] } },
   ],
   relatedLessons: ['what-are-agents', 'what-is-tool-calling'],
+  furtherReading: [
+    { title: 'LLM-Powered Autonomous Agents', url: 'https://lilianweng.github.io/posts/2023-06-23-agent/', type: 'article', author: 'Lilian Weng / OpenAI', description: 'Technical but accessible breakdown of agent architectures — planning loops, memory types, and tool use explained with examples.' },
+    { title: 'AI Agents in LangGraph', url: 'https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/', type: 'course', author: 'LangChain / DeepLearning.AI', description: 'Hands-on short course on building agents — free to enroll, no prior ML knowledge required.' },
+  ],
 };
 
 const whatIsToolCalling: Lesson = {
@@ -2945,6 +3052,11 @@ const whatIsToolCalling: Lesson = {
     { type: 'summary-box', data: { title: 'Key ideas', points: ['Tool calling lets AI reach outside text generation to take real-world actions', 'Every AI agent is built on tool calling under the hood', 'The flow: model decides → calls tool → tool runs → result returned → model continues', 'Skills, plugins, actions, and MCP servers are all packaged collections of tools', 'You use tool calling every time ChatGPT searches the web or runs code for you'] } },
   ],
   relatedLessons: ['what-are-agents', 'what-is-mcp'],
+  furtherReading: [
+    { title: 'Function Calling Guide', url: 'https://platform.openai.com/docs/guides/function-calling', type: 'article', author: 'OpenAI', description: 'Official OpenAI documentation on function calling — how to connect GPT models to external tools and APIs.' },
+    { title: 'Tool Use with Claude', url: 'https://docs.anthropic.com/en/docs/build-with-claude/tool-use', type: 'article', author: 'Anthropic', description: "Anthropic's guide to giving Claude access to tools — with schema examples and best practices." },
+    { title: 'Function Calling with Gemini', url: 'https://ai.google.dev/gemini-api/docs/function-calling', type: 'article', author: 'Google', description: "Google's documentation on connecting Gemini to external functions and data sources." },
+  ],
 };
 
 const aiLimitations: Lesson = {
@@ -3081,6 +3193,10 @@ const aiLimitations: Lesson = {
     },
   ],
   relatedLessons: ['critical-evaluation', 'ai-hallucination-deep-dive'],
+  furtherReading: [
+    { title: 'Hallucination (Artificial Intelligence)', url: 'https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence)', type: 'article', author: 'Wikipedia', description: 'Comprehensive overview of AI hallucination, causes, and the research approaches to reduce it.' },
+    { title: 'AI for Everyone', url: 'https://www.coursera.org/learn/ai-for-everyone', type: 'course', author: 'Andrew Ng / DeepLearning.AI', description: 'Module 2 specifically covers AI limitations and how to set realistic expectations in teams and projects.' },
+  ],
 };
 
 const criticalEvaluation: Lesson = {
@@ -3202,6 +3318,10 @@ const criticalEvaluation: Lesson = {
     },
   ],
   relatedLessons: ['evaluating-ai-output', 'protecting-your-data'],
+  furtherReading: [
+    { title: 'Learn Prompting — Reliability', url: 'https://learnprompting.org/docs/reliability/intro', type: 'article', author: 'Learn Prompting', description: 'Practical techniques for verifying, validating, and improving the reliability of AI outputs.' },
+    { title: 'Evaluating and Debugging Generative AI', url: 'https://www.deeplearning.ai/short-courses/evaluating-debugging-generative-ai/', type: 'course', author: 'DeepLearning.AI / Weights & Biases', description: 'Free short course on systematic evaluation methods for generative AI output quality.' },
+  ],
 };
 
 const protectingYourData: Lesson = {
@@ -3313,6 +3433,11 @@ const protectingYourData: Lesson = {
     { type: 'summary-box', data: { title: 'Your personal data policy', points: ['Check default privacy settings on every AI tool you use regularly — training is often on by default', 'Tier your data: public is fine, sensitive needs care, confidential never goes into public AI', 'Anonymize before sharing: replace names, IDs, and specific numbers with placeholders', 'For business-sensitive work, use enterprise or local AI options', 'Follow your organization\'s AI policy and when in doubt, ask IT or legal'] } },
   ],
   relatedLessons: ['critical-evaluation', 'local-ai-options'],
+  furtherReading: [
+    { title: 'OpenAI Privacy Policy', url: 'https://openai.com/policies/privacy-policy', type: 'article', author: 'OpenAI', description: 'Details what data ChatGPT collects and stores, and how to opt out of having conversations used for training.' },
+    { title: 'Anthropic Privacy Policy', url: 'https://www.anthropic.com/privacy', type: 'article', author: 'Anthropic', description: 'How Anthropic handles Claude user data, retention periods, and enterprise privacy options.' },
+    { title: 'OWASP Top 10 for LLM Applications', url: 'https://owasp.org/www-project-top-10-for-large-language-model-applications/', type: 'article', author: 'OWASP', description: 'Security risks specific to systems using language models — covers prompt injection, data leakage, and more.' },
+  ],
 };
 
 const ragExplained: Lesson = {
@@ -3423,6 +3548,10 @@ const ragExplained: Lesson = {
     { type: 'summary-box', data: { title: 'RAG core concepts', points: ['RAG = retrieve first, then generate — grounding AI answers in real documents', 'It dramatically reduces hallucination on domain-specific questions', 'The pipeline: embed docs into vectors → retrieve relevant chunks → LLM generates grounded answer', 'RAG updates without retraining; fine-tuning is for teaching the model new behaviors', 'Perplexity, Notion AI, and Microsoft 365 Copilot all use RAG under the hood'] } },
   ],
   relatedLessons: ['embeddings-simply', 'protecting-your-data'],
+  furtherReading: [
+    { title: 'Retrieval-Augmented Generation Overview', url: 'https://learn.microsoft.com/en-us/azure/search/retrieval-augmented-generation-overview', type: 'article', author: 'Microsoft Azure', description: 'Clear technical explanation of RAG architecture, when to use it, and how it improves accuracy over standard prompting.' },
+    { title: 'Building and Evaluating Advanced RAG', url: 'https://www.deeplearning.ai/short-courses/building-and-evaluating-advanced-rag/', type: 'course', author: 'LlamaIndex / DeepLearning.AI', description: 'Free short course on building and evaluating RAG pipelines — accessible with basic Python knowledge.' },
+  ],
 };
 
 // ─── Chunk 5: Advanced Systems + Capstone ────────────────────────────────────
@@ -3583,6 +3712,10 @@ const embeddingsSimply: Lesson = {
     },
   ],
   relatedLessons: ['rag-explained', 'what-is-mcp'],
+  furtherReading: [
+    { title: 'The Illustrated Word2Vec', url: 'https://jalammar.github.io/illustrated-word2vec/', type: 'article', author: 'Jay Alammar', description: 'Visual walkthrough of word embeddings — the conceptual foundation behind all modern text embedding models.' },
+    { title: 'What Are Embeddings?', url: 'https://vickiboykis.com/what_are_embeddings/', type: 'article', author: 'Vicki Boykis', description: 'Accessible deep-dive into how embeddings work, what they represent, and how they power modern AI systems.' },
+  ],
 };
 
 const whatIsMcp: Lesson = {
@@ -3617,6 +3750,10 @@ const whatIsMcp: Lesson = {
     { type: 'summary-box', data: { title: 'MCP in brief', points: ['MCP = a standard protocol for AI models to connect to external tools', 'Created by Anthropic, now adopted industry-wide', 'Like USB for AI integrations — build once, works everywhere', 'The foundation for increasingly capable AI agents in your workflow'] } },
   ],
   relatedLessons: ['ai-skills-explained', 'what-are-agents'],
+  furtherReading: [
+    { title: 'Model Context Protocol — Official Docs', url: 'https://modelcontextprotocol.io', type: 'article', author: 'Anthropic', description: 'The official MCP specification — covers the protocol design, how to build MCP servers, and the growing ecosystem.' },
+    { title: 'Introducing the Model Context Protocol', url: 'https://www.anthropic.com/news/model-context-protocol', type: 'article', author: 'Anthropic', description: "Anthropic's announcement post explaining why MCP was created and how it changes the AI tools landscape." },
+  ],
 };
 
 const aiSkillsExplained: Lesson = {
@@ -3698,6 +3835,10 @@ const aiSkillsExplained: Lesson = {
     { type: 'summary-box', data: { title: 'Bottom line', points: ['Different words, same concept: giving AI access to external capabilities', 'Tools, skills, plugins, actions, MCP servers = all ways to give AI real-world access', 'As a user: focus on WHAT the tool can do, and whether it\'s safe', 'MCP is becoming the standard that will make these integrations universal', 'The richer the tool ecosystem, the more useful the AI becomes as an agent'] } },
   ],
   relatedLessons: ['what-is-mcp', 'what-are-agents'],
+  furtherReading: [
+    { title: 'Function Calling Guide', url: 'https://platform.openai.com/docs/guides/function-calling', type: 'article', author: 'OpenAI', description: 'Official documentation on how to give AI models access to external tools and APIs via function calling.' },
+    { title: 'AI Agents in LangGraph', url: 'https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/', type: 'course', author: 'LangChain / DeepLearning.AI', description: 'Practical course on building agentic systems with tool calling and memory — free to enroll.' },
+  ],
 };
 
 const imagesAndAi: Lesson = {
@@ -3862,6 +4003,11 @@ const imagesAndAi: Lesson = {
     },
   ],
   relatedLessons: ['local-ai-options', 'model-comparison'],
+  furtherReading: [
+    { title: 'DALL-E 3 Overview', url: 'https://openai.com/dall-e-3', type: 'article', author: 'OpenAI', description: "OpenAI's overview of DALL-E 3 — how it works, what makes it different, and how to use it effectively." },
+    { title: 'Midjourney Documentation', url: 'https://docs.midjourney.com', type: 'article', author: 'Midjourney', description: 'Official guide to Midjourney prompting — parameters, style modifiers, and how to craft effective image prompts.' },
+    { title: 'Stable Diffusion Guide', url: 'https://huggingface.co/blog/stable_diffusion', type: 'article', author: 'Hugging Face', description: 'Introduction to how Stable Diffusion works and how to run it yourself — visual and accessible.' },
+  ],
 };
 
 const localAiOptions: Lesson = {
@@ -4019,6 +4165,11 @@ const localAiOptions: Lesson = {
     },
   ],
   relatedLessons: ['protecting-your-data', 'building-your-ai-stack'],
+  furtherReading: [
+    { title: 'Ollama — Run LLMs Locally', url: 'https://ollama.com', type: 'tool', author: 'Ollama', description: 'The simplest way to run open-source AI models on your own computer — one-command install, no cloud required.' },
+    { title: 'Hugging Face Model Hub', url: 'https://huggingface.co/models', type: 'tool', author: 'Hugging Face', description: 'Repository of thousands of open-source AI models — browse, filter by task, and run in the browser or locally.' },
+    { title: 'LM Studio', url: 'https://lmstudio.ai', type: 'tool', author: 'LM Studio', description: 'Visual desktop app for discovering and running local AI models — no command line required.' },
+  ],
 };
 
 const buildingYourAiStack: Lesson = {
@@ -4059,6 +4210,10 @@ const buildingYourAiStack: Lesson = {
     { type: 'summary-box', data: { title: 'Your AI stack principles', points: ['Start minimal: 2-3 tools max for 90 days', 'Choose by task, not by news coverage', 'Depth beats breadth — master one tool before adding another', 'Review quarterly and cut what you do not use'] } },
   ],
   relatedLessons: ['staying-current-in-ai', 'choosing-the-right-tool'],
+  furtherReading: [
+    { title: 'DeepLearning.AI Short Courses', url: 'https://www.deeplearning.ai/short-courses/', type: 'course', author: 'DeepLearning.AI', description: 'Free 1-hour courses on specific AI tools — a great way to evaluate tools before committing to them in your stack.' },
+    { title: 'The AI Canon', url: 'https://a16z.com/ai-canon/', type: 'article', author: 'Andreessen Horowitz', description: 'Curated reading list organised by AI topic — useful for building expertise in specific layers of your AI stack.' },
+  ],
 };
 
 const stayingCurrentInAi: Lesson = {
@@ -4099,6 +4254,11 @@ const stayingCurrentInAi: Lesson = {
     { type: 'summary-box', data: { title: 'Staying current without overwhelm', points: ['Filter ruthlessly: follow capabilities in tools you use, not hype', '2 newsletters + 1 YouTube channel is enough for most people', 'Build a 15-minute weekly review habit — scalable and sustainable', 'Your foundation from this course gives you context to evaluate anything new quickly'] } },
   ],
   relatedLessons: ['building-your-ai-stack', 'choosing-the-right-tool'],
+  furtherReading: [
+    { title: 'The Batch — DeepLearning.AI Newsletter', url: 'https://www.deeplearning.ai/the-batch/', type: 'article', author: 'DeepLearning.AI', description: 'Weekly newsletter by Andrew Ng covering the most important AI developments — curated, concise, and accessible.' },
+    { title: 'Hugging Face Blog', url: 'https://huggingface.co/blog', type: 'article', author: 'Hugging Face', description: 'Regular deep-dives and announcements on the latest open-source AI models, datasets, and research.' },
+    { title: 'Google AI Blog', url: 'https://blog.google/technology/ai/', type: 'article', author: 'Google', description: "Google's official blog covering AI research, product updates, and real-world applications." },
+  ],
 };
 
 // ─── Chunk 6: Writing, Voice/Video, System Prompts, Coding, Copyright, Data ───
@@ -4244,6 +4404,10 @@ const aiWritingAssistant: Lesson = {
     },
   ],
   relatedLessons: ['editing-with-ai', 'prompt-patterns'],
+  furtherReading: [
+    { title: 'Intro to Claude', url: 'https://docs.anthropic.com/en/docs/intro-to-claude', type: 'article', author: 'Anthropic', description: "Overview of Claude's strengths as a writing collaborator, with tips on tone, style, and long-document handling." },
+    { title: 'Prompt Engineering for ChatGPT', url: 'https://www.coursera.org/learn/prompt-engineering', type: 'course', author: 'Vanderbilt University / Coursera', description: 'Includes dedicated modules on using AI for writing tasks — free to audit on Coursera.' },
+  ],
 };
 
 const editingWithAi: Lesson = {
@@ -4388,6 +4552,10 @@ const editingWithAi: Lesson = {
     },
   ],
   relatedLessons: ['ai-writing-assistant', 'common-prompting-mistakes'],
+  furtherReading: [
+    { title: 'Learn Prompting — Text Transformation', url: 'https://learnprompting.org/docs/basic_applications/writing_in_a_style', type: 'article', author: 'Learn Prompting', description: 'Practical prompting patterns for rewriting, condensing, and changing the tone of existing text.' },
+    { title: 'Prompt Engineering Guide', url: 'https://platform.openai.com/docs/guides/prompt-engineering', type: 'article', author: 'OpenAI', description: 'Covers strategies for transforming and improving existing text — rewriting, shortening, and tone adjustment.' },
+  ],
 };
 
 const voiceAndVideoAi: Lesson = {
@@ -4567,6 +4735,11 @@ const voiceAndVideoAi: Lesson = {
     },
   ],
   relatedLessons: ['images-and-ai', 'ai-writing-assistant'],
+  furtherReading: [
+    { title: 'ElevenLabs Voice AI', url: 'https://elevenlabs.io', type: 'tool', author: 'ElevenLabs', description: 'Leading AI voice synthesis platform — text to speech, voice cloning, and audio generation with natural-sounding results.' },
+    { title: 'OpenAI Whisper', url: 'https://openai.com/research/whisper', type: 'article', author: 'OpenAI', description: 'Overview of Whisper, the open-source speech recognition model powering many transcription tools.' },
+    { title: 'RunwayML', url: 'https://runwayml.com', type: 'tool', author: 'Runway', description: 'AI-powered video editing and generation tool — remove backgrounds, add effects, and generate video clips.' },
+  ],
 };
 
 const systemPromptsAndCustomInstructions: Lesson = {
@@ -4685,6 +4858,11 @@ const systemPromptsAndCustomInstructions: Lesson = {
     },
   ],
   relatedLessons: ['anatomy-of-a-good-prompt', 'prompt-patterns'],
+  furtherReading: [
+    { title: 'System Messages — OpenAI Docs', url: 'https://platform.openai.com/docs/guides/prompt-engineering', type: 'article', author: 'OpenAI', description: 'Official documentation covering how system prompts work in ChatGPT and the API — with best practice examples.' },
+    { title: 'Prompt Engineering Overview', url: 'https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview', type: 'article', author: 'Anthropic', description: 'Deep coverage of system prompts in Claude — how to use them to set consistent personas and constraints.' },
+    { title: 'Learn Prompting — Role Prompting', url: 'https://learnprompting.org/docs/basics/roles', type: 'article', author: 'Learn Prompting', description: 'Guide to role-setting in prompts — personas, system messages, and how to apply them effectively.' },
+  ],
 };
 
 const aiForCoding: Lesson = {
@@ -4833,6 +5011,10 @@ const aiForCoding: Lesson = {
     },
   ],
   relatedLessons: ['chatgpt-guide', 'model-comparison', 'what-is-tool-calling'],
+  furtherReading: [
+    { title: 'GitHub Copilot Documentation', url: 'https://docs.github.com/en/copilot', type: 'article', author: 'GitHub', description: 'Official guide to using GitHub Copilot — prompting patterns, keyboard shortcuts, and IDE integration tips.' },
+    { title: 'Pair Programming with an LLM', url: 'https://www.deeplearning.ai/short-courses/pair-programming-llm/', type: 'course', author: 'Google / DeepLearning.AI', description: 'Free short course on using AI as a coding partner — prompting techniques for code generation, debugging, and explanation.' },
+  ],
 };
 
 const aiAndCopyright: Lesson = {
@@ -4967,6 +5149,10 @@ const aiAndCopyright: Lesson = {
     },
   ],
   relatedLessons: ['protecting-your-data', 'ai-limitations'],
+  furtherReading: [
+    { title: 'Copyright and Artificial Intelligence', url: 'https://www.copyright.gov/ai/', type: 'article', author: 'US Copyright Office', description: 'Official US Copyright Office guidance on AI-generated content and what copyright protections apply.' },
+    { title: 'OWASP Top 10 for LLM Applications', url: 'https://owasp.org/www-project-top-10-for-large-language-model-applications/', type: 'article', author: 'OWASP', description: 'Security and compliance risks in AI systems — relevant to legal, copyright, and data protection use cases.' },
+  ],
 };
 
 const aiForDataAnalysis: Lesson = {
@@ -5129,6 +5315,10 @@ const aiForDataAnalysis: Lesson = {
     },
   ],
   relatedLessons: ['what-is-ai-automation', 'no-code-automation-tools', 'building-your-first-workflow'],
+  furtherReading: [
+    { title: 'ChatGPT Prompt Engineering for Developers', url: 'https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/', type: 'course', author: 'OpenAI / DeepLearning.AI', description: 'Free course demonstrating ChatGPT code interpreter for data analysis, transformation, and visualisation.' },
+    { title: 'Gemini in Google Workspace', url: 'https://workspace.google.com/intl/en/products/gemini/', type: 'tool', author: 'Google', description: "Overview of Gemini's native integration in Google Sheets — formula help, data analysis, and summarisation." },
+  ],
 };
 
 // ─── Lesson registry ─────────────────────────────────────────────────────────
