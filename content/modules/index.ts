@@ -132,7 +132,7 @@ export const modules: Module[] = [
     estimatedHours: 2,
     icon: '💬',
     tags: ['chatgpt', 'claude', 'gemini', 'perplexity', 'comparison'],
-    lessonSlugs: ['chatgpt-guide', 'model-comparison', 'ai-for-coding'],
+    lessonSlugs: ['chatgpt-guide', 'model-comparison', 'ai-for-coding', 'model-selection-and-cost-optimization'],
     isOptional: false,
     prerequisites: ['ai-tools-overview'],
     whatYouLearn: [
@@ -221,7 +221,7 @@ export const modules: Module[] = [
     estimatedHours: 2,
     icon: '🔄',
     tags: ['workflows', 'templates', 'prompt-chaining', 'productivity'],
-    lessonSlugs: ['building-your-first-workflow'],
+    lessonSlugs: ['building-your-first-workflow', 'prompt-debugging-workflow', 'ai-product-design-lifecycle'],
     isOptional: false,
     prerequisites: ['advanced-prompting'],
     whatYouLearn: [
@@ -288,7 +288,7 @@ export const modules: Module[] = [
     estimatedHours: 1.5,
     icon: '🔧',
     tags: ['tool-calling', 'skills', 'plugins', 'apis'],
-    lessonSlugs: ['what-is-tool-calling'],
+    lessonSlugs: ['what-is-tool-calling', 'agent-guardrails-and-approvals'],
     isOptional: true,
     skipLabel: 'Skip if you are not using agent-based tools yet',
     prerequisites: ['agents-introduction'],
@@ -312,7 +312,7 @@ export const modules: Module[] = [
     estimatedHours: 2,
     icon: '⚠️',
     tags: ['safety', 'limitations', 'fact-checking', 'responsible-ai'],
-    lessonSlugs: ['ai-limitations', 'critical-evaluation'],
+    lessonSlugs: ['ai-limitations', 'critical-evaluation', 'ai-evaluation-metrics', 'prompt-security-and-jailbreak-defense'],
     isOptional: false,
     prerequisites: ['prompting-basics'],
     whatYouLearn: [
@@ -334,7 +334,7 @@ export const modules: Module[] = [
     estimatedHours: 1.5,
     icon: '🔒',
     tags: ['privacy', 'data', 'security', 'enterprise'],
-    lessonSlugs: ['protecting-your-data', 'ai-and-copyright'],
+    lessonSlugs: ['protecting-your-data', 'ai-and-copyright', 'team-ai-governance', 'enterprise-ai-implementation-playbook'],
     isOptional: false,
     prerequisites: ['safety-and-limitations'],
     whatYouLearn: [
@@ -380,7 +380,7 @@ export const modules: Module[] = [
     estimatedHours: 2,
     icon: '🔢',
     tags: ['embeddings', 'vector-databases', 'semantic-search'],
-    lessonSlugs: ['embeddings-simply'],
+    lessonSlugs: ['embeddings-simply', 'vector-databases-in-practice'],
     isOptional: true,
     skipLabel: 'Skip unless you are building or evaluating RAG systems',
     prerequisites: ['rag-and-memory'],
@@ -473,7 +473,7 @@ export const modules: Module[] = [
     estimatedHours: 2,
     icon: '🎒',
     tags: ['personal-toolkit', 'ai-stack', 'workflow-design', 'capstone'],
-    lessonSlugs: ['building-your-ai-stack'],
+    lessonSlugs: ['building-your-ai-stack', 'ai-roadmap-by-role', 'ai-project-portfolio-and-capstone-assessments'],
     isOptional: false,
     prerequisites: ['automation-basics'],
     whatYouLearn: [
