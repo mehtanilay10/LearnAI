@@ -6,12 +6,15 @@
   "description": "Understand what AI automation means, how it differs from traditional automation, and why it is a game-changer for individuals.",
   "order": 1,
   "difficulty": "intermediate",
-  "estimatedMinutes": 12,
+  "estimatedMinutes": 25,
   "tags": [
     "automation",
     "workflows",
     "productivity",
-    "no-code"
+    "no-code",
+    "rpa",
+    "agents",
+    "verification"
   ],
   "blocks": [
     {
@@ -165,6 +168,244 @@
       }
     },
     {
+      "type": "heading",
+      "id": "key-terms",
+      "data": {
+        "level": 2,
+        "text": "Key terms to know",
+        "anchor": "key-terms"
+      }
+    },
+    {
+      "type": "key-terms",
+      "data": {
+        "terms": [
+          {
+            "term": "Trigger",
+            "definition": "An event that starts the automation (new email, file upload, scheduled time)."
+          },
+          {
+            "term": "AI step",
+            "definition": "A workflow node that uses an LLM to classify, summarize, extract, or generate text."
+          },
+          {
+            "term": "RAG (Retrieval-Augmented Generation)",
+            "definition": "Pattern that retrieves documents or facts to ground LLM outputs and reduce hallucinations."
+          },
+          {
+            "term": "Human-in-the-loop",
+            "definition": "A checkpoint where a person reviews or approves AI outputs before final action."
+          },
+          {
+            "term": "Shadow mode",
+            "definition": "Running automation in parallel without affecting users to detect failures before full rollout."
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "design-patterns",
+      "data": {
+        "level": 2,
+        "text": "Common design patterns",
+        "anchor": "design-patterns"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "items": [
+          "Classify → Route: use AI to label inputs and route to the correct queue or person.",
+          "Extract → Enrich → Write: extract structured fields, enrich via lookup, then write to CRM or DB.",
+          "Summarize → Human review → Publish: generate a draft summary and require human approval before publishing.",
+          "Batch → Process → Aggregate: group similar items to reduce API calls and improve cost-efficiency."
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "risk-mitigation",
+      "data": {
+        "level": 2,
+        "text": "Risk mitigation and practical safeguards",
+        "anchor": "risk-mitigation"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Risk",
+          "What can go wrong",
+          "Practical safeguard"
+        ],
+        "rows": [
+          [
+            "Incorrect action",
+            "Automation takes wrong action (e.g., refunds, deletions)",
+            "Require human approval for irreversible actions"
+          ],
+          [
+            "PII leakage",
+            "Sensitive data sent to third-party services",
+            "Redact or tokenise PII; use enterprise/self-hosted plans"
+          ],
+          [
+            "Hallucination",
+            "AI invents facts or misattributes information",
+            "Use RAG, require citations, and add verification checks"
+          ],
+          [
+            "Cost overrun",
+            "High volume of AI calls increases bills",
+            "Batch requests, add rate limits, monitor usage"
+          ],
+          [
+            "Drift",
+            "Model performance degrades as inputs change",
+            "Monitor metrics, schedule prompt reviews, refresh examples"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "integration-patterns",
+      "data": {
+        "level": 2,
+        "text": "Integration patterns and tooling",
+        "anchor": "integration-patterns"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI automation can be implemented with no-code platforms (Zapier, Make, n8n), low-code orchestration (workflow engines, serverless functions), or full engineering stacks (agents, orchestrators, microservices). Choose the level of control and privacy that matches your risk profile and scale needs."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "integration-overview",
+        "caption": "Typical integration: trigger → AI → verification → action → audit",
+        "definition": "graph LR\n  Trigger[\"Trigger\\n(e.g., new email)\"] --> AI[\"AI step\\n(classify/extract)\"]\n  AI --> Verify[\"Verification\\n(schema, lookups)\"]\n  Verify -->|pass| Action[\"Action\\n(create task / send message)\"]\n  Verify -->|fail| Human[\"Human review\"]\n  Action --> Audit[\"Audit log\\n(store inputs/outputs)\"]\n\n  style Trigger fill:#fffbeb,stroke:#d97706\n  style AI fill:#ddf4ff,stroke:#0969da\n  style Verify fill:#fff8c5,stroke:#9a6700\n  style Human fill:#eddff8,stroke:#8250df\n  style Audit fill:#d1f3d8,stroke:#1a7f37"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "templates",
+      "data": {
+        "level": 2,
+        "text": "Copyable prompt templates for automation steps",
+        "anchor": "templates"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Use case",
+          "Template",
+          "Notes"
+        ],
+        "rows": [
+          [
+            "Email classification",
+            "\"Classify this email as: 'urgent', 'action', or 'FYI'. Return only the label. If 'action', also extract a one-sentence summary and the requested due date if present (ISO format or null).\"",
+            "Return machine-parseable output for routing"
+          ],
+          [
+            "Action item extraction",
+            "\"From this meeting transcript, extract action items as JSON array: [{owner, task, due_date}]. If owner not found, set owner to 'unassigned'.\"",
+            "Use for creating tasks in project tools"
+          ],
+          [
+            "Document routing",
+            "\"Read this document and determine its type: 'invoice', 'contract', 'spec', or 'other'. Provide the reason in one sentence and a confidence score 0-1.\"",
+            "Combine with RAG for higher accuracy on domain docs"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "operational-checklist",
+      "data": {
+        "level": 2,
+        "text": "Operational checklist before automating a task",
+        "anchor": "operational-checklist"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "items": [
+          "Define success metrics and acceptable error rates.",
+          "Identify sensitive fields and redact or exclude them.",
+          "Start in shadow mode and run parallel comparisons for 1–2 weeks.",
+          "Add human approval gates for irreversible actions.",
+          "Instrument logs for inputs, outputs, and verification results."
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "measuring-success",
+      "data": {
+        "level": 2,
+        "text": "How to measure success",
+        "anchor": "measuring-success"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Metric",
+          "What to track",
+          "Why it matters"
+        ],
+        "rows": [
+          [
+            "Accuracy",
+            "Percent correct classifications or extractions",
+            "Primary indicator of usefulness"
+          ],
+          [
+            "Human override rate",
+            "How often humans correct outputs",
+            "Shows where prompts or models need improvement"
+          ],
+          [
+            "Time saved",
+            "Average minutes saved per run",
+            "Quantifies productivity impact"
+          ],
+          [
+            "Cost per action",
+            "AI calls and platform costs per successful automation",
+            "Helps decide when to scale or migrate platforms"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "conclusion",
+      "data": {
+        "level": 2,
+        "text": "Summary",
+        "anchor": "conclusion"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI automation extends automation into tasks that require language understanding and judgment. Start small, instrument everything, require verification for risky steps, and iterate. With the right safeguards, AI automation turns repetitive busywork into reliable time savings."
+      }
+    },
+    {
       "type": "summary-box",
       "data": {
         "title": "AI automation fundamentals",
@@ -196,6 +437,27 @@
       "type": "course",
       "author": "Andrew Ng / DeepLearning.AI",
       "description": "Week 1 helps you identify high-value automation opportunities in your own workflow."
+    },
+    {
+      "title": "Zapier Getting Started",
+      "url": "https://zapier.com/learn/automation/zapier-getting-started/",
+      "type": "article",
+      "author": "Zapier",
+      "description": "Practical guide to building simple automations and understanding triggers, actions, and filters."
+    },
+    {
+      "title": "Make Tutorials",
+      "url": "https://www.make.com/en/help/tutorials",
+      "type": "article",
+      "author": "Make",
+      "description": "Step-by-step tutorials for building advanced automation scenarios and optimizing for cost and reliability."
+    },
+    {
+      "title": "n8n Documentation",
+      "url": "https://docs.n8n.io",
+      "type": "article",
+      "author": "n8n",
+      "description": "Guides for self-hosting, security best practices, and advanced workflow patterns."
     }
   ]
 }

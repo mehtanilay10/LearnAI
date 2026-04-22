@@ -6,12 +6,24 @@
   "description": "Show the AI exactly what you want by providing examples — one of the most reliable techniques for consistent output.",
   "order": 2,
   "difficulty": "intermediate",
-  "estimatedMinutes": 11,
+  "estimatedMinutes": 30,
   "tags": [
     "few-shot",
     "examples",
     "consistent-output",
-    "advanced-prompting"
+    "advanced-prompting",
+    "in-context-learning",
+    "prompt-templates",
+    "production-prompts"
+  ],
+  "relatedGlossaryTerms": [
+    "prompt",
+    "zero-shot",
+    "one-shot",
+    "few-shot-learning",
+    "in-context-learning",
+    "prompt-template",
+    "instruction-following"
   ],
   "blocks": [
     {
@@ -34,7 +46,7 @@
       "data": {
         "id": "few-shot-comparison",
         "caption": "The more examples you provide, the more reliably the AI matches your desired format — especially for unusual or specific output styles",
-        "definition": "graph LR\n  subgraph ZERO [\"Zero-shot\n(no examples)\"]\n    ZI[\"Classify: 'The\nonboarding was rough'\"] --> ZO[\"May format\ninconsistently\"]\n  end\n  subgraph ONE [\"One-shot\n(1 example)\"]\n    OI[\"Example: 'Great\nexperience!' → Positive\n---\nClassify: 'The\nonboarding was rough'\"] --> OO[\"More likely\nto match format\"]\n  end\n  subgraph FEW [\"Few-shot\n(2-3 examples)\"]\n    FI[\"3 varied examples\ncovering edge cases\"] --> FO[\"Highly consistent\nformat every time\"]\n  end\n\n  style ZERO fill:#ffebe9,stroke:#cf222e\n  style ONE fill:#fff8c5,stroke:#9a6700\n  style FEW fill:#d1f3d8,stroke:#1a7f37"
+        "definition": "graph LR\n  subgraph ZERO [\"Zero-shot\\n(no examples)\"]\n    ZI[\"Instruction only\\n'Summarize this'\"] --> ZO[\"Output varies\\n(format unpredictable)\"]\n  end\n  subgraph ONE [\"One-shot\\n(1 example)\"]\n    OI[\"Example: 'Great\\nexperience!' → Positive\\n---\\nClassify: 'The\\nonboarding was rough'\"] --> OO[\"More likely\\nto match format\"]\n  end\n  subgraph FEW [\"Few-shot\\n(2-3 examples)\"]\n    FI[\"3 varied examples\\ncovering edge cases\"] --> FO[\"High format consistency\\nand robust handling\"]\n  end\n\n  style ZERO fill:#fff1f0,stroke:#cf222e\n  style ONE fill:#fff8e1,stroke:#9a6700\n  style FEW fill:#e6ffed,stroke:#1a7f37"
       }
     },
     {
@@ -134,6 +146,14 @@
           [
             "Save working few-shot prompts as templates",
             "Reuse them for recurring batch tasks without rebuilding each time"
+          ],
+          [
+            "Place examples close to the new query",
+            "Models pay more attention to the most recent context in the prompt window"
+          ],
+          [
+            "Use explicit labels (Input:, Output:)",
+            "Reduces ambiguity and improves parsing for structured tasks"
           ]
         ]
       }
@@ -158,6 +178,312 @@
           "Save your working few-shot prompts as templates for reuse"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "beginners-guide",
+      "data": {
+        "level": 2,
+        "text": "Beginner's guide: simple templates",
+        "anchor": "beginners-guide"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Start with short, copyable templates. Keep examples concise and consistent. Below are beginner-friendly templates you can paste into a prompt and adapt to your domain."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Use case",
+          "Template (copyable)",
+          "Notes"
+        ],
+        "rows": [
+          [
+            "Classification",
+            "\"Example 1:\\nInput: 'The onboarding was smooth.'\\nOutput: Positive\\n\\nExample 2:\\nInput: 'I waited 3 days for a reply.'\\nOutput: Negative\\n\\nNow classify:\\nInput: '[NEW TEXT]'\\nOutput:\",",
+            "Labelled examples; keep labels consistent"
+          ],
+          [
+            "Extraction to JSON",
+            "\"Example:\\nInput: 'Acme Corp raised $5M in Series A.'\\nOutput: {\\\"company\\\": \\\"Acme Corp\\\", \\\"amount\\\": \\\"$5M\\\", \\\"round\\\": \\\"Series A\\\"}\\n\\nNow extract from: '[NEW SENTENCE]'\\nOutput:\",",
+            "Use exact JSON schema in examples"
+          ],
+          [
+            "Tone and style",
+            "\"Example:\\nInput: 'Product X'\\nOutput: 'Introducing Product X — [quirky one-liner].'\\n\\nNow write for: '[NEW PRODUCT]'\\nOutput:\",",
+            "One-shot often sufficient for voice matching"
+          ],
+          [
+            "Multi-field form filling",
+            "\"Example:\\nInput: 'Order #123: John Doe, 2x T-shirt, shipped'\\nOutput: {\\\"order_id\\\":\\\"123\\\",\\\"name\\\":\\\"John Doe\\\",\\\"items\\\":2,\\\"status\\\":\\\"shipped\\\"}\\n\\nNow parse: '[NEW ORDER]'\\nOutput:\",",
+            "Good for automating structured data pipelines"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "advanced-patterns",
+      "data": {
+        "level": 2,
+        "text": "Advanced patterns and hybrid approaches",
+        "anchor": "advanced-patterns"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Combine few-shot with other techniques for stronger results: pair few-shot with chain-of-thought when you want the model to explain its mapping; use self-consistency to sample multiple outputs and vote; use prompt-chaining to break complex tasks into smaller few-shot steps; and add deterministic verification for critical fields."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "few-shot-hybrid",
+        "caption": "Hybrid workflow: few-shot + CoT + verification",
+        "definition": "graph LR\n  U[\"User input\"] --> F[\"Few-shot prompt (examples + instruction)\"]\n  F --> C[\"Chain-of-thought reasoning (optional)\"]\n  C --> S[\"Sample multiple outputs (self-consistency)\"]\n  S --> V[\"Automated verification / schema check\"]\n  V --> R[\"Final structured output\"]\n\n  style U fill:#fff3bf,stroke:#d97706\n  style R fill:#d1f3d8,stroke:#1a7f37"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "self-consistency",
+      "data": {
+        "level": 2,
+        "text": "Self-consistency and robustness",
+        "anchor": "self-consistency"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Self-consistency samples multiple outputs (often with higher temperature) and aggregates the final answers (majority vote or confidence-weighted). When combined with few-shot examples that show the desired aggregation format, this approach reduces brittle single-output failures."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "evaluation-and-metrics",
+      "data": {
+        "level": 2,
+        "text": "How to evaluate few-shot prompts",
+        "anchor": "evaluation-and-metrics"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Metric",
+          "What to check",
+          "Why it matters"
+        ],
+        "rows": [
+          [
+            "Format adherence",
+            "Does the output match the exact structure shown in examples?",
+            "Critical for downstream parsing and automation"
+          ],
+          [
+            "Accuracy",
+            "Are labels or extracted values correct?",
+            "Measures task correctness"
+          ],
+          [
+            "Robustness",
+            "Does the prompt handle noisy or edge-case inputs?",
+            "Ensures reliability in production"
+          ],
+          [
+            "Latency / cost",
+            "How long and how expensive is the prompt to run (context length matters)?",
+            "Practical constraints for scale"
+          ],
+          [
+            "Stability",
+            "Do repeated runs produce consistent outputs?",
+            "Important for deterministic pipelines"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "text": "Few-shot improves consistency but does not eliminate hallucinations or factual errors. Always validate critical fields with deterministic checks or external data sources before using outputs in production."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "pitfalls-and-limitations",
+      "data": {
+        "level": 2,
+        "text": "Pitfalls and limitations",
+        "anchor": "pitfalls-and-limitations"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Common pitfalls include: overfitting to the examples (model copies examples too literally), exceeding the model's context window with many or long examples, failing to include negative or ambiguous examples which leads to brittle behavior, and hidden biases in examples that propagate to outputs. Few-shot is not a substitute for fine-tuning when you need large-scale, consistent behavior across millions of queries."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "production-workflows",
+      "data": {
+        "level": 2,
+        "text": "Production workflows and operational tips",
+        "anchor": "production-workflows"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "For production use: (1) keep examples concise and representative, (2) store prompt templates centrally and version them, (3) run adversarial tests, (4) add lightweight verification (regex, schema validation, lookups), (5) monitor drift and update examples when real inputs change, and (6) log failures for continuous improvement."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "production-flow",
+        "caption": "Production flow for few-shot pipelines",
+        "definition": "graph LR\n  User[\"Incoming data\"] --> P[\"Apply few-shot prompt\"]\n  P --> V[\"Validate output (schema, regex)\"]\n  V --> A[\"Auto-accept if valid\"]\n  V --> H[\"Human review if invalid or low confidence\"]\n  H --> DB[\"Store corrected examples for prompt updates\"]\n\n  style User fill:#fff3bf,stroke:#d97706\n  style DB fill:#e6f4ff,stroke:#0366d6"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "prompt-templates",
+      "data": {
+        "level": 2,
+        "text": "Copyable prompt templates",
+        "anchor": "prompt-templates"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Use case",
+          "Template",
+          "Notes"
+        ],
+        "rows": [
+          [
+            "Classification",
+            "\"Example 1:\\nInput: 'The onboarding was smooth.'\\nOutput: Positive\\n\\nExample 2:\\nInput: 'I waited 3 days for a reply.'\\nOutput: Negative\\n\\nNow classify:\\nInput: '[NEW TEXT]'\\nOutput:\",",
+            "Labelled examples; keep labels consistent"
+          ],
+          [
+            "Extraction to JSON",
+            "\"Example:\\nInput: 'Acme Corp raised $5M in Series A.'\\nOutput: {\\\"company\\\": \\\"Acme Corp\\\", \\\"amount\\\": \\\"$5M\\\", \\\"round\\\": \\\"Series A\\\"}\\n\\nNow extract from: '[NEW SENTENCE]'\\nOutput:\",",
+            "Use exact JSON schema in examples"
+          ],
+          [
+            "Tone and style",
+            "\"Example:\\nInput: 'Product X'\\nOutput: 'Introducing Product X — [quirky one-liner].'\\n\\nNow write for: '[NEW PRODUCT]'\\nOutput:\",",
+            "One-shot often sufficient for voice matching"
+          ],
+          [
+            "Orchestration example",
+            "\"Example:\\nGoal: Summarize and extract action items from meeting notes.\\nInput: [meeting notes] → Output: {summary:..., action_items:[{owner:..., due:...}]}\\n\\nNow process: [NEW NOTES]\\nOutput:\",",
+            "Combine extraction with structured output"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "testing-and-validation",
+      "data": {
+        "level": 2,
+        "text": "Testing and validation strategies",
+        "anchor": "testing-and-validation"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Create a test suite of representative inputs including edge cases and adversarial examples. Measure format adherence, accuracy, and stability. Use automated checks to reject outputs that fail schema validation and route them to human review. Periodically refresh examples based on logged failures."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "further-resources",
+      "data": {
+        "level": 2,
+        "text": "Further reading and tools",
+        "anchor": "further-resources"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Curated resources to deepen your understanding of few-shot prompting, in-context learning, and related research."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Resource",
+          "Type",
+          "Why read it"
+        ],
+        "rows": [
+          [
+            "Learn Prompting — Few-Shot",
+            "Tutorial",
+            "Clear explanation of few-shot prompting with practical examples across classification, writing, and reasoning tasks"
+          ],
+          [
+            "Prompt Engineering Guide (OpenAI)",
+            "Guide",
+            "Covers few-shot examples as part of core prompting strategies with annotated examples"
+          ],
+          [
+            "Language Models are Few-Shot Learners (GPT-3)",
+            "Research paper",
+            "Foundational paper demonstrating in-context learning and the few-shot capabilities of large language models"
+          ],
+          [
+            "Self-Consistency: A Simple Method for Improving Chain of Thought",
+            "Article",
+            "Explains sampling multiple outputs and aggregating — useful when combining few-shot with CoT"
+          ],
+          [
+            "Practical Prompting Patterns",
+            "Resource",
+            "A living collection of prompting patterns, templates, and community examples for applied few-shot and related techniques"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "When scaling few-shot prompts, balance the number and length of examples against the model's context window. Consider moving rarely changing examples to a short system instruction or using retrieval-augmented prompts for long example sets."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "conclusion",
+      "data": {
+        "level": 2,
+        "text": "Conclusion and next steps",
+        "anchor": "conclusion"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Few-shot prompting is a practical, low-effort way to get consistent, structured outputs from LLMs without fine-tuning. Start with 2–3 high-quality examples, include edge cases, validate outputs, and iterate. Combine few-shot with verification and other prompting techniques for the best results."
+      }
     }
   ],
   "relatedLessons": [
@@ -178,6 +504,27 @@
       "type": "article",
       "author": "OpenAI",
       "description": "Covers few-shot examples as part of OpenAI's six core prompting strategies — with annotated examples."
+    },
+    {
+      "title": "Language Models are Few-Shot Learners (GPT-3)",
+      "url": "https://arxiv.org/abs/2005.14165",
+      "type": "article",
+      "author": "Brown et al.",
+      "description": "Foundational paper demonstrating in-context learning and the few-shot capabilities of large language models."
+    },
+    {
+      "title": "Self-Consistency: A Simple Method for Improving Chain of Thought",
+      "url": "https://arxiv.org/abs/2203.11171",
+      "type": "article",
+      "author": "Wang et al.",
+      "description": "Describes sampling multiple reasoning paths and aggregating to improve robustness — useful when combining few-shot with CoT."
+    },
+    {
+      "title": "Practical Prompting Patterns",
+      "url": "https://learnprompting.org/",
+      "type": "resource",
+      "author": "Community",
+      "description": "A living collection of prompting patterns, templates, and community examples for applied few-shot and related techniques."
     }
   ]
 }
