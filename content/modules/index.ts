@@ -64,7 +64,7 @@ export const modules: Module[] = [
     estimatedHours: 2.5,
     icon: '✍️',
     tags: ['prompting', 'prompt-engineering', 'communication'],
-    lessonSlugs: ['anatomy-of-a-good-prompt', 'prompt-patterns', 'common-prompting-mistakes'],
+    lessonSlugs: ['anatomy-of-a-good-prompt', 'prompt-patterns', 'common-prompting-mistakes', 'system-prompts-and-custom-instructions'],
     isOptional: false,
     prerequisites: ['what-is-ai'],
     whatYouLearn: [
@@ -132,7 +132,7 @@ export const modules: Module[] = [
     estimatedHours: 2,
     icon: '💬',
     tags: ['chatgpt', 'claude', 'gemini', 'perplexity', 'comparison'],
-    lessonSlugs: ['chatgpt-guide', 'model-comparison'],
+    lessonSlugs: ['chatgpt-guide', 'model-comparison', 'ai-for-coding'],
     isOptional: false,
     prerequisites: ['ai-tools-overview'],
     whatYouLearn: [
@@ -244,7 +244,7 @@ export const modules: Module[] = [
     estimatedHours: 3,
     icon: '🤖',
     tags: ['automation', 'workflows', 'no-code', 'productivity', 'zapier'],
-    lessonSlugs: ['what-is-ai-automation', 'no-code-automation-tools'],
+    lessonSlugs: ['what-is-ai-automation', 'no-code-automation-tools', 'ai-for-data-analysis'],
     isOptional: false,
     prerequisites: ['ai-workflows'],
     whatYouLearn: [
@@ -334,7 +334,7 @@ export const modules: Module[] = [
     estimatedHours: 1.5,
     icon: '🔒',
     tags: ['privacy', 'data', 'security', 'enterprise'],
-    lessonSlugs: ['protecting-your-data'],
+    lessonSlugs: ['protecting-your-data', 'ai-and-copyright'],
     isOptional: false,
     prerequisites: ['safety-and-limitations'],
     whatYouLearn: [

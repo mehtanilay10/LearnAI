@@ -4101,6 +4101,1036 @@ const stayingCurrentInAi: Lesson = {
   relatedLessons: ['building-your-ai-stack', 'choosing-the-right-tool'],
 };
 
+// ─── Chunk 6: Writing, Voice/Video, System Prompts, Coding, Copyright, Data ───
+
+const aiWritingAssistant: Lesson = {
+  id: 'lesson-036',
+  slug: 'ai-writing-assistant',
+  moduleSlug: 'writing-and-content-tools',
+  title: 'Using AI as a Writing Assistant',
+  description:
+    'How to use AI as a collaborative writing partner — from brainstorming and outlining to drafting and refining — while keeping your voice.',
+  order: 1,
+  difficulty: 'beginner',
+  estimatedMinutes: 15,
+  tags: ['writing', 'drafting', 'brainstorming', 'content', 'voice'],
+  relatedGlossaryTerms: ['prompt', 'temperature'],
+  blocks: [
+    {
+      type: 'paragraph',
+      data: { text: 'AI can transform how you write — not by writing for you, but by taking care of the parts that slow you down: staring at a blank page, restructuring a messy draft, or finding the right words for a tricky sentence. The key insight is that AI works best as a collaborator on the process, not a replacement for your judgment.' },
+    },
+    {
+      type: 'heading',
+      id: 'where-ai-helps',
+      data: { level: 2, text: 'Where AI genuinely helps in writing', anchor: 'where-ai-helps' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'writing-workflow',
+        caption: 'AI can assist at every stage of the writing process — but your thinking and judgment guide each step',
+        definition: `flowchart LR
+  A["\u{1F4A1} Idea / Topic"] --> B["\u{1F5C2} Brainstorm\\nAI: generate angles,\\nlist subtopics, find gaps"]
+  B --> C["\u{1F4CB} Outline\\nAI: structure ideas,\\nreorder sections, fill gaps"]
+  C --> D["\u270D\uFE0F First Draft\\nAI: expand bullet points,\\ndraft sections from outline"]
+  D --> E["\u{1F504} Revise\\nAI: rewrite unclear parts,\\ncut for length, fix tone"]
+  E --> F["\u2705 Final Review\\nYOU: verify facts,\\npreserve your voice"]
+
+  style A fill:#ddf4ff,stroke:#0969da
+  style F fill:#d1f3d8,stroke:#1a7f37`,
+      },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Writing stage', 'AI value', 'Best prompt approach'],
+        rows: [
+          ['Beating blank page', 'Very high', '"Give me 10 angles on [topic] for [audience]"'],
+          ['Outlining', 'High', '"Create a 5-section outline for a [type] article on [topic]"'],
+          ['Expanding notes to prose', 'Very high', '"Expand these bullet points into a paragraph: [bullets]"'],
+          ['First draft of a section', 'Medium-high', '"Write the introduction using this outline and tone: [spec]"'],
+          ['Rewriting for clarity', 'High', '"Rewrite this more clearly, keeping all key points: [text]"'],
+          ['Final proofread', 'High', '"Check for grammar, awkward phrasing, and redundancy"'],
+          ['Finding the right phrasing', 'Medium', '"Suggest 5 ways to say [idea] in a [tone] tone"'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'preserve-your-voice',
+      data: { level: 2, text: 'Preserving your voice', anchor: 'preserve-your-voice' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'The biggest risk with AI writing assistance is generic output. AI by default produces careful, inoffensive, middle-of-the-road prose. Your voice — your distinctive rhythm, humor, directness, or warmth — requires explicit instruction.' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Technique', 'How to do it'],
+        rows: [
+          ['Show a sample of your writing', '"Match the style and voice of this sample: [paste 1-2 paragraphs you wrote]"'],
+          ['Name your tone explicitly', '"Write in a direct, slightly irreverent tone — like a knowledgeable friend, not a textbook"'],
+          ['Specify what NOT to sound like', '"Avoid corporate filler words like leverage, synergy, impactful. No bullet overload."'],
+          ['Ask it to flag guesses', '"When you made a stylistic choice, note it in [brackets] so I can revise it"'],
+          ['Always edit before submitting', 'Treat AI output as a strong first draft — read every sentence out loud before using it'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'writing-prompt-templates',
+      data: { level: 2, text: 'Practical writing prompt templates', anchor: 'writing-prompt-templates' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Generate angles (beats blank page)',
+        content: '"I am writing a [article / blog post / LinkedIn post] about [topic] for an audience of [description]. Give me 8 different angles or hooks I could take. For each, describe it in one sentence and say why it would resonate with that audience."',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Expand notes into a draft section',
+        content: '"Here are my raw notes for a section:\n[paste notes]\n\nWrite a draft of this section (~250 words). Tone: [describe]. Match the writing style of this sample: [paste 2-3 sentences of your writing]. Do not add facts I have not included. Mark any gap you spotted in [brackets]."',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Feedback pass on existing draft',
+        content: '"I wrote this article draft. Give me specific, actionable feedback on: (1) clarity — which sentences are confusing? (2) structure — does the flow make sense? (3) length — what could be cut without losing value? (4) opening — does the first paragraph create enough reason to keep reading?\n\nDraft: [paste]"',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'what-ai-cant-do',
+      data: { level: 2, text: 'What AI cannot replace in writing', anchor: 'what-ai-cant-do' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        items: [
+          'Original ideas and fresh perspectives — AI recombines existing patterns; novel insight still comes from you',
+          'Firsthand experience and anecdotes — AI cannot write authentically about what happened to you',
+          'Emotional truth — AI produces emotionally plausible text, not felt experience',
+          'Audience intuition — AI cannot know your specific reader the way you do',
+          'Fact verification — AI will confidently fill in details it does not know',
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        title: 'The right mental model',
+        text: 'Think of AI as scaffolding — something that holds the structure while you do the real work, then comes down when you are done. Use it to reduce friction, not to replace judgment.',
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'AI writing assistant principles',
+        points: [
+          'AI is most valuable at the stages that create friction: blank page, restructuring, and rewriting',
+          'Show AI a sample of your writing to get output that matches your voice',
+          'Specify tone, what to avoid, and audience — explicitly',
+          'First drafts from AI are starting points; every sentence should pass through your judgment',
+          'AI cannot replace original ideas, firsthand experience, or audience intuition',
+        ],
+      },
+    },
+  ],
+  relatedLessons: ['editing-with-ai', 'prompt-patterns'],
+};
+
+const editingWithAi: Lesson = {
+  id: 'lesson-037',
+  slug: 'editing-with-ai',
+  moduleSlug: 'writing-and-content-tools',
+  title: 'Editing with AI',
+  description:
+    'Use AI as an editorial partner — to sharpen clarity, fix structure, cut fluff, and get a second opinion — while keeping your voice intact.',
+  order: 2,
+  difficulty: 'beginner',
+  estimatedMinutes: 12,
+  tags: ['editing', 'proofreading', 'clarity', 'writing', 'feedback'],
+  blocks: [
+    {
+      type: 'paragraph',
+      data: { text: 'AI is an outstanding editing tool. Unlike drafting — where AI synthesis can feel generic — editing asks AI to react to something you already created. It finds problems, not creativity. And that is a task it does reliably well.' },
+    },
+    {
+      type: 'heading',
+      id: 'types-of-edits',
+      data: { level: 2, text: 'Four types of editing — and how AI handles each', anchor: 'types-of-edits' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Edit type', 'What it fixes', 'AI performance', 'Best prompt approach'],
+        rows: [
+          ['Line editing', 'Awkward phrasing, unclear sentences', 'Excellent', '"Rewrite any unclear or awkward sentences"'],
+          ['Proofreading', 'Grammar, spelling, punctuation', 'Excellent', '"Proofread and list corrections"'],
+          ['Structural editing', 'Logical flow, section order', 'Very good', '"Does this flow logically? What would you reorder?"'],
+          ['Developmental editing', 'Big ideas, argument depth, audience fit', 'Good with context', '"Does this achieve [goal] for [specific audience]?"'],
+          ['Voice editing', 'Whether it sounds like you', 'Limited', 'You must do this — AI cannot know your voice unless you show it'],
+        ],
+      },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'editing-feedback-loop',
+        caption: 'The AI-assisted editing workflow: get specific feedback on specific aspects, one pass at a time',
+        definition: `flowchart TD
+  DRAFT["Your draft"] --> PASS1
+  PASS1["Pass 1: Structural\\n'Does the flow and\\nstructure work?'"] --> REVISE1["You revise structure"]
+  REVISE1 --> PASS2["Pass 2: Clarity\\n'Which sentences are\\nconfusing or wordy?'"]
+  PASS2 --> REVISE2["You revise sentences"]
+  REVISE2 --> PASS3["Pass 3: Tone\\n'Does this match\\n[tone] for [audience]?'"]
+  PASS3 --> REVISE3["You adjust tone"]
+  REVISE3 --> PASS4["Pass 4: Proofread\\n'Fix grammar and\\npunctuation'"]
+  PASS4 --> FINAL["\u2705 Final draft\\n(still yours)"]
+
+  style DRAFT fill:#ddf4ff,stroke:#0969da
+  style FINAL fill:#d1f3d8,stroke:#1a7f37`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'editing-prompts',
+      data: { level: 2, text: 'High-signal editing prompts', anchor: 'editing-prompts' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Clarity edit',
+        content: '"Read this section and identify: (1) any sentence that takes more than one read to understand, (2) any jargon a non-specialist would not know, (3) any word that could be replaced with a simpler one without losing meaning. Quote the original and suggest a fix.\n\n[paste text]"',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Cut for length',
+        content: '"This section is 400 words. I need it to be 200 words. Cut it to half the length while keeping all the key information and the same logical flow. Do not merge different ideas. Do not add new ideas.\n\n[paste text]"',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Tone check',
+        content: '"I am writing this for [specific audience: e.g. skeptical CFOs who do not trust hype]. Does the tone of this section work for that audience? Where does it miss? Suggest specific rewrites for any misaligned sentences.\n\n[paste text]"',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Track-changes style feedback',
+        content: '"Edit this text for clarity and concision. Show your edits in this format: [ORIGINAL: ...] → [EDIT: ...] — and only show changed lines.\n\n[paste text]"',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'voice-preservation',
+      data: { level: 2, text: 'Not losing your voice in the edit', anchor: 'voice-preservation' },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'warning',
+        title: 'The homogenization trap',
+        text: 'If you ask AI to "improve" or "polish" without further instruction, it will smooth your writing toward a safe, generic middle. Your quirks — intentional and unintentional — may disappear. Always tell it what to keep: "Preserve the informal tone", "Keep my sentence rhythm even if it is punchy", "Do not change anything marked [KEEP]."',
+      },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Instead of...', 'Say this instead'],
+        rows: [
+          ['"Improve this"', '"Fix clarity and grammar only. Do not change my voice or phrasing unless a sentence is genuinely unclear."'],
+          ['"Make it better"', '"What would make this more compelling for [audience]? Give feedback, do not rewrite unsolicited."'],
+          ['"Polish it"', '"Proofread only — fix typos and grammar. Do not rephrase sentences I have written intentionally."'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'what-ai-editing-misses',
+      data: { level: 2, text: 'What AI editing often misses', anchor: 'what-ai-editing-misses' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        items: [
+          'Whether an anecdote or example actually lands for your specific audience',
+          'Intentional style choices that look like errors (fragments, dashes, repetition for effect)',
+          'Whether the emotional resonance of a section works — AI has no taste',
+          'Whether a fact you stated is actually true — it will not flag incorrect content',
+          'Cultural context and sensitivity that requires lived understanding',
+        ],
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'The editing strategy',
+        points: [
+          'Do editing passes by type: structure first, then clarity, then tone, then proofread',
+          'Be specific: ask about one aspect per pass — not "improve everything"',
+          'Protect your voice: tell AI what to preserve and what not to change',
+          'Use "track changes" format prompts to see exactly what shifted',
+          'AI cannot check facts or truly know your audience — you must do those passes yourself',
+        ],
+      },
+    },
+  ],
+  relatedLessons: ['ai-writing-assistant', 'common-prompting-mistakes'],
+};
+
+const voiceAndVideoAi: Lesson = {
+  id: 'lesson-038',
+  slug: 'voice-and-video-ai',
+  moduleSlug: 'multimodal-ai',
+  title: 'Voice and Video AI',
+  description:
+    'Explore AI tools for audio transcription, voice generation, video processing, and the practical — and ethical — implications of each.',
+  order: 2,
+  difficulty: 'intermediate',
+  estimatedMinutes: 14,
+  tags: ['voice', 'audio', 'video', 'transcription', 'synthesis', 'multimodal'],
+  blocks: [
+    {
+      type: 'paragraph',
+      data: { text: 'Audio and video AI tools have quietly become some of the most practically useful AI capabilities available today. From instant meeting transcription to turning a podcast into a blog post, this category delivers real-world time savings most people are not yet using.' },
+    },
+    {
+      type: 'heading',
+      id: 'the-landscape',
+      data: { level: 2, text: 'The voice and video AI landscape', anchor: 'the-landscape' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'voice-video-landscape',
+        caption: 'Voice and video AI falls into four capability areas — each with distinct tools and use cases',
+        definition: `graph TD
+  VV["Voice and Video AI"]
+  VV --> TR["\u{1F399}\uFE0F Transcription\\nSpeech to Text"]
+  VV --> SYN["\u{1F50A} Voice Synthesis\\nText to Speech"]
+  VV --> VID["\u{1F3AC} Video AI\\nGeneration and Processing"]
+  VV --> ANL["\u{1F50D} Audio Analysis\\nSearch and Summarize"]
+
+  TR --> TR1["Whisper (OpenAI)"]
+  TR --> TR2["Otter.ai"]
+  TR --> TR3["Fireflies.ai"]
+
+  SYN --> SYN1["ElevenLabs"]
+  SYN --> SYN2["OpenAI TTS"]
+  SYN --> SYN3["Murf.ai"]
+
+  VID --> VID1["Runway Gen-3"]
+  VID --> VID2["Descript (editing)"]
+  VID --> VID3["Opus Clip (highlights)"]
+
+  ANL --> ANL1["Meeting summaries"]
+  ANL --> ANL2["Speaker identification"]
+  ANL --> ANL3["Podcast to blog post"]
+
+  style VV fill:#ddf4ff,stroke:#0969da
+  style TR fill:#d1f3d8,stroke:#1a7f37
+  style SYN fill:#fff8c5,stroke:#9a6700
+  style VID fill:#eddff8,stroke:#8250df
+  style ANL fill:#ffe1cc,stroke:#bc4c00`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'transcription',
+      data: { level: 2, text: 'Transcription: turning speech to text', anchor: 'transcription' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'AI transcription has become remarkably accurate — often exceeding 95% word-level accuracy on clear audio. Modern tools add speaker identification, timestamps, and searchable transcripts automatically, turning hours of audio into structured, searchable text in minutes.' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Tool', 'Best for', 'Free tier', 'Key feature'],
+        rows: [
+          ['Whisper (OpenAI)', 'Offline use, developer integration', 'Free open-source model', 'Highest accuracy, 100 languages, runs locally'],
+          ['Otter.ai', 'Live meeting transcription', 'Limited minutes/month', 'Real-time transcription + speaker labels + summaries'],
+          ['Fireflies.ai', 'Meeting recording + CRM sync', 'Limited storage', 'Auto-joins meetings, creates searchable archive'],
+          ['Riverside.fm', 'Podcast recording + transcription', 'Free basic', 'High-quality remote recording with transcript'],
+          ['Zoom / Teams', 'Built-in meeting transcription', 'Included in subscriptions', 'Native integration, no add-on required'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'transcription-workflows',
+      data: { level: 2, text: 'High-value transcription workflows', anchor: 'transcription-workflows' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Podcast to blog post workflow',
+        content: '1. Record podcast episode\n2. Transcribe with Whisper or Otter.ai\n3. Paste transcript into Claude or ChatGPT\n4. Prompt: "This is a podcast transcript. Create a structured blog post (~800 words) covering the main points. Use the speaker\'s voice and examples. Add an intro and conclusion. Do not invent facts not in the transcript."\n5. Edit the draft — add your analysis and links\n\nTime saved: 2-3 hours of manual note-taking and writing per episode',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Meeting to action items workflow',
+        content: '1. Record meeting via Fireflies, Otter, or built-in Zoom/Teams transcription\n2. Feed transcript to AI\n3. Prompt: "From this meeting transcript extract: (1) key decisions made with rationale, (2) action items as [Owner: Task by Date], (3) open questions not resolved. Keep under 300 words."\n\nTime saved: 30-45 minutes of manual meeting notes per session',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'voice-synthesis',
+      data: { level: 2, text: 'Voice synthesis: text to speech', anchor: 'voice-synthesis' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'AI voice synthesis has crossed the threshold of believability. Tools like ElevenLabs generate speech indistinguishable from a real person. The practical uses are widespread — narration, accessibility, explainer videos — and the ethical risks are equally real.' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Tool', 'Quality', 'Best use case', 'Cost'],
+        rows: [
+          ['ElevenLabs', 'Best-in-class', 'Narration, podcast voices, voice cloning', 'Free tier limited; paid from $5/month'],
+          ['OpenAI TTS', 'Excellent', 'API integration, developer use', 'API pricing per character'],
+          ['Murf.ai', 'Very good', 'Explainer videos, presentations', 'Subscription from $19/month'],
+          ['Speechify', 'Good', 'Listen to articles and documents', 'Freemium'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'video-ai',
+      data: { level: 2, text: 'Video AI: what is useful today', anchor: 'video-ai' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Capability', 'Top tools', 'Maturity', 'Practical use'],
+        rows: [
+          ['Auto-transcription and captions', 'CapCut, Descript, Adobe Premiere', 'Mature', 'Subtitles in minutes, not hours'],
+          ['Edit video by editing the transcript', 'Descript', 'Very good', 'Delete filler words by deleting text'],
+          ['Short clips from long video', 'Opus Clip, Munch', 'Very good', 'Turn a 1-hour recording into 5 highlight clips automatically'],
+          ['Text-to-video generation', 'Runway Gen-3, Sora, Kling', 'Improving fast', 'Short B-roll clips and concept visualization'],
+          ['AI avatar (talking head) videos', 'HeyGen, Synthesia', 'Good', 'Explainer videos without filming yourself'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'ethics-section',
+      data: { level: 2, text: 'Voice and video AI ethics', anchor: 'ethics-section' },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'warning',
+        title: 'Deepfakes and non-consensual use',
+        text: 'Voice cloning and video generation can be misused to create fake audio or video of real people without consent. This technology is used in fraud, disinformation, and social manipulation. When evaluating media: verify the source independently, check with reverse image/audio search tools, and be especially skeptical of surprising or sensational audio/video of public figures.',
+      },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        title: 'Ethical use principles:',
+        items: [
+          'Only clone or replicate a voice with explicit, documented consent from that person',
+          'Label AI-generated audio and video clearly in any published content',
+          'Do not use AI-generated voices to impersonate real people for deception',
+          'Check your platform terms — most video platforms prohibit undisclosed AI avatars for monetized content',
+        ],
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Voice and video AI essentials',
+        points: [
+          'Transcription: Whisper (free, accurate), Otter.ai (live meetings), Fireflies (auto-join + archive)',
+          'Best workflows: podcast to blog post, meeting to action items, video to highlights',
+          'Voice synthesis: ElevenLabs and OpenAI TTS are best-in-class for realistic speech',
+          'Video AI most useful today: auto-captions, transcript-based editing, clip generation',
+          'Text-to-video is maturing fast — useful for B-roll and short concepts, not yet for complex scenes',
+          'Always label AI-generated audio/video and only clone voices with explicit consent',
+        ],
+      },
+    },
+  ],
+  relatedLessons: ['images-and-ai', 'ai-writing-assistant'],
+};
+
+const systemPromptsAndCustomInstructions: Lesson = {
+  id: 'lesson-039',
+  slug: 'system-prompts-and-custom-instructions',
+  moduleSlug: 'prompting-basics',
+  title: 'System Prompts and Custom Instructions',
+  description:
+    'Learn how persistent context shapes AI behavior — and how to set up custom instructions that make every interaction more relevant to you.',
+  order: 4,
+  difficulty: 'beginner',
+  estimatedMinutes: 12,
+  tags: ['system-prompt', 'custom-instructions', 'persistent-context', 'personalization'],
+  relatedGlossaryTerms: ['system-prompt', 'prompt', 'context-window'],
+  blocks: [
+    {
+      type: 'paragraph',
+      data: { text: 'Most users type the same context in every chat: "I am a [role]", "I prefer [style]", "I work in [field]". System prompts and custom instructions let you set this context once and have it apply automatically to every conversation — making AI more useful from the very first message.' },
+    },
+    {
+      type: 'heading',
+      id: 'what-is-system-prompt',
+      data: { level: 2, text: 'What is a system prompt?', anchor: 'what-is-system-prompt' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'A system prompt is a set of instructions placed before the conversation begins. The AI reads it first, and it conditions every response that follows. In consumer apps like ChatGPT it is called "Custom Instructions". In developer contexts it is the "system" role in the API.' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'system-prompt-architecture',
+        caption: 'The system prompt is always present at the start of every conversation — it shapes all AI responses before you type a single word',
+        definition: `graph TD
+  SP["\u{1F527} System Prompt\\n(always present)\\nRole + rules + context\\nfor this AI instance"] --> CTX
+  USER["\u{1F464} Your message"] --> CTX
+  CTX["Conversation context\\n(system prompt + your messages\\n+ previous replies)"] --> LLM
+  LLM["Language Model"] --> RESP["AI Response\\n(shaped by system prompt\\n+ conversation)"]
+
+  style SP fill:#fff8c5,stroke:#9a6700
+  style LLM fill:#ddf4ff,stroke:#0969da
+  style RESP fill:#d1f3d8,stroke:#1a7f37`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'custom-instructions-chatgpt',
+      data: { level: 2, text: 'Custom Instructions in ChatGPT', anchor: 'custom-instructions-chatgpt' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'ChatGPT\'s Custom Instructions feature (Settings → Personalization → Custom Instructions) lets you set two persistent blocks: (1) About you — context about your role and background; (2) How you want ChatGPT to respond — tone, format preferences, what to avoid.' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Example: Custom Instructions for a product manager',
+        content: 'About me:\nI am a senior product manager at a B2B SaaS company focused on enterprise features. My background is engineering. I consult AI for: writing product specs, decision analysis, stakeholder communication, and research.\n\nHow I want responses:\n- Be direct and concise. Skip preamble and filler phrases like "Great question!"\n- Use bullet points for lists; prose for explanations.\n- When I ask for analysis, present both sides before concluding.\n- Flag assumptions you are making.\n- Default to technical depth — I can handle it.\n- If the answer is "it depends", explain what it depends on.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'claude-projects',
+      data: { level: 2, text: 'Claude Projects: persistent memory for ongoing work', anchor: 'claude-projects' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'Claude Projects lets you create named workspaces with: (1) a persistent project instructions prompt, (2) uploaded documents the AI can reference, (3) shared conversation history across sessions. Every conversation in the project starts with the same context loaded.' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Example: Claude Project for a long writing project',
+        content: 'Project instructions:\n"This project is for writing a book on AI literacy for non-technical professionals. Audience: business professionals aged 30-55, no technical background, skeptical of hype.\n\nStyle: conversational but authoritative, plain English, no jargon. Use analogies to everyday situations. Max paragraph length: 4 sentences. Avoid buzzwords like leverage, empower, revolutionary.\n\nFiles uploaded: Table of contents, sample chapter, reader persona.\n\nMy role: author. Your role: writing partner — give honest feedback and help draft sections on request."',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'what-to-put-in',
+      data: { level: 2, text: 'What to include in your system prompt', anchor: 'what-to-put-in' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Category', 'Example content', 'Why it helps'],
+        rows: [
+          ['Your role and context', '"I am a freelance UX designer focused on mobile apps"', 'AI tailors examples and vocabulary to your world'],
+          ['Communication style', '"Direct, no filler. Bullet points where possible."', 'Removes pleasantries that waste time'],
+          ['Domain expertise level', '"I have 10 years in finance. Technical depth is welcome."', 'Prevents over-explaining basics you already know'],
+          ['What to avoid', '"No corporate jargon. Do not hedge everything."', 'Prevents the most common AI response failures'],
+          ['Format defaults', '"Headers for long answers. Code blocks for any code."', 'Sets structural expectations once instead of every time'],
+          ['Decision rules', '"When I ask for recommendations, give a clear top choice plus rationale."', 'Shapes how AI handles ambiguous requests'],
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        title: 'One setup session saves hundreds of prompt words',
+        text: 'Spending 15 minutes setting up custom instructions will save you from typing the same context paragraph in every single conversation for the next year. Set it up once, refine it monthly.',
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'System prompts and custom instructions',
+        points: [
+          'System prompts set persistent context that applies to all conversations — you configure once',
+          'ChatGPT: Settings → Personalization → Custom Instructions',
+          'Claude: Create a Project and add project instructions + documents',
+          'Include: your role, communication style, domain expertise, what to avoid, format defaults',
+          'Treat your custom instructions like settings — review and update them as your work evolves',
+        ],
+      },
+    },
+  ],
+  relatedLessons: ['anatomy-of-a-good-prompt', 'prompt-patterns'],
+};
+
+const aiForCoding: Lesson = {
+  id: 'lesson-040',
+  slug: 'ai-for-coding',
+  moduleSlug: 'chatbots-in-depth',
+  title: 'AI for Coding and Technical Tasks',
+  description:
+    'How to use AI for coding — from writing your first script to reviewing complex code — even if you have never programmed before.',
+  order: 3,
+  difficulty: 'beginner',
+  estimatedMinutes: 14,
+  tags: ['coding', 'github-copilot', 'cursor', 'debugging', 'technical', 'non-coders'],
+  blocks: [
+    {
+      type: 'paragraph',
+      data: { text: 'AI has transformed coding more than almost any other knowledge domain. Developers ship features faster. And non-developers — for the first time — can create working scripts, formulas, and automation snippets without years of programming experience. This lesson covers both cases.' },
+    },
+    {
+      type: 'heading',
+      id: 'coding-ai-modes',
+      data: { level: 2, text: 'Four ways AI assists with code', anchor: 'coding-ai-modes' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'ai-coding-assistance',
+        caption: 'AI coding assistance spans four modes — write, explain, debug, and review — all available even without coding experience',
+        definition: `graph TD
+  AI["AI Coding Assistant"]
+
+  AI --> WRITE["\u270D\uFE0F Write new code\\nDescribe what you want\\nin plain English"]
+  AI --> EXPLAIN["\u{1F4D6} Explain code\\n'What does this do?'\\n'Why is it written this way?'"]
+  AI --> DEBUG["\u{1F41B} Debug problems\\n'This throws an error.\\nWhat is wrong?'"]
+  AI --> REVIEW["\u{1F50D} Review and improve\\n'Is there a better way?\\nWhat are the edge cases?'"]
+
+  WRITE --> USE1["Scripts / automation"]
+  WRITE --> USE2["Excel / Sheets formulas"]
+  WRITE --> USE3["SQL queries"]
+  WRITE --> USE4["HTML / CSS"]
+
+  style AI fill:#ddf4ff,stroke:#0969da
+  style WRITE fill:#d1f3d8,stroke:#1a7f37
+  style EXPLAIN fill:#fff8c5,stroke:#9a6700
+  style DEBUG fill:#ffe1cc,stroke:#bc4c00
+  style REVIEW fill:#eddff8,stroke:#8250df`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'non-coders',
+      data: { level: 2, text: 'For non-coders: what you can build with AI', anchor: 'non-coders' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Task', 'What to ask AI', 'Tools needed'],
+        rows: [
+          ['Advanced Excel/Sheets formula', '"Write a formula that [describes logic]. I use Excel 365."', 'ChatGPT or Claude — free'],
+          ['Simple Python script', '"Write a Python script that reads a CSV, filters rows where [condition], and saves the result"', 'ChatGPT + Python (free)'],
+          ['SQL query', '"Write a SQL query to find all customers who signed up last month and made at least 2 purchases"', 'ChatGPT or Claude'],
+          ['Regex pattern', '"Write a regex that matches UK phone numbers in all common formats"', 'Any AI chatbot'],
+          ['HTML/CSS snippet', '"Create a simple HTML email template with a header, two columns, and CTA button"', 'ChatGPT'],
+          ['Automate a file task', '"Write a script that renames all .jpg files in a folder to include today\'s date"', 'ChatGPT + terminal'],
+          ['Explain confusing code', '"Explain this function line by line in plain English: [paste]"', 'Any AI chatbot'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'coding-tools',
+      data: { level: 2, text: 'AI coding tools compared', anchor: 'coding-tools' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Tool', 'Best for', 'Where it runs', 'Free?'],
+        rows: [
+          ['ChatGPT (GPT-4o)', 'General coding help, explanations, debugging', 'Browser', 'Yes with limits'],
+          ['Claude (Sonnet)', 'Complex code, long files, architectural decisions', 'Browser', 'Yes with limits'],
+          ['GitHub Copilot', 'Code suggestions as you type inside your editor', 'VS Code, JetBrains, Vim', 'Free for individuals with GitHub account'],
+          ['Cursor', 'Full codebase understanding, agent-mode coding', 'Standalone IDE', 'Free tier; $20/month paid'],
+          ['Replit AI', 'Beginners learning to code, quick scripting', 'Browser (runs code too)', 'Free tier available'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'effective-coding-prompts',
+      data: { level: 2, text: 'Writing effective coding prompts', anchor: 'effective-coding-prompts' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Write new code — complete prompt template',
+        content: '"Write a [language] [function / script / class] that:\n- Takes [input description] as input\n- Does [behavior, step by step]\n- Returns [output description]\n- Handles the edge case where [edge case]\n\nAdd comments explaining each major step. Use [specific library if known]."',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Debug a problem',
+        content: '"This [language] code is supposed to [describe goal] but instead it [describe behavior or error message].\n\nCode:\n[paste code]\n\nError message:\n[paste error]\n\nWhat is wrong, and how do I fix it? Explain why the error occurs."',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Ask for improvements',
+        content: '"Review this code for: (1) bugs or edge cases it does not handle, (2) performance issues if it runs on large data, (3) readability — could it be easier to understand? Show specific suggestions with the improved code.\n\n[paste code]"',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'security',
+      data: { level: 2, text: 'Security considerations', anchor: 'security' },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'warning',
+        title: 'Never paste sensitive credentials into AI',
+        text: 'Never paste API keys, passwords, database connection strings, or authentication tokens into any AI chatbot. Remove them before pasting and replace with placeholders like YOUR_API_KEY. AI-generated code can also introduce security vulnerabilities — always review code that handles user input, file access, or authentication.',
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'tip',
+        text: 'Always test AI-generated code before using it in production. It can look correct and still have subtle bugs on edge cases. For anything handling money, authentication, or user data — have a developer review it.',
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'AI for coding essentials',
+        points: [
+          'Non-coders: AI can write Excel formulas, Python scripts, SQL queries, regex, and HTML — just describe what you need',
+          'The four modes: write, explain, debug, and review — all in natural language',
+          'For in-editor use: GitHub Copilot (free) or Cursor (more powerful)',
+          'For one-off tasks: ChatGPT or Claude in the browser',
+          'Never paste credentials into AI — use placeholders',
+          'Test and review all AI-generated code before using it in real systems',
+        ],
+      },
+    },
+  ],
+  relatedLessons: ['chatgpt-guide', 'model-comparison', 'what-is-tool-calling'],
+};
+
+const aiAndCopyright: Lesson = {
+  id: 'lesson-041',
+  slug: 'ai-and-copyright',
+  moduleSlug: 'privacy-and-data',
+  title: 'AI and Copyright',
+  description:
+    'Who owns AI-generated content? What are the rules around commercial use? What creators, marketers, and professionals need to know.',
+  order: 2,
+  difficulty: 'beginner',
+  estimatedMinutes: 12,
+  tags: ['copyright', 'ownership', 'legal', 'content', 'IP', 'ethics'],
+  blocks: [
+    {
+      type: 'paragraph',
+      data: { text: 'AI has created genuinely new and unresolved questions about intellectual property. Who owns an article written with AI? Can you copyright an AI-generated image? What happens when AI is trained on copyrighted content? The law is catching up slowly. Here is what is established, what is contested, and what practical rules to follow now.' },
+    },
+    {
+      type: 'heading',
+      id: 'ownership-of-ai-output',
+      data: { level: 2, text: 'Who owns AI-generated content?', anchor: 'ownership-of-ai-output' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'copyright-landscape',
+        caption: 'Copyright status of AI-generated content roughly maps to how much human creative direction and editing went into it',
+        definition: `graph LR
+  A["You typed a vague prompt\\n'Write a poem about love'"] --> NONE["\u274C Weak or no copyright\\n(minimal human creativity)"]
+  B["Detailed style, structure,\\nsubstantial edits by you"] --> YOURS["\u2705 Your copyright\\n(sufficient human authorship)"]
+  C["AI generated it,\\nyou substantially edited it"] --> PARTIAL["\u2696\uFE0F Partial copyright\\n(for your human-added portions)"]
+  D["Work made for hire\\nusing AI tools"] --> EMPLOYER["\u2696\uFE0F Depends on employment\\nand NDA agreements"]
+
+  style NONE fill:#ffebe9,stroke:#cf222e
+  style YOURS fill:#d1f3d8,stroke:#1a7f37
+  style PARTIAL fill:#fff8c5,stroke:#9a6700
+  style EMPLOYER fill:#fff8c5,stroke:#9a6700`,
+      },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'The current position in most jurisdictions (US, EU, UK as of 2025): pure AI output with minimal human creativity receives no copyright protection. Content where a human exercised substantial creative direction, selection, and editing may qualify. The more human creative input, the stronger the copyright claim.' },
+    },
+    {
+      type: 'heading',
+      id: 'commercial-use-rules',
+      data: { level: 2, text: 'Commercial use rules by platform', anchor: 'commercial-use-rules' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Tool', 'Commercial use?', 'Ownership', 'Key restriction'],
+        rows: [
+          ['ChatGPT (OpenAI)', 'Yes', 'Output rights assigned to you', 'Cannot use to build tools competing with OpenAI'],
+          ['Claude (Anthropic)', 'Yes', 'Output rights to you per ToS', 'Standard acceptable use policies apply'],
+          ['DALL-E 3 (via ChatGPT)', 'Yes', 'You own generated images', 'Certain content categories prohibited'],
+          ['Midjourney (paid)', 'Yes on Pro+', 'Pro+ plans grant ownership', 'Free tier: Midjourney retains license rights'],
+          ['Adobe Firefly', 'Yes — designed for commercial safety', 'You own outputs', 'Trained on licensed content specifically'],
+          ['Gemini (Google)', 'Yes', 'Assigned to you per Google ToS', 'Google has broad license to use your inputs to improve services'],
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'warning',
+        title: 'Terms change — verify before commercial use',
+        text: 'Platform terms of service update frequently. Before using AI-generated content in commercial work — especially for clients — verify the current terms of the specific tool used. This table reflects general 2025 policies and is not legal advice.',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'ai-training-and-your-data',
+      data: { level: 2, text: 'Training data and creator concerns', anchor: 'ai-training-and-your-data' },
+    },
+    {
+      type: 'paragraph',
+      data: { text: 'Many AI models were trained on publicly available internet content — including copyrighted creative work. This is legally contested. Artists, authors, and coders have filed lawsuits arguing their work was used without consent for commercial training. Courts are still deciding.' },
+    },
+    {
+      type: 'bullet-list',
+      data: {
+        items: [
+          'What you type into public AI tools may be used for training (if you have not opted out — see the data protection lesson)',
+          'Your past published work may already be in training data — this is largely out of your control now',
+          'Adobe Firefly and Getty\'s Generative AI were trained explicitly on licensed content for commercial safety',
+          'The EU AI Act (effective 2024-2026) introduces transparency requirements for training data disclosures',
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'practical-rules',
+      data: { level: 2, text: 'Practical rules for content professionals', anchor: 'practical-rules' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Situation', 'Recommended practice'],
+        rows: [
+          ['Creating content for a client', 'Disclose AI use in your contract; use paid tools with clear commercial terms'],
+          ['Publishing AI-generated images', 'Use tools with explicit commercial licenses (Firefly, paid Midjourney, ChatGPT DALL-E)'],
+          ['Writing a book or long-form article', 'Your substantial editing and creative direction strengthens copyright claim'],
+          ['Workplace AI content', 'Check your employer\'s AI use policy before using AI on client work or internal IP'],
+          ['AI output with brand names or trademarks', 'Trademark law still applies — AI cannot grant you trademark rights'],
+          ['Academic work', 'Most institutions require AI disclosure; some prohibit it — check policy before submitting'],
+        ],
+      },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'note',
+        title: 'Not legal advice',
+        text: 'Copyright law varies by country and is evolving rapidly. For commercial work where IP ownership matters — client deliverables, publishing, patents — consult a lawyer familiar with AI and intellectual property.',
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'Copyright and AI essentials',
+        points: [
+          'Pure AI output with minimal human input typically has weak or no copyright protection',
+          'The more substantial your human creative direction and editing, the stronger your copyright claim',
+          'Most major AI tools (ChatGPT, Claude, paid Midjourney, Adobe Firefly) allow commercial use',
+          'Adobe Firefly is specifically built to be commercially safe — trained on licensed content',
+          'Disclose AI use in client contracts and follow your employer\'s AI policy',
+          'Platform terms change — verify current terms before commercial or client work',
+        ],
+      },
+    },
+  ],
+  relatedLessons: ['protecting-your-data', 'ai-limitations'],
+};
+
+const aiForDataAnalysis: Lesson = {
+  id: 'lesson-042',
+  slug: 'ai-for-data-analysis',
+  moduleSlug: 'automation-basics',
+  title: 'AI for Data Analysis',
+  description:
+    'Use AI to analyze spreadsheets, find patterns, create charts, and extract insights — without writing a single formula.',
+  order: 3,
+  difficulty: 'intermediate',
+  estimatedMinutes: 14,
+  tags: ['data-analysis', 'spreadsheets', 'csv', 'code-interpreter', 'charts', 'insights'],
+  blocks: [
+    {
+      type: 'paragraph',
+      data: { text: 'One of the most powerful and underused AI capabilities for non-technical professionals is data analysis. Upload a spreadsheet, describe what you want to know, and get instant analysis, charts, and insights — no formulas, no pivot tables, no coding.' },
+    },
+    {
+      type: 'heading',
+      id: 'the-workflow',
+      data: { level: 2, text: 'The AI data analysis workflow', anchor: 'the-workflow' },
+    },
+    {
+      type: 'mermaid',
+      data: {
+        id: 'data-analysis-flow',
+        caption: 'The AI data analysis workflow: upload your data, ask in plain English, get insight — then verify the output',
+        definition: `flowchart LR
+  A["\u{1F4CA} Your data\\n(CSV, Excel, Sheets)"] --> B["\u{1F4E4} Upload to AI\\n(ChatGPT, Claude,\\nGemini Advanced)"]
+  B --> C["\u{1F4AC} Ask plain English\\n'What are the top 5\\ncustomers by revenue?'"]
+  C --> D["\u{1F916} AI runs analysis\\n(writes and executes code\\nbehind the scenes)"]
+  D --> E["\u{1F4C8} Get output\\nTable or Chart or Summary"]
+  E --> F["\u2705 You verify\\n(spot-check key numbers)"]
+  F --> G["\u{1F4A1} Ask follow-up\\n'Now split by region.'"]
+
+  style A fill:#ddf4ff,stroke:#0969da
+  style F fill:#d1f3d8,stroke:#1a7f37`,
+      },
+    },
+    {
+      type: 'heading',
+      id: 'what-you-can-do',
+      data: { level: 2, text: 'What you can analyze with AI', anchor: 'what-you-can-do' },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Analysis type', 'Example question', 'What AI produces'],
+        rows: [
+          ['Summary statistics', '"Give me a summary: min, max, average, and count by region"', 'A table with descriptive statistics'],
+          ['Trend analysis', '"Show monthly revenue for 12 months and highlight anomalies"', 'Chart plus anomaly callouts'],
+          ['Segmentation', '"Group customers by purchase frequency: 1, 2-5, and 6+ times"', 'Segmented table with counts'],
+          ['Correlation', '"Is there a relationship between lead response time and close rate?"', 'Scatter plot plus explanation'],
+          ['Top/bottom rankings', '"Which 10 products have the lowest profit margin? Sort lowest first."', 'Ranked table'],
+          ['Data cleaning', '"Find rows with missing values. Show me counts by column."', 'Missing data audit'],
+          ['Calculated columns', '"Add a column: cost per acquisition = ad spend divided by new customers"', 'Updated dataset download'],
+          ['Text theme analysis', '"What are the most common themes in the feedback column?"', 'Theme clusters with counts'],
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'best-tools',
+      data: { level: 2, text: 'Best tools for data analysis', anchor: 'best-tools' },
+    },
+    {
+      type: 'comparison-cards',
+      data: {
+        cards: [
+          {
+            title: 'ChatGPT Plus (Code Interpreter)',
+            description: 'The most capable data analysis tool for non-coders. Upload CSV or Excel files, ask in plain English, and it writes and executes real Python code behind the scenes to produce tables, charts, and insights.',
+            pros: ['Executes actual Python — genuine calculation not text generation', 'Generates charts downloadable as images', 'Can clean data, merge files, and export results', 'Shows the code it ran so you can verify the approach'],
+            cons: ['Requires ChatGPT Plus ($20/month)', 'Files reset after session — re-upload each time', 'Very large files (100MB+) may fail'],
+            tags: ['paid', 'best-overall'],
+          },
+          {
+            title: 'Claude (Pro tier)',
+            description: 'Excellent at reading, discussing, and summarizing data in prose. Strong for interpretation, written narratives of findings, and suggesting analysis approaches. Less focused on code execution than ChatGPT.',
+            pros: ['Superior prose explanations of data findings', 'Handles reading very large CSV files in context', 'Strong at suggesting analysis approaches before executing'],
+            cons: ['Code execution less seamless than ChatGPT', 'Chart generation requires more setup'],
+            tags: ['paid', 'great-for-interpretation'],
+          },
+          {
+            title: 'Gemini Advanced (Google Sheets)',
+            description: 'If your data lives in Google Sheets, Gemini Advanced integrates natively in a sidebar. Ask questions about your sheet, get formula recommendations, create charts, and get summaries without leaving Sheets.',
+            pros: ['Native Sheets integration — data stays in place', 'No upload required', 'Can write and insert formulas directly into cells'],
+            cons: ['Requires Google One AI Premium subscription', 'Less powerful for complex multi-step analysis'],
+            tags: ['paid', 'google-workspace'],
+          },
+        ],
+      },
+    },
+    {
+      type: 'heading',
+      id: 'effective-data-prompts',
+      data: { level: 2, text: 'Effective data analysis prompts', anchor: 'effective-data-prompts' },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Initial data exploration (start here)',
+        content: '"I have uploaded a CSV. The columns represent [describe what each column is]. Please:\n1. Tell me the dimensions (row and column count)\n2. List column names and data types\n3. Flag data quality issues: missing values, outliers, inconsistent formats\n4. Give me 3-5 initial observations about the data"',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Specific insight request',
+        content: '"Using this sales data, answer these questions:\n1. Which 5 salespeople had the highest close rates last quarter?\n2. Is there a pattern between deal size and sales cycle length?\n3. Which product categories are growing vs declining?\n\nFor each answer: (a) a brief written finding, (b) a supporting data table or chart"',
+      },
+    },
+    {
+      type: 'example',
+      data: {
+        title: 'Data transformation and export',
+        content: '"Clean this dataset:\n1. Remove rows where [column] is empty\n2. Standardize [column] to Title Case\n3. Convert [column] from MM/DD/YYYY to YYYY-MM-DD\n4. Add a calculated column: [describe calculation]\n\nAfter cleaning, give me the updated file to download."',
+      },
+    },
+    {
+      type: 'heading',
+      id: 'critical-limitations',
+      data: { level: 2, text: 'Always verify outputs — critical limitations', anchor: 'critical-limitations' },
+    },
+    {
+      type: 'callout',
+      data: {
+        variant: 'warning',
+        title: 'Verify numbers before presenting them',
+        text: 'AI-generated analysis can contain calculation errors, especially on aggregations, date math, and percentages. Always spot-check key numbers against your source data before presenting results to stakeholders. For high-stakes decisions, verify analysis in Excel or a BI tool.',
+      },
+    },
+    {
+      type: 'table',
+      data: {
+        headers: ['Limitation', 'What can go wrong', 'How to mitigate'],
+        rows: [
+          ['Calculation errors', 'AI may miscount, misaggregate, or use wrong formulas', 'Spot-check 3-5 numbers manually against source data'],
+          ['Misinterpreting columns', 'Mixing up date formats, treating text as numbers', 'Describe your data schema at the start of the session'],
+          ['File size limits', 'Very large files may be truncated silently', 'Check row counts before and after upload'],
+          ['Session memory', 'Data disappears after session ends', 'Save all outputs before closing the chat'],
+          ['Statistical over-confidence', 'AI may claim correlation where there is none', 'Ask: "How confident are you? What might make this wrong?"'],
+        ],
+      },
+    },
+    {
+      type: 'summary-box',
+      data: {
+        title: 'AI data analysis essentials',
+        points: [
+          'ChatGPT Plus Code Interpreter: upload CSV or Excel, ask in plain English, get real charts and tables',
+          'Gemini Advanced: best if your data lives in Google Sheets — native in-app integration',
+          'Start every session with an exploration prompt: dimensions, column types, data quality, first observations',
+          'Request output in two parts: written finding plus supporting table or chart',
+          'Always spot-check key numbers before presenting — AI calculations can have errors',
+          'Verify aggregations, percentages, and date math manually for important decisions',
+        ],
+      },
+    },
+  ],
+  relatedLessons: ['what-is-ai-automation', 'no-code-automation-tools', 'building-your-first-workflow'],
+};
+
 // ─── Lesson registry ─────────────────────────────────────────────────────────
 
 export const lessons: Lesson[] = [
@@ -4139,6 +5169,13 @@ export const lessons: Lesson[] = [
   localAiOptions,
   buildingYourAiStack,
   stayingCurrentInAi,
+  aiWritingAssistant,
+  editingWithAi,
+  voiceAndVideoAi,
+  systemPromptsAndCustomInstructions,
+  aiForCoding,
+  aiAndCopyright,
+  aiForDataAnalysis,
 ];
 
 export function getLessonBySlug(slug: string): Lesson | undefined {
