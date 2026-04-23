@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, X, BookOpen, GraduationCap } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { PWAInstallButton } from '@/components/ui/PWAInstallButton';
 import { cn } from '@/lib/utils';
 
 const NAV_LINKS = [
@@ -92,6 +93,8 @@ export function Navbar() {
             className="flex flex-col gap-1 px-4 py-3"
             aria-label="Mobile navigation"
           >
+            <PWAInstallButton className="mb-2" />
+
             {NAV_LINKS.map((link) => {
               const isActive =
                 link.href === '/'
