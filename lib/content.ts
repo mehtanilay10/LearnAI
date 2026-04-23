@@ -67,11 +67,19 @@ export function getLessonsForModule(moduleSlug: string): Lesson[] {
 export function getAdjacentLessons(
   lesson: Lesson
 ): { prev: Lesson | null; next: Lesson | null } {
-  const moduleLessons = getLessonsByModule(lesson.moduleSlug);
-  const idx = moduleLessons.findIndex((l) => l.slug === lesson.slug);
+  const orderedLessons = getAllModules()
+    .flatMap((m) => getLessonsByModule(m.slug))
+    .filter((l) => Boolean(l));
+
+  const idx = orderedLessons.findIndex((l) => l.slug === lesson.slug);
+
+  if (idx === -1) {
+    return { prev: null, next: null };
+  }
+
   return {
-    prev: idx > 0 ? moduleLessons[idx - 1] : null,
-    next: idx < moduleLessons.length - 1 ? moduleLessons[idx + 1] : null,
+    prev: idx > 0 ? orderedLessons[idx - 1] : null,
+    next: idx < orderedLessons.length - 1 ? orderedLessons[idx + 1] : null,
   };
 }
 

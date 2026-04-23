@@ -23,35 +23,63 @@ let mermaidCurrentTheme: string | null = null;
 const DARK_COLOR_MAP: Record<string, string> = {
   // Blue
   '#ddf4ff': '#0d2d45',
+  '#e6f4ff': '#0f2a40',
+  '#e8f4f8': '#112d3a',
   '#0969da': '#58a6ff',
+  '#0366d6': '#58a6ff',
   '#0550ae': '#79c0ff',
   // Green
   '#d1f3d8': '#0d2e1a',
+  '#e6ffed': '#0f2d1a',
+  '#e8f8e8': '#0f2c18',
   '#1a7f37': '#3fb950',
   // Yellow / Amber
   '#fff8c5': '#272000',
+  '#fff8e1': '#2a1f00',
+  '#fff3bf': '#2a1b00',
+  '#fffbeb': '#2e2200',
   '#9a6700': '#e3b341',
+  '#d97706': '#e3b341',
   // Orange
   '#ffe1cc': '#2d1500',
+  '#ff6b35': '#7a3419',
+  '#ea580c': '#7c2d12',
   '#bc4c00': '#db6d28',
+  '#e55a26': '#ff8e63',
+  '#d05a0c': '#f0883e',
   // Purple
   '#eddff8': '#1e0a3c',
   '#8250df': '#bc8cff',
   '#6639ba': '#a371f7',
+  '#7c3aed': '#3d1a78',
+  '#6d28d9': '#a371f7',
+  '#a626a4': '#db61d2',
   // Red / Pink
   '#ffebe9': '#2d0b0b',
+  '#fff1f0': '#2d0f0f',
+  '#fbeff2': '#2d1020',
   '#ffd8d3': '#2d0b0b',
   '#cf222e': '#f85149',
   // Gray
+  '#f0f0f0': '#1f242b',
   '#f6f8fa': '#161b22',
   '#57606a': '#8b949e',
+  // Shorthand
+  '#fff': '#e6edf3',
 };
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 function adaptForDark(definition: string): string {
   let result = definition;
-  for (const [light, dark] of Object.entries(DARK_COLOR_MAP)) {
-    // replaceAll with a regexp handles potential case variations
-    result = result.replace(new RegExp(light, 'gi'), dark);
+  const entries = Object.entries(DARK_COLOR_MAP).sort(([a], [b]) => b.length - a.length);
+
+  for (const [light, dark] of entries) {
+    // Avoid partial substitutions (e.g., #fff inside #fff8c5).
+    const pattern = new RegExp(`${escapeRegExp(light)}(?![0-9a-f])`, 'gi');
+    result = result.replace(pattern, dark);
   }
   return result;
 }
