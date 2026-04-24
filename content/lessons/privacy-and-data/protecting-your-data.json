@@ -165,6 +165,72 @@
     },
     {
       "type": "heading",
+      "id": "safe-prompt-workflow",
+      "data": {
+        "level": 3,
+        "text": "A safe prompt workflow for sensitive environments",
+        "anchor": "safe-prompt-workflow"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "safe-prompt-pipeline",
+        "caption": "Treat prompt submission as a controlled workflow: classify, sanitize, then submit.",
+        "definition": "flowchart TD\n  A[Input request] --> B[Classify data tier]\n  B --> C{Tier 3 restricted?}\n  C -->|Yes| D[Do not submit\nuse approved secure channel]\n  C -->|No| E[Sanitize identifiers]\n  E --> F[Use approved tool tier]\n  F --> G[Human review output]\n  G --> H[Store minimal required data]\n\n  style D fill:#ffebe9,stroke:#cf222e,color:#cf222e\n  style E fill:#fff8c5,stroke:#9a6700,color:#9a6700\n  style F fill:#ddf4ff,stroke:#0969da,color:#0550ae\n  style G fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "response-playbook",
+      "data": {
+        "level": 3,
+        "text": "If data is shared accidentally: first 24-hour response",
+        "anchor": "response-playbook"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Time window",
+          "Action",
+          "Goal"
+        ],
+        "rows": [
+          [
+            "First 15 minutes",
+            "Stop further sharing and capture exact prompt/response context",
+            "Contain the incident quickly"
+          ],
+          [
+            "First hour",
+            "Notify security or IT contact through official incident path",
+            "Start coordinated response"
+          ],
+          [
+            "Hours 1-4",
+            "Classify data involved and affected stakeholders",
+            "Assess legal and operational impact"
+          ],
+          [
+            "Hours 4-24",
+            "Implement remediation: credential rotation, policy update, user guidance",
+            "Reduce recurrence and downstream risk"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Prevention beats cleanup",
+        "text": "Most leakage events come from rushed copy-paste behavior. A 20-second pre-send check (data tier + tool tier + anonymization) prevents most incidents without slowing your workflow materially."
+      }
+    },
+    {
+      "type": "heading",
       "id": "safe-options",
       "data": {
         "level": 2,
@@ -231,6 +297,20 @@
       "type": "article",
       "author": "OWASP",
       "description": "Security risks specific to systems using language models — covers prompt injection, data leakage, and more."
+    },
+    {
+      "title": "NIST Privacy Framework",
+      "url": "https://www.nist.gov/privacy-framework",
+      "type": "article",
+      "author": "NIST",
+      "description": "Actionable framework for identifying and reducing privacy risk in data-intensive workflows."
+    },
+    {
+      "title": "ENISA: Data Protection Engineering",
+      "url": "https://www.enisa.europa.eu/topics/data-protection",
+      "type": "article",
+      "author": "ENISA",
+      "description": "Practical guidance for privacy-by-design controls and technical data protection measures."
     }
   ]
 }

@@ -82,6 +82,48 @@
           "Regularly red-team your prompts with adversarial test cases"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-prompt-security-and-jailbreak-defense",
+      "data": {
+        "level": 3,
+        "text": "Defense-in-depth for prompt security",
+        "anchor": "enrichment-prompt-security-and-jailbreak-defense"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Prompt security should combine multiple layers: input controls, policy checks, tool scoping, and output monitoring. Single-layer defenses are easy to bypass under adversarial pressure."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Defense layer",
+          "Control objective",
+          "Example control"
+        ],
+        "rows": [
+          [
+            "Input layer",
+            "Reduce malicious instruction payloads",
+            "Sanitize and classify untrusted input"
+          ],
+          [
+            "Execution layer",
+            "Limit harmful actions",
+            "Least-privilege tool permissions"
+          ],
+          [
+            "Output layer",
+            "Block unsafe responses",
+            "Policy-based output filtering and logging"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [

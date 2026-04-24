@@ -75,6 +75,106 @@
       }
     },
     {
+      "type": "mermaid",
+      "data": {
+        "id": "enterprise-rollout-loop",
+        "caption": "Successful enterprise rollout is a governance-and-learning loop, not a one-time launch.",
+        "definition": "flowchart LR\n  A[Pilot selection] --> B[Policy and controls]\n  B --> C[User enablement]\n  C --> D[Measured production use]\n  D --> E[Risk and quality review]\n  E --> F[Standardized playbook]\n  F --> G[Scale to next workflow]\n  G --> A\n\n  style A fill:#ddf4ff,stroke:#0969da,color:#0550ae\n  style B fill:#fff8c5,stroke:#9a6700,color:#9a6700\n  style D fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37\n  style E fill:#ffe1cc,stroke:#bc4c00,color:#bc4c00\n  style F fill:#eddff8,stroke:#8250df,color:#6639ba"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "pilot-selection-scorecard",
+      "data": {
+        "level": 3,
+        "text": "Pilot selection scorecard",
+        "anchor": "pilot-selection-scorecard"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Criterion",
+          "What to evaluate",
+          "Strong pilot signal"
+        ],
+        "rows": [
+          [
+            "Business value",
+            "Potential time, cost, or quality impact",
+            "Direct tie to quarterly objective"
+          ],
+          [
+            "Data sensitivity",
+            "Classification and regulatory exposure",
+            "Low-to-medium risk with clear controls"
+          ],
+          [
+            "Operational repeatability",
+            "How often workflow occurs",
+            "Weekly or daily process"
+          ],
+          [
+            "Adoption readiness",
+            "Team willingness and manager sponsorship",
+            "Named owner plus active team lead"
+          ],
+          [
+            "Measurement clarity",
+            "Can outcomes be measured objectively",
+            "Baseline exists before pilot starts"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "implementation-metrics",
+      "data": {
+        "level": 3,
+        "text": "Metrics that prevent false progress",
+        "anchor": "implementation-metrics"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Metric category",
+          "Example metric",
+          "Why it matters"
+        ],
+        "rows": [
+          [
+            "Productivity",
+            "Median cycle-time reduction",
+            "Shows whether workflow is actually faster"
+          ],
+          [
+            "Quality",
+            "Rework rate after human review",
+            "Catches polished but low-quality outputs"
+          ],
+          [
+            "Risk",
+            "Policy violations per 100 runs",
+            "Highlights unsafe scaling"
+          ],
+          [
+            "Adoption",
+            "Weekly active pilot users",
+            "Separates real adoption from pilot theater"
+          ],
+          [
+            "Economics",
+            "Net value after software and review costs",
+            "Prevents expensive low-impact deployments"
+          ]
+        ]
+      }
+    },
+    {
       "type": "summary-box",
       "data": {
         "title": "Implementation success factors",
@@ -107,6 +207,20 @@
       "type": "course",
       "author": "Andrew Ng / DeepLearning.AI",
       "description": "Non-technical strategic framework for AI adoption in organizations."
+    },
+    {
+      "title": "ISO/IEC 42001 AI Management Systems",
+      "url": "https://www.iso.org/standard/81230.html",
+      "type": "article",
+      "author": "ISO",
+      "description": "International management system standard for operationalizing AI governance and accountability."
+    },
+    {
+      "title": "Microsoft Responsible AI Standard",
+      "url": "https://www.microsoft.com/ai/responsible-ai",
+      "type": "article",
+      "author": "Microsoft",
+      "description": "Practical enterprise patterns for policy, risk review, and organizational AI controls."
     }
   ]
 }

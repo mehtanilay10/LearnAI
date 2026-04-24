@@ -167,6 +167,48 @@
           "For math → use code interpreter; for facts → verify with Perplexity or a primary source"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-what-ai-can-and-cannot-do",
+      "data": {
+        "level": 3,
+        "text": "Capability-risk matrix",
+        "anchor": "enrichment-what-ai-can-and-cannot-do"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI is strongest in pattern-heavy language tasks and weakest where verified ground truth, physical context, or high-stakes judgment is required. Pair capability with risk before delegating work."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Task type",
+          "Delegation level",
+          "Required human role"
+        ],
+        "rows": [
+          [
+            "Drafting and summarization",
+            "High delegation",
+            "Review for tone and factual fit"
+          ],
+          [
+            "Analysis and recommendations",
+            "Medium delegation",
+            "Validate assumptions and data"
+          ],
+          [
+            "Legal/medical/financial decisions",
+            "Low delegation",
+            "Human expert final authority"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -194,6 +236,13 @@
       "type": "article",
       "author": "IBM",
       "description": "IBM's grounded overview of AI capabilities and limitations across different problem types and industries."
+    },
+    {
+      "title": "WHO Ethics and Governance of AI for Health",
+      "url": "https://www.who.int/publications/i/item/9789240029200",
+      "type": "article",
+      "author": "World Health Organization",
+      "description": "High-stakes-domain perspective on AI limits and human oversight."
     }
   ]
 }

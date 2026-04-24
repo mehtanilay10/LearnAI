@@ -206,6 +206,48 @@
           "Larger context windows = better for long documents and extended conversations"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-tokens-explained",
+      "data": {
+        "level": 3,
+        "text": "Token-aware prompt engineering",
+        "anchor": "enrichment-tokens-explained"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Token usage directly affects cost, latency, and truncation risk. Efficient prompts keep intent dense and eliminate redundant phrasing so more budget can be spent on useful context and retrieval evidence."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Optimization move",
+          "Token effect",
+          "Practical result"
+        ],
+        "rows": [
+          [
+            "Compress repeated instructions",
+            "Lower prompt tokens",
+            "Lower cost per run"
+          ],
+          [
+            "Use structured sections",
+            "Improves model parsing",
+            "Higher consistency"
+          ],
+          [
+            "Trim irrelevant history",
+            "Avoids context bloat",
+            "Less truncation risk"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [

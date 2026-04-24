@@ -116,6 +116,48 @@
           "Your foundation from this course gives you context to evaluate anything new quickly"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-staying-current-in-ai",
+      "data": {
+        "level": 3,
+        "text": "Sustainable learning system",
+        "anchor": "enrichment-staying-current-in-ai"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Staying current is less about volume and more about signal quality. A lightweight weekly learning loop with curated sources and practical experiments produces better long-term skill growth than constant news consumption."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Cadence",
+          "Activity",
+          "Outcome"
+        ],
+        "rows": [
+          [
+            "Weekly",
+            "Review 2-3 high-signal updates",
+            "Maintain directional awareness"
+          ],
+          [
+            "Biweekly",
+            "Run one practical mini-experiment",
+            "Convert news into capability"
+          ],
+          [
+            "Monthly",
+            "Update templates and tool choices",
+            "Keep workflows relevant"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -143,6 +185,13 @@
       "type": "article",
       "author": "Google",
       "description": "Google's official blog covering AI research, product updates, and real-world applications."
+    },
+    {
+      "title": "State of AI Report",
+      "url": "https://www.stateof.ai/",
+      "type": "article",
+      "author": "Air Street Capital",
+      "description": "Annual landscape synthesis useful for strategic prioritization."
     }
   ]
 }

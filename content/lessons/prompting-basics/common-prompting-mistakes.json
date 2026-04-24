@@ -162,6 +162,48 @@
           "AI output is a starting point, not a final product — always review and edit"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-common-prompting-mistakes",
+      "data": {
+        "level": 3,
+        "text": "Failure pattern triage",
+        "anchor": "enrichment-common-prompting-mistakes"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Most prompting failures come from one of three causes: missing context, conflicting constraints, or undefined quality criteria. A triage mindset helps you fix the root issue instead of repeatedly rewriting surface wording."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Failure symptom",
+          "Likely root cause",
+          "Fastest correction"
+        ],
+        "rows": [
+          [
+            "Output is generic",
+            "Task context is too thin",
+            "Add audience, scenario, and decision goal"
+          ],
+          [
+            "Output contradicts requirements",
+            "Constraints conflict or are buried",
+            "List constraints as ordered bullet rules"
+          ],
+          [
+            "Output looks polished but wrong",
+            "No verification instruction",
+            "Require assumptions and source-check steps"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -182,6 +224,13 @@
       "type": "article",
       "author": "OpenAI",
       "description": "Covers few-shot examples as part of OpenAI's six core prompting strategies — with annotated examples."
+    },
+    {
+      "title": "Anthropic Prompting Guide",
+      "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+      "type": "article",
+      "author": "Anthropic",
+      "description": "Prompt troubleshooting methods and structured instruction patterns."
     }
   ]
 }

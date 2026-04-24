@@ -191,6 +191,48 @@
           "AI cannot check facts or truly know your audience — you must do those passes yourself"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-editing-with-ai",
+      "data": {
+        "level": 3,
+        "text": "Quality rubric for AI-assisted editing",
+        "anchor": "enrichment-editing-with-ai"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Editing with AI is most effective when quality is judged against a rubric, not intuition alone. A simple rubric aligns revisions with purpose and reduces endless rewrites."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Rubric dimension",
+          "Evaluation question",
+          "Pass indicator"
+        ],
+        "rows": [
+          [
+            "Accuracy",
+            "Are factual claims supported and consistent?",
+            "No unsupported claims remain"
+          ],
+          [
+            "Clarity",
+            "Can target readers understand it quickly?",
+            "Low ambiguity and concise phrasing"
+          ],
+          [
+            "Voice fidelity",
+            "Does it still sound like intended author/brand?",
+            "Tone remains consistent end-to-end"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -211,6 +253,13 @@
       "type": "article",
       "author": "OpenAI",
       "description": "Covers strategies for transforming and improving existing text — rewriting, shortening, and tone adjustment."
+    },
+    {
+      "title": "Chicago Manual of Style Online",
+      "url": "https://www.chicagomanualofstyle.org/",
+      "type": "article",
+      "author": "University of Chicago Press",
+      "description": "Editorial standards useful for final quality checks in AI-assisted editing."
     }
   ]
 }

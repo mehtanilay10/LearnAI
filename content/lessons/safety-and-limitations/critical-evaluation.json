@@ -144,6 +144,48 @@
           "Treat AI as a brilliant first draft — your judgment is still the final step"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-critical-evaluation",
+      "data": {
+        "level": 3,
+        "text": "Critical review prompts that improve judgment",
+        "anchor": "enrichment-critical-evaluation"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Critical evaluation improves when you ask the model to expose uncertainty, alternatives, and missing evidence. This shifts interaction from answer consumption to analytical review."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Review prompt intent",
+          "Example question",
+          "Expected benefit"
+        ],
+        "rows": [
+          [
+            "Uncertainty surfacing",
+            "What are the weakest assumptions here?",
+            "Reveals fragile conclusions"
+          ],
+          [
+            "Alternative framing",
+            "What is a competing interpretation?",
+            "Reduces tunnel vision"
+          ],
+          [
+            "Evidence validation",
+            "Which claims need primary-source checks?",
+            "Prioritizes verification effort"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -164,6 +206,13 @@
       "type": "course",
       "author": "DeepLearning.AI / Weights & Biases",
       "description": "Free short course on systematic evaluation methods for generative AI output quality."
+    },
+    {
+      "title": "OECD AI Principles",
+      "url": "https://oecd.ai/en/ai-principles",
+      "type": "article",
+      "author": "OECD",
+      "description": "Policy principles supporting trustworthy and accountable AI decision-making."
     }
   ]
 }

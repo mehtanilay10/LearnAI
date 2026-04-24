@@ -172,6 +172,48 @@
           "None of these make AI useless — they make understanding them essential"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-ai-limitations",
+      "data": {
+        "level": 3,
+        "text": "Operational boundaries in real workflows",
+        "anchor": "enrichment-ai-limitations"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI limitations become visible at workflow boundaries: changing requirements, ambiguous data, and high-stakes decisions. Design processes that treat model output as draft intelligence, not final authority."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Limitation type",
+          "Real-world signal",
+          "Process safeguard"
+        ],
+        "rows": [
+          [
+            "Reasoning gap",
+            "Confident but shallow justification",
+            "Require explicit assumptions and review notes"
+          ],
+          [
+            "Knowledge gap",
+            "Outdated or missing facts",
+            "Attach retrieval or source verification step"
+          ],
+          [
+            "Instruction fragility",
+            "Small prompt changes cause instability",
+            "Standardize prompts with templates"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -192,6 +234,13 @@
       "type": "course",
       "author": "Andrew Ng / DeepLearning.AI",
       "description": "Module 2 specifically covers AI limitations and how to set realistic expectations in teams and projects."
+    },
+    {
+      "title": "Stanford HAI AI Index",
+      "url": "https://aiindex.stanford.edu/",
+      "type": "article",
+      "author": "Stanford HAI",
+      "description": "Evidence-based trends and limitations in current AI capabilities."
     }
   ]
 }

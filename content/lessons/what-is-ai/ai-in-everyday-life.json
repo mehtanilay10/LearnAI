@@ -175,6 +175,48 @@
         ],
         "takeaway": "AI fluency is now a practical everyday skill, not a specialty."
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-ai-in-everyday-life",
+      "data": {
+        "level": 3,
+        "text": "Everyday AI adoption maturity",
+        "anchor": "enrichment-ai-in-everyday-life"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Everyday AI value grows in stages: awareness, assisted execution, and workflow integration. The most sustainable progress comes from turning occasional use into repeatable habits with clear quality checks."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Maturity stage",
+          "Typical behavior",
+          "Next step"
+        ],
+        "rows": [
+          [
+            "Awareness",
+            "Occasional ad-hoc questions",
+            "Identify one repeated weekly use case"
+          ],
+          [
+            "Assisted execution",
+            "AI helps with drafts and summaries",
+            "Standardize prompts and review rules"
+          ],
+          [
+            "Workflow integration",
+            "AI embedded in routine tasks",
+            "Measure outcomes and refine stack"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -195,6 +237,13 @@
       "type": "article",
       "author": "Andreessen Horowitz",
       "description": "Curated reading list of the most important AI papers, articles, and resources — organised by topic and depth."
+    },
+    {
+      "title": "Pew Research on AI Use",
+      "url": "https://www.pewresearch.org/topic/science/artificial-intelligence/",
+      "type": "article",
+      "author": "Pew Research Center",
+      "description": "Public adoption trends and practical implications for everyday AI use."
     }
   ]
 }

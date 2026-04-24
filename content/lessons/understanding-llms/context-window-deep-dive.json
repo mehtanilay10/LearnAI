@@ -181,6 +181,53 @@
           "Use the \"summary handoff\" when a long conversation nears its limit"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-context-window-deep-dive",
+      "data": {
+        "level": 3,
+        "text": "Context budgeting strategies",
+        "anchor": "enrichment-context-window-deep-dive"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Context window limits require prioritization. High-value context should be structured first, while low-value details should be summarized or retrieved on demand. This improves accuracy and reduces cost."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Context segment",
+          "Priority",
+          "Handling strategy"
+        ],
+        "rows": [
+          [
+            "Task instructions",
+            "Critical",
+            "Keep explicit and stable"
+          ],
+          [
+            "Grounding evidence",
+            "High",
+            "Include most relevant excerpts"
+          ],
+          [
+            "Background detail",
+            "Medium",
+            "Summarize before inclusion"
+          ],
+          [
+            "Historical chatter",
+            "Low",
+            "Drop or archive outside prompt"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -208,6 +255,13 @@
       "type": "course",
       "author": "Vanderbilt University / Coursera",
       "description": "Includes practical techniques for managing context across long, multi-turn conversations."
+    },
+    {
+      "title": "Transformers and Context",
+      "url": "https://huggingface.co/docs/transformers/main/en/llm_tutorial",
+      "type": "article",
+      "author": "Hugging Face",
+      "description": "Technical overview of transformer behavior and long-context considerations."
     }
   ]
 }

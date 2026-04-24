@@ -247,6 +247,48 @@
           "Perplexity, Notion AI, and Microsoft 365 Copilot all use RAG under the hood"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-rag-explained",
+      "data": {
+        "level": 3,
+        "text": "RAG quality control checklist",
+        "anchor": "enrichment-rag-explained"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "RAG systems fail most often due to retrieval quality, not generation quality. Chunk strategy, metadata filters, and evaluation queries determine whether the model receives relevant evidence."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "RAG component",
+          "Quality risk",
+          "Mitigation"
+        ],
+        "rows": [
+          [
+            "Chunking",
+            "Context fragmentation",
+            "Tune chunk size and overlap by document type"
+          ],
+          [
+            "Retrieval",
+            "Low relevance matches",
+            "Use hybrid search and metadata filters"
+          ],
+          [
+            "Generation",
+            "Unsupported claims",
+            "Require citations from retrieved context"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -267,6 +309,13 @@
       "type": "course",
       "author": "LlamaIndex / DeepLearning.AI",
       "description": "Free short course on building and evaluating RAG pipelines — accessible with basic Python knowledge."
+    },
+    {
+      "title": "LlamaIndex RAG Concepts",
+      "url": "https://docs.llamaindex.ai/en/stable/understanding/understanding_rag/",
+      "type": "article",
+      "author": "LlamaIndex",
+      "description": "Core retrieval-augmented generation design and evaluation principles."
     }
   ]
 }

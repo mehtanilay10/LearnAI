@@ -73,6 +73,150 @@
       }
     },
     {
+      "type": "heading",
+      "id": "student-track",
+      "data": {
+        "level": 3,
+        "text": "Student and early-career fast-track",
+        "anchor": "student-track"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "If you are a student or early-career professional, optimize for portfolio proof, communication clarity, and repeatable research habits. Your roadmap should focus on outputs you can show: better notes, stronger analyses, clearer writing, and structured project artifacts that demonstrate consistent improvement over 12 weeks."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Role",
+          "Days 1-30",
+          "Days 31-60",
+          "Days 61-90"
+        ],
+        "rows": [
+          [
+            "Student / Early-career",
+            "Lecture summarization + study-plan prompts",
+            "Project writeups + presentation drafting",
+            "Portfolio case studies + interview story rehearsal"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "workflow-prioritization",
+      "data": {
+        "level": 3,
+        "text": "How to pick month-one workflows",
+        "anchor": "workflow-prioritization"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Most people stall because they pick interesting workflows, not high-leverage ones. In the first 30 days, choose two workflows that happen frequently, consume noticeable time, and have clear quality criteria. This creates quick confidence and measurable gains before you expand your stack."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Selection criterion",
+          "What to ask",
+          "Good signal"
+        ],
+        "rows": [
+          [
+            "Frequency",
+            "Do I do this at least weekly?",
+            "Appears 4+ times per month"
+          ],
+          [
+            "Time cost",
+            "How many minutes or hours does this consume?",
+            "Usually takes 45+ minutes"
+          ],
+          [
+            "Quality friction",
+            "Where do errors, rewrites, or delays happen?",
+            "Repeated rework or manual checks"
+          ],
+          [
+            "Standardization potential",
+            "Can this process use a reusable prompt or template?",
+            "Strong recurring pattern exists"
+          ],
+          [
+            "Risk level",
+            "What happens if output quality drops?",
+            "Low-to-medium risk in early rollout"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "quality-checks-by-role",
+      "data": {
+        "level": 3,
+        "text": "Quality checks by role",
+        "anchor": "quality-checks-by-role"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Role",
+          "Primary quality check",
+          "Common failure pattern",
+          "Simple safeguard"
+        ],
+        "rows": [
+          [
+            "Manager",
+            "Decision assumptions are explicit",
+            "Polished memo with weak evidence",
+            "Require source links and counter-argument section"
+          ],
+          [
+            "Marketer",
+            "Message matches channel and audience intent",
+            "Generic copy that sounds plausible but bland",
+            "Use channel-specific prompt templates and voice guardrails"
+          ],
+          [
+            "Analyst",
+            "Numbers and definitions reconcile to source",
+            "Narrative and chart disagree",
+            "Add a final metrics reconciliation checklist"
+          ],
+          [
+            "Founder",
+            "Recommendations align to current business constraints",
+            "Over-ambitious strategy disconnected from capacity",
+            "Force budget, timeline, and owner fields in outputs"
+          ],
+          [
+            "Developer",
+            "Code passes tests and edge-case review",
+            "Works on happy path only",
+            "Pair generated code with tests before merge"
+          ],
+          [
+            "Student / Early-career",
+            "Claims are understandable and source-backed",
+            "Copying model output without comprehension",
+            "Rewrite in your own words and verify key facts"
+          ]
+        ]
+      }
+    },
+    {
       "type": "exercise",
       "data": {
         "title": "Create your personal 12-week AI plan",
@@ -99,6 +243,19 @@
           "Review and adapt monthly as tools evolve"
         ]
       }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Common roadmap mistakes to avoid",
+        "points": [
+          "Trying five tools at once before one workflow is stable",
+          "Tracking activity instead of measurable outcomes",
+          "Skipping quality checks because outputs look polished",
+          "Copying someone else's stack without role fit",
+          "Failing to revisit prompts and templates after each month"
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -120,6 +277,20 @@
       "type": "course",
       "author": "DeepLearning.AI",
       "description": "Role-specific practical courses to build depth fast."
+    },
+    {
+      "title": "Future of Jobs Report 2025",
+      "url": "https://www.weforum.org/publications/the-future-of-jobs-report-2025/",
+      "type": "article",
+      "author": "World Economic Forum",
+      "description": "Useful signal for choosing role-relevant AI capabilities with long-term career value."
+    },
+    {
+      "title": "NIST AI Risk Management Framework",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "type": "article",
+      "author": "NIST",
+      "description": "Practical framework for adding governance and reliability checks as your AI workflows mature."
     }
   ]
 }

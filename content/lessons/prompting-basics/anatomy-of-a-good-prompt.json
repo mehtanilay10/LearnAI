@@ -216,6 +216,53 @@
           "The AI cannot read your mind; tell it exactly what you need, for whom, and in what form"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-anatomy-of-a-good-prompt",
+      "data": {
+        "level": 3,
+        "text": "Prompt quality diagnostics",
+        "anchor": "enrichment-anatomy-of-a-good-prompt"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A strong prompt can be diagnosed before execution. Clear role, objective, constraints, and output format reduce ambiguity and lower revision cycles. For practical work, treat prompts as draft specifications that should be iterated with concrete acceptance criteria."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Diagnostic lens",
+          "Check question",
+          "Improvement move"
+        ],
+        "rows": [
+          [
+            "Intent clarity",
+            "Is the goal explicit in one sentence?",
+            "Add a one-line objective statement"
+          ],
+          [
+            "Context completeness",
+            "Does the model have enough background?",
+            "Provide only the minimum relevant context"
+          ],
+          [
+            "Constraint precision",
+            "Are boundaries measurable?",
+            "Convert vague rules into explicit limits"
+          ],
+          [
+            "Output contract",
+            "Can quality be reviewed quickly?",
+            "Specify format, tone, and evaluation points"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -243,6 +290,13 @@
       "type": "course",
       "author": "Vanderbilt University / Coursera",
       "description": "Hands-on course covering prompt patterns and real-world applications — free to audit."
+    },
+    {
+      "title": "OpenAI Prompt Engineering Guide",
+      "url": "https://platform.openai.com/docs/guides/prompt-engineering",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Practical patterns for improving instruction clarity and reliability in prompts."
     }
   ]
 }

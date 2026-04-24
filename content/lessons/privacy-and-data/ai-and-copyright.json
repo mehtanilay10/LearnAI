@@ -182,6 +182,55 @@
       }
     },
     {
+      "type": "heading",
+      "id": "copyright-decision-flow",
+      "data": {
+        "level": 3,
+        "text": "A practical copyright decision flow",
+        "anchor": "copyright-decision-flow"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "copyright-decision-tree",
+        "caption": "Use a simple decision flow before publishing or delivering AI-assisted content.",
+        "definition": "flowchart TD\n  A[Created with AI] --> B{Substantial human\ncreative direction and editing?}\n  B -->|No| C[Weak copyright claim\nTreat as high-risk for exclusivity]\n  B -->|Yes| D{Includes third-party\nprotected assets or style mimicry?}\n  D -->|Yes| E[Run legal/policy review\nand replace risky material]\n  D -->|No| F{Commercial/client use?}\n  F -->|Yes| G[Verify current tool ToS\nand contract disclosure]\n  F -->|No| H[Publish with attribution\nnotes where needed]\n\n  style C fill:#ffebe9,stroke:#cf222e,color:#cf222e\n  style E fill:#fff8c5,stroke:#9a6700,color:#9a6700\n  style G fill:#fff8c5,stroke:#9a6700,color:#9a6700\n  style H fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Claim type",
+          "What strengthens your position",
+          "What weakens your position"
+        ],
+        "rows": [
+          [
+            "Authorship claim",
+            "Documented prompt strategy, iterative edits, and original structure",
+            "One-shot generation with minimal human changes"
+          ],
+          [
+            "Commercial reuse rights",
+            "Paid tier with explicit commercial license and archived ToS snapshot",
+            "Unclear or changing tool terms at time of delivery"
+          ],
+          [
+            "Client ownership",
+            "Contract clause defining AI use and assignment of deliverables",
+            "No contract language on AI-generated assets"
+          ],
+          [
+            "Brand safety",
+            "Human legal/editorial review plus source verification",
+            "Publishing model output without validation"
+          ]
+        ]
+      }
+    },
+    {
       "type": "callout",
       "data": {
         "variant": "note",
@@ -222,6 +271,20 @@
       "type": "article",
       "author": "OWASP",
       "description": "Security and compliance risks in AI systems — relevant to legal, copyright, and data protection use cases."
+    },
+    {
+      "title": "WIPO: Generative AI and Intellectual Property",
+      "url": "https://www.wipo.int/en/web/artificial-intelligence/generative-ai",
+      "type": "article",
+      "author": "World Intellectual Property Organization",
+      "description": "International policy perspective on AI-generated works, ownership questions, and evolving IP frameworks."
+    },
+    {
+      "title": "EU AI Act Overview",
+      "url": "https://artificialintelligenceact.eu/",
+      "type": "article",
+      "author": "EU AI Act Tracker",
+      "description": "Readable summary of AI Act obligations that affect transparency and governance in AI content pipelines."
     }
   ]
 }

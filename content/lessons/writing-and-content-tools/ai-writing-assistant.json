@@ -206,6 +206,48 @@
           "AI cannot replace original ideas, firsthand experience, or audience intuition"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-ai-writing-assistant",
+      "data": {
+        "level": 3,
+        "text": "Editorial workflow with AI assistance",
+        "anchor": "enrichment-ai-writing-assistant"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI writing quality improves when editing is separated into passes: structure, clarity, and voice. This prevents over-editing and helps preserve author intent while using AI for speed."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Editing pass",
+          "AI role",
+          "Human role"
+        ],
+        "rows": [
+          [
+            "Structure pass",
+            "Suggest organization and missing sections",
+            "Choose final narrative arc"
+          ],
+          [
+            "Clarity pass",
+            "Rewrite dense sentences and reduce ambiguity",
+            "Preserve meaning and evidence"
+          ],
+          [
+            "Voice pass",
+            "Adapt tone to audience",
+            "Ensure authenticity and style consistency"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -226,6 +268,13 @@
       "type": "course",
       "author": "Vanderbilt University / Coursera",
       "description": "Includes dedicated modules on using AI for writing tasks — free to audit on Coursera."
+    },
+    {
+      "title": "Plain Language Guidelines",
+      "url": "https://www.plainlanguage.gov/guidelines/",
+      "type": "article",
+      "author": "PlainLanguage.gov",
+      "description": "Practical writing standards that pair well with AI-assisted drafting."
     }
   ]
 }

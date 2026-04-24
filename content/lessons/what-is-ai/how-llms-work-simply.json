@@ -203,6 +203,48 @@
           "Context window = how much text the model can \"hold in mind\" in one session"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-how-llms-work-simply",
+      "data": {
+        "level": 3,
+        "text": "From prediction to behavior",
+        "anchor": "enrichment-how-llms-work-simply"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "LLMs fundamentally predict likely next tokens, but chat behavior emerges from training stages, instruction tuning, and safety alignment. Understanding this pipeline explains both impressive fluency and persistent failure modes."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Pipeline stage",
+          "What it adds",
+          "Common misconception"
+        ],
+        "rows": [
+          [
+            "Pretraining",
+            "Broad language pattern learning",
+            "Model understands truth natively"
+          ],
+          [
+            "Instruction tuning",
+            "Task-following behavior",
+            "Model becomes perfectly reliable"
+          ],
+          [
+            "Safety alignment",
+            "Policy and risk constraints",
+            "Safety removes all unsafe outputs"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -230,6 +272,13 @@
       "type": "video",
       "author": "3Blue1Brown",
       "description": "Animation-first explanation of how the attention mechanism lets LLMs focus on the right parts of text."
+    },
+    {
+      "title": "Attention Is All You Need",
+      "url": "https://arxiv.org/abs/1706.03762",
+      "type": "article",
+      "author": "Vaswani et al.",
+      "description": "Foundational transformer paper underlying modern LLM architecture."
     }
   ]
 }

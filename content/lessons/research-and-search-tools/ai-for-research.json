@@ -149,6 +149,48 @@
           "Always document your actual sources, not just \"I asked AI\""
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-ai-for-research",
+      "data": {
+        "level": 3,
+        "text": "Evidence confidence ladder",
+        "anchor": "enrichment-ai-for-research"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI can accelerate synthesis, but trust should be tiered by source strength. Use AI for exploration first, then move to higher-confidence evidence for decisions, publication, and client communication."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Evidence tier",
+          "Typical source",
+          "Appropriate use"
+        ],
+        "rows": [
+          [
+            "Tier 1",
+            "Model summary or uncited answer",
+            "Brainstorming only"
+          ],
+          [
+            "Tier 2",
+            "Cited web sources",
+            "Early framing and hypothesis building"
+          ],
+          [
+            "Tier 3",
+            "Primary documents and official datasets",
+            "Decision-grade conclusions"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -176,6 +218,13 @@
       "type": "article",
       "author": "Andreessen Horowitz",
       "description": "Curated reading list of must-read AI resources — ideal starting point for deeper research on any AI topic."
+    },
+    {
+      "title": "Google Scholar",
+      "url": "https://scholar.google.com/",
+      "type": "tool",
+      "author": "Google",
+      "description": "Reliable starting point for peer-reviewed and citable literature discovery."
     }
   ]
 }

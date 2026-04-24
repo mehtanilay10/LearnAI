@@ -100,6 +100,48 @@
           "Safe defaults matter more than maximum autonomy"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-agent-guardrails-and-approvals",
+      "data": {
+        "level": 3,
+        "text": "Guardrail design tradeoffs",
+        "anchor": "enrichment-agent-guardrails-and-approvals"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Guardrails should be calibrated to consequence. Overly strict approvals create bottlenecks, while weak controls increase incident risk. The goal is risk-proportionate friction."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Action class",
+          "Approval policy",
+          "Rationale"
+        ],
+        "rows": [
+          [
+            "Read-only lookup",
+            "Auto-allow with audit log",
+            "Low operational risk"
+          ],
+          [
+            "External write action",
+            "Require human approval",
+            "Potential irreversible impact"
+          ],
+          [
+            "High-risk transaction",
+            "Dual approval and policy check",
+            "Legal and financial protection"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -121,6 +163,13 @@
       "type": "article",
       "author": "Anthropic",
       "description": "Practical guidance for constrained tool access and safe execution."
+    },
+    {
+      "title": "Model Context Protocol",
+      "url": "https://modelcontextprotocol.io/",
+      "type": "article",
+      "author": "MCP",
+      "description": "Standardized interface patterns relevant to tool safety boundaries."
     }
   ]
 }

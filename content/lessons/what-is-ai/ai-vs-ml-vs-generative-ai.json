@@ -305,6 +305,48 @@
         ],
         "takeaway": "You now have the vocabulary to talk about these technologies clearly and precisely."
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-ai-vs-ml-vs-generative-ai",
+      "data": {
+        "level": 3,
+        "text": "Concept boundary map",
+        "anchor": "enrichment-ai-vs-ml-vs-generative-ai"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Confusion between AI, ML, and generative AI often comes from scope mismatch. AI is the broad umbrella, ML is a method family inside it, and generative AI is a subset focused on producing new content from learned patterns."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Concept",
+          "Primary purpose",
+          "Typical output"
+        ],
+        "rows": [
+          [
+            "AI",
+            "Perform intelligent tasks",
+            "Decisions, predictions, automation"
+          ],
+          [
+            "Machine learning",
+            "Learn patterns from data",
+            "Classifications and forecasts"
+          ],
+          [
+            "Generative AI",
+            "Create new content",
+            "Text, images, code, audio"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -332,6 +374,13 @@
       "type": "article",
       "author": "IBM",
       "description": "Concise overview of machine learning: types, techniques, and real-world examples across industries."
+    },
+    {
+      "title": "NVIDIA AI Glossary",
+      "url": "https://www.nvidia.com/en-us/glossary/",
+      "type": "article",
+      "author": "NVIDIA",
+      "description": "Clear definitions for foundational AI and ML terminology."
     }
   ]
 }

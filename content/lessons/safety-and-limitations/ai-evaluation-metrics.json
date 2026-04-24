@@ -111,6 +111,48 @@
         ],
         "expectedOutcome": "You end with a measurable quality baseline and a repeatable improvement loop."
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-ai-evaluation-metrics",
+      "data": {
+        "level": 3,
+        "text": "Metric selection by risk level",
+        "anchor": "enrichment-ai-evaluation-metrics"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "No single metric captures quality. Evaluation should align with impact: higher-risk use cases need stricter thresholds, clearer failure definitions, and human review coverage metrics."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Risk tier",
+          "Core metric focus",
+          "Operational threshold style"
+        ],
+        "rows": [
+          [
+            "Low risk",
+            "User satisfaction and latency",
+            "Flexible threshold with trend monitoring"
+          ],
+          [
+            "Medium risk",
+            "Factuality and consistency",
+            "Minimum pass rate plus spot audits"
+          ],
+          [
+            "High risk",
+            "Harm prevention and correctness",
+            "Strict thresholds and mandatory human sign-off"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -132,6 +174,13 @@
       "type": "tool",
       "author": "OpenAI",
       "description": "Open-source framework for evaluating model behavior on structured benchmarks."
+    },
+    {
+      "title": "NIST AI RMF Playbook",
+      "url": "https://airc.nist.gov/AI_RMF_Knowledge_Base/Playbook",
+      "type": "article",
+      "author": "NIST",
+      "description": "Practical risk and measurement guidance for operational AI systems."
     }
   ]
 }

@@ -163,6 +163,48 @@
           "Treat your custom instructions like settings — review and update them as your work evolves"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-system-prompts-and-custom-instructions",
+      "data": {
+        "level": 3,
+        "text": "Instruction hierarchy and drift control",
+        "anchor": "enrichment-system-prompts-and-custom-instructions"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "System prompts define baseline behavior, while user prompts define task-specific intent. Over time, instruction drift appears when templates become inconsistent. A versioned instruction library helps teams preserve behavior across tools and updates."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Instruction layer",
+          "Purpose",
+          "Governance practice"
+        ],
+        "rows": [
+          [
+            "System layer",
+            "Global behavior and guardrails",
+            "Version and review quarterly"
+          ],
+          [
+            "Task template layer",
+            "Workflow-specific execution rules",
+            "Maintain owners per template"
+          ],
+          [
+            "Session/user layer",
+            "Context for a single run",
+            "Keep concise and disposable"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -190,6 +232,13 @@
       "type": "article",
       "author": "Learn Prompting",
       "description": "Guide to role-setting in prompts — personas, system messages, and how to apply them effectively."
+    },
+    {
+      "title": "Model Spec",
+      "url": "https://model-spec.openai.com/",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Guidance on instruction hierarchy, policy behavior, and reliable model use."
     }
   ]
 }

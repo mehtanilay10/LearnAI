@@ -175,6 +175,48 @@
           "You use tool calling every time ChatGPT searches the web or runs code for you"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-what-is-tool-calling",
+      "data": {
+        "level": 3,
+        "text": "Tool-calling reliability model",
+        "anchor": "enrichment-what-is-tool-calling"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Reliable tool calling depends on clear schemas, deterministic validation, and explicit error handling. If tools are loosely defined, model behavior becomes inconsistent and harder to audit."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Reliability element",
+          "Failure if missing",
+          "Best practice"
+        ],
+        "rows": [
+          [
+            "Schema precision",
+            "Invalid or ambiguous arguments",
+            "Use strict typed parameter schemas"
+          ],
+          [
+            "Validation layer",
+            "Unsafe or malformed requests",
+            "Validate before execution"
+          ],
+          [
+            "Recovery strategy",
+            "Silent failure loops",
+            "Return structured errors and retry rules"
+          ]
+        ]
+      }
     }
   ],
   "relatedLessons": [
@@ -202,6 +244,13 @@
       "type": "article",
       "author": "Google",
       "description": "Google's documentation on connecting Gemini to external functions and data sources."
+    },
+    {
+      "title": "OpenAI Function Calling",
+      "url": "https://platform.openai.com/docs/guides/function-calling",
+      "type": "article",
+      "author": "OpenAI",
+      "description": "Core implementation patterns for schema-driven tool invocation."
     }
   ]
 }

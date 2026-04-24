@@ -91,6 +91,101 @@
       }
     },
     {
+      "type": "heading",
+      "id": "governance-decision-routing",
+      "data": {
+        "level": 3,
+        "text": "Decision routing: who approves what",
+        "anchor": "governance-decision-routing"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "governance-routing-flow",
+        "caption": "Route decisions by risk level so teams move quickly on low-risk work and escalate only when needed.",
+        "definition": "flowchart TD\n  A[Proposed AI use case] --> B{Data and impact risk level}\n  B -->|Low| C[Team lead approval]\n  B -->|Medium| D[Ops owner + policy check]\n  B -->|High| E[Security/Legal review]\n  C --> F[Run with logging]\n  D --> F\n  E --> G[Conditional go/no-go]\n  G --> F\n  F --> H[Monthly policy feedback loop]\n\n  style C fill:#d1f3d8,stroke:#1a7f37,color:#1a7f37\n  style D fill:#fff8c5,stroke:#9a6700,color:#9a6700\n  style E fill:#ffebe9,stroke:#cf222e,color:#cf222e\n  style H fill:#eddff8,stroke:#8250df,color:#6639ba"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Governance artifact",
+          "Owner",
+          "Update cadence"
+        ],
+        "rows": [
+          [
+            "Approved tools registry",
+            "Security + IT",
+            "Monthly"
+          ],
+          [
+            "Allowed/disallowed use-case matrix",
+            "Ops + Legal",
+            "Monthly or after incidents"
+          ],
+          [
+            "High-impact output review protocol",
+            "Team leads",
+            "Quarterly"
+          ],
+          [
+            "Incident response runbook",
+            "Security",
+            "After each incident and quarterly"
+          ],
+          [
+            "Training and onboarding brief",
+            "People ops + Team leads",
+            "Each onboarding cycle"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "governance-anti-patterns",
+      "data": {
+        "level": 3,
+        "text": "Governance anti-patterns to avoid",
+        "anchor": "governance-anti-patterns"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Anti-pattern",
+          "What goes wrong",
+          "Better alternative"
+        ],
+        "rows": [
+          [
+            "One giant policy PDF",
+            "Teams ignore it and make ad-hoc decisions",
+            "Short operational policy with examples"
+          ],
+          [
+            "Approve everything centrally",
+            "Bottlenecks and shadow AI usage",
+            "Risk-tiered approvals with local ownership"
+          ],
+          [
+            "No measurement of incidents",
+            "False sense of safety",
+            "Track incidents and near-misses monthly"
+          ],
+          [
+            "Policy never updated",
+            "Rules lag behind tool changes",
+            "Set fixed monthly policy refresh"
+          ]
+        ]
+      }
+    },
+    {
       "type": "summary-box",
       "data": {
         "title": "Governance that works",
@@ -123,6 +218,20 @@
       "type": "article",
       "author": "OWASP",
       "description": "Security risks and mitigation patterns for LLM systems."
+    },
+    {
+      "title": "ISO/IEC 42001 AI Management System",
+      "url": "https://www.iso.org/standard/81230.html",
+      "type": "article",
+      "author": "ISO",
+      "description": "Reference model for operational AI governance, accountability, and continual improvement."
+    },
+    {
+      "title": "OECD AI Principles",
+      "url": "https://oecd.ai/en/ai-principles",
+      "type": "article",
+      "author": "OECD",
+      "description": "Widely used policy principles to align AI governance with fairness, transparency, and accountability."
     }
   ]
 }
