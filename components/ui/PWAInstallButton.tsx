@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { Download, Share2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Download, Info, Share2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -11,6 +11,13 @@ interface BeforeInstallPromptEvent extends Event {
 
 interface PWAInstallButtonProps {
   className?: string;
+}
+
+interface InstallEnvironment {
+  hasServiceWorkerSupport: boolean;
+  isIos: boolean;
+  isMobile: boolean;
+  isSecureContext: boolean;
 }
 
 function isStandaloneMode(): boolean {
@@ -26,15 +33,25 @@ function isStandaloneMode(): boolean {
 
 export function PWAInstallButton({ className }: PWAInstallButtonProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [environment, setEnvironment] = useState<InstallEnvironment>({
+    hasServiceWorkerSupport: false,
+    isIos: false,
+    isMobile: false,
+    isSecureContext: false,
+  });
   const [installed, setInstalled] = useState(false);
-  const [showIosHelp, setShowIosHelp] = useState(false);
-
-  const isIos = useMemo(() => {
-    if (typeof window === 'undefined') return false;
-    return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-  }, []);
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
+    const userAgent = window.navigator.userAgent;
+
+    setEnvironment({
+      hasServiceWorkerSupport: 'serviceWorker' in window.navigator,
+      isIos: /iphone|ipad|ipod/i.test(userAgent),
+      isMobile: /android|iphone|ipad|ipod/i.test(userAgent),
+      isSecureContext: window.isSecureContext,
+    });
+
     setInstalled(isStandaloneMode());
 
     const onBeforeInstallPrompt = (event: Event) => {
@@ -45,7 +62,7 @@ export function PWAInstallButton({ className }: PWAInstallButtonProps) {
     const onAppInstalled = () => {
       setInstalled(true);
       setDeferredPrompt(null);
-      setShowIosHelp(false);
+      setShowHelp(false);
     };
 
     const media = window.matchMedia('(display-mode: standalone)');
@@ -64,14 +81,18 @@ export function PWAInstallButton({ className }: PWAInstallButtonProps) {
     };
   }, []);
 
-  if (installed) return null;
+  if (installed || !environment.isMobile) return null;
 
   const canInstallWithPrompt = deferredPrompt !== null;
-  const shouldShowFallback = !canInstallWithPrompt && isIos;
+  const buttonIcon = canInstallWithPrompt ? Download : environment.isIos ? Share2 : Info;
 
-  if (!canInstallWithPrompt && !shouldShowFallback) {
-    return null;
-  }
+  const helpText = environment.isIos
+    ? 'On iPhone or iPad, tap Share in Safari, then choose Add to Home Screen.'
+    : !environment.isSecureContext
+      ? 'Install is blocked because this page is not running in a secure context. Open the site on HTTPS. If you are testing from a phone on a local network URL over HTTP, the browser will not allow PWA install.'
+      : !environment.hasServiceWorkerSupport
+        ? 'This browser does not support the service worker features required for PWA install. Try Chrome, Edge, or Safari.'
+        : 'If no install prompt appears yet, open the browser menu and look for Install app or Add to Home screen after the page fully loads.';
 
   const handleInstall = async () => {
     if (deferredPrompt) {
@@ -84,8 +105,10 @@ export function PWAInstallButton({ className }: PWAInstallButtonProps) {
       return;
     }
 
-    setShowIosHelp((value) => !value);
+    setShowHelp((value) => !value);
   };
+
+  const Icon = buttonIcon;
 
   return (
     <div className={cn('w-full', className)}>
@@ -93,20 +116,16 @@ export function PWAInstallButton({ className }: PWAInstallButtonProps) {
         type="button"
         onClick={handleInstall}
         className="flex w-full items-center justify-center gap-2 rounded-md border border-border bg-canvas-subtle px-3 py-2 text-sm font-medium text-fg-default transition-colors hover:bg-canvas"
-        aria-expanded={showIosHelp}
-        aria-controls="ios-install-help"
+        aria-expanded={showHelp}
+        aria-controls="mobile-install-help"
       >
-        {canInstallWithPrompt ? (
-          <Download className="h-4 w-4" aria-hidden="true" />
-        ) : (
-          <Share2 className="h-4 w-4" aria-hidden="true" />
-        )}
+        <Icon className="h-4 w-4" aria-hidden="true" />
         Install App
       </button>
 
-      {shouldShowFallback && showIosHelp && (
-        <p id="ios-install-help" className="mt-2 rounded-md border border-border bg-canvas px-3 py-2 text-xs text-fg-muted">
-          On iPhone/iPad: tap Share in your browser, then choose Add to Home Screen.
+      {!canInstallWithPrompt && showHelp && (
+        <p id="mobile-install-help" className="mt-2 rounded-md border border-border bg-canvas px-3 py-2 text-xs text-fg-muted" role="status" aria-live="polite">
+          {helpText}
         </p>
       )}
     </div>

@@ -39,6 +39,16 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+### Test PWA on mobile
+
+By default, PWA registration is disabled in development. To test installability intentionally, start the app with:
+
+```bash
+NEXT_PUBLIC_ENABLE_PWA_DEV=true yarn dev
+```
+
+Mobile browsers still require a secure context for service workers. `localhost` is allowed, but a phone opening `http://192.168.x.x:3000` will not be installable unless you serve the site over HTTPS.
+
 ### Build
 
 ```bash

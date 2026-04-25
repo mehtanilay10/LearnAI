@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ThemeProvider } from '@/components/ui/ThemeProvider';
+import { PWARegistration } from '@/components/ui/PWARegistration';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import './globals.css';
@@ -15,6 +16,13 @@ export const metadata: Metadata = {
   authors: [{ name: 'LearnAI' }],
   robots: { index: true, follow: true },
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: '/icons/icon-192x192.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -38,6 +46,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className="flex min-h-screen flex-col bg-canvas text-fg-default antialiased transition-theme">
+        <PWARegistration />
         <ThemeProvider>
           <Navbar />
           <main id="main-content" className="flex-1">
