@@ -85,6 +85,8 @@ export function PWAInstallButton({ className }: PWAInstallButtonProps) {
 
   const canInstallWithPrompt = deferredPrompt !== null;
   const buttonIcon = canInstallWithPrompt ? Download : environment.isIos ? Share2 : Info;
+  const isBlockedByInsecureContext = !canInstallWithPrompt && !environment.isIos && !environment.isSecureContext;
+  const isBlockedByBrowserSupport = !canInstallWithPrompt && !environment.isIos && environment.isSecureContext && !environment.hasServiceWorkerSupport;
 
   const helpText = environment.isIos
     ? 'On iPhone or iPad, tap Share in Safari, then choose Add to Home Screen.'
@@ -93,6 +95,12 @@ export function PWAInstallButton({ className }: PWAInstallButtonProps) {
       : !environment.hasServiceWorkerSupport
         ? 'This browser does not support the service worker features required for PWA install. Try Chrome, Edge, or Safari.'
         : 'If no install prompt appears yet, open the browser menu and look for Install app or Add to Home screen after the page fully loads.';
+
+  const buttonLabel = isBlockedByInsecureContext
+    ? 'Install Requires HTTPS'
+    : isBlockedByBrowserSupport
+      ? 'Install Not Supported'
+      : 'Install App';
 
   const handleInstall = async () => {
     if (deferredPrompt) {
@@ -120,10 +128,10 @@ export function PWAInstallButton({ className }: PWAInstallButtonProps) {
         aria-controls="mobile-install-help"
       >
         <Icon className="h-4 w-4" aria-hidden="true" />
-        Install App
+        {buttonLabel}
       </button>
 
-      {!canInstallWithPrompt && showHelp && (
+      {!canInstallWithPrompt && (showHelp || isBlockedByInsecureContext || isBlockedByBrowserSupport) && (
         <p id="mobile-install-help" className="mt-2 rounded-md border border-border bg-canvas px-3 py-2 text-xs text-fg-muted" role="status" aria-live="polite">
           {helpText}
         </p>

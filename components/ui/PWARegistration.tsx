@@ -2,6 +2,14 @@
 
 import { useEffect } from 'react';
 
+declare global {
+  interface Window {
+    workbox?: {
+      register: () => Promise<ServiceWorkerRegistration>;
+    };
+  }
+}
+
 const isPwaEnabled =
   process.env.NODE_ENV === 'production' || process.env.NEXT_PUBLIC_ENABLE_PWA_DEV === 'true';
 
@@ -13,12 +21,13 @@ export function PWARegistration() {
 
     const registerServiceWorker = async () => {
       try {
-        const registration = await navigator.serviceWorker.register('/sw.js', {
-          scope: '/',
-          updateViaCache: 'none',
-        });
+        if (window.workbox === undefined) {
+          return;
+        }
 
-        void registration.update().catch(() => undefined);
+        const registration = await window.workbox?.register();
+
+        void registration?.update().catch(() => undefined);
       } catch (error) {
         if (process.env.NODE_ENV !== 'production') {
           console.error('PWA service worker registration failed.', error);
