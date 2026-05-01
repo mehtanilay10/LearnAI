@@ -52,7 +52,7 @@ export function ToolComparisonCard({ tool, className }: ToolComparisonCardProps)
               )}
               {tool.isBeginnnerPick && (
                 <span className="rounded-full bg-success-subtle border border-success-muted text-success-fg px-1.5 py-0 text-xs font-medium">
-                  ⭐ Beginner pick
+                  ⭐ Novice
                 </span>
               )}
             </div>

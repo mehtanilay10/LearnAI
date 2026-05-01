@@ -34,7 +34,7 @@ export default function ToolsPage() {
       <div className="mb-8 rounded-xl border border-border bg-canvas-subtle p-4 text-sm text-fg-muted">
         <p>
           <strong className="text-fg-default">Where to start:</strong> If you&apos;re new to AI, pick any tool marked{' '}
-          <span className="text-success-fg font-medium">⭐ Beginner pick</span>. ChatGPT or Claude are both excellent starting points.
+          <span className="text-success-fg font-medium">⭐ Novice</span>. ChatGPT or Claude are both excellent starting points.
         </p>
       </div>
 

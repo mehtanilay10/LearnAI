@@ -76,7 +76,7 @@ export function Footer() {
           <p>© {new Date().getFullYear()} LearnAI. Open knowledge for everyone.</p>
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com"
+              href="https://github.com/mehtanilay10/LearnAI/"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 transition-colors hover:text-fg-default"
