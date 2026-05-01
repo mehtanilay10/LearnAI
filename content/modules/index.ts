@@ -1,33 +1,49 @@
 import type { Module } from '@/types';
 
-// AI Basics course modules
-import whatIsAi from './phase-1-foundations/what-is-ai.json';
-import aiToolsOverview from './phase-1-foundations/ai-tools-overview.json';
-import promptingBasics from './phase-1-foundations/prompting-basics.json';
-import understandingLlms from './phase-2-key-concepts/understanding-llms.json';
-import hallucinationsAndAccuracy from './phase-2-key-concepts/hallucinations-and-accuracy.json';
-import chatbotsInDepth from './phase-3-tools-in-depth/chatbots-in-depth.json';
-import researchAndSearchTools from './phase-3-tools-in-depth/research-and-search-tools.json';
-import writingAndContentTools from './phase-3-tools-in-depth/writing-and-content-tools.json';
-import advancedPrompting from './phase-4-advanced-prompting/advanced-prompting.json';
-import aiWorkflows from './phase-4-advanced-prompting/ai-workflows.json';
-import automationBasics from './phase-5-automation-agents/automation-basics.json';
-import agentsIntroduction from './phase-5-automation-agents/agents-introduction.json';
-import toolCallingBasics from './phase-5-automation-agents/tool-calling-basics.json';
-import safetyAndLimitations from './phase-6-safety/safety-and-limitations.json';
-import privacyAndData from './phase-6-safety/privacy-and-data.json';
-import ragAndMemory from './phase-7-intermediate-systems/rag-and-memory.json';
-import embeddingsAndVectors from './phase-7-intermediate-systems/embeddings-and-vectors.json';
-import mcpAndSkills from './phase-8-advanced-ai/mcp-and-skills.json';
-import multimodalAi from './phase-8-advanced-ai/multimodal-ai.json';
-import localVsCloudAi from './phase-8-advanced-ai/local-vs-cloud-ai.json';
-import personalAiStack from './phase-9-capstone/personal-ai-stack.json';
-import stayingCurrent from './phase-9-capstone/staying-current.json';
+// AI Basics — phase-1-foundations
+import whatIsAi from '../courses/ai-basics/phase-1-foundations/what-is-ai/content.json';
+import aiToolsOverview from '../courses/ai-basics/phase-1-foundations/ai-tools-overview/content.json';
+import promptingBasics from '../courses/ai-basics/phase-1-foundations/prompting-basics/content.json';
+
+// AI Basics — phase-2-key-concepts
+import understandingLlms from '../courses/ai-basics/phase-2-key-concepts/understanding-llms/content.json';
+import hallucinationsAndAccuracy from '../courses/ai-basics/phase-2-key-concepts/hallucinations-and-accuracy/content.json';
+
+// AI Basics — phase-3-tools-in-depth
+import chatbotsInDepth from '../courses/ai-basics/phase-3-tools-in-depth/chatbots-in-depth/content.json';
+import researchAndSearchTools from '../courses/ai-basics/phase-3-tools-in-depth/research-and-search-tools/content.json';
+import writingAndContentTools from '../courses/ai-basics/phase-3-tools-in-depth/writing-and-content-tools/content.json';
+
+// AI Basics — phase-4-advanced-prompting
+import advancedPrompting from '../courses/ai-basics/phase-4-advanced-prompting/advanced-prompting/content.json';
+import aiWorkflows from '../courses/ai-basics/phase-4-advanced-prompting/ai-workflows/content.json';
+
+// AI Basics — phase-5-automation-agents
+import automationBasics from '../courses/ai-basics/phase-5-automation-agents/automation-basics/content.json';
+import agentsIntroduction from '../courses/ai-basics/phase-5-automation-agents/agents-introduction/content.json';
+import toolCallingBasics from '../courses/ai-basics/phase-5-automation-agents/tool-calling-basics/content.json';
+
+// AI Basics — phase-6-safety
+import safetyAndLimitations from '../courses/ai-basics/phase-6-safety/safety-and-limitations/content.json';
+import privacyAndData from '../courses/ai-basics/phase-6-safety/privacy-and-data/content.json';
+
+// AI Basics — phase-7-intermediate-systems
+import ragAndMemory from '../courses/ai-basics/phase-7-intermediate-systems/rag-and-memory/content.json';
+import embeddingsAndVectors from '../courses/ai-basics/phase-7-intermediate-systems/embeddings-and-vectors/content.json';
+
+// AI Basics — phase-8-advanced-ai
+import mcpAndSkills from '../courses/ai-basics/phase-8-advanced-ai/mcp-and-skills/content.json';
+import multimodalAi from '../courses/ai-basics/phase-8-advanced-ai/multimodal-ai/content.json';
+import localVsCloudAi from '../courses/ai-basics/phase-8-advanced-ai/local-vs-cloud-ai/content.json';
+
+// AI Basics — phase-9-capstone
+import personalAiStack from '../courses/ai-basics/phase-9-capstone/personal-ai-stack/content.json';
+import stayingCurrent from '../courses/ai-basics/phase-9-capstone/staying-current/content.json';
 
 // Codex course modules
-import codexIntroToAiCoding from './codex-phase-1-foundations/codex-intro-to-ai-coding.json';
-import codexAiCodingTools from './codex-phase-2-tools/codex-ai-coding-tools.json';
-import codexAgenticWorkflows from './codex-phase-3-workflows/codex-agentic-workflows.json';
+import codexIntroToAiCoding from '../courses/codex/codex-phase-1-foundations/codex-intro-to-ai-coding/content.json';
+import codexAiCodingTools from '../courses/codex/codex-phase-2-tools/codex-ai-coding-tools/content.json';
+import codexAgenticWorkflows from '../courses/codex/codex-phase-3-workflows/codex-agentic-workflows/content.json';
 
 const rawModules = [
   whatIsAi,

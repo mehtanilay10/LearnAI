@@ -1,7 +1,7 @@
 import type { Course } from '@/types';
 
-import aiBasics from './ai-basics.json';
-import codex from './codex.json';
+import aiBasics from './ai-basics/content.json';
+import codex from './codex/content.json';
 
 const rawCourses = [aiBasics, codex];
 
