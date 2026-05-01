@@ -1,0 +1,21 @@
+{
+  "id": "course-ai-basics",
+  "slug": "ai-basics",
+  "title": "AI Basics",
+  "subtitle": "Practical AI literacy for everyday users",
+  "description": "Learn AI tools, prompting, automation, agents, and modern workflows — no coding required. A comprehensive course from foundations to advanced AI concepts.",
+  "icon": "🧠",
+  "color": "accent",
+  "order": 1,
+  "phaseSlugs": [
+    "phase-1-foundations",
+    "phase-2-key-concepts",
+    "phase-3-tools-in-depth",
+    "phase-4-advanced-prompting",
+    "phase-5-automation-agents",
+    "phase-6-safety",
+    "phase-7-intermediate-systems",
+    "phase-8-advanced-ai",
+    "phase-9-capstone"
+  ]
+}

@@ -143,11 +143,26 @@ export interface TocEntry {
   level: 2 | 3 | 4;
 }
 
+// ── Course ────────────────────────────────────────────────────────────────────
+
+export interface Course {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  icon: string;
+  color: string;
+  order: number;
+  phaseSlugs: string[]; // ordered list of phase slugs belonging to this course
+}
+
 // ── Phase ────────────────────────────────────────────────────────────────────
 
 export interface Phase {
   id: string;
   slug: string;
+  courseSlug: string; // which course this phase belongs to
   title: string;
   subtitle: string;
   description: string;

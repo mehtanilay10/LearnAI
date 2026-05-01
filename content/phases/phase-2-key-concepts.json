@@ -1,6 +1,7 @@
 {
   "id": "phase-2",
   "slug": "phase-2-key-concepts",
+  "courseSlug": "ai-basics",
   "title": "Phase 2: Key Concepts",
   "subtitle": "Build the vocabulary to use AI intelligently",
   "description": "Understand the technical concepts every AI user should know — tokens, context windows, and hallucination — without needing a computer science background.",

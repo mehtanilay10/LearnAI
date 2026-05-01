@@ -1,6 +1,7 @@
 {
   "id": "phase-7",
   "slug": "phase-7-intermediate-systems",
+  "courseSlug": "ai-basics",
   "title": "Phase 7: Intermediate Systems",
   "subtitle": "Understand the architecture behind AI memory and search",
   "description": "Learn about RAG, embeddings, and vector databases — the technology that lets AI tools search your documents and remember your data across sessions.",

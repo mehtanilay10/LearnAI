@@ -1,14 +1,16 @@
 import { MetadataRoute } from 'next';
-import { getAllModules, getAllLessons } from '@/lib/content';
+import { getAllModules, getAllLessons, getAllCourses } from '@/lib/content';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://learnai.dev';
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const courses = getAllCourses();
   const modules = getAllModules();
   const lessons = getAllLessons();
 
   const staticRoutes = [
     '/',
+    '/courses',
     '/modules',
     '/roadmap',
     '/glossary',
@@ -27,6 +29,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === '/' ? 1 : 0.8,
   }));
 
+  const courseRoutes = courses.map((course) => ({
+    url: `${BASE_URL}/courses/${course.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }));
+
   const moduleRoutes = modules.map((mod) => ({
     url: `${BASE_URL}/modules/${mod.slug}`,
     lastModified: new Date(),
@@ -41,5 +50,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...moduleRoutes, ...lessonRoutes];
+  return [...staticRoutes, ...courseRoutes, ...moduleRoutes, ...lessonRoutes];
 }

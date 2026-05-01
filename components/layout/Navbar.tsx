@@ -9,6 +9,7 @@ import { PWAInstallButton } from '@/components/ui/PWAInstallButton';
 import { cn } from '@/lib/utils';
 
 const NAV_LINKS = [
+  { href: '/courses', label: 'Courses' },
   { href: '/modules', label: 'Modules' },
   { href: '/roadmap', label: 'Roadmap' },
   { href: '/glossary', label: 'Glossary' },

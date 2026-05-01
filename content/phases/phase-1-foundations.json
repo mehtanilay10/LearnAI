@@ -1,6 +1,7 @@
 {
   "id": "phase-1",
   "slug": "phase-1-foundations",
+  "courseSlug": "ai-basics",
   "title": "Phase 1: Foundations",
   "subtitle": "Understand what AI is and how to work with it",
   "description": "Build your core mental model of AI. Learn what AI tools actually do, why they behave the way they do, and how to start using them confidently in daily life.",

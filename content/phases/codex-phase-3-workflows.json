@@ -1,0 +1,15 @@
+{
+  "id": "codex-phase-3",
+  "slug": "codex-phase-3-workflows",
+  "courseSlug": "codex",
+  "title": "Phase 3: Agentic Coding Workflows",
+  "subtitle": "Build real projects with AI as your pair programmer",
+  "description": "Learn advanced workflows — agentic coding, multi-file refactoring, test-driven development with AI, and how to integrate AI coding tools into professional development pipelines.",
+  "order": 3,
+  "icon": "🚀",
+  "color": "accent",
+  "moduleSlug": [
+    "codex-agentic-workflows"
+  ],
+  "estimatedWeeks": 3
+}

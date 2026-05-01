@@ -1,0 +1,15 @@
+{
+  "id": "codex-phase-1",
+  "slug": "codex-phase-1-foundations",
+  "courseSlug": "codex",
+  "title": "Phase 1: AI Coding Foundations",
+  "subtitle": "Understand how AI writes and assists with code",
+  "description": "Build your mental model of AI-assisted coding. Learn what AI coding tools actually do, how they work under the hood, and how to start using them effectively.",
+  "order": 1,
+  "icon": "🏗️",
+  "color": "accent",
+  "moduleSlug": [
+    "codex-intro-to-ai-coding"
+  ],
+  "estimatedWeeks": 2
+}

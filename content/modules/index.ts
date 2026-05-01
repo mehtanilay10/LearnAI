@@ -1,5 +1,6 @@
 import type { Module } from '@/types';
 
+// AI Basics course modules
 import whatIsAi from './phase-1-foundations/what-is-ai.json';
 import aiToolsOverview from './phase-1-foundations/ai-tools-overview.json';
 import promptingBasics from './phase-1-foundations/prompting-basics.json';
@@ -22,6 +23,11 @@ import multimodalAi from './phase-8-advanced-ai/multimodal-ai.json';
 import localVsCloudAi from './phase-8-advanced-ai/local-vs-cloud-ai.json';
 import personalAiStack from './phase-9-capstone/personal-ai-stack.json';
 import stayingCurrent from './phase-9-capstone/staying-current.json';
+
+// Codex course modules
+import codexIntroToAiCoding from './codex-phase-1-foundations/codex-intro-to-ai-coding.json';
+import codexAiCodingTools from './codex-phase-2-tools/codex-ai-coding-tools.json';
+import codexAgenticWorkflows from './codex-phase-3-workflows/codex-agentic-workflows.json';
 
 const rawModules = [
   whatIsAi,
@@ -46,6 +52,10 @@ const rawModules = [
   localVsCloudAi,
   personalAiStack,
   stayingCurrent,
+  // Codex course
+  codexIntroToAiCoding,
+  codexAiCodingTools,
+  codexAgenticWorkflows,
 ];
 
 export const modules: Module[] = rawModules as unknown as Module[];

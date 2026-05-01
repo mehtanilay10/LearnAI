@@ -54,6 +54,11 @@ import promptSecurityAndJailbreakDefense from './safety-and-limitations/prompt-s
 import enterpriseAiImplementationPlaybook from './privacy-and-data/enterprise-ai-implementation-playbook.json';
 import aiProjectPortfolioAndCapstoneAssessments from './personal-ai-stack/ai-project-portfolio-and-capstone-assessments.json';
 
+// Codex course lessons
+import whatIsAiCoding from './codex-intro-to-ai-coding/what-is-ai-coding.json';
+import githubCopilotGuide from './codex-ai-coding-tools/github-copilot-guide.json';
+import agenticCodingIntro from './codex-agentic-workflows/agentic-coding-intro.json';
+
 const rawLessons = [
   aiVsMlVsGenerativeAi,
   howLlmsWorkSimply,
@@ -108,6 +113,10 @@ const rawLessons = [
   promptSecurityAndJailbreakDefense,
   enterpriseAiImplementationPlaybook,
   aiProjectPortfolioAndCapstoneAssessments,
+  // Codex course
+  whatIsAiCoding,
+  githubCopilotGuide,
+  agenticCodingIntro,
 ];
 
 export const lessons: Lesson[] = rawLessons as unknown as Lesson[];

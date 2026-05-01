@@ -4,14 +4,16 @@
  * These helpers provide cross-content lookups and navigation utilities.
  */
 
-import { phases } from '@/content/phases';
+import { phases, getPhasesByCourse } from '@/content/phases';
 import { modules, getModulesByPhase } from '@/content/modules';
 import { lessons, getLessonsByModule } from '@/content/lessons';
 import { glossaryTerms } from '@/content/glossary';
+import { courses, getCourseBySlug } from '@/content/courses';
 import type {
   Phase,
   Module,
   Lesson,
+  Course,
   GlossaryTerm,
   TocEntry,
   ContentBlock,
@@ -20,7 +22,35 @@ import type {
 } from '@/types';
 
 // ── Re-exports for convenience ────────────────────────────────────────────────
-export { phases, modules, lessons, glossaryTerms };
+export { phases, modules, lessons, glossaryTerms, courses };
+
+// ── Course helpers ────────────────────────────────────────────────────────────
+
+export function getAllCourses(): Course[] {
+  return [...courses].sort((a, b) => a.order - b.order);
+}
+
+export { getCourseBySlug };
+
+export function getPhasesForCourse(courseSlug: string): Phase[] {
+  return getPhasesByCourse(courseSlug);
+}
+
+export function getModulesForCourse(courseSlug: string): Module[] {
+  const coursePhases = getPhasesByCourse(courseSlug);
+  const phaseSlugs = new Set(coursePhases.map((p) => p.slug));
+  return modules
+    .filter((m) => phaseSlugs.has(m.phaseSlug))
+    .sort((a, b) => a.order - b.order);
+}
+
+export function getLessonsForCourse(courseSlug: string): Lesson[] {
+  const courseModules = getModulesForCourse(courseSlug);
+  const moduleSlugs = new Set(courseModules.map((m) => m.slug));
+  return lessons
+    .filter((l) => moduleSlugs.has(l.moduleSlug))
+    .sort((a, b) => a.order - b.order);
+}
 
 // ── Phase helpers ─────────────────────────────────────────────────────────────
 

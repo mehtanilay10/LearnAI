@@ -1,0 +1,27 @@
+{
+  "id": "codex-lesson-github-copilot-guide",
+  "slug": "github-copilot-guide",
+  "moduleSlug": "codex-ai-coding-tools",
+  "title": "GitHub Copilot: Complete Guide",
+  "description": "Master GitHub Copilot — from basic tab completions to chat, inline edits, and agent mode. Learn the prompting techniques that get the best results.",
+  "order": 1,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 18,
+  "tags": ["copilot", "github", "ide", "vscode"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": { "level": 2, "text": "Getting Started with GitHub Copilot", "anchor": "getting-started" }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "GitHub Copilot is the most widely used AI coding assistant, integrated directly into VS Code and other IDEs. It offers code completions, chat-based coding help, and increasingly autonomous agent capabilities." }
+    },
+    {
+      "type": "callout",
+      "data": { "variant": "info", "title": "Coming Soon", "text": "This lesson is currently a placeholder. Full content will be added soon covering GitHub Copilot in depth." }
+    }
+  ],
+  "relatedLessons": [],
+  "relatedGlossaryTerms": []
+}

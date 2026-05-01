@@ -1,0 +1,27 @@
+{
+  "id": "codex-lesson-what-is-ai-coding",
+  "slug": "what-is-ai-coding",
+  "moduleSlug": "codex-intro-to-ai-coding",
+  "title": "What Is AI-Assisted Coding?",
+  "description": "Understand how AI coding assistants work, from autocomplete to autonomous agents, and learn where they fit in your development workflow.",
+  "order": 1,
+  "difficulty": "beginner",
+  "estimatedMinutes": 12,
+  "tags": ["ai-coding", "introduction", "copilot", "overview"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": { "level": 2, "text": "The AI Coding Revolution", "anchor": "ai-coding-revolution" }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "AI-assisted coding has fundamentally changed how developers write software. From simple autocomplete suggestions to full autonomous agents that can build entire features, AI coding tools span a wide spectrum of capability." }
+    },
+    {
+      "type": "callout",
+      "data": { "variant": "info", "title": "Coming Soon", "text": "This lesson is currently a placeholder. Full content will be added soon covering the complete landscape of AI coding assistants." }
+    }
+  ],
+  "relatedLessons": [],
+  "relatedGlossaryTerms": []
+}

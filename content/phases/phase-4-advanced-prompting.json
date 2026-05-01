@@ -1,6 +1,7 @@
 {
   "id": "phase-4",
   "slug": "phase-4-advanced-prompting",
+  "courseSlug": "ai-basics",
   "title": "Phase 4: Advanced Prompting",
   "subtitle": "Master the techniques that separate good from great results",
   "description": "Go beyond basic prompts. Learn chain-of-thought reasoning, few-shot examples, role-play personas, and how to chain prompts into repeatable workflows.",

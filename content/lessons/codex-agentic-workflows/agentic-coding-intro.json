@@ -1,0 +1,27 @@
+{
+  "id": "codex-lesson-agentic-coding-intro",
+  "slug": "agentic-coding-intro",
+  "moduleSlug": "codex-agentic-workflows",
+  "title": "Introduction to Agentic Coding",
+  "description": "Learn how AI coding agents go beyond suggestions — planning, executing multi-step tasks, and building features autonomously with human oversight.",
+  "order": 1,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 15,
+  "tags": ["agents", "agentic", "autonomous", "workflows"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": { "level": 2, "text": "From Autocomplete to Autonomous", "anchor": "from-autocomplete-to-autonomous" }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "Agentic coding represents the next evolution of AI-assisted development. Instead of suggesting one line at a time, AI agents can plan multi-step implementations, create files, run tests, and iterate on errors — all with appropriate human oversight." }
+    },
+    {
+      "type": "callout",
+      "data": { "variant": "info", "title": "Coming Soon", "text": "This lesson is currently a placeholder. Full content will be added soon covering agentic coding workflows in detail." }
+    }
+  ],
+  "relatedLessons": [],
+  "relatedGlossaryTerms": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "codex-phase-2",
+  "slug": "codex-phase-2-tools",
+  "courseSlug": "codex",
+  "title": "Phase 2: AI Coding Tools",
+  "subtitle": "Master the leading AI coding assistants",
+  "description": "Dive deep into GitHub Copilot, ChatGPT for coding, Claude for code, Cursor, and other AI-powered IDEs. Learn when to use each tool and how to get the best results.",
+  "order": 2,
+  "icon": "🛠️",
+  "color": "success",
+  "moduleSlug": [
+    "codex-ai-coding-tools"
+  ],
+  "estimatedWeeks": 3
+}
