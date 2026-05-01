@@ -41,18 +41,12 @@ export function HeroSection({ totalLessons, totalHours, totalGlossaryTerms }: He
         {/* CTAs */}
         <div className="mb-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
-            href="/modules"
+            href="/courses"
             className="flex items-center gap-2 rounded-lg bg-accent-fg px-5 py-2.5 font-medium text-white transition-colors hover:bg-accent-emphasis"
           >
             <BookOpen className="h-4 w-4" aria-hidden="true" />
             Start Learning
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
-          <Link
-            href="/roadmap"
-            className="flex items-center gap-2 rounded-lg border border-border bg-canvas px-5 py-2.5 font-medium text-fg-default transition-colors hover:border-accent-fg hover:text-accent-fg dark:bg-canvas-subtle"
-          >
-            View Roadmap
           </Link>
         </div>
 

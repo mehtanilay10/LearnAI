@@ -114,66 +114,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Sample modules */}
-      <section className="border-b border-border py-12">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6">
-          <div className="mb-6 flex items-center justify-between">
-            <SectionHeader
-              eyebrow="Course modules"
-              title="Start with the basics"
-              className="mb-0"
-            />
-            <Link
-              href="/modules"
-              className="flex items-center gap-1 text-sm text-accent-fg hover:underline whitespace-nowrap"
-            >
-              All modules
-              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-            </Link>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {modules.map((mod) => (
-              <ModuleCard key={mod.id} module={mod} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Course phases */}
-      <section className="border-b border-border bg-canvas-subtle py-12">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6">
-          <SectionHeader
-            eyebrow="Learning path"
-            title="Two clear phases"
-            description="The course is organized into two phases that take you from fundamentals to real-world AI workflows."
-          />
-          <div className="grid gap-4 sm:grid-cols-2">
-            {phases.map((phase) => (
-              <div
-                key={phase.id}
-                className="rounded-xl border border-border bg-canvas p-6 dark:bg-canvas-subtle"
-              >
-                <div className="mb-3 flex items-center gap-3">
-                  <span className="text-3xl" aria-hidden="true">{phase.icon}</span>
-                  <div>
-                    <h3 className="font-bold text-fg-default">{phase.title}</h3>
-                    <p className="text-xs text-fg-muted">~{phase.estimatedWeeks} weeks</p>
-                  </div>
-                </div>
-                <p className="mb-4 text-sm text-fg-muted">{phase.description}</p>
-                <Link
-                  href="/roadmap"
-                  className="flex items-center gap-1 text-sm font-medium text-accent-fg hover:underline"
-                >
-                  View roadmap
-                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA strip */}
       <section className="py-12">
         <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
@@ -185,17 +125,11 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
-              href="/modules/what-is-ai"
+              href="/courses/ai-basics/what-is-ai"
               className="flex items-center gap-2 rounded-lg bg-accent-fg px-5 py-2.5 font-medium text-white transition-colors hover:bg-accent-emphasis"
             >
               Start: What is AI?
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-            <Link
-              href="/plan"
-              className="rounded-lg border border-border px-5 py-2.5 font-medium text-fg-default transition-colors hover:border-accent-fg hover:text-accent-fg"
-            >
-              View 90-Day Plan
             </Link>
           </div>
         </div>

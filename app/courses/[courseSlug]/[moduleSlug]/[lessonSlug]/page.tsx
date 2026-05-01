@@ -18,7 +18,7 @@ import { ContentBlockRenderer } from '@/components/content/ContentBlockRenderer'
 import { FurtherReading } from '@/components/content/FurtherReading';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { LessonSidebar } from '@/components/layout/LessonSidebar';
-import { MobileLessonDrawer } from '@/components/layout/MobileLessonDrawer';
+import { MobileProgressAndContents } from '@/components/course/MobileProgressAndContents';
 import { TableOfContents } from '@/components/course/TableOfContents';
 import { ProgressTracker } from '@/components/course/ProgressTracker';
 import { DifficultyBadge } from '@/components/ui/DifficultyBadge';
@@ -115,16 +115,7 @@ export default async function CourseLessonDetailPage({ params }: Params) {
             className="mb-4"
           />
 
-          {/* Mobile course contents drawer */}
-          <div className="mb-6 lg:hidden">
-            <MobileLessonDrawer
-              currentModuleSlug={moduleSlug}
-              currentLessonSlug={lessonSlug}
-              courseSlug={courseSlug}
-              modules={courseModules}
-              lessonsByModule={lessonsByModule}
-            />
-          </div>
+
 
           {/* Lesson header */}
           <header className="mb-8">
@@ -156,12 +147,17 @@ export default async function CourseLessonDetailPage({ params }: Params) {
             )}
           </header>
 
-          {/* Progress tracker (mobile) */}
+          Nilay+123
+
+          {/* Mobile: progress tracker + course contents (combined) */}
           <div className="mb-6 lg:hidden">
-            <ProgressTracker
+            <MobileProgressAndContents
               lessonSlug={lessonSlug}
               moduleSlug={moduleSlug}
+              courseSlug={courseSlug}
               allModuleLessonSlugs={moduleLessons.map((l) => l.slug)}
+              modules={courseModules}
+              lessonsByModule={lessonsByModule}
             />
           </div>
 
