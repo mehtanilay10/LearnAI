@@ -8,6 +8,7 @@ import type { Lesson } from '@/types';
 interface LessonCardProps {
   lesson: Lesson;
   moduleSlug: string;
+  courseSlug?: string;
   isCompleted?: boolean;
   isCurrent?: boolean;
   className?: string;
@@ -17,15 +18,19 @@ interface LessonCardProps {
 export function LessonCard({
   lesson,
   moduleSlug,
+  courseSlug,
   isCompleted = false,
   isCurrent = false,
   className,
   variant = 'default',
 }: LessonCardProps) {
+  const lessonHref = courseSlug
+    ? `/courses/${courseSlug}/${moduleSlug}/${lesson.slug}`
+    : `/modules/${moduleSlug}/${lesson.slug}`;
   if (variant === 'list') {
     return (
       <Link
-        href={`/modules/${moduleSlug}/${lesson.slug}`}
+        href={lessonHref}
         className={cn(
           'group flex items-center gap-3 rounded-lg border border-border bg-canvas p-3',
           'transition-all hover:border-accent-fg hover:shadow-sm dark:bg-canvas-subtle',
@@ -54,7 +59,7 @@ export function LessonCard({
 
   return (
     <Link
-      href={`/modules/${moduleSlug}/${lesson.slug}`}
+      href={lessonHref}
       className={cn(
         'group flex flex-col rounded-xl border border-border bg-canvas p-4',
         'transition-all hover:border-accent-fg hover:shadow-md dark:bg-canvas-subtle',

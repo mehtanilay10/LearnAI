@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { ChevronDown, ChevronRight, CheckCircle2, Circle } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -11,6 +10,7 @@ import type { Module, Lesson } from '@/types';
 interface LessonSidebarProps {
   currentModuleSlug: string;
   currentLessonSlug: string;
+  courseSlug?: string;
   modules: Module[];
   lessonsByModule: Record<string, Lesson[]>;
 }
@@ -18,10 +18,10 @@ interface LessonSidebarProps {
 export function LessonSidebar({
   currentModuleSlug,
   currentLessonSlug,
+  courseSlug,
   modules,
   lessonsByModule,
 }: LessonSidebarProps) {
-  const pathname = usePathname();
   const { isCompleted } = useProgress();
 
   // Track which modules are open
@@ -42,6 +42,11 @@ export function LessonSidebar({
       return next;
     });
   };
+
+  const lessonHref = (modSlug: string, lessonSlug: string) =>
+    courseSlug
+      ? `/courses/${courseSlug}/${modSlug}/${lessonSlug}`
+      : `/modules/${modSlug}/${lessonSlug}`;
 
   return (
     <nav
@@ -97,7 +102,7 @@ export function LessonSidebar({
                     return (
                       <li key={lesson.slug}>
                         <Link
-                          href={`/modules/${mod.slug}/${lesson.slug}`}
+                          href={lessonHref(mod.slug, lesson.slug)}
                           aria-current={isCurrent ? 'page' : undefined}
                           className={cn(
                             'flex items-start gap-2 rounded-md px-2 py-1.5 transition-colors',

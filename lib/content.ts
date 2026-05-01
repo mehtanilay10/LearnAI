@@ -76,6 +76,14 @@ export function getModulesForPhase(phaseSlug: string): Module[] {
   return getModulesByPhase(phaseSlug);
 }
 
+export function getCourseForModule(moduleSlug: string): Course | undefined {
+  const mod = getModuleBySlug(moduleSlug);
+  if (!mod) return undefined;
+  const phase = phases.find((p) => p.slug === mod.phaseSlug);
+  if (!phase) return undefined;
+  return courses.find((c) => c.slug === phase.courseSlug);
+}
+
 export function filterModulesByDifficulty(difficulty: Difficulty): Module[] {
   return modules.filter((m) => m.difficulty === difficulty);
 }

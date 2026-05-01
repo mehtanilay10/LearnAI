@@ -56,6 +56,7 @@ export default async function CourseDetailPage({ params }: Params) {
                 <ModuleCard
                   key={mod.id}
                   module={mod}
+                  courseSlug={courseSlug}
                   lessonCount={mod.lessonSlugs.length}
                 />
               ))}

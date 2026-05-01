@@ -6,6 +6,7 @@ import type { Module } from '@/types';
 
 interface ModuleCardProps {
   module: Module;
+  courseSlug?: string;
   lessonCount?: number;
   completedCount?: number;
   className?: string;
@@ -14,11 +15,15 @@ interface ModuleCardProps {
 
 export function ModuleCard({
   module,
+  courseSlug,
   lessonCount,
   completedCount,
   className,
   variant = 'default',
 }: ModuleCardProps) {
+  const moduleHref = courseSlug
+    ? `/courses/${courseSlug}/${module.slug}`
+    : `/modules/${module.slug}`;
   const hasProgress = completedCount !== undefined && lessonCount && lessonCount > 0;
   const progressPercent = hasProgress
     ? Math.round((completedCount! / lessonCount!) * 100)
@@ -27,7 +32,7 @@ export function ModuleCard({
   if (variant === 'compact') {
     return (
       <Link
-        href={`/modules/${module.slug}`}
+        href={moduleHref}
         className={cn(
           'flex items-center gap-3 rounded-lg border border-border bg-canvas p-3',
           'transition-all hover:border-accent-fg hover:shadow-sm dark:bg-canvas-subtle',
@@ -51,7 +56,7 @@ export function ModuleCard({
 
   return (
     <Link
-      href={`/modules/${module.slug}`}
+      href={moduleHref}
       className={cn(
         'group flex flex-col rounded-xl border border-border bg-canvas p-5',
         'transition-all hover:border-accent-fg hover:shadow-md dark:bg-canvas-subtle',
