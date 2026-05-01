@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, BookOpen, GraduationCap } from "lucide-react";
+import { Menu, X, GraduationCap } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { PWAInstallButton } from "@/components/ui/PWAInstallButton";
 import { cn } from "@/lib/utils";
@@ -40,11 +40,26 @@ export function Navbar() {
 						);
 					})}
 				</nav>
+
+				{/* Right side: theme toggle + mobile hamburger */}
+				<div className="flex items-center gap-1">
+					<ThemeToggle />
+					<button
+						type="button"
+						onClick={() => setMobileOpen((o) => !o)}
+						className="rounded-md p-2 text-fg-muted transition-colors hover:bg-canvas-subtle hover:text-fg-default md:hidden"
+						aria-label={mobileOpen ? "Close menu" : "Open menu"}
+						aria-expanded={mobileOpen}
+						aria-controls="mobile-nav"
+					>
+						{mobileOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+					</button>
+				</div>
 			</div>
 
 			{/* Mobile menu */}
 			{mobileOpen && (
-				<div className="border-t border-border bg-canvas md:hidden animate-slide-up">
+				<div id="mobile-nav" className="border-t border-border bg-canvas md:hidden animate-slide-up">
 					<nav className="flex flex-col gap-1 px-4 py-3" aria-label="Mobile navigation">
 						<PWAInstallButton className="mb-2" />
 
