@@ -1,78 +1,93 @@
+"use client";
+
 import Link from 'next/link';
-import { GraduationCap, Github, ExternalLink } from 'lucide-react';
+import { useState } from 'react';
+import { Github, ExternalLink, ChevronDown } from 'lucide-react';
+import { Logo } from '@/components/ui/Logo';
+import { cn } from '@/lib/utils';
 
 const FOOTER_LINKS = [
   {
     heading: 'Learn',
     links: [
       { href: '/courses', label: 'All Courses' },
-      { href: '/modules', label: 'All Modules' },
-      { href: '/roadmap', label: 'Learning Roadmap' },
-      { href: '/plan', label: '90-Day Plan' },
+      { href: '/glossary', label: 'AI Glossary' },
       { href: '/projects', label: 'Mini Projects' },
     ],
   },
   {
     heading: 'Reference',
     links: [
-      { href: '/glossary', label: 'AI Glossary' },
       { href: '/tools', label: 'Tool Comparisons' },
       { href: '/prompts', label: 'Prompt Library' },
       { href: '/advanced', label: 'Advanced Concepts' },
     ],
   },
-  {
-    heading: 'Course',
-    links: [
-      { href: '/about', label: 'About This Course' },
-      { href: '/faq', label: 'FAQ' },
-      { href: '/safety', label: 'Safety & Ethics' },
-    ],
-  },
 ];
+
+function FooterLinkGroup({ col }: { col: typeof FOOTER_LINKS[0] }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="border-b border-border py-3 sm:border-none sm:py-0">
+      <button
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="flex w-full items-center justify-between py-1 sm:pointer-events-none sm:cursor-default sm:py-0"
+        aria-expanded={isOpen}
+      >
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-fg-subtle">
+          {col.heading}
+        </h3>
+        <ChevronDown 
+          className={cn("h-4 w-4 text-fg-muted transition-transform sm:hidden", isOpen && "rotate-180")} 
+        />
+      </button>
+      <ul className={cn("mt-3 space-y-2 overflow-hidden sm:mt-3 sm:block", isOpen ? "block animate-slide-up" : "hidden")}>
+        {col.links.map((link) => (
+          <li key={link.href}>
+            <Link
+              href={link.href}
+              className="block py-1 text-sm text-fg-muted transition-colors hover:text-accent-fg sm:inline sm:py-0"
+            >
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export function Footer() {
   return (
     <footer className="border-t border-border bg-canvas-subtle transition-theme">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {/* Brand */}
-          <div>
+          <div className="sm:col-span-1">
             <Link
               href="/"
-              className="flex items-center gap-2 font-semibold text-fg-default"
+              className="flex items-center gap-2 font-semibold text-fg-default transition-colors hover:text-accent-fg"
             >
-              <GraduationCap className="h-5 w-5 text-accent-fg" aria-hidden="true" />
-              LearnAI
+              <Logo className="h-6 w-6" />
+              <span className="text-base">LearnAI</span>
             </Link>
-            <p className="mt-3 text-sm leading-relaxed text-fg-muted">
+            <p className="mt-4 text-sm leading-relaxed text-fg-muted">
               Practical AI literacy for everyday users. Learn AI tools, prompting, automation, and modern workflows — no coding required.
             </p>
           </div>
 
           {/* Link columns */}
-          {FOOTER_LINKS.map((col) => (
-            <div key={col.heading}>
-              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-fg-subtle">
-                {col.heading}
-              </h3>
-              <ul className="space-y-2">
-                {col.links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-fg-muted transition-colors hover:text-accent-fg"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+          <div className="sm:col-span-1 lg:col-span-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-8">
+              {FOOTER_LINKS.map((col) => (
+                <FooterLinkGroup key={col.heading} col={col} />
+              ))}
             </div>
-          ))}
+          </div>
         </div>
 
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-xs text-fg-subtle sm:flex-row">
+        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-xs text-fg-subtle sm:mt-12 sm:flex-row">
           <p>© {new Date().getFullYear()} LearnAI. Open knowledge for everyone.</p>
           <div className="flex items-center gap-4">
             <a

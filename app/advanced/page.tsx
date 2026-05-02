@@ -138,7 +138,7 @@ export default function AdvancedPage() {
           These concept pages are scaffolded and ready to be populated. The architecture supports full content blocks, Mermaid diagrams, and cross-linking.
         </p>
         <Link
-          href="/modules"
+          href="/courses"
           className="inline-flex items-center gap-2 text-sm text-accent-fg hover:underline"
         >
           Start with the core modules
