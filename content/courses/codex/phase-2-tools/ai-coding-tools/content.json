@@ -11,7 +11,8 @@
   "tags": ["copilot", "cursor", "chatgpt", "claude", "tools"],
   "lessonSlugs": [
     "github-copilot-guide",
-    "cursor-ide-guide"
+    "cursor-ide-guide",
+    "chat-assistants-for-coding"
   ],
   "whatYouLearn": [
     "How to use GitHub Copilot effectively for daily coding",

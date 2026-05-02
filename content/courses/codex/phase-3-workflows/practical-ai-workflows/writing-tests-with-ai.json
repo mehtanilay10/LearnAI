@@ -1,0 +1,23 @@
+{
+  "id": "lesson-writing-tests-with-ai",
+  "slug": "writing-tests-with-ai",
+  "moduleSlug": "practical-ai-workflows",
+  "title": "Writing Tests with AI",
+  "description": "Automated testing is crucial, but tedious. Learn how to use AI to generate unit tests and edge cases effortlessly.",
+  "order": 2,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 20,
+  "tags": ["testing", "tdd", "unit-tests"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": { "level": 2, "text": "Test Generation Strategies", "anchor": "test-generation-strategies" }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "AI models are exceptionally good at writing tests because testing follows predictable patterns. By providing a function and asking for 'all edge cases using Jest', you can generate a complete test suite in seconds." }
+    }
+  ],
+  "relatedLessons": [],
+  "relatedGlossaryTerms": []
+}

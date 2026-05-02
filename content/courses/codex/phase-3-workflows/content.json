@@ -9,6 +9,7 @@
   "icon": "🚀",
   "color": "accent",
   "moduleSlug": [
+    "practical-ai-workflows",
     "agentic-workflows"
   ],
   "estimatedWeeks": 3

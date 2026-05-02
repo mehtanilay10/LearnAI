@@ -11,15 +11,15 @@
   "blocks": [
     {
       "type": "heading",
-      "data": { "level": 2, "text": "From Autocomplete to Autonomous", "anchor": "from-autocomplete-to-autonomous" }
+      "data": { "level": 2, "text": "The Agentic Loop", "anchor": "the-agentic-loop" }
     },
     {
       "type": "paragraph",
-      "data": { "text": "Agentic coding represents the next evolution of AI-assisted development. Instead of suggesting one line at a time, AI agents can plan multi-step implementations, create files, run tests, and iterate on errors — all with appropriate human oversight." }
+      "data": { "text": "Unlike standard chat or autocomplete, an agentic workflow involves a continuous loop: Planning, Executing, and Verifying. The AI agent analyzes the goal, proposes a series of file changes, executes them, and reads the compiler or test output to verify if the changes were successful." }
     },
     {
       "type": "callout",
-      "data": { "variant": "info", "title": "Coming Soon", "text": "This lesson is currently a placeholder. Full content will be added soon covering agentic coding workflows in detail." }
+      "data": { "variant": "info", "title": "Human in the Loop", "text": "While agents operate autonomously, the developer's role shifts from writing code to reviewing plans and guiding the agent when it gets stuck." }
     }
   ],
   "relatedLessons": [],

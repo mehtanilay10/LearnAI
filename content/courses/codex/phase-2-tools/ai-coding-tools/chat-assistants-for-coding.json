@@ -1,0 +1,23 @@
+{
+  "id": "lesson-chat-assistants-for-coding",
+  "slug": "chat-assistants-for-coding",
+  "moduleSlug": "ai-coding-tools",
+  "title": "ChatGPT and Claude for Coding",
+  "description": "Learn how to use general-purpose LLM chat interfaces like ChatGPT and Claude to architect solutions, debug complex issues, and write code outside of your IDE.",
+  "order": 3,
+  "difficulty": "beginner",
+  "estimatedMinutes": 20,
+  "tags": ["chatgpt", "claude", "web", "architecture"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": { "level": 2, "text": "When to leave the IDE", "anchor": "when-to-leave-the-ide" }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "While IDE-integrated tools are great for writing lines of code, web-based chat interfaces excel at high-level system design, explaining unfamiliar codebases, and brainstorming. Claude's Artifacts feature and ChatGPT's Advanced Data Analysis make them incredibly powerful for prototyping." }
+    }
+  ],
+  "relatedLessons": [],
+  "relatedGlossaryTerms": []
+}
