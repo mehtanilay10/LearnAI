@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, GraduationCap } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { Logo } from "@/components/ui/Logo";
 import { PWAInstallButton } from "@/components/ui/PWAInstallButton";
 import { cn } from "@/lib/utils";
 
@@ -25,8 +26,8 @@ export function Navbar() {
 			<div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
 				{/* Logo */}
 				<Link href="/" className="flex items-center gap-2 font-semibold text-fg-default hover:text-accent-fg transition-colors">
-					<GraduationCap className="h-5 w-5 text-accent-fg" aria-hidden="true" />
-					<span className="text-sm">LearnAI</span>
+					<Logo className="w-8 h-8" />
+					<span className="text-base">LearnAI</span>
 				</Link>
 
 				{/* Desktop nav */}

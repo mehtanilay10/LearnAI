@@ -42,7 +42,7 @@ export function ContinuePrompt() {
   if (!showPrompt || !lastPath) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 max-w-sm w-full rounded-lg border border-border bg-canvas shadow-lg p-4 animate-slide-up">
+    <div className="fixed z-50 bottom-4 left-4 right-4 sm:bottom-6 sm:left-auto sm:right-6 sm:w-full sm:max-w-sm rounded-lg border border-border bg-canvas shadow-lg p-4 animate-slide-up">
       <div className="flex flex-col gap-3">
         <div className="flex justify-between items-start">
           <div>
