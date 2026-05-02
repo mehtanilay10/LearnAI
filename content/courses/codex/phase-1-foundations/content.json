@@ -1,6 +1,6 @@
 {
-  "id": "codex-phase-1",
-  "slug": "codex-phase-1-foundations",
+  "id": "phase-1",
+  "slug": "phase-1-foundations",
   "courseSlug": "codex",
   "title": "Phase 1: AI Coding Foundations",
   "subtitle": "Understand how AI writes and assists with code",
@@ -9,7 +9,9 @@
   "icon": "🏗️",
   "color": "accent",
   "moduleSlug": [
-    "codex-intro-to-ai-coding"
+    "intro-to-ai-coding",
+    "prompt-engineering-for-code"
   ],
   "estimatedWeeks": 2
 }
+

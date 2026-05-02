@@ -1,0 +1,28 @@
+{
+  "id": "lesson-basic-prompting-for-code",
+  "slug": "basic-prompting-for-code",
+  "moduleSlug": "prompt-engineering-for-code",
+  "title": "Basic Prompting for Code",
+  "description": "Master the fundamentals of writing clear, effective prompts for AI coding assistants.",
+  "order": 1,
+  "difficulty": "beginner",
+  "estimatedMinutes": 15,
+  "tags": ["prompting", "context", "communication"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": { "level": 2, "text": "Context is King", "anchor": "context-is-king" }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "The most common mistake when using AI for coding is not providing enough context. An AI doesn't know what frameworks you're using, what your current file looks like, or what your ultimate goal is unless you tell it." }
+    },
+    {
+      "type": "callout",
+      "data": { "variant": "tip", "title": "Provide Examples", "text": "Whenever possible, include input and output examples in your prompt. This significantly improves the accuracy of the generated code." }
+    }
+  ],
+  "relatedLessons": [],
+  "relatedGlossaryTerms": []
+}
+

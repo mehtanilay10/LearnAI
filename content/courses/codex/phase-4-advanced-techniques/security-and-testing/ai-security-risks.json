@@ -1,0 +1,28 @@
+{
+  "id": "lesson-ai-security-risks",
+  "slug": "ai-security-risks",
+  "moduleSlug": "security-and-testing",
+  "title": "Security Risks in AI-Generated Code",
+  "description": "Understand the most common vulnerabilities introduced by AI and how to prevent them.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 20,
+  "tags": ["security", "vulnerabilities", "code-review", "owasp"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": { "level": 2, "text": "The Risk of Blind Trust", "anchor": "the-risk-of-blind-trust" }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "AI models are trained on large amounts of open-source code, which often contains vulnerabilities. Consequently, they may suggest code that is functionally correct but insecure, such as SQL injections or unvalidated inputs." }
+    },
+    {
+      "type": "callout",
+      "data": { "variant": "warning", "title": "Never Skip Code Review", "text": "Always treat AI-generated code as if it was written by a junior developer. Rigorous code review is essential before shipping." }
+    }
+  ],
+  "relatedLessons": [],
+  "relatedGlossaryTerms": []
+}
+

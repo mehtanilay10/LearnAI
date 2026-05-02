@@ -8,8 +8,10 @@
   "color": "success",
   "order": 2,
   "phaseSlugs": [
-    "codex-phase-1-foundations",
-    "codex-phase-2-tools",
-    "codex-phase-3-workflows"
+    "phase-1-foundations",
+    "phase-2-tools",
+    "phase-3-workflows",
+    "phase-4-advanced-techniques"
   ]
 }
+

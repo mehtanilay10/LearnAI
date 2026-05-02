@@ -1,7 +1,7 @@
 {
-  "id": "codex-mod-ai-coding-tools",
-  "slug": "codex-ai-coding-tools",
-  "phaseSlug": "codex-phase-2-tools",
+  "id": "mod-ai-coding-tools",
+  "slug": "ai-coding-tools",
+  "phaseSlug": "phase-2-tools",
   "title": "AI Coding Tools Deep Dive",
   "description": "Master GitHub Copilot, ChatGPT for code, Claude, Cursor, and other AI-powered development tools.",
   "order": 2,
@@ -10,7 +10,8 @@
   "icon": "🔧",
   "tags": ["copilot", "cursor", "chatgpt", "claude", "tools"],
   "lessonSlugs": [
-    "github-copilot-guide"
+    "github-copilot-guide",
+    "cursor-ide-guide"
   ],
   "whatYouLearn": [
     "How to use GitHub Copilot effectively for daily coding",
@@ -19,3 +20,4 @@
     "Prompting strategies specific to code generation"
   ]
 }
+

@@ -1,7 +1,7 @@
 {
-  "id": "codex-mod-agentic-workflows",
-  "slug": "codex-agentic-workflows",
-  "phaseSlug": "codex-phase-3-workflows",
+  "id": "mod-agentic-workflows",
+  "slug": "agentic-workflows",
+  "phaseSlug": "phase-3-workflows",
   "title": "Agentic Coding Workflows",
   "description": "Learn how to use AI agents for multi-file refactoring, test generation, and full-stack development workflows.",
   "order": 3,
@@ -19,3 +19,4 @@
     "Building and shipping features end-to-end with AI"
   ]
 }
+

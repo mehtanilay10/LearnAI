@@ -1,0 +1,28 @@
+{
+  "id": "lesson-cursor-ide-guide",
+  "slug": "cursor-ide-guide",
+  "moduleSlug": "ai-coding-tools",
+  "title": "Using Cursor IDE",
+  "description": "Learn how to use Cursor, an AI-first code editor designed for pair programming with large language models.",
+  "order": 2,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 25,
+  "tags": ["cursor", "ide", "pair-programming"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": { "level": 2, "text": "What is Cursor?", "anchor": "what-is-cursor" }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "Cursor is a fork of VS Code with AI deeply integrated into the editor. Unlike GitHub Copilot which functions as an extension, Cursor is built from the ground up to support AI coding workflows, including full file generation, natural language editing, and robust codebase awareness." }
+    },
+    {
+      "type": "callout",
+      "data": { "variant": "info", "title": "Composer and Chat", "text": "Cursor's primary features include the Chat panel for discussing code and the Composer for multi-file edits and project generation." }
+    }
+  ],
+  "relatedLessons": [],
+  "relatedGlossaryTerms": []
+}
+

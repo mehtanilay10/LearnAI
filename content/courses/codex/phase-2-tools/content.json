@@ -1,6 +1,6 @@
 {
-  "id": "codex-phase-2",
-  "slug": "codex-phase-2-tools",
+  "id": "phase-2",
+  "slug": "phase-2-tools",
   "courseSlug": "codex",
   "title": "Phase 2: AI Coding Tools",
   "subtitle": "Master the leading AI coding assistants",
@@ -9,7 +9,8 @@
   "icon": "🛠️",
   "color": "success",
   "moduleSlug": [
-    "codex-ai-coding-tools"
+    "ai-coding-tools"
   ],
   "estimatedWeeks": 3
 }
+

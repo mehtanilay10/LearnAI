@@ -1,7 +1,7 @@
 {
-  "id": "codex-mod-intro-to-ai-coding",
-  "slug": "codex-intro-to-ai-coding",
-  "phaseSlug": "codex-phase-1-foundations",
+  "id": "mod-intro-to-ai-coding",
+  "slug": "intro-to-ai-coding",
+  "phaseSlug": "phase-1-foundations",
   "title": "Introduction to AI-Assisted Coding",
   "description": "Understand how AI coding assistants work, what they can and cannot do, and how to set yourself up for success.",
   "order": 1,
@@ -19,3 +19,4 @@
     "Setting up your first AI coding environment"
   ]
 }
+

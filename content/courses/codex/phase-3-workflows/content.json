@@ -1,6 +1,6 @@
 {
-  "id": "codex-phase-3",
-  "slug": "codex-phase-3-workflows",
+  "id": "phase-3",
+  "slug": "phase-3-workflows",
   "courseSlug": "codex",
   "title": "Phase 3: Agentic Coding Workflows",
   "subtitle": "Build real projects with AI as your pair programmer",
@@ -9,7 +9,8 @@
   "icon": "🚀",
   "color": "accent",
   "moduleSlug": [
-    "codex-agentic-workflows"
+    "agentic-workflows"
   ],
   "estimatedWeeks": 3
 }
+

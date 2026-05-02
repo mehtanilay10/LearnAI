@@ -1,7 +1,7 @@
 {
-  "id": "codex-lesson-what-is-ai-coding",
+  "id": "lesson-what-is-ai-coding",
   "slug": "what-is-ai-coding",
-  "moduleSlug": "codex-intro-to-ai-coding",
+  "moduleSlug": "intro-to-ai-coding",
   "title": "What Is AI-Assisted Coding?",
   "description": "Understand how AI coding assistants work, from autocomplete to autonomous agents, and learn where they fit in your development workflow.",
   "order": 1,
@@ -25,3 +25,4 @@
   "relatedLessons": [],
   "relatedGlossaryTerms": []
 }
+

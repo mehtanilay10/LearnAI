@@ -1,7 +1,7 @@
 {
-  "id": "codex-lesson-agentic-coding-intro",
+  "id": "lesson-agentic-coding-intro",
   "slug": "agentic-coding-intro",
-  "moduleSlug": "codex-agentic-workflows",
+  "moduleSlug": "agentic-workflows",
   "title": "Introduction to Agentic Coding",
   "description": "Learn how AI coding agents go beyond suggestions — planning, executing multi-step tasks, and building features autonomously with human oversight.",
   "order": 1,
@@ -25,3 +25,4 @@
   "relatedLessons": [],
   "relatedGlossaryTerms": []
 }
+

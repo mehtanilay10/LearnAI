@@ -1,7 +1,7 @@
 {
-  "id": "codex-lesson-github-copilot-guide",
+  "id": "lesson-github-copilot-guide",
   "slug": "github-copilot-guide",
-  "moduleSlug": "codex-ai-coding-tools",
+  "moduleSlug": "ai-coding-tools",
   "title": "GitHub Copilot: Complete Guide",
   "description": "Master GitHub Copilot — from basic tab completions to chat, inline edits, and agent mode. Learn the prompting techniques that get the best results.",
   "order": 1,
@@ -25,3 +25,4 @@
   "relatedLessons": [],
   "relatedGlossaryTerms": []
 }
+

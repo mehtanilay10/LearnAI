@@ -1,0 +1,16 @@
+{
+  "id": "phase-4",
+  "slug": "phase-4-advanced-techniques",
+  "courseSlug": "codex",
+  "title": "Phase 4: Advanced AI Coding Techniques",
+  "subtitle": "Security, Testing, and Optimization",
+  "description": "Learn how to ensure code quality, security, and test coverage when using AI tools for development.",
+  "order": 4,
+  "icon": "🛡️",
+  "color": "warning",
+  "moduleSlug": [
+    "security-and-testing"
+  ],
+  "estimatedWeeks": 2
+}
+
