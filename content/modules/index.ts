@@ -41,9 +41,12 @@ import personalAiStack from '../courses/ai-basics/phase-9-capstone/personal-ai-s
 import stayingCurrent from '../courses/ai-basics/phase-9-capstone/staying-current/content.json';
 
 // Codex course modules
-import codexIntroToAiCoding from '../courses/codex/codex-phase-1-foundations/codex-intro-to-ai-coding/content.json';
-import codexAiCodingTools from '../courses/codex/codex-phase-2-tools/codex-ai-coding-tools/content.json';
-import codexAgenticWorkflows from '../courses/codex/codex-phase-3-workflows/codex-agentic-workflows/content.json';
+import codexIntroToAiCoding from '../courses/codex/phase-1-foundations/intro-to-ai-coding/content.json';
+import codexPromptEngineeringForCode from '../courses/codex/phase-1-foundations/prompt-engineering-for-code/content.json';
+import codexAiCodingTools from '../courses/codex/phase-2-tools/ai-coding-tools/content.json';
+import codexPracticalAiWorkflows from '../courses/codex/phase-3-workflows/practical-ai-workflows/content.json';
+import codexAgenticWorkflows from '../courses/codex/phase-3-workflows/agentic-workflows/content.json';
+import codexSecurityAndTesting from '../courses/codex/phase-4-advanced-techniques/security-and-testing/content.json';
 
 const rawModules = [
   whatIsAi,
@@ -70,8 +73,11 @@ const rawModules = [
   stayingCurrent,
   // Codex course
   codexIntroToAiCoding,
+  codexPromptEngineeringForCode,
   codexAiCodingTools,
+  codexPracticalAiWorkflows,
   codexAgenticWorkflows,
+  codexSecurityAndTesting,
 ];
 
 export const modules: Module[] = rawModules as unknown as Module[];

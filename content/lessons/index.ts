@@ -97,14 +97,26 @@ import aiProjectPortfolioAndCapstoneAssessments from '../courses/ai-basics/phase
 // AI Basics — phase-9-capstone — staying-current
 import stayingCurrentInAi from '../courses/ai-basics/phase-9-capstone/staying-current/staying-current-in-ai.json';
 
-// Codex — codex-phase-1-foundations — codex-intro-to-ai-coding
-import whatIsAiCoding from '../courses/codex/codex-phase-1-foundations/codex-intro-to-ai-coding/what-is-ai-coding.json';
+// Codex — phase-1-foundations — intro-to-ai-coding
+import whatIsAiCoding from '../courses/codex/phase-1-foundations/intro-to-ai-coding/what-is-ai-coding.json';
 
-// Codex — codex-phase-2-tools — codex-ai-coding-tools
-import githubCopilotGuide from '../courses/codex/codex-phase-2-tools/codex-ai-coding-tools/github-copilot-guide.json';
+// Codex — phase-1-foundations — prompt-engineering-for-code
+import basicPromptingForCode from '../courses/codex/phase-1-foundations/prompt-engineering-for-code/basic-prompting-for-code.json';
 
-// Codex — codex-phase-3-workflows — codex-agentic-workflows
-import agenticCodingIntro from '../courses/codex/codex-phase-3-workflows/codex-agentic-workflows/agentic-coding-intro.json';
+// Codex — phase-2-tools — ai-coding-tools
+import githubCopilotGuide from '../courses/codex/phase-2-tools/ai-coding-tools/github-copilot-guide.json';
+import cursorIdeGuide from '../courses/codex/phase-2-tools/ai-coding-tools/cursor-ide-guide.json';
+import chatAssistantsForCoding from '../courses/codex/phase-2-tools/ai-coding-tools/chat-assistants-for-coding.json';
+
+// Codex — phase-3-workflows — practical-ai-workflows
+import debuggingWithAi from '../courses/codex/phase-3-workflows/practical-ai-workflows/debugging-with-ai.json';
+import writingTestsWithAi from '../courses/codex/phase-3-workflows/practical-ai-workflows/writing-tests-with-ai.json';
+
+// Codex — phase-3-workflows — agentic-workflows
+import agenticCodingIntro from '../courses/codex/phase-3-workflows/agentic-workflows/agentic-coding-intro.json';
+
+// Codex — phase-4-advanced-techniques — security-and-testing
+import aiSecurityRisks from '../courses/codex/phase-4-advanced-techniques/security-and-testing/ai-security-risks.json';
 
 const rawLessons = [
   aiVsMlVsGenerativeAi,
@@ -162,8 +174,14 @@ const rawLessons = [
   aiProjectPortfolioAndCapstoneAssessments,
   // Codex course
   whatIsAiCoding,
+  basicPromptingForCode,
   githubCopilotGuide,
+  cursorIdeGuide,
+  chatAssistantsForCoding,
+  debuggingWithAi,
+  writingTestsWithAi,
   agenticCodingIntro,
+  aiSecurityRisks,
 ];
 
 export const lessons: Lesson[] = rawLessons as unknown as Lesson[];

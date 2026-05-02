@@ -12,9 +12,10 @@ import phase8AdvancedAi from '../courses/ai-basics/phase-8-advanced-ai/content.j
 import phase9Capstone from '../courses/ai-basics/phase-9-capstone/content.json';
 
 // Codex course phases
-import codexPhase1Foundations from '../courses/codex/codex-phase-1-foundations/content.json';
-import codexPhase2Tools from '../courses/codex/codex-phase-2-tools/content.json';
-import codexPhase3Workflows from '../courses/codex/codex-phase-3-workflows/content.json';
+import codexPhase1Foundations from '../courses/codex/phase-1-foundations/content.json';
+import codexPhase2Tools from '../courses/codex/phase-2-tools/content.json';
+import codexPhase3Workflows from '../courses/codex/phase-3-workflows/content.json';
+import codexPhase4AdvancedTechniques from '../courses/codex/phase-4-advanced-techniques/content.json';
 
 const rawPhases = [
   phase1Foundations,
@@ -29,6 +30,7 @@ const rawPhases = [
   codexPhase1Foundations,
   codexPhase2Tools,
   codexPhase3Workflows,
+  codexPhase4AdvancedTechniques,
 ];
 
 export const phases: Phase[] = rawPhases as unknown as Phase[];
