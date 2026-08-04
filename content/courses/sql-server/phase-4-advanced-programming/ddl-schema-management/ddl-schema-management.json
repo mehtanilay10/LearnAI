@@ -1,0 +1,215 @@
+{
+  "id": "lesson-ddl-schema-management",
+  "slug": "ddl-schema-management",
+  "moduleSlug": "ddl-schema-management",
+  "title": "DDL and Schema Management",
+  "description": "Modify database structure with ALTER TABLE, manage schemas, rename objects, drop database objects, and create synonyms for abstraction.",
+  "order": 1,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 20,
+  "tags": ["ddl", "alter-table", "schema", "rename", "drop", "synonym", "t-sql"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "So far you have focused on reading and writing data. But databases change over time — new columns are needed, tables are renamed, stale objects are dropped. Data Definition Language (DDL) handles these structural changes. This lesson covers the most common DDL operations."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "alter-table",
+      "data": {
+        "level": 2,
+        "text": "ALTER TABLE — add, alter, and drop columns",
+        "anchor": "alter-table"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "ALTER TABLE modifies the structure of an existing table. The three most common sub-operations are ADD (new column), ALTER (change type/nullability), and DROP COLUMN (remove)."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Add a column",
+        "code": "ALTER TABLE production.products\nADD    discontinued BIT NOT NULL DEFAULT 0;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Alter a column's data type",
+        "code": "-- Increase the size of a VARCHAR column\nALTER TABLE production.products\nALTER COLUMN product_name VARCHAR(300);",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Drop a column",
+        "code": "-- Caution: this destroys data irreversibly\nALTER TABLE production.products\nDROP COLUMN obsolete_notes;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "ALTER TABLE is expensive on large tables",
+        "text": "Adding or dropping columns on a large table can lock it for seconds or minutes. Schedule these operations during maintenance windows, and test the impact first on a copy."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "schemas",
+      "data": {
+        "level": 2,
+        "text": "Schemas — grouping database objects",
+        "anchor": "schemas"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A schema is a named container for database objects — a way to group related tables, views, and procedures. It provides an additional namespace so you can have, for example, both Sales.Customers and Archive.Customers in the same database."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Create schema and assign ownership",
+        "code": "-- Create a new schema\nCREATE SCHEMA purchasing;\n\n-- Create a table inside it\nCREATE TABLE purchasing.vendors (\n    vendor_id  INT IDENTITY PRIMARY KEY,\n    vendor_name NVARCHAR(100) NOT NULL\n);",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Transfer an object between schemas",
+        "code": "-- Move a table from dbo to purchasing\nALTER SCHEMA purchasing\nTRANSFER dbo.old_vendors;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "rename",
+      "data": {
+        "level": 2,
+        "text": "Renaming tables and indexes",
+        "anchor": "rename"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "sp_rename syntax",
+        "code": "-- Rename a table\nsp_rename 'Sales.Orders', 'Sales.CompletedOrders';\n\n-- Rename an index\nsp_rename 'Sales.CompletedOrders.IX_CompletedOrders_Date',\n           'IX_CompletedOrders_Date';",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "sp_rename has side effects",
+        "text": "sp_rename updates metadata only, not application code. If your application hard-codes the old table name, it will break. Renaming is generally discouraged — design the right name upfront."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "drop",
+      "data": {
+        "level": 2,
+        "text": "Dropping objects",
+        "anchor": "drop"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "DROP removes a database object permanently. Use IF EXISTS (SQL Server 2016+) to avoid errors when the object doesn't exist. DROP TABLE is more efficient than DELETE for removing all rows."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "DROP with IF EXISTS",
+        "code": "-- Drop a table if it exists\nDROP TABLE IF EXISTS production.product_backup;\n\n-- Drop a database\nDROP DATABASE IF EXISTS temp_test;\n\n-- Drop a view\nDROP VIEW IF EXISTS sales.daily_sales;\n\n-- Drop an index\nDROP INDEX IF EXISTS IX_products_name ON production.products;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "synonyms",
+      "data": {
+        "level": 2,
+        "text": "Synonyms — aliases for database objects",
+        "anchor": "synonyms"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A synonym is an alias for a database object. It lets you reference a table, view, stored procedure, or function by a simpler name — and it becomes invaluable when you need to rename or move an object without recompiling dependent applications."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Creating and using a synonym",
+        "code": "-- Create a synonym for a table in another database\nCREATE SYNONYM suppliers\nFOR test.purchasing.suppliers;\n\n-- Use the synonym as if it were a real table\nSELECT * FROM suppliers;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Drop a synonym",
+        "code": "DROP SYNONYM IF EXISTS suppliers;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "When to use synonyms",
+        "text": "Synonyms solve two problems: they shorten long multi-part names (server.database.schema.object → orders), and they provide backward compatibility when you rename a table — existing code continues to work through the old name."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "DDL essentials",
+        "points": [
+          "ALTER TABLE ADD / ALTER COLUMN / DROP COLUMN changes table structure",
+          "CREATE SCHEMA and ALTER SCHEMA ... TRANSFER organize objects into named containers",
+          "sp_rename changes an object's name but not your application code",
+          "DROP TABLE is faster than DELETE for clearing all rows — use IF EXISTS to be safe",
+          "Synonyms alias objects for simpler names and rename-safe compatibility"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["temp-storage", "views-and-stored-procedures"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "ALTER TABLE (Transact-SQL)",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/statements/alter-table-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for ALTER TABLE clause."
+    },
+    {
+      "title": "CREATE SYNONYM (Transact-SQL)",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/statements/create-synonym-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for creating and managing synonyms."
+    }
+  ]
+}

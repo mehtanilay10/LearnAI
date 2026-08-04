@@ -1,0 +1,19 @@
+{
+  "id": "phase-4",
+  "slug": "sqlserver-advanced-programming",
+  "courseSlug": "sql-server",
+  "title": "Phase 4: Advanced Programming and Administration",
+  "subtitle": "Control flow, error handling, DDL management, and advanced database features",
+  "description": "Level up your T-SQL skills with control flow, error handling, dynamic SQL, DDL management, and advanced database features like PIVOT, sequences, partitioning, and cursors.",
+  "order": 4,
+  "icon": "⚙️",
+  "color": "warning",
+  "moduleSlug": [
+    "control-flow-and-error-handling",
+    "ddl-schema-management",
+    "temp-storage",
+    "advanced-query-features",
+    "cursors-and-concurrency"
+  ],
+  "estimatedWeeks": 3
+}

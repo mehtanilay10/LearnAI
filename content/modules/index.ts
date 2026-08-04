@@ -63,6 +63,13 @@ import sqlModifyingData from '../courses/sql-server/phase-3-advanced/modifying-d
 import sqlDatabaseObjects from '../courses/sql-server/phase-3-advanced/database-objects/content.json';
 import sqlPerformanceAndSecurity from '../courses/sql-server/phase-3-advanced/performance-and-security/content.json';
 
+// SQL Server course modules — phase 4
+import sqlControlFlowAndErrorHandling from '../courses/sql-server/phase-4-advanced-programming/control-flow-and-error-handling/content.json';
+import sqlDdlSchemaManagement from '../courses/sql-server/phase-4-advanced-programming/ddl-schema-management/content.json';
+import sqlTempStorage from '../courses/sql-server/phase-4-advanced-programming/temp-storage/content.json';
+import sqlAdvancedQueryFeatures from '../courses/sql-server/phase-4-advanced-programming/advanced-query-features/content.json';
+import sqlCursorsAndConcurrency from '../courses/sql-server/phase-4-advanced-programming/cursors-and-concurrency/content.json';
+
 const rawModules = [
   whatIsAi,
   aiToolsOverview,
@@ -104,6 +111,12 @@ const rawModules = [
   sqlModifyingData,
   sqlDatabaseObjects,
   sqlPerformanceAndSecurity,
+  // SQL Server course — phase 4
+  sqlControlFlowAndErrorHandling,
+  sqlDdlSchemaManagement,
+  sqlTempStorage,
+  sqlAdvancedQueryFeatures,
+  sqlCursorsAndConcurrency,
 ];
 
 export const modules: Module[] = rawModules as unknown as Module[];

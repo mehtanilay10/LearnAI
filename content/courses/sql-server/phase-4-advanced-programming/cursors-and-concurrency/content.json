@@ -1,0 +1,21 @@
+{
+  "id": "mod-cursors-and-concurrency",
+  "slug": "cursors-and-concurrency",
+  "phaseSlug": "sqlserver-advanced-programming",
+  "title": "Cursors and Concurrency",
+  "description": "Process rows one at a time with cursors. Understand deadlocks, how they occur, and strategies to avoid them in production systems.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedHours": 3,
+  "icon": "🔒",
+  "tags": ["cursors", "deadlock", "concurrency", "row-by-row"],
+  "lessonSlugs": [
+    "cursors-and-concurrency"
+  ],
+  "whatYouLearn": [
+    "How cursors work and the full life cycle: DECLARE, OPEN, FETCH, CLOSE, DEALLOCATE",
+    "Why cursors are almost always slower than set-based alternatives",
+    "How deadlocks occur when two transactions lock resources in conflicting orders",
+    "Strategies to prevent and resolve deadlocks in production databases"
+  ]
+}

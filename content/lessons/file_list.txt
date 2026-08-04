@@ -95,6 +95,15 @@ database-objects\indexes-triggers-functions
 performance-and-security\query-optimization
 performance-and-security\backup-recovery-security
 
+# SQL Server course lessons — phase 4: Advanced Programming and Administration
+control-flow-and-error-handling\control-flow-statements
+control-flow-and-error-handling\error-handling
+control-flow-and-error-handling\dynamic-sql
+ddl-schema-management\ddl-schema-management
+temp-storage\temp-storage
+advanced-query-features\advanced-query-features
+cursors-and-concurrency\cursors-and-concurrency
+
 
 Here is json that I want to update. You can refer moduleSlug and slug to identify which file's contents are those.
 

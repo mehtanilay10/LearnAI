@@ -1,0 +1,163 @@
+{
+  "id": "lesson-temp-storage",
+  "slug": "temp-storage",
+  "moduleSlug": "temp-storage",
+  "title": "Temporary Tables, Table Variables, and Variables",
+  "description": "Store intermediate results with temporary tables and table variables. Use stored procedure variables and OUTPUT parameters for flexible T-SQL programs.",
+  "order": 1,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 14,
+  "tags": ["temp-tables", "table-variables", "output-parameters", "variables", "t-sql"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Sometimes you need to hold intermediate results within a query or procedure. Temporary tables and table variables are the two main ways to do this in SQL Server. Each has its own strengths: temp tables for large data sets, table variables for small ones."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "temp-tables",
+      "data": {
+        "level": 2,
+        "text": "Temporary tables",
+        "anchor": "temp-tables"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A temporary table (#table) is a real table that exists only for the duration of a session or procedure. Local temp tables (single #) are visible only to the creating session; global temp tables (##) are visible to all sessions."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Creating and using a local temp table",
+        "code": "-- # means local temp table\nCREATE TABLE #top_products (\n    product_id   INT,\n    product_name NVARCHAR(100),\n    sales        MONEY\n);\n\nINSERT INTO #top_products\nSELECT TOP 5 p.product_id, p.product_name, SUM(i.quantity * i.list_price) AS sales\nFROM   production.products p\nINNER JOIN sales.order_items i ON i.product_id = p.product_id\nGROUP BY p.product_id, p.product_name\nORDER BY sales DESC;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Feature", "Local temp (#)", "Global temp (##)"],
+        "rows": [
+          ["Visibility", "Current session only", "All sessions"],
+          ["Lifetime", "Dropped when last referencing proc ends", "Dropped when all sessions disconnect"],
+          ["Use case", "Intermediate results in procedures", "Rare — sharing data across sessions"]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "title": "Temp tables in tempdb",
+        "text": "Temporary tables are created in tempdb, not your database. This means they are fast (memory-optimized in modern SQL Server) and automatically cleaned up. They also benefit from automatic statistics, unlike table variables."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "table-variables",
+      "data": {
+        "level": 2,
+        "text": "Table variables",
+        "anchor": "table-variables"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A table variable (@variable) is declared with DECLARE and has a more limited scope — it exists only within the current batch. Table variables do not maintain statistics and are best for small result sets (under ~1,000 rows)."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Declaring and using a table variable",
+        "code": "DECLARE @product_counts TABLE (\n    category_id INT,\n    product_count INT\n);\n\nINSERT INTO @product_counts\nSELECT category_id, COUNT(*) AS product_count\nFROM   production.products\nGROUP BY category_id;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Table variable vs. temp table",
+        "text": "Table variables: less locking, no statistics, good for small sets. Temp tables: real statistics, better for large sets and complex joins. When in doubt, test both and check the execution plan."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "variables",
+      "data": {
+        "level": 2,
+        "text": "Regular variables in stored procedures",
+        "anchor": "variables"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "DECLARE and SET variables",
+        "code": "CREATE PROCEDURE Sales.CalculateTax\n    @subtotal MONEY\nAS\nBEGIN\n    DECLARE @taxRate DECIMAL(5,4) = 0.085;\n    DECLARE @total MONEY;\n\n    SET @total = @subtotal + (@subtotal * @taxRate);\n    RETURN @total;\nEND;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "output-parameters",
+      "data": {
+        "level": 2,
+        "text": "Returning values with OUTPUT parameters",
+        "anchor": "output-parameters"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "OUTPUT parameters let a stored procedure return scalar values to the caller — useful for calculated counts, totals, or status codes that you want back in T-SQL variables."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "OUTPUT parameter",
+        "code": "CREATE PROCEDURE Sales.GetCustomerOrderCount\n    @customerID  INT,\n    @orderCount  INT OUTPUT\nAS\nBEGIN\n    SELECT @orderCount = COUNT(*)\n    FROM   sales.orders\n    WHERE  customer_id = @customerID;\nEND;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Calling a procedure with OUTPUT",
+        "code": "DECLARE @count INT;\nEXEC Sales.GetCustomerOrderCount\n    @customerID = 42,\n    @orderCount = @count OUTPUT;\nPRINT 'Order count: ' + CAST(@count AS VARCHAR(10));",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Temporary storage and variables",
+        "points": [
+          "Local temp tables (#name) are session-scoped and auto-dropped; global (##name) are visible to all sessions",
+          "Table variables (@name) are batch-scoped, have no statistics, and suit small result sets",
+          "Temp tables live in tempdb and are auto-cleaned; table variables are lighter but less optimizable",
+          "OUTPUT parameters return scalar values from procedures to the calling code"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["ddl-schema-management", "views-and-stored-procedures"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "CREATE TABLE (Transact-SQL) - temporary objects",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/statements/create-table-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for temporary tables and table variables."
+    }
+  ]
+}

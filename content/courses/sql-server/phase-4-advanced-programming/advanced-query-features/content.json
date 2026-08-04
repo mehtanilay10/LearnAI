@@ -1,0 +1,22 @@
+{
+  "id": "mod-advanced-query-features",
+  "slug": "advanced-query-features",
+  "phaseSlug": "sqlserver-advanced-programming",
+  "title": "Advanced Query Features",
+  "description": "Transform data with PIVOT, join tables to functions with CROSS APPLY, use computed columns and sequences, and manage large datasets with partitioning.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedHours": 5,
+  "icon": "⚡",
+  "tags": ["pivot", "cross-apply", "computed-columns", "sequences", "partitioning", "snapshot"],
+  "lessonSlugs": [
+    "advanced-query-features"
+  ],
+  "whatYouLearn": [
+    "How to use PIVOT to rotate rows into columns for crosstab reports",
+    "How CROSS APPLY joins a table to a table-valued function or correlated subquery",
+    "How computed columns and sequences provide reusable logic and auto-generated values",
+    "How table partitioning improves performance on large tables",
+    "How database snapshots provide point-in-time read-only views"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "mod-control-flow-and-error-handling",
+  "slug": "control-flow-and-error-handling",
+  "phaseSlug": "sqlserver-advanced-programming",
+  "title": "Control Flow and Error Handling",
+  "description": "Write procedural T-SQL with BEGIN/END, IF/ELSE, and WHILE loops. Gracefully handle errors with TRY/CATCH, RAISERROR, and THROW. Build flexible queries with dynamic SQL.",
+  "order": 1,
+  "difficulty": "intermediate",
+  "estimatedHours": 5,
+  "icon": "🔄",
+  "tags": ["control-flow", "try-catch", "raizerror", "throw", "dynamic-sql", "t-sql"],
+  "lessonSlugs": [
+    "control-flow-statements",
+    "error-handling",
+    "dynamic-sql"
+  ],
+  "whatYouLearn": [
+    "How to use BEGIN/END blocks, IF/ELSE conditions, and WHILE loops to control execution flow",
+    "How to use BREAK and CONTINUE to control loop execution",
+    "How to handle errors gracefully with TRY/CATCH and diagnose them using ERROR_* functions",
+    "How to raise custom errors with RAISERROR and THROW",
+    "How to build dynamic SQL queries at runtime using sp_executesql and prevent SQL injection"
+  ]
+}

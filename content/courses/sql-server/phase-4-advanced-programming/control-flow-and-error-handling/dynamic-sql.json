@@ -1,0 +1,167 @@
+{
+  "id": "lesson-dynamic-sql",
+  "slug": "dynamic-sql",
+  "moduleSlug": "control-flow-and-error-handling",
+  "title": "Dynamic SQL",
+  "description": "Build SQL statements at runtime using sp_executesql, parameterize queries safely, and prevent SQL injection attacks.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 18,
+  "tags": ["dynamic-sql", "sp-executesql", "sql-injection", "parameterized"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Sometimes you cannot know the table name, column name, or filter value at the time you write the query. You might need to query a table whose name is passed as a parameter, or build a WHERE clause dynamically based on user input. That is where *dynamic SQL* — constructing and executing SQL statements at runtime as strings — comes in."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "sp-executesql",
+      "data": {
+        "level": 2,
+        "text": "Executing dynamic SQL with sp_executesql",
+        "anchor": "sp-executesql"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The sp_executesql system stored procedure executes a T-SQL statement. The statement must be a Unicode string prefixed with N. Unlike the older EXEC, sp_executesql supports parameterized queries, which is critical for both performance and security."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Basic sp_executesql",
+        "code": "DECLARE @sql NVARCHAR(MAX);\nSET @sql = N'SELECT * FROM production.products;\nEXEC sp_executesql @sql;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Always use N prefix",
+        "text": "SQL Server expects Unicode strings for dynamic SQL. Always prefix with N: N'SELECT ...'. Without it, non-ASCII characters and certain collation behaviors can cause silent issues."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "parameterized-dynamic-sql",
+      "data": {
+        "level": 2,
+        "text": "Parameterized dynamic SQL",
+        "anchor": "parameterized-dynamic-sql"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The real power of sp_executesql is parameter binding. You pass the parameter definition and values separately from the SQL string, which allows SQL Server to reuse the cached plan across different parameter values."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Parameterized query with sp_executesql",
+        "code": "DECLARE @sql  NVARCHAR(MAX);\nDECLARE @param NVARCHAR(500);\n\nSET @sql =\n    N'SELECT product_name, list_price\n' + N'FROM   production.products\n' + N'WHERE  list_price > @minPrice\n' + N'  AND  category_id = @catId;\n';\n\nEXEC sp_executesql\n    @sql,\n    N'@minPrice DECIMAL(10,2), @catId INT',\n    @minPrice = 100,\n    @catId = 3;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "sql-injection",
+      "data": {
+        "level": 2,
+        "text": "Preventing SQL injection",
+        "anchor": "sql-injection"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "SQL injection happens when untrusted input is concatenated directly into a SQL string. An attacker can append '; DROP TABLE users; -- to a user-supplied table name and execute it alongside your query."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Vulnerable vs. safe dynamic SQL",
+        "code": "-- VULNERABLE: direct concatenation\nDECLARE @table NVARCHAR(128) = @user_input;\nDECLARE @sql NVARCHAR(MAX) = N'SELECT * FROM ' + @table;\nEXEC sp_executesql @sql;\n\n-- The attacker passes: 'users; DROP TABLE orders; --'\n-- Resulting SQL: SELECT * FROM users; DROP TABLE orders; --",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Safe: use QUOTENAME for object names",
+        "code": "CREATE OR ALTER PROC usp_safe_query\n    @schema SYSNAME,\n    @table  SYSNAME\nAS\nBEGIN\n    DECLARE @sql NVARCHAR(MAX);\n    SET @sql = N'SELECT * FROM ' + QUOTENAME(@schema) + '.' + QUOTENAME(@table);\n    EXEC sp_executesql @sql;\nEND;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "QUOTENAME prevents injection",
+        "text": "QUOTENAME wraps the input in square brackets and escapes any embedded closing brackets: [production.brands;DROP TABLE sales.tests] — the injected SQL becomes part of the object name, and the statement fails instead of executing both parts."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "building-dynamic-queries",
+      "data": {
+        "level": 2,
+        "text": "Building conditional queries at runtime",
+        "anchor": "building-dynamic-queries"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A common pattern: build a WHERE clause dynamically based on which filters the caller specified, then execute the assembled query with sp_executesql."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Dynamic WHERE from optional parameters",
+        "code": "CREATE OR ALTER PROC usp_search_products\n    @categoryId  INT = NULL,\n    @minPrice    DECIMAL(10,2) = NULL,\n    @brandName   NVARCHAR(100) = NULL\nAS\nBEGIN\n    DECLARE @sql  NVARCHAR(MAX) = N'SELECT product_name, list_price FROM production.products WHERE 1 = 1';\n    DECLARE @params NVARCHAR(500) = N'';\n\n    IF @categoryId IS NOT NULL\n    BEGIN\n        SET @sql += N' AND category_id = @categoryId';\n        SET @params += N'@categoryId INT, ';\n    END\n    IF @minPrice IS NOT NULL\n    BEGIN\n        SET @sql += N' AND list_price >= @minPrice';\n        SET @params += N'@minPrice DECIMAL(10,2), ';\n    END\n\n    -- remove trailing comma+space from @params\n    SET @params = LEFT(@params, LEN(@params) - 2);\n\n    EXEC sp_executesql @sql, @params,\n        @categoryId = @categoryId,\n        @minPrice = @minPrice;\nEND;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Dynamic SQL trade-offs",
+        "text": "Dynamic SQL is powerful but harder to read, harder to debug, and a common surface for SQL injection. Only use it when static SQL cannot express the logic. Prefer parameterized queries, always use QUOTENAME for object names, and thoroughly review the final @sql string before execution."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Dynamic SQL essentials",
+        "points": [
+          "Use sp_executesql (not EXEC) for parameterized dynamic SQL — it enables plan reuse",
+          "Always prefix strings with N for Unicode, and always pass N for the parameter-definition string",
+          "Use QUOTENAME for object names to prevent SQL injection",
+          "Build WHERE clauses dynamically by appending conditions and parameters separately",
+          "Dynamic SQL is harder to debug — prefer static SQL when possible"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["control-flow-statements", "error-handling"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "sp_executesql (Transact-SQL)",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/language-elements/sp-executesql-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for sp_executesql including parameterization and plan reuse."
+    }
+  ]
+}

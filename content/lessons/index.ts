@@ -164,6 +164,23 @@ import sqlIndexesTriggersFunctions from '../courses/sql-server/phase-3-advanced/
 import sqlQueryOptimization from '../courses/sql-server/phase-3-advanced/performance-and-security/query-optimization.json';
 import sqlBackupRecoverySecurity from '../courses/sql-server/phase-3-advanced/performance-and-security/backup-recovery-security.json';
 
+// SQL Server — phase-4-advanced-programming — control-flow-and-error-handling
+import sqlControlFlowStatements from '../courses/sql-server/phase-4-advanced-programming/control-flow-and-error-handling/control-flow-statements.json';
+import sqlErrorHandling from '../courses/sql-server/phase-4-advanced-programming/control-flow-and-error-handling/error-handling.json';
+import sqlDynamicSql from '../courses/sql-server/phase-4-advanced-programming/control-flow-and-error-handling/dynamic-sql.json';
+
+// SQL Server — phase-4-advanced-programming — ddl-schema-management
+import sqlDdlSchemaManagement from '../courses/sql-server/phase-4-advanced-programming/ddl-schema-management/ddl-schema-management.json';
+
+// SQL Server — phase-4-advanced-programming — temp-storage
+import sqlTempStorage from '../courses/sql-server/phase-4-advanced-programming/temp-storage/temp-storage.json';
+
+// SQL Server — phase-4-advanced-programming — advanced-query-features
+import sqlAdvancedQueryFeatures from '../courses/sql-server/phase-4-advanced-programming/advanced-query-features/advanced-query-features.json';
+
+// SQL Server — phase-4-advanced-programming — cursors-and-concurrency
+import sqlCursorsAndConcurrency from '../courses/sql-server/phase-4-advanced-programming/cursors-and-concurrency/cursors-and-concurrency.json';
+
 const rawLessons = [
   aiVsMlVsGenerativeAi,
   howLlmsWorkSimply,
@@ -255,6 +272,14 @@ const rawLessons = [
   sqlIndexesTriggersFunctions,
   sqlQueryOptimization,
   sqlBackupRecoverySecurity,
+  // SQL Server course — phase 4
+  sqlControlFlowStatements,
+  sqlErrorHandling,
+  sqlDynamicSql,
+  sqlDdlSchemaManagement,
+  sqlTempStorage,
+  sqlAdvancedQueryFeatures,
+  sqlCursorsAndConcurrency,
 ];
 
 export const lessons: Lesson[] = rawLessons as unknown as Lesson[];

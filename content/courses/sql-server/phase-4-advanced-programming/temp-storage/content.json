@@ -1,0 +1,21 @@
+{
+  "id": "mod-temp-storage",
+  "slug": "temp-storage",
+  "phaseSlug": "sqlserver-advanced-programming",
+  "title": "Temporary Storage and Variables",
+  "description": "Use temporary tables, table variables, and stored procedure variables to store intermediate results and build flexible T-SQL programs.",
+  "order": 3,
+  "difficulty": "intermediate",
+  "estimatedHours": 3,
+  "icon": "📋",
+  "tags": ["temp-tables", "table-variables", "variables", "t-sql"],
+  "lessonSlugs": [
+    "temp-storage"
+  ],
+  "whatYouLearn": [
+    "How to create and use local (#) and global (##) temporary tables",
+    "How table variables differ from temporary tables in scope and performance",
+    "How to use variables in stored procedures for dynamic behavior",
+    "How to use OUTPUT parameters to return values from stored procedures"
+  ]
+}

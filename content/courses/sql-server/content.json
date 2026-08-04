@@ -10,6 +10,7 @@
   "phaseSlugs": [
     "sqlserver-foundations",
     "phase-2-querying",
-    "phase-3-advanced"
+    "phase-3-advanced",
+    "sqlserver-advanced-programming"
   ]
 }
