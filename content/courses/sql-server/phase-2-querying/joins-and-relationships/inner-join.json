@@ -1,0 +1,185 @@
+{
+  "id": "lesson-inner-join",
+  "slug": "inner-join",
+  "moduleSlug": "joins-and-relationships",
+  "title": "INNER JOIN",
+  "description": "Combine data from multiple tables using INNER JOIN. Learn how the join predicate matches rows and why INNER JOIN is the most common join type.",
+  "order": 1,
+  "difficulty": "beginner",
+  "estimatedMinutes": 18,
+  "tags": ["joins", "inner-join", "relationships", "foreign-key"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In the real world, data lives in multiple tables. A customer's orders are in one table; the customer's profile is in another. To get a complete picture, you need to **join** tables together. The INNER JOIN is the most fundamental and most commonly used join type."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "join-keys",
+      "data": {
+        "level": 2,
+        "text": "What makes tables joinable",
+        "anchor": "join-keys"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Tables are connected by *keys*. A **primary key** (PK) uniquely identifies each row in a table — like a customer_id. A **foreign key** (FK) is a column in another table that references that primary key — like the customer_id on each order. These shared values are the glue that lets SQL Server match rows across tables."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "join-key-relationship",
+        "caption": "A foreign key in the orders table points back to the primary key in the customers table — this is what lets them be joined",
+        "definition": "erDiagram\n  CUSTOMERS ||--o{ ORDERS : has\n  CUSTOMERS {\n    int customer_id PK\n    string name\n  }\n  ORDERS {\n    int order_id PK\n    int customer_id FK\n    date order_date\n  }\n\n  style CUSTOMERS fill:#e8f5e9\n  style ORDERS fill:#e3f2fd"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "inner-join-syntax",
+      "data": {
+        "level": 2,
+        "text": "INNER JOIN syntax",
+        "anchor": "inner-join-syntax"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The syntax specifies the main table in FROM, then adds the second table with INNER JOIN and an ON clause that defines the matching condition:"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "INNER JOIN syntax",
+        "code": "SELECT\n    select_list\nFROM\n    T1\nINNER JOIN T2\n    ON T1.column = T2.column;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The INNER keyword is optional — JOIN by itself means INNER JOIN:"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "These two are equivalent",
+        "code": "SELECT product_name, category_name, list_price\nFROM   production.products p\nINNER JOIN production.categories c\n    ON c.category_id = p.category_id;\n\n-- Or without the INNER keyword:\nSELECT product_name, category_name, list_price\nFROM   production.products p\nJOIN production.categories c\n    ON c.category_id = p.category_id;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "what-inner-join-returns",
+      "data": {
+        "level": 2,
+        "text": "What INNER JOIN returns",
+        "anchor": "what-inner-join-returns"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "INNER JOIN compares every row from the first table against every row from the second. It returns only the pairs where the ON condition is TRUE. Rows with no match on either side are *excluded*. This is why it's called an 'inner' — it keeps only the inner overlap."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Always use table aliases",
+        "text": "In joins, you will reference many columns. Give each table a short alias (like p for products, c for categories) and use alias.column_name throughout. It is shorter and prevents ambiguity errors."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "joining-more-tables",
+      "data": {
+        "level": 2,
+        "text": "Joining three or more tables",
+        "anchor": "joining-more-tables"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Three-table INNER JOIN",
+        "code": "SELECT product_name, category_name, brand_name, list_price\nFROM   production.products p\nINNER JOIN production.categories c\n    ON c.category_id = p.category_id\nINNER JOIN production.brands b\n    ON b.brand_id = p.brand_id\nORDER BY product_name;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Cartesian products",
+        "text": "If you forget the ON clause or write a non-matching condition, INNER JOIN produces a Cartesian product — every row paired with every row. For two tables of 1,000 rows each, that is 1,000,000 result rows!"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "join-best-practices",
+      "data": {
+        "level": 2,
+        "text": "INNER JOIN best practices",
+        "anchor": "join-best-practices"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "items": [
+          "Always alias joined tables to keep references short and clear",
+          "Always include the join key in the ON clause, not the WHERE clause (see the next lesson for why this matters)",
+          "Join on primary key / foreign key columns for best performance",
+          "Order your result with ORDER BY for consistent output"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "INNER JOIN at a glance",
+        "points": [
+          "INNER JOIN returns only rows that have matching values in BOTH tables",
+          "The ON clause defines the matching condition (where the keys are equal)",
+          "INNER is optional — JOIN alone means INNER JOIN",
+          "Join more tables by chaining additional INNER JOIN clauses",
+          "Rows without matches on either side are excluded from the result"
+        ]
+      }
+    },
+    {
+      "heading": "enrichment-inner-join",
+      "data": {
+        "level": 3,
+        "text": "INNER JOIN vs. comma-join (legacy)",
+        "anchor": "enrichment-inner-join"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Older SQL code sometimes uses the comma syntax — FROM a, b WHERE a.id = b.id — which is functionally identical to an INNER JOIN but harder to read and easy to accidentally leave the WHERE off. Modern best practice favours the explicit INNER JOIN form."
+      }
+    }
+  ],
+  "relatedLessons": ["left-and-right-join"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "FROM and JOIN Clause (Transact-SQL)",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/queries/queries-from-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for the FROM clause and all join types."
+    }
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "id": "lesson-update-and-delete",
+  "slug": "update-and-delete",
+  "moduleSlug": "modifying-data",
+  "title": "UPDATE and DELETE",
+  "description": "Modify and remove existing data safely. Learn UPDATE with SET and WHERE, DELETE with proper filtering, and how transactions protect your changes.",
+  "order": 2,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 16,
+  "tags": ["update", "delete", "transactions", "try-catch", "where"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "UPDATE modifies existing rows. DELETE removes them. Both are powerful — and dangerous if you forget the WHERE clause. This lesson shows the safe patterns."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "update",
+      "data": {
+        "level": 2,
+        "text": "UPDATE — changing existing rows",
+        "anchor": "update"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Update syntax",
+        "code": "UPDATE table_name\nSET    column1 = value1,\n       column2 = value2\nWHERE  search_condition;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Update from the source markdown example",
+        "code": "-- Set updated_at to current timestamp for all rows\nUPDATE sales.taxes\nSET    updated_at = GETDATE();\n\n-- Increase max_local_tax_rate by 2% for states where it is 1%\nUPDATE sales.taxes\nSET    max_local_tax_rate = max_local_tax_rate + 0.02,\n       avg_local_tax_rate = avg_local_tax_rate + 0.01\nWHERE  max_local_tax_rate = 0.01;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Always start with a SELECT",
+        "text": "Before running an UPDATE or DELETE, test your WHERE clause with a SELECT. Run 'SELECT COUNT(*) ... WHERE ...' to see exactly how many rows will be affected. It is far cheaper than rolling back a bad update."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "update-with-join",
+      "data": {
+        "level": 2,
+        "text": "UPDATE with JOIN",
+        "anchor": "update-with-join"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "You can update columns using values from a joined table. The syntax places the JOIN in the same position as a SELECT JOIN, followed by SET."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Update using a JOIN",
+        "code": "UPDATE p\nSET    p.list_price = p.list_price * 1.10\nFROM   production.products p\nINNER JOIN production.categories c\n    ON c.category_id = p.category_id\nWHERE  c.category_name = 'Mountain Bikes';",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "delete",
+      "data": {
+        "level": 2,
+        "text": "DELETE — removing rows",
+        "anchor": "delete"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "DELETE syntax",
+        "code": "DELETE FROM table_name\nWHERE  search_condition;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Delete with conditions",
+        "code": "-- Delete all rows from 2017\nDELETE FROM production.product_history\nWHERE  model_year = 2017;\n\n-- Delete a specific number of rows\nDELETE TOP (10) FROM production.product_history;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "The deadly un-qualified DELETE",
+        "text": "DELETE FROM table_name (with no WHERE) removes EVERY row. For large tables, use TRUNCATE TABLE instead — it is faster but irreversible. For small, selective deletions, always verify with SELECT first."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "trUNCATE-vs-delete",
+      "data": {
+        "level": 2,
+        "text": "TRUNCATE vs. DELETE",
+        "anchor": "trUNCATE-vs-delete"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["", "TRUNCATE", "DELETE"],
+        "rows": [
+          ["Deals with", "Entire table (all rows)", "Specific rows (with WHERE)"],
+          ["Speed", "Very fast (allocates new extents)", "Slower (logs each row)"],
+          ["Reversible?", "No (irreversible)", "Yes (within a transaction)"],
+          ["WHERE clause", "Cannot use WHERE", "Can filter with WHERE"],
+          ["Conditions", "Cannot fire DELETE triggers", "Fires DELETE triggers"],
+          ["Identity seed reset", "Yes (resets to seed)", "No (keeps current value)"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "transactions",
+      "data": {
+        "level": 2,
+        "text": "Protecting changes with transactions",
+        "anchor": "transactions"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A transaction groups multiple statements into a single, all-or-nothing unit of work. Either everything succeeds, or everything rolls back — so a partial update never corrupts your data."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Explicit transaction",
+        "code": "BEGIN TRY\n    BEGIN TRANSACTION;\n\n    UPDATE sales.accounts\n    SET    balance = balance - 100\n    WHERE  account_id = 12345;\n\n    UPDATE sales.accounts\n    SET    balance = balance + 100\n    WHERE  account_id = 67890;\n\n    COMMIT TRANSACTION;\n    PRINT 'Transfer complete.';\nEND TRY\nBEGIN CATCH\n    ROLLBACK TRANSACTION;\n    PRINT 'Transfer failed — all changes rolled back.';\nEND CATCH;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "title": "TRY...CATCH pattern",
+        "text": "BEGIN TRY wraps statements that might fail; BEGIN CATCH handles the error. Always ROLLBACK TRANSACTION inside CATCH if you opened one — never COMMIT a failed transaction."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "UPDATE / DELETE essentials",
+        "points": [
+          "UPDATE changes rows; always pair with WHERE to limit the scope",
+          "DELETE removes rows; test your WHERE with SELECT first",
+          "TRUNCATE is faster than DELETE but cannot be filtered or rolled back easily",
+          "Use transactions (BEGIN TRANSACTION / COMMIT / ROLLBACK) for multi-step changes",
+          "Wrap risky operations in TRY...CATCH and always ROLLBACK in the CATCH block"
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-dml-lifecycle",
+      "data": {
+        "level": 3,
+        "text": "The data modification lifecycle",
+        "anchor": "enrichment-dml-lifecycle"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "INSERT, UPDATE, and DELETE are Data Manipulation Language (DML). Every change is logged in the transaction log, which enables rollbacks and crash recovery. For ad-hoc updates in SSMS, you can manually rollback with Ctrl+Z if you did not commit — but in automated scripts, always manage transactions explicitly."
+      }
+    }
+  ],
+  "relatedLessons": ["insert-statements", "merge-statements"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "UPDATE (Transact-SQL)",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/statements/update-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for UPDATE including JOIN, OUTPUT, and error handling."
+    },
+    {
+      "title": "DELETE (Transact-SQL)",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/statements/delete-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for DELETE including TOP and FROM clause."
+    }
+  ]
+}

@@ -1,0 +1,193 @@
+{
+  "id": "lesson-rollup-cube-grouping-sets",
+  "slug": "rollup-cube-grouping-sets",
+  "moduleSlug": "aggregation-and-grouping",
+  "title": "ROLLUP, CUBE, and GROUPING SETS",
+  "description": "Generate hierarchical subtotals and cross-tabulated aggregates in a single query using ROLLUP, CUBE, and GROUPING SETS.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 20,
+  "tags": ["rollup", "cube", "grouping-sets", "subtotals", "reporting"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Sometimes a single GROUP BY is not enough. You might want subtotals per region, per category, and a grand total — all in one report. Rather than running four separate queries, SQL Server lets you generate multiple grouping sets in a single pass using ROLLUP, CUBE, and GROUPING SETS."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "what-are-grouping-sets",
+      "data": {
+        "level": 2,
+        "text": "What is a grouping set?",
+        "anchor": "what-are-grouping-sets"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A *grouping set* is a specific combination of columns that you group by. A plain GROUP BY (brand, category) defines one grouping set: (brand, category). But you might also want subtotals by brand alone, by category alone, and an overall grand total. That is four grouping sets:"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Four grouping sets we might want",
+        "content": "(brand, category) — detail level\n(brand) — subtotal per brand\n(category) — subtotal per category\n() — grand total across everything\n",
+        "language": "text"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "grouping-sets",
+      "data": {
+        "level": 2,
+        "text": "GROUPING SETS — explicit control",
+        "anchor": "grouping-sets"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "GROUPING SETS lets you list exactly which combinations you want. You list each grouping set as a parenthesized list of columns inside the GROUPING SETS clause."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Explicit grouping sets",
+        "code": "SELECT\n    brand,\n    category,\n    SUM(sales) AS sales\nFROM   sales.sales_summary\nGROUP BY\n    GROUPING SETS (\n        (brand, category),  -- detail level\n        (brand),            -- subtotal by brand\n        (category),         -- subtotal by category\n        ()                  -- grand total\n    )\nORDER BY brand, category;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "title": "NULL in the output",
+        "text": "In a grouping set that does not include a column, SQL Server fills that column's place with NULL. To distinguish a real NULL from a 'subtotal' NULL, use the GROUPING() function."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "rollup",
+      "data": {
+        "level": 2,
+        "text": "ROLLUP — hierarchical subtotals",
+        "anchor": "rollup"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "ROLLUP assumes a hierarchy among the dimension columns and generates subtotals at each level. For ROLLUP(brand, category), it produces (brand, category), then (brand), then the grand total (). It is perfect for drill-down reports: year → quarter → month → day."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "ROLLUP for hierarchical subtotals",
+        "code": "SELECT\n    brand,\n    category,\n    SUM(sales) AS sales\nFROM   sales.sales_summary\nGROUP BY ROLLUP(brand, category);",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Grouping set", "Rows returned"],
+        "rows": [
+          ["(brand, category)", "Sales for each brand-category combination"],
+          ["(brand)", "Subtotal sales per brand"],
+          ["()", "Grand total across all brands and categories"]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Column order in ROLLUP matters",
+        "text": "ROLLUP(brand, category) is NOT the same as ROLLUP(category, brand). The first argument is the highest level in the hierarchy. Choose the order to match your reporting hierarchy: region → state → city, not city → region."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "cube",
+      "data": {
+        "level": 2,
+        "text": "CUBE — all possible combinations",
+        "anchor": "cube"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "CUBE generates every possible combination of the dimension columns. For N columns, that is 2^N grouping sets. It is exhaustive — use it when you want a full cross-tab of subtotals."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "CUBE with 2 dimensions = 4 grouping sets",
+        "code": "SELECT\n    brand,\n    category,\n    SUM(sales) AS sales\nFROM   sales.sales_summary\nGROUP BY CUBE(brand, category);",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "cube-vs-rollup-comparison",
+        "caption": "With 2 columns, CUBE produces 4 grouping sets; ROLLUP produces only 3 (no category-only subtotal)",
+        "definition": "table\n  | Function | (brand, category) | (brand) | (category) | () |\n  | ROLLUP   | ✅              | ✅    | ❌       | ✅ |\n  | CUBE     | ✅              | ✅    | ✅      | ✅ |"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "grouping-function",
+      "data": {
+        "level": 2,
+        "text": "The GROUPING() function",
+        "anchor": "grouping-function"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "GROUPING(column) returns 1 if the column's value is NULL because it was aggregated (i.e., it's a subtotal row), and 0 otherwise. This lets you label your output so you can tell detail rows apart from subtotal rows."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Labeling subtotal rows",
+        "code": "SELECT\n    CASE WHEN GROUPING(brand) = 1 THEN 'ALL BRANDS'\n         ELSE brand END  AS brand,\n    CASE WHEN GROUPING(category) = 1 THEN 'ALL CATEGORIES'\n         ELSE category END AS category,\n    SUM(sales) AS sales\nFROM   sales.sales_summary\nGROUP BY GROUPING SETS (\n    (brand, category), (brand), (category), ()\n);",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Choosing the right tool",
+        "points": [
+          "GROUPING SETS — explicit control; list exactly the combinations you need",
+          "ROLLUP — hierarchical subtotals (n, n-1, ..., grand total); fewer grouping sets than CUBE",
+          "CUBE — every combination; powerful but can be slow on many columns",
+          "GROUPING() tells you whether a NULL is a real value or an aggregated subtotal",
+          "For reporting: ROLLUP for drill-downs, CUBE for full cross-tabs, GROUPING SETS for custom"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["group-by-having", "aggregate-functions"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "GROUP BY Clause (Transact-SQL)",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/queries/select-group-by-clause-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for GROUP BY, WITH ROLLUP, WITH CUBE, GROUPING SETS, and the GROUPING function."
+    }
+  ]
+}

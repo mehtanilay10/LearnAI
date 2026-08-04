@@ -1,0 +1,167 @@
+{
+  "id": "lesson-common-table-expressions",
+  "slug": "common-table-expressions",
+  "moduleSlug": "subqueries-and-ctes",
+  "title": "Common Table Expressions (CTEs)",
+  "description": "Write more readable queries with CTEs (WITH clause). Learn recursive CTEs for hierarchical data like org charts and parent-child relationships.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 22,
+  "tags": ["cte", "with-clause", "recursive", "hierarchical", "readability"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A Common Table Expression (CTE) is a named, temporary result set that you can reference within a SELECT, INSERT, UPDATE, DELETE, or MERGE statement. Introduced with the WITH keyword, CTEs make complex queries far more readable than deeply nested subqueries."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "cte-syntax",
+      "data": {
+        "level": 2,
+        "text": "CTE syntax",
+        "anchor": "cte-syntax"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Basic CTE structure",
+        "code": "WITH expression_name[(column_list)]\nAS (\n    -- CTE definition (a SELECT statement)\n)\n-- Reference the CTE like a table\nSELECT * FROM expression_name;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The CTE definition is a regular SELECT. Once defined, you reference it by name in the statement that follows — just like any other table or view."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Why CTEs beat subqueries",
+        "text": "CTEs can reference themselves, support recursion, and are evaluated once then reused. They also make the logical flow of a query top-to-bottom and readable, especially when you need to join a complex calculation back to the main query."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "cte-example",
+      "data": {
+        "level": 2,
+        "text": "Example: sales totals by staff",
+        "anchor": "cte-example"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "CTE replacing a subquery in FROM",
+        "code": "WITH cte_sales (staff, sales, year) AS (\n    SELECT\n        first_name + ' ' + last_name,\n        SUM(quantity * list_price * (1 - discount)),\n        YEAR(order_date)\n    FROM   sales.orders o\n    INNER JOIN sales.order_items i ON i.order_id = o.order_id\n    INNER JOIN sales.staffs s ON s.staff_id = o.staff_id\n    GROUP BY first_name + ' ' + last_name, YEAR(order_date)\n)\nSELECT staff, sales\nFROM   cte_sales\nWHERE  year = 2018;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "multiple-ctes",
+      "data": {
+        "level": 2,
+        "text": "Multiple CTEs in one query",
+        "anchor": "multiple-ctes"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Chaining two CTEs together",
+        "code": "WITH cte_category_counts (category_id, category_name, product_count) AS (\n    SELECT c.category_id,\n           c.category_name,\n           COUNT(p.product_id)\n    FROM   production.products p\n    INNER JOIN production.categories c ON c.category_id = p.category_id\n    GROUP BY c.category_id, c.category_name\n),\ncte_category_sales (category_id, sales) AS (\n    SELECT p.category_id,\n           SUM(i.quantity * i.list_price * (1 - i.discount))\n    FROM   sales.order_items i\n    INNER JOIN production.products p ON p.product_id = i.product_id\n    INNER JOIN sales.orders o ON o.order_id = i.order_id\n    WHERE  o.order_status = 4  -- completed\n    GROUP BY p.category_id\n)\nSELECT c.category_id,\n       c.category_name,\n       c.product_count,\n       s.sales\nFROM   cte_category_counts c\nINNER JOIN cte_category_sales s\n    ON s.category_id = c.category_id\nORDER BY c.category_name;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "recursive-cte",
+      "data": {
+        "level": 2,
+        "text": "Recursive CTEs — querying hierarchies",
+        "anchor": "recursive-cte"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A *recursive CTE* references itself to traverse hierarchical data — like an organization chart, a bill of materials, or a category tree. It has two parts separated by UNION ALL:"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Recursive CTE skeleton",
+        "code": "WITH cte_name (col1, col2, level) AS (\n    -- Anchor member: the root rows\n    SELECT col1, col2, 1\n    FROM   base_table\n    WHERE  parent_id IS NULL\n\n    UNION ALL\n\n    -- Recursive member: references the CTE itself\n    SELECT b.col1, b.col2, c.level + 1\n    FROM   base_table b\n    INNER JOIN cte_name c ON c.col1 = b.parent_id\n    WHERE  c.level < 10  -- safety guard\n)\nSELECT * FROM cte_name;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "Always cap the recursion level",
+        "text": "Recursive CTEs can run infinitely if there is a cycle in the data. Always include a level counter and a WHERE level < N guard — SQL Server's default max recursion is 100, after which it raises an error."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "recursive-cte-flow",
+        "caption": "A recursive CTE starts with an anchor (root rows), then repeatedly joins its own output (recursive member) until no new rows appear",
+        "definition": "flowchart TD\n  Anchor[Anchor Member\nRoot-level rows] --> Union[UNION ALL]\n  Recursive[Recursive Member\nJoins CTE to base table] --> Union\n  Union --> Next[Feed result back into\nRecursive Member]\n  Next -->|New rows found?| Recursive\n  Next -->|No new rows| Done[Final result set]\n\n  style Anchor fill:#e8f5e9\n  style Recursive fill:#fff8c5\n  style Done fill:#e3f2fd"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "cte-best-practices",
+      "data": {
+        "level": 2,
+        "text": "CTE best practices",
+        "anchor": "cte-best-practices"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "items": [
+          "Give CTEs descriptive names — they serve as inline documentation",
+          "CTEs can only reference themselves once; they are not materialized (SQL Server inlines them)",
+          "Multiple CTEs are defined in one WITH clause, separated by commas, and only the last is the 'main' CTE",
+          "Recursive CTEs need an anchor, a recursive member, and a termination condition"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "CTE essentials",
+        "points": [
+          "A CTE is a named, temporary result set defined with WITH and referenced once in the following statement",
+          "CTEs improve readability over nested subqueries and can be chained or referenced multiple times",
+          "Multiple CTEs can be defined in a single WITH clause, separated by commas",
+          "Recursive CTEs traverse hierarchies like org charts and bills of materials",
+          "Every recursive CTE needs a anchor base case, a recursive step, and a safety cap on recursion depth"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["subqueries-basics", "correlated-subqueries-exists"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "WITH Common Table Expression",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/queries/with-common-table-expression-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Full reference for CTE syntax including recursive CTEs."
+    }
+  ]
+}

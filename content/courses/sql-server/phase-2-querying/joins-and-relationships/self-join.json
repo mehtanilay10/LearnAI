@@ -1,0 +1,132 @@
+{
+  "id": "lesson-self-join",
+  "slug": "self-join",
+  "moduleSlug": "joins-and-relationships",
+  "title": "SELF JOIN",
+  "description": "Join a table to itself to find hierarchical relationships and compare rows within the same table.",
+  "order": 4,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 14,
+  "tags": ["joins", "self-join", "hierarchical", "recursive"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Sometimes a table references itself. An employee table has a manager_id that points back to another employee_id in the same table. To read that relationship, you join the table to itself — a SELF JOIN."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "self-join-syntax",
+      "data": {
+        "level": 2,
+        "text": "SELF JOIN syntax",
+        "anchor": "self-join-syntax"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A self-join is just an INNER JOIN (or LEFT JOIN) where the same table appears twice in the FROM clause. You MUST give each occurrence a different alias, or SQL Server cannot tell them apart."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "SELF JOIN skeleton",
+        "code": "SELECT e.col1, m.col2\nFROM   employees e\nINNER JOIN employees m\n    ON m.employee_id = e.manager_id;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "employee-manager",
+      "data": {
+        "level": 2,
+        "text": "Example: employees and their managers",
+        "anchor": "employee-manager"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Every employee has a manager_id that references their manager's employee_id in the same table. The left alias (e) is the employee; the right alias (m) is the manager."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "List every employee with their manager's name",
+        "code": "SELECT e.first_name  AS employee,\n       e.last_name   AS emp_last,\n       m.first_name  AS manager_first,\n       m.last_name   AS manager_last\nFROM   employees e\nLEFT JOIN employees m\n    ON m.employee_id = e.manager_id\nORDER BY e.last_name;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "LEFT JOIN to include the top boss",
+        "text": "If the CEO has a NULL manager_id, an INNER JOIN would exclude them. Use LEFT JOIN instead so every employee appears, with NULL in the manager columns for the top-level person."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "hierarchical-patterns",
+      "data": {
+        "level": 2,
+        "text": "Other self-join patterns",
+        "anchor": "hierarchical-patterns"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "items": [
+          "Comparing rows within a table: find employees earning more than their own manager",
+          "Hierarchical chains: employee → manager → director (multi-level joins)",
+          "Sequential data: compare each row to the previous row by date or ID"
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Employees who earn more than their manager",
+        "code": "-- Assuming salaries table with employee_id and salary columns\nSELECT e.first_name, e.last_name, e.salary\nFROM   employees e\nINNER JOIN employees m\n    ON m.employee_id = e.manager_id\nINNER JOIN salaries s1 ON s1.employee_id = e.employee_id\nINNER JOIN salaries s2 ON s2.employee_id = m.employee_id\nWHERE  s1.salary > s2.salary;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "title": "For deep hierarchies: recursive CTEs",
+        "text": "If you need to traverse an unknown number of levels (e.g., a bill of materials with 10 layers), a SELF JOIN that manually chains N levels becomes unwieldy. The recursive CTE — covered in the next phase — is the better tool for arbitrary-depth hierarchies."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Self-join essentials",
+        "points": [
+          "A self-join is a table joined to itself using different aliases",
+          "Aliases are mandatory — SQL Server cannot resolve two references to the same table name",
+          "LEFT JOIN keeps employees whose manager is NULL (e.g. the CEO)",
+          "Common use cases: org charts, sequential comparisons, finding anomalies",
+          "For arbitrary-depth hierarchies, prefer recursive CTEs over chained self-joins"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["inner-join", "left-and-right-join", "common-table-expressions"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "JOINS Overview",
+      "url": "https://learn.microsoft.com/en-us/sql/relational-databases/performance/understand-and-criteria-on-joins",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Fundamentals of all SQL Server join types."
+    }
+  ]
+}

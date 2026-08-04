@@ -1,0 +1,164 @@
+{
+  "id": "lesson-ordering-and-paging",
+  "slug": "ordering-and-paging",
+  "moduleSlug": "select-and-filtering",
+  "title": "Sorting and Paging Results",
+  "description": "Sort your result sets with ORDER BY, deduplicate with DISTINCT, and page through large result sets with OFFSET-FETCH or TOP.",
+  "order": 2,
+  "difficulty": "beginner",
+  "estimatedMinutes": 14,
+  "tags": ["order-by", "distinct", "top", "offset-fetch", "sorting", "paging", "limit"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "By default, SQL Server returns rows in an unpredictable order. When you need consistent output — whether for a report, a screen, or just readable results — you use ORDER BY to sort the rows. This lesson also covers removing duplicates and paging through large datasets."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "order-by",
+      "data": {
+        "level": 2,
+        "text": "Sorting with ORDER BY",
+        "anchor": "order-by"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Basic ascending sort",
+        "code": "SELECT first_name, last_name, city\nFROM   sales.customers\nORDER BY first_name;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "By default, ORDER BY sorts in ascending order (ASC). Add DESC for descending:"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Descending sort on one column, ascending on another",
+        "code": "SELECT first_name, last_name, city\nFROM   sales.customers\nORDER BY city DESC, first_name ASC;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Sorting by column position",
+        "text": "You can sort by the column's position in the SELECT list (ORDER BY 2 DESC sorts by the second column). It is shorter, but less readable than naming the column — prefer explicit names in production code."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "distinct",
+      "data": {
+        "level": 2,
+        "text": "Removing duplicates with DISTINCT",
+        "anchor": "distinct"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "DISTINCT removes duplicate rows from the result set. It is especially useful when you are joining tables and may produce repeated combinations."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "DISTINCT — one row per city",
+        "code": "SELECT DISTINCT city\nFROM   sales.customers\nORDER BY city;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "NULLs and DISTINCT",
+        "text": "DISTINCT treats NULL as a value, so all NULLs collapse into a single row. If you need to count NULLs separately, handle them explicitly with COALESCE."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "limiting-top",
+      "data": {
+        "level": 2,
+        "text": "Limiting results: TOP vs OFFSET-FETCH",
+        "anchor": "limiting-top"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "There are two main ways to limit how many rows a query returns:"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "TOP — get the first N rows",
+        "code": "-- Top 10 most expensive products\nSELECT TOP(10) product_name, list_price\nFROM   production.products\nORDER BY list_price DESC;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "OFFSET-FETCH — page through results",
+        "code": "-- Page 2, 10 rows per page (skip the first 10)\nSELECT product_name, list_price\nFROM   production.products\nORDER BY product_name\nOFFSET 10 ROWS FETCH NEXT 10 ROWS ONLY;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Feature", "TOP", "OFFSET-FETCH"],
+        "rows": [
+          ["Syntax", "TOP (N) or TOP N", "OFFSET n ROWS FETCH NEXT m ROWS ONLY"],
+          ["Needs ORDER BY", "No (but recommended)", "Yes — ORDER BY is required"],
+          ["Use case", "Grab the first N rows", "Page through a large sorted result set"],
+          ["Available since", "SQL Server 2005", "SQL Server 2012"]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "title": "OFFSET-FETCH always needs ORDER BY",
+        "text": "SQL Server will raise an error if you use OFFSET-FETCH without ORDER BY, because paging without a defined sort order is meaningless — the 'next 10 rows' could change between executions."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "What to remember",
+        "points": [
+          "ORDER BY defines the sort — ASC ascending, DESC descending; you can mix per column",
+          "DISTINCT removes duplicate rows from the result",
+          "TOP(N) is the quick way to get the first N rows",
+          "OFFSET-FETCH pages through sorted results but requires ORDER BY",
+          "Always pair sorting + limiting for reproducible output"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["select-and-where"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "ORDER BY Clause (Transact-SQL)",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/queries/select-order-by-clause-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for ORDER BY, TOP, and OFFSET-FETCH."
+    }
+  ]
+}

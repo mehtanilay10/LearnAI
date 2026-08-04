@@ -1,0 +1,24 @@
+{
+  "id": "mod-modifying-data",
+  "slug": "modifying-data",
+  "phaseSlug": "phase-3-advanced",
+  "title": "Modifying Data",
+  "description": "Insert, update, delete, and merge data safely. Learn about transactions, error handling with TRY...CATCH, and the MERGE statement.",
+  "order": 2,
+  "difficulty": "intermediate",
+  "estimatedHours": 7,
+  "icon": "✏️",
+  "tags": ["insert", "update", "delete", "merge", "transactions", "try-catch"],
+  "lessonSlugs": [
+    "insert-statements",
+    "update-and-delete",
+    "merge-statements"
+  ],
+  "whatYouLearn": [
+    "How to INSERT single and multiple rows into a table",
+    "How to INSERT results from one query into another table",
+    "How to UPDATE and DELETE rows safely with proper WHERE clauses",
+    "How the MERGE statement combines insert, update, and delete in one operation",
+    "How transactions and TRY...CATCH protect data integrity"
+  ]
+}

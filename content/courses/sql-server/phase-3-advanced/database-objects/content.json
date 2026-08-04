@@ -1,0 +1,23 @@
+{
+  "id": "mod-database-objects",
+  "slug": "database-objects",
+  "phaseSlug": "phase-3-advanced",
+  "title": "Database Objects",
+  "description": "Build reusable database logic with views, stored procedures, functions, triggers, and indexes. Learn how to encapsulate business rules in the database.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedHours": 9,
+  "icon": "⚙️",
+  "tags": ["views", "stored-procedures", "functions", "triggers", "indexes", "t-sql"],
+  "lessonSlugs": [
+    "views-and-stored-procedures",
+    "indexes-triggers-functions"
+  ],
+  "whatYouLearn": [
+    "How views create saved queries that you can query like tables",
+    "How stored procedures package reusable T-SQL logic with parameters",
+    "How scalar and table-valued functions encapsulate reusable computations",
+    "How triggers automatically respond to data changes",
+    "How indexes speed up queries and the difference between clustered and nonclustered indexes"
+  ]
+}

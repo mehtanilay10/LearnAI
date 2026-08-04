@@ -1,0 +1,149 @@
+{
+  "id": "lesson-set-operations",
+  "slug": "set-operations",
+  "moduleSlug": "select-and-filtering",
+  "title": "Set Operations: UNION, INTERSECT, EXCEPT",
+  "description": "Combine result sets from multiple queries. Learn when to use UNION (concatenation), INTERSECT (overlap), and EXCEPT (difference).",
+  "order": 3,
+  "difficulty": "intermediate",
+  "estimatedMinutes": 16,
+  "tags": ["union", "intersect", "except", "set-operations", "concat"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Sometimes a single SELECT from one table isn't enough. You might need to append rows from two queries, find what they have in common, or find what one has that the other doesn't. SQL Server provides three set-based operators for exactly these scenarios."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "union",
+      "data": {
+        "level": 2,
+        "text": "UNION — stacking rows",
+        "anchor": "union"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "UNION (or UNION ALL) appends the rows of one query below the rows of another. Both queries must return the same number of columns with compatible types."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "UNION vs UNION ALL",
+        "code": "-- UNION removes duplicate rows\nSELECT category_name FROM production.categories_2018\nUNION\nSELECT category_name FROM production.categories_2019;\n\n-- UNION ALL keeps duplicates (faster)\nSELECT category_name FROM production.categories_2018\nUNION ALL\nSELECT category_name FROM production.categories_2019;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "UNION ALL is faster",
+        "text": "UNION ALL is almost always faster than UNION because SQL Server does not need to sort and de-duplicate the combined result. If you know your two result sets cannot overlap, always use UNION ALL."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "intersect",
+      "data": {
+        "level": 2,
+        "text": "INTERSECT — rows in both result sets",
+        "anchor": "intersect"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "INTERSECT returns only rows that appear in BOTH queries. It is the SQL equivalent of finding common ground."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Find categories that appear in both years",
+        "code": "SELECT category_name FROM production.categories_2018\nINTERSECT\nSELECT category_name FROM production.categories_2019;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "except",
+      "data": {
+        "level": 2,
+        "text": "EXCEPT — rows in the first, not in the second",
+        "anchor": "except"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "EXCEPT (also called MINUS in some databases) returns rows from the first query that do NOT appear in the second query. The order of operands matters."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Find categories from 2018 that did not continue to 2019",
+        "code": "SELECT category_name FROM production.categories_2018\nEXCEPT\nSELECT category_name FROM production.categories_2019;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "set-operations-rules",
+      "data": {
+        "level": 2,
+        "text": "Rules for set operations",
+        "anchor": "set-operations-rules"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "items": [
+          "Both queries must return the same number of columns",
+          "Corresponding columns must have compatible data types",
+          "Column names come from the first (top) query",
+          "NULL values are considered equal to NULL in set operations",
+          "Set operators can be chained: a UNION b UNION c is evaluated left-to-right"
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "Parentheses matter when chaining",
+        "text": "When you mix UNION, INTERSECT, and EXCEPT in one statement, SQL Server evaluates them left-to-right unless you add parentheses. Use parentheses to make your intent unambiguous."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Set operations cheat sheet",
+        "points": [
+          "UNION combines rows and removes duplicates; UNION ALL keeps duplicates (faster)",
+          "INTERSECT returns rows common to both queries",
+          "EXCEPT returns rows from the first query that are NOT in the second",
+          "All three require matching column counts and compatible types",
+          "Column names come from the first query; NULLs are equal across the two sides"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["select-and-where", "ordering-and-paging"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "UNION (Transact-SQL)",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/queries/operations-in-the-from-clause-transact-sql-union",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for UNION, INTERSECT, and EXCEPT operators."
+    }
+  ]
+}

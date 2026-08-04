@@ -1,0 +1,24 @@
+{
+  "id": "mod-select-and-filtering",
+  "slug": "select-and-filtering",
+  "phaseSlug": "phase-2-querying",
+  "title": "SELECT and Filtering",
+  "description": "Retrieve exactly the data you need using SELECT, WHERE, ORDER BY, and other essential clauses. Master filtering, sorting, and limiting results.",
+  "order": 1,
+  "difficulty": "beginner",
+  "estimatedHours": 6,
+  "icon": "🔍",
+  "tags": ["select", "where", "order-by", "distinct", "offset-fetch", "top"],
+  "lessonSlugs": [
+    "select-and-where",
+    "ordering-and-paging",
+    "set-operations"
+  ],
+  "whatYouLearn": [
+    "How to write a SELECT statement to retrieve columns from a table",
+    "How to filter rows using the WHERE clause with comparison and logical operators",
+    "How to sort results with ORDER BY and control ascending/descending order",
+    "How to remove duplicates with DISTINCT and limit results with TOP or OFFSET-FETCH",
+    "How to combine result sets with UNION, INTERSECT, and EXCEPT"
+  ]
+}

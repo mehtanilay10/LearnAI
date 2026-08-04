@@ -1,0 +1,180 @@
+{
+  "id": "lesson-indexes-triggers-functions",
+  "slug": "indexes-triggers-functions",
+  "moduleSlug": "database-objects",
+  "title": "Indexes, Triggers, and Functions",
+  "description": "Speed up queries with indexes, automate logic with triggers, and encapsulate computations with user-defined functions.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 26,
+  "tags": ["indexes", "triggers", "functions", "clustered-index", "nonclustered-index", "performance"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "This lesson covers three powerful but advanced database objects: indexes (the engine of query speed), triggers (code that fires automatically), and functions (reusable logic you call like a built-in)."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "indexes",
+      "data": {
+        "level": 2,
+        "text": "Indexes: making queries fast",
+        "anchor": "indexes"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "An index is a data structure that lets SQL Server find rows without scanning the entire table. Think of it like a book's index — instead of reading every page, you look up a term and jump to the right page."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "clustered-vs-nonclustered",
+        "caption": "Clustered index determines the physical order of rows; nonclustered index stores a separate lookup structure",
+        "definition": "flowchart LR\n  sub1[Heap Table\\n(rows in no particular order)] --> CI[Clustered Index\\n(physical sort by key)]--> Scan[Table Scan\\nO(n) — slow]\n  sub1 --> NC[Nonclustered Index\\n(separate lookup)]--> Seek[Index Seek\\nO(log n) — fast]\n  CI --> Seek2[Index Seek on clustered key\\nO(log n) — fast]\n\n  style Scan fill:#ffebee\n  style Seek fill:#e8f5e9\n  style Seek2 fill:#e8f5e9"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Aspect", "Clustered", "Nonclustered"],
+        "rows": [
+          ["Count per table", "One only", "Many"],
+          ["Stores rows physically sorted?", "Yes", "No — stores key + row locator"],
+          ["Affects row order?", "Yes (defines physical order)", "No"],
+          ["Created manually?", "Rare — usually via PRIMARY KEY", "Yes — CREATE NONCLUSTERED INDEX"]
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Creating indexes",
+        "code": "-- Clustered index (or rely on PRIMARY KEY for this)\nCREATE CLUSTERED INDEX IX_products_category\nON production.products (category_id);\n\n-- Nonclustered index with included columns\nCREATE NONCLUSTERED INDEX IX_orders_customer_date\nON sales.orders (customer_id)\nINCLUDE (order_date, order_status);",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Included columns",
+        "text": "Nonclustered indexes can carry non-key columns with the INCLUDE clause. This covers more queries from the index alone — no trip back to the main table. But every included column adds size, so be selective."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "triggers",
+      "data": {
+        "level": 2,
+        "text": "Triggers — automatic responses to events",
+        "anchor": "triggers"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A trigger is a stored procedure that fires automatically when a specific event occurs — typically INSERT, UPDATE, or DELETE on a table. There are two kinds: DML triggers (fire on data changes) and DDL triggers (fire on structural changes like CREATE TABLE or DROP INDEX)."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "DML trigger preventing deletion of protected rows",
+        "code": "CREATE TRIGGER trg_PreventProductDelete\nON production.products\nFOR DELETE\nAS\nBEGIN\n    IF EXISTS (SELECT 1 FROM deleted WHERE is_protected = 1)\n    BEGIN\n        RAISERROR('Cannot delete protected products.', 16, 1);\n        ROLLBACK TRANSACTION;\n    END\nEND;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Triggers can cause cascading effects",
+        "text": "Because triggers fire automatically, a poorly written one can cause cascading updates, infinite loops, or unexpected slowdowns. Keep triggers simple and test them thoroughly with real workloads."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "functions",
+      "data": {
+        "level": 2,
+        "text": "User-defined functions",
+        "anchor": "functions"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A user-defined function (UDF) is a reusable routine that returns a value or a table. Scalar functions return a single value; table-valued functions return a result set. Unlike stored procedures, functions can be called inside SELECT, WHERE, and other expressions."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Function type", "Returns", "Can be used in", "Side effects?"],
+        "rows": [
+          ["Scalar (UDF)", "Single value", "SELECT, WHERE expressions", "None (deterministic only)"],
+          ["Table-valued (TVF)", "Result set (table)", "FROM clause", "None"]
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Scalar function",
+        "code": "CREATE FUNCTION dbo.GetAge(@BirthDate DATE)\nRETURNS INT\nAS\nBEGIN\n    DECLARE @Age INT;\n    SET @Age = DATEDIFF(YEAR, @BirthDate, GETDATE());\n    RETURN @Age;\nEND;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Inline table-valued function",
+        "code": "CREATE FUNCTION Sales.GetCustomerOrders(@CustomerID INT)\nRETURNS TABLE\nAS\nRETURN\n    SELECT order_id, order_date, order_status\n    FROM   sales.orders\n    WHERE  customer_id = @CustomerID;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "title": "Functions must be deterministic",
+        "text": "Functions cannot perform data modifications (no INSERT/UPDATE/DELETE) and should not call non-deterministic functions. This is enforced by SQL Server — if a function tries to modify data, it raises an error."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Database objects essentials",
+        "points": [
+          "Clustered index = one per table, defines physical row order; nonclustered = separate lookup structure",
+          "CREATE NONCLUSTERED INDEX with INCLUDE to cover more queries from the index",
+          "Triggers fire automatically on INSERT/UPDATE/DELETE (DML) or schema changes (DDL)",
+          "Functions return a value or table and can be used in expressions — but must not modify data"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["views-and-stored-procedures"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "CREATE INDEX (Transact-SQL)",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/statements/create-index-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for CREATE INDEX including options like INCLUDE and FILTER."
+    },
+    {
+      "title": "CREATE TRIGGER (Transact-SQL)",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/statements/create-trigger-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for DML and DDL triggers."
+    }
+  ]
+}

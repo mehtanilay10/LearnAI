@@ -1,0 +1,173 @@
+{
+  "id": "lesson-install-and-management-tools",
+  "slug": "install-and-management-tools",
+  "moduleSlug": "getting-started",
+  "title": "Installing SQL Server and Management Tools",
+  "description": "Step through installing SQL Server (Developer Edition) and SQL Server Management Studio on Windows, plus a quick intro to Azure Data Studio.",
+  "order": 2,
+  "difficulty": "beginner",
+  "estimatedMinutes": 18,
+  "tags": ["sql-server", "installation", "ssms", "azure-data-studio", "setup", "windows"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Before you can write your first query, you need a running SQL Server instance and a tool to talk to it. This lesson walks through the two installers you need and how to confirm everything is working."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "prerequisites",
+      "data": {
+        "level": 2,
+        "text": "Before you begin",
+        "anchor": "prerequisites"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "items": [
+          "A Windows PC (10 or 11) or Windows Server — SQL Server runs natively on Windows",
+          "Administrator rights on the machine",
+          "At least 6 GB of free disk space (Express is smaller)",
+          "An active internet connection for the download"
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "title": "Using macOS or Linux?",
+        "text": "SQL Server is available on Linux, but the simplest path for beginners is Windows + SSMS. If you are on a Mac, you can use Azure Data Studio (cross-platform) to connect to a SQL Server running on a cloud VM or Docker container."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "install-sql-server",
+      "data": {
+        "level": 2,
+        "text": "Step 1 — Install the SQL Server database engine",
+        "anchor": "install-sql-server"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Download and run the installer",
+        "content": "1. Go to the Microsoft SQL Server Downloads page and select the Developer edition.\n2. Run the installer (EXE) and choose 'Basic' installation.\n3. When prompted, select Mixed Mode authentication and set a strong 'sa' password.\n4. Complete the wizard and restart if prompted.",
+        "language": "text"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Remember your 'sa' password",
+        "text": "During setup, write down the password you set for the built-in 'sa' (system administrator) account. You will need it to log in — and if you forget it, recovering is painful."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "install-ssms",
+      "data": {
+        "level": 2,
+        "text": "Step 2 — Install SQL Server Management Studio (SSMS)",
+        "anchor": "install-ssms"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Installing SSMS",
+        "content": "1. Download the SSMS installer from Microsoft's website.\n2. Run it — it is a small bootstrapper that downloads the rest automatically.\n3. Once installed, launch SSMS and sign in with the SQL Server instance you just configured.",
+        "language": "text"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "SSMS is a heavy, Windows-only application with a full graphical interface. For a lighter, cross-platform experience, download Azure Data Studio instead — it supports Windows, macOS, and Linux, and uses 'extensions' for extra features."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "connect-to-instance",
+      "data": {
+        "level": 2,
+        "text": "Step 3 — Connect to your instance",
+        "anchor": "connect-to-instance"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When you open SSMS, the 'Connect to Server' dialog asks for a server name. If you installed SQL Server with the default options, the server name is:"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Connection details",
+        "content": "Server name:  localhost\nAuthentication:  SQL Server Authentication\nLogin:  sa\nPassword:  [the password you set during setup]",
+        "language": "text"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "title": "What 'localhost' means",
+        "text": "'localhost' tells SSMS to connect to a SQL Server instance running on your own computer. If you see your computer name (e.g., 'MYPC') instead, that works too."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "first-query",
+      "data": {
+        "level": 2,
+        "text": "Step 4 — Run your first query",
+        "anchor": "first-query"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Hello, SQL Server!",
+        "content": "-- The simplest possible T-SQL query\nSELECT 1 + 1 AS Result;",
+        "code": "SELECT 1 + 1 AS Result;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In SSMS, open a 'New Query' window, paste that code, and click the 'Execute' button (or press F5). If you see a result of 2, your setup is working."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Installation checklist",
+        "points": [
+          "Install SQL Server Developer Edition with Mixed Mode authentication",
+          "Install SSMS or Azure Data Studio on your development machine",
+          "Connect using 'localhost' as the server name and the 'sa' account",
+          "Run 'SELECT 1 + 1 AS Result' to confirm the connection works"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["what-is-sql-server"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "Install SQL Server",
+      "url": "https://learn.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Step-by-step instructions for installing SQL Server on Windows."
+    }
+  ]
+}

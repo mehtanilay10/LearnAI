@@ -1,0 +1,183 @@
+{
+  "id": "lesson-correlated-subqueries-exists",
+  "slug": "correlated-subqueries-exists",
+  "moduleSlug": "subqueries-and-ctes",
+  "title": "Correlated Subqueries and EXISTS",
+  "description": "Understand correlated subqueries that reference the outer query, and learn when to use EXISTS and NOT EXISTS for efficient existence checks.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 20,
+  "tags": ["correlated-subquery", "exists", "not-exists", "nested-queries"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A correlated subquery is a subquery that depends on the outer query — it references a column from the outer query inside its own WHERE clause. Unlike a regular subquery that runs once, a correlated subquery is re-evaluated for every row the outer query processes."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "correlated-vs-simple",
+      "data": {
+        "level": 2,
+        "text": "Correlated vs. simple subqueries",
+        "anchor": "correlated-vs-simple"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["", "Simple subquery", "Correlated subquery"],
+        "rows": [
+          ["Execution", "Runs once, independently", "Re-runs for every outer row"],
+          ["References outer columns?", "No", "Yes"],
+          ["Performance", "Fast (single execution)", "Can be slow (N executions)"],
+          ["Readability", "Easy to follow", "Harder to follow"]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Performance warning",
+        "text": "A correlated subquery over N rows executes N times. On large tables this can be painfully slow. Always check whether a JOIN or a CTE can express the same logic more efficiently."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "correlated-example",
+      "data": {
+        "level": 2,
+        "text": "Example: top products per category",
+        "anchor": "correlated-example"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Find products whose list price equals the highest price in their own category. The subquery references p1.category_id from the outer query:"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Correlated subquery finding max price per category",
+        "code": "SELECT product_name, list_price, category_id\nFROM   production.products p1\nWHERE  list_price = (\n    SELECT MAX(list_price)\n    FROM   production.products p2\n    WHERE  p2.category_id = p1.category_id\n)\nORDER BY category_id, product_name;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "exists",
+      "data": {
+        "level": 2,
+        "text": "EXISTS and NOT EXISTS",
+        "anchor": "exists"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The EXISTS operator tests whether a subquery returns *any* rows at all. It returns TRUE as soon as it finds the first matching row — it does not care about the actual values, only whether rows exist. This makes it ideal for existence checks and it naturally pairs with correlated subqueries."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "EXISTS — find customers who placed orders in 2017",
+        "code": "SELECT customer_id, first_name, last_name, city\nFROM   sales.customers c\nWHERE  EXISTS (\n    SELECT 1\n    FROM   sales.orders o\n    WHERE  o.customer_id = c.customer_id\n      AND  YEAR(order_date) = 2017\n)\nORDER BY first_name, last_name;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "SELECT 1 vs SELECT * in EXISTS",
+        "text": "Inside EXISTS, use SELECT 1 (or SELECT NULL) rather than SELECT *. Since EXISTS only checks for row existence, the column list is irrelevant — SELECT 1 avoids the overhead of building a result set."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "not-exists",
+      "data": {
+        "level": 2,
+        "text": "NOT EXISTS — the anti-join pattern",
+        "anchor": "not-exists"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "NOT EXISTS is perfect for finding 'orphans' — rows in one table that have no matching row in another. This is often called an 'anti-join.'"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Customers who never placed an order",
+        "code": "SELECT customer_id, first_name, last_name\nFROM   sales.customers c\nWHERE  NOT EXISTS (\n    SELECT 1\n    FROM   sales.orders o\n    WHERE  o.customer_id = c.customer_id\n)\nORDER BY first_name;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "exists-vs-in",
+      "data": {
+        "level": 2,
+        "text": "EXISTS vs. IN vs. JOIN",
+        "anchor": "exists-vs-in"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "For existence checks, EXISTS, IN, and JOIN can often produce the same result. The choice matters for both correctness and performance:"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Method", "Best when...", "NULL-safe?", "Correlated?"],
+        "rows": [
+          ["EXISTS", "You need to check existence and don't need columns from the subquery", "Yes", "Yes (can be)"],
+          ["IN", "The subquery returns a small, known set; or you are comparing to a literal list", "No (NULLs break IN)", "Usually not"],
+          ["JOIN", "You need columns from the related table in the output", "Yes", "No"]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "title": "NULLs and IN",
+        "text": "IN (subquery) returns UNKNOWN (not TRUE) if the subquery contains a NULL. NOT IN returns FALSE for every row when NULLs are present. EXISTS does not have this problem — it is NULL-safe."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key takeaways",
+        "points": [
+          "A correlated subquery references columns from the outer query and re-runs for every outer row",
+          "EXISTS returns TRUE as soon as the subquery yields any row; use SELECT 1 for clarity",
+          "NOT EXISTS is the standard pattern for finding orphaned (unmatched) rows",
+          "IN with a subquery containing NULLs can silently filter out everything — prefer EXISTS for safety",
+          "Correlated subqueries can be slow on large datasets; consider JOINs or CTEs instead"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["subqueries-basics", "common-table-expressions"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "EXISTS (Transact-SQL)",
+      "url": "https://learn.microsoft.com/en-us/sql/t-sql/language-elements/exists-transact-sql",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Reference for the EXISTS and NOT EXISTS operators."
+    }
+  ]
+}

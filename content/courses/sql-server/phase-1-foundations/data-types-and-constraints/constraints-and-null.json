@@ -1,0 +1,243 @@
+{
+  "id": "lesson-constraints-and-null",
+  "slug": "constraints-and-null",
+  "moduleSlug": "data-types-and-constraints",
+  "title": "Constraints and NULL Values",
+  "description": "Enforce data integrity with PRIMARY KEY, FOREIGN KEY, NOT NULL, UNIQUE, and CHECK constraints. Learn how NULL and three-valued logic work.",
+  "order": 2,
+  "difficulty": "beginner",
+  "estimatedMinutes": 22,
+  "tags": ["constraints", "primary-key", "foreign-key", "unique", "check", "null", "integrity"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A database that accepts any garbage is a database that will give you garbage back. Constraints are rules you attach to tables and columns that tell SQL Server: 'reject any data that violates this rule.' They are your first line of defense for data quality."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "null-and-three-valued-logic",
+      "data": {
+        "level": 2,
+        "text": "NULL and three-valued logic",
+        "anchor": "null-and-three-valued-logic"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "NULL means 'unknown' or 'not applicable' — it is not zero, not an empty string, not a blank. It is the absence of a value. Because you don't know anything about an unknown value, SQL Server uses three-valued logic in comparisons: TRUE, FALSE, and UNKNOWN."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "NULL comparisons return UNKNOWN",
+        "content": "Assume column discount has the value NULL.\n\n  price > 100    — evaluates to UNKNOWN (not TRUE or FALSE)\n  price = NULL   — always UNKNOWN (use IS NULL instead)\n  price <> 100   — also UNKNOWN\n\nBecause WHERE filters on TRUE only, rows with NULL in a compared column are excluded:",
+        "language": "text"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Testing for NULL correctly",
+        "code": "-- ✅ Correct way to find missing values\nWHERE discount IS NULL\n\n-- ❌ This finds nothing — NULL = NULL is UNKNOWN, not TRUE\nWHERE discount = NULL",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "NULL traps",
+        "text": "You can never use = or <> to compare with NULL. Always use IS NULL or IS NOT NULL. COUNT(*) counts rows including NULLs; COUNT(column) counts only non-NULL values."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "constraint-types",
+      "data": {
+        "level": 2,
+        "text": "The five constraint types",
+        "anchor": "constraint-types"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "constraint-types-diagram",
+        "caption": "Constraints protect data integrity at three levels — column, table, and cross-table",
+        "definition": "flowchart TD\n  C[Constraints protect data] --> Col[Column-level]\n  C --> Table[Table-level]\n  C --> Cross[Cross-table]\n\n  Col --> NN[NOT NULL]\n  Col --> ID[IDENTITY]\n  Col --> DFLT[DEFAULT]\n\n  Table --> PK[PRIMARY KEY]\n  Table --> UNIQ[UNIQUE]\n  Table --> CK[CHECK]\n\n  Cross --> FK[FOREIGN KEY]\n\n  style C fill:#fff8c5\n  style Col fill:#ddf4ff\n  style Table fill:#d1f3d8\n  style Cross fill:#ffd8be"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "SQL Server provides five main types of integrity constraints. Each one prevents a specific class of data problem."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "primary-key",
+      "data": {
+        "level": 2,
+        "text": "1. PRIMARY KEY — the unique identity",
+        "anchor": "primary-key"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A primary key uniquely identifies each row in a table. By definition it cannot contain NULL, and only one primary key is allowed per table. When you define a primary key on a single column, SQL Server creates a clustered index on it by default."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Defining a primary key at table creation",
+        "code": "CREATE TABLE sales.categories (\n    category_id INT PRIMARY KEY,\n    category_name VARCHAR(100) NOT NULL\n);\n\n-- You can also name it explicitly as a table constraint:\nCREATE TABLE sales.categories (\n    category_id INT,\n    category_name VARCHAR(100) NOT NULL,\n    CONSTRAINT pk_categories PRIMARY KEY (category_id)\n);",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "foreign-key",
+      "data": {
+        "level": 2,
+        "text": "2. FOREIGN KEY — enforcing relationships",
+        "anchor": "foreign-key"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A foreign key links a column (or columns) in one table to the primary key in another. It ensures that every 'child' value points to a valid 'parent' row — no orphaned references allowed."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Creating a foreign key relationship",
+        "code": "CREATE TABLE procurement.vendors (\n    vendor_id   INT IDENTITY(1,1) PRIMARY KEY,\n    vendor_name VARCHAR(100)    NOT NULL,\n    group_id    INT             NOT NULL,\n    CONSTRAINT fk_vendors_group\n        FOREIGN KEY (group_id)\n        REFERENCES procurement.vendor_groups(group_id)\n);",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "note",
+        "title": "Referential actions",
+        "text": "When a parent row is deleted or updated, the foreign key can enforce different behaviors: ON DELETE CASCADE removes child rows automatically, ON DELETE NO ACTION raises an error, ON DELETE SET NULL clears the reference. Choose carefully based on your business rules."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "not-null",
+      "data": {
+        "level": 2,
+        "text": "3. NOT NULL — no missing values",
+        "anchor": "not-null"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "By default, a column accepts NULL. Adding NOT NULL means every row must provide a value. This is how you ensure a 'last_name' field is never left blank."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "unique",
+      "data": {
+        "level": 2,
+        "text": "4. UNIQUE — no duplicates",
+        "anchor": "unique"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "UNIQUE ensures every value in a column (or combination of columns) is different. Unlike PRIMARY KEY, it allows one NULL. Behind the scenes, SQL Server creates a UNIQUE index to enforce it."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Adding a UNIQUE constraint",
+        "code": "-- Define at table creation:\nCREATE TABLE hr.persons (\n    person_id  INT IDENTITY(1,1) PRIMARY KEY,\n    email      VARCHAR(255) UNIQUE,\n    phone      VARCHAR(20)\n);\n\n-- Add to an existing table:\nALTER TABLE hr.persons\nADD CONSTRAINT unique_phone UNIQUE(phone);",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "check",
+      "data": {
+        "level": 2,
+        "text": "5. CHECK — business rule enforcement",
+        "anchor": "check"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A CHECK constraint evaluates a boolean expression for every row. If the expression is false, the insert or update is rejected. This is where you encode business rules like 'discount must be between 0 and 1' or 'delivery date must be after the order date'."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Defining CHECK constraints",
+        "code": "CREATE TABLE sales.orders (\n    order_id        INT IDENTITY(1,1) PRIMARY KEY,\n    discount        DECIMAL(3,2) CHECK (discount BETWEEN 0 AND 1),\n    order_date        DATE,\n    shipped_date      DATE CHECK (shipped_date >= order_date)\n);",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "constraint-summary",
+      "data": {
+        "level": 2,
+        "text": "Constraint quick reference",
+        "anchor": "constraint-summary"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Constraint", "What it prevents", "NULL allowed?", "Per table"],
+        "rows": [
+          ["PRIMARY KEY", "Duplicate or NULL IDs", "No", "One only"],
+          ["FOREIGN KEY", "Orphaned references to parent rows", "Yes (unless NOT NULL)", "Many"],
+          ["NOT NULL", "Missing/blank values", "No (by definition)", "Many"],
+          ["UNIQUE", "Duplicate values", "One NULL", "Many"],
+          ["CHECK", "Values violating a rule", "Yes", "Many"]
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key takeaways",
+        "points": [
+          "NULL is 'unknown' — never compare with =; use IS NULL / IS NOT NULL instead",
+          "PRIMARY KEY = unique + not null; one per table",
+          "FOREIGN KEY = referential integrity; use CASCADE or NO ACTION for deletes",
+          "NOT NULL = column must have a value",
+          "UNIQUE = no duplicates, allows one NULL; creates a UNIQUE index behind the scenes",
+          "CHECK = custom boolean rule, perfect for business logic like ranges"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["sql-server-data-types", "creating-your-first-table"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "Constraints",
+      "url": "https://learn.microsoft.com/en-us/sql/relational-databases/constraints/constraints-database-engine",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Overview of constraints and how they enforce data integrity in SQL Server."
+    }
+  ]
+}

@@ -17,6 +17,11 @@ import codexPhase2Tools from '../courses/codex/phase-2-tools/content.json';
 import codexPhase3Workflows from '../courses/codex/phase-3-workflows/content.json';
 import codexPhase4AdvancedTechniques from '../courses/codex/phase-4-advanced-techniques/content.json';
 
+// SQL Server course phases
+import sqlPhase1Foundations from '../courses/sql-server/phase-1-foundations/content.json';
+import sqlPhase2Querying from '../courses/sql-server/phase-2-querying/content.json';
+import sqlPhase3Advanced from '../courses/sql-server/phase-3-advanced/content.json';
+
 const rawPhases = [
   phase1Foundations,
   phase2KeyConcepts,
@@ -31,6 +36,9 @@ const rawPhases = [
   codexPhase2Tools,
   codexPhase3Workflows,
   codexPhase4AdvancedTechniques,
+  sqlPhase1Foundations,
+  sqlPhase2Querying,
+  sqlPhase3Advanced,
 ];
 
 export const phases: Phase[] = rawPhases as unknown as Phase[];

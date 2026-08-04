@@ -1,0 +1,182 @@
+{
+  "id": "lesson-what-is-sql-server",
+  "slug": "what-is-sql-server",
+  "moduleSlug": "getting-started",
+  "title": "What Is SQL Server?",
+  "description": "Learn what Microsoft SQL Server is, its architecture, the tools it includes, and which edition is right for you.",
+  "order": 1,
+  "difficulty": "beginner",
+  "estimatedMinutes": 12,
+  "tags": ["sql-server", "architecture", "editions", "database-engine", "overview"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "SQL Server is a relational database management system (RDBMS) developed by Microsoft. Just like a spreadsheet stores data in rows and columns, SQL Server stores information in a structured way that makes it easy to find, update, and analyze — even when you have millions of records."
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Where a spreadsheet is a single file you open on your computer, SQL Server runs as a *database engine* on a server. Multiple users and applications connect to it over a network, and it handles storing data safely, enforcing rules, and answering questions (queries) quickly and reliably."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "sql-server-architecture",
+      "data": {
+        "level": 2,
+        "text": "How SQL Server is built",
+        "anchor": "sql-server-architecture"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "sql-server-architecture-diagram",
+        "caption": "SQL Server architecture — the Database Engine sits on top of SQLOS, with management tools connecting from above",
+        "definition": "graph TB\n  subgraph Client[\"Client Applications\"]\n    SSMS[SQL Server Management Studio]\n    App[Your Application]\n    ADP[Azure Data Studio]\n  end\n  subgraph Engine[\"Database Engine\"]\n    RE[Relational Engine\nQuery Processor]\n    SE[Storage Engine\nData & Log Files]\n  end\n  SQLOS[SQL Server Operating System\nMemory / I/O / Scheduling]\n  Disk[(Database Files\n.mdf .ldf .ndf)]\n\n  Client -->|Requests| RE\n  RE -->|Reads/Writes| SE\n  SE -->|Pages| SQLOS\n  SQLOS --> Disk\n\n  style Client fill:#ddf4ff,stroke:#0969da\n  style Engine fill:#ffd8be,stroke:#b05b1d\n  style SQLOS fill:#e8f5e9,stroke:#1a7f37\n  style Disk fill:#fff4e5,stroke:#9a6700"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "SQL Server has three main components you should know about:\n\n1. **Database Engine** — the core service that stores, processes, and secures your data. It has two parts: the *Relational Engine* (which figures out the best way to run your queries) and the *Storage Engine* (which reads and writes data to disk).\n2. **SQLOS** (SQL Server Operating System) — a layer that sits between the Database Engine and Windows. It handles memory management, I/O scheduling, and task coordination.\n3. **Management tools** — applications like SQL Server Management Studio (SSMS) and Azure Data Studio that let you connect, write queries, and manage your server in a visual interface."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "editions",
+      "data": {
+        "level": 2,
+        "text": "SQL Server editions at a glance",
+        "anchor": "editions"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Edition", "Best for", "Free?", "Notes"],
+        "rows": [
+          [
+            "Express",
+            "Learning, small desktop apps, very small databases",
+            "Yes",
+            "Limited to 10 GB per database; capped at 1 CPU"
+          ],
+          [
+            "Developer",
+            "Development and testing",
+            "Yes",
+            "Full feature set but not licensed for production"
+          ],
+          [
+            "Standard",
+            "Small-to-medium production workloads",
+            "No",
+            "Good for most business applications and departmental servers"
+          ],
+          [
+            "Enterprise",
+            "Large-scale, mission-critical production",
+            "No",
+            "Includes advanced features: partitioning, compression, Always On availability groups"
+          ],
+          [
+            "Web",
+            "Web hosting providers",
+            "No",
+            "Low-cost option for web-facing workloads"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Which edition should you pick?",
+        "text": "If you're learning, install **Developer Edition** (free) — it has every feature. Use **Express Edition** if you're working on a very small project or want the lightest install. Production deployments use Standard or Enterprise depending on scale."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "services-and-tools",
+      "data": {
+        "level": 2,
+        "text": "SQL Server services and tools",
+        "anchor": "services-and-tools"
+      }
+    },
+    {
+      "type": "key-terms",
+      "data": {
+        "terms": [
+          {
+            "term": "Database Engine",
+            "definition": "The core SQL Server component that manages data storage, query processing, and security."
+          },
+          {
+            "term": "SSMS (SQL Server Management Studio)",
+            "definition": "A free, Windows-based graphical interface for configuring, managing, and developing SQL Server."
+          },
+          {
+            "term": "Azure Data Studio",
+            "definition": "A lightweight, cross-platform (Windows, macOS, Linux) code-focused data tool; the modern alternative to SSMS."
+          },
+          {
+            "term": "Schema",
+            "definition": "A named container for database objects that groups tables, views, and procedures by owner or purpose."
+          }
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "title": "What is Transact-SQL?",
+        "text": "SQL Server uses T-SQL (Transact-SQL), Microsoft's extension of the standard SQL language. T-SQL adds useful features like variables (@var), procedural statements (IF...ELSE, WHILE), and built-in functions. Everything you'll write in this course is T-SQL."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key takeaways",
+        "points": [
+          "SQL Server is a relational database that stores structured data in tables with rows and columns",
+          "The Database Engine (Relational + Storage) processes your queries; SQLOS manages memory and I/O",
+          "Developer and Express editions are free and great for learning",
+          "Use SSMS or Azure Data Studio to connect and interact with SQL Server",
+          "T-SQL is Microsoft's extended flavor of SQL — it powers everything you'll write"
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "id": "enrichment-architecture",
+      "data": {
+        "level": 3,
+        "text": "Beyond the Database Engine",
+        "anchor": "enrichment-architecture"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Beyond the Database Engine, SQL Server offers a family of related services you may encounter in enterprise environments:\n\n- **SQL Server Integration Services (SSIS)** — for building ETL (extract, transform, load) data pipelines\n- **SQL Server Analysis Services (SSAS)** — for online analytical processing (OLAP) and data mining\n- **SQL Server Reporting Services (SSRS)** — for creating and publishing reports, dashboards, and scorecards\n- **SQL Server Machine Learning Services** — for running Python and R scripts inside the database"
+      }
+    }
+  ],
+  "relatedLessons": ["install-and-management-tools"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "Microsoft SQL Server Documentation",
+      "url": "https://learn.microsoft.com/en-us/sql/sql-server/",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Official documentation covering SQL Server editions, installation, and architecture."
+    }
+  ]
+}

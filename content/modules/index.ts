@@ -48,6 +48,21 @@ import codexPracticalAiWorkflows from '../courses/codex/phase-3-workflows/practi
 import codexAgenticWorkflows from '../courses/codex/phase-3-workflows/agentic-workflows/content.json';
 import codexSecurityAndTesting from '../courses/codex/phase-4-advanced-techniques/security-and-testing/content.json';
 
+// SQL Server course modules
+// Phase 1: Foundations
+import sqlGettingStarted from '../courses/sql-server/phase-1-foundations/getting-started/content.json';
+import sqlDatabaseBasics from '../courses/sql-server/phase-1-foundations/database-basics/content.json';
+import sqlDataTypesAndConstraints from '../courses/sql-server/phase-1-foundations/data-types-and-constraints/content.json';
+// Phase 2: Querying Data
+import sqlSelectAndFiltering from '../courses/sql-server/phase-2-querying/select-and-filtering/content.json';
+import sqlJoinsAndRelationships from '../courses/sql-server/phase-2-querying/joins-and-relationships/content.json';
+import sqlAggregationAndGrouping from '../courses/sql-server/phase-2-querying/aggregation-and-grouping/content.json';
+// Phase 3: Advanced SQL
+import sqlSubqueriesAndCtes from '../courses/sql-server/phase-3-advanced/subqueries-and-ctes/content.json';
+import sqlModifyingData from '../courses/sql-server/phase-3-advanced/modifying-data/content.json';
+import sqlDatabaseObjects from '../courses/sql-server/phase-3-advanced/database-objects/content.json';
+import sqlPerformanceAndSecurity from '../courses/sql-server/phase-3-advanced/performance-and-security/content.json';
+
 const rawModules = [
   whatIsAi,
   aiToolsOverview,
@@ -78,6 +93,17 @@ const rawModules = [
   codexPracticalAiWorkflows,
   codexAgenticWorkflows,
   codexSecurityAndTesting,
+  // SQL Server course
+  sqlGettingStarted,
+  sqlDatabaseBasics,
+  sqlDataTypesAndConstraints,
+  sqlSelectAndFiltering,
+  sqlJoinsAndRelationships,
+  sqlAggregationAndGrouping,
+  sqlSubqueriesAndCtes,
+  sqlModifyingData,
+  sqlDatabaseObjects,
+  sqlPerformanceAndSecurity,
 ];
 
 export const modules: Module[] = rawModules as unknown as Module[];

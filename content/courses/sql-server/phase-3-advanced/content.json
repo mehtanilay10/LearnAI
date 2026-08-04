@@ -1,0 +1,13 @@
+{
+  "id": "phase-3",
+  "slug": "phase-3-advanced",
+  "courseSlug": "sql-server",
+  "title": "Phase 3: Advanced SQL",
+  "subtitle": "Master subqueries, data modification, and database objects",
+  "description": "Take your SQL skills to the next level with subqueries, CTEs, data modification, views, stored procedures, triggers, and performance optimization. This phase covers the advanced features that make SQL Server a powerful enterprise tool.",
+  "order": 3,
+  "icon": "⚡",
+  "color": "success",
+  "moduleSlug": ["subqueries-and-ctes", "modifying-data", "database-objects", "performance-and-security"],
+  "estimatedWeeks": 4
+}

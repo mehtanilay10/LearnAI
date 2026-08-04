@@ -1,0 +1,13 @@
+{
+  "id": "phase-2",
+  "slug": "phase-2-querying",
+  "courseSlug": "sql-server",
+  "title": "Phase 2: Querying Data",
+  "subtitle": "Write powerful queries to retrieve and analyze data",
+  "description": "Master SELECT statements, joins, filtering, aggregation, and grouping to extract meaningful insights from your data. This phase builds the core querying skills every SQL Server professional needs.",
+  "order": 2,
+  "icon": "🔍",
+  "color": "info",
+  "moduleSlug": ["select-and-filtering", "joins-and-relationships", "aggregation-and-grouping"],
+  "estimatedWeeks": 3
+}

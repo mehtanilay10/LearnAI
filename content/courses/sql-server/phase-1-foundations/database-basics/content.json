@@ -1,0 +1,23 @@
+{
+  "id": "mod-database-basics",
+  "slug": "database-basics",
+  "phaseSlug": "sqlserver-foundations",
+  "title": "Databases, Tables, and Schemas",
+  "description": "Understand the structure of a SQL Server database. Learn how to create databases, tables, and schemas, and how they relate to each other.",
+  "order": 2,
+  "difficulty": "beginner",
+  "estimatedHours": 5,
+  "icon": "🏗️",
+  "tags": ["database", "tables", "schemas", "create-database", "create-table"],
+  "lessonSlugs": [
+    "understanding-databases",
+    "creating-your-first-table"
+  ],
+  "whatYouLearn": [
+    "How databases, tables, rows, and columns fit together in a relational model",
+    "The role of schemas in organizing database objects",
+    "How to create a new database and a new table with columns and data types",
+    "How to inspect existing database objects using system views",
+    "The difference between system databases and user databases"
+  ]
+}

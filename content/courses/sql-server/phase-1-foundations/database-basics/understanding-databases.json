@@ -1,0 +1,156 @@
+{
+  "id": "lesson-understanding-databases",
+  "slug": "understanding-databases",
+  "moduleSlug": "database-basics",
+  "title": "Understanding Databases, Tables, and Schemas",
+  "description": "Learn the relational model: how databases contain tables, tables have rows and columns, and schemas organize your objects.",
+  "order": 1,
+  "difficulty": "beginner",
+  "estimatedMinutes": 12,
+  "tags": ["database", "tables", "schemas", "relational-model", "system-databases"],
+  "blocks": [
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Think of a database as a well-organized filing cabinet. Instead of loose papers in folders, a SQL Server database stores data in *tables* — structured grids much like a spreadsheet, where each row is one record and each column is a field of information."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "the-relational-model",
+      "data": {
+        "level": 2,
+        "text": "The relational model",
+        "anchor": "the-relational-model"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "relational-model-diagram",
+        "caption": "A database contains schemas, which contain tables. Each table has rows (records) and columns (fields).",
+        "definition": "erDiagram\n  DB ||--o{ SCHEMA : contains\n  SCHEMA ||--o{ TABLE : contains\n  TABLE ||--o{ ROW : has\n  TABLE ||--o{ COLUMN : defines\n\n  DB {\n    string name\n  }\n  SCHEMA {\n    string name\n  }\n  TABLE {\n    string name\n  }\n  ROW {\n    n/a values\n  }\n  COLUMN {\n    string name\n    string data_type\n  }"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A *database* is the top-level container. Inside it, a *schema* is a logical grouping (usually by owner) that holds tables, views, stored procedures, and other objects. Within a schema, a *table* is a two-dimensional structure of rows and columns. Each *row* (also called a *record*) represents one thing you are tracking, and each *column* (also called a *field*) describes one attribute of that thing."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "A customers table",
+        "content": "Consider a simple table that tracks customers:\n\n| customer_id | first_name | last_name | email | city |\n|-------------|------------|-----------|-------|------|\n| 1 | Alice | Chen | alice@example.com | Seattle |\n| 2 | Bob | Kim | bob@example.com | Portland |\n| 3 | Carla | Ruiz | carla@example.com | Austin |\n\nEach row is one customer. Each column is one piece of information about that customer.",
+        "language": "text"
+      }
+    },
+    {
+      "type": "heading",
+      "id": "schemas",
+      "data": {
+        "level": 2,
+        "text": "Schemas: more than just a namespace",
+        "anchor": "schemas"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A schema is like a folder inside a filing cabinet. It groups related objects together and helps avoid naming conflicts. When you reference a table, you can use the fully qualified name: database_name.schema_name.table_name. If you omit the schema, SQL Server defaults to the dbo (database owner) schema."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Why use schemas?",
+        "text": "In real applications, schemas often map to teams or business domains: 'sales' for sales-related tables, 'hr' for human resources, 'production' for inventory. This keeps objects organized and lets you set permissions at the schema level."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "system-databases",
+      "data": {
+        "level": 2,
+        "text": "System databases",
+        "anchor": "system-databases"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Every SQL Server instance comes with five system databases. These are managed automatically and you should rarely modify their contents:"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Database", "Purpose"],
+        "rows": [
+          ["master", "Records system information: logins, endpoints, linked servers, and metadata about all other databases"],
+          ["model", "Template used as the basis for all new databases — files added here appear in every new database"],
+          ["msdb", "Used by SQL Server Agent for jobs, alerts, and backup/restore history"],
+          ["tempdb", "Shared workspace for temporary tables, sorts, and work tables"],
+          ["resource", "Read-only database holding system objects (hidden from normal queries)"]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Don't touch system databases",
+        "text": "Never store your application data in master, model, msdb, or tempdb. Always create your own user databases. Modifying system databases can break your SQL Server instance."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "inspecting-objects",
+      "data": {
+        "level": 2,
+        "text": "Inspecting database objects",
+        "anchor": "inspecting-objects"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "SQL Server exposes its own structure through a set of system views. You can query these to find tables, columns, and their data types."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "List all user tables in the current database",
+        "code": "SELECT SCHEMA_NAME(schema_id) AS schema_name,\n       name AS table_name\nFROM   sys.tables\nORDER BY schema_name, table_name;",
+        "language": "sql"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key takeaways",
+        "points": [
+          "A database contains schemas, and schemas contain tables",
+          "Tables store data in rows (records) and columns (fields)",
+          "Schemas help organize objects and manage permissions",
+          "Five system databases exist on every instance — leave them alone",
+          "Query sys.tables and related system views to inspect your database structure"
+        ]
+      }
+    }
+  ],
+  "relatedLessons": ["creating-your-first-table", "what-is-sql-server"],
+  "relatedGlossaryTerms": [],
+  "furtherReading": [
+    {
+      "title": "Database Design Basics",
+      "url": "https://learn.microsoft.com/en-us/sql/relational-databases/databases/database-design",
+      "type": "article",
+      "author": "Microsoft Learn",
+      "description": "Introduction to database design principles and relational modeling."
+    }
+  ]
+}
