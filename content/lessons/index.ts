@@ -118,69 +118,6 @@ import agenticCodingIntro from '../courses/codex/phase-3-workflows/agentic-workf
 // Codex — phase-4-advanced-techniques — security-and-testing
 import aiSecurityRisks from '../courses/codex/phase-4-advanced-techniques/security-and-testing/ai-security-risks.json';
 
-// SQL Server — phase-1-foundations — getting-started
-import sqlWhatIsSqlServer from '../courses/sql-server/phase-1-foundations/getting-started/what-is-sql-server.json';
-import sqlInstallAndManagementTools from '../courses/sql-server/phase-1-foundations/getting-started/install-and-management-tools.json';
-
-// SQL Server — phase-1-foundations — database-basics
-import sqlUnderstandingDatabases from '../courses/sql-server/phase-1-foundations/database-basics/understanding-databases.json';
-import sqlCreatingYourFirstTable from '../courses/sql-server/phase-1-foundations/database-basics/creating-your-first-table.json';
-
-// SQL Server — phase-1-foundations — data-types-and-constraints
-import sqlDataTypes from '../courses/sql-server/phase-1-foundations/data-types-and-constraints/sql-server-data-types.json';
-import sqlConstraintsAndNull from '../courses/sql-server/phase-1-foundations/data-types-and-constraints/constraints-and-null.json';
-
-// SQL Server — phase-2-querying — select-and-filtering
-import sqlSelectAndWhere from '../courses/sql-server/phase-2-querying/select-and-filtering/select-and-where.json';
-import sqlOrderingAndPaging from '../courses/sql-server/phase-2-querying/select-and-filtering/ordering-and-paging.json';
-import sqlSetOperations from '../courses/sql-server/phase-2-querying/select-and-filtering/set-operations.json';
-
-// SQL Server — phase-2-querying — joins-and-relationships
-import sqlInnerJoin from '../courses/sql-server/phase-2-querying/joins-and-relationships/inner-join.json';
-import sqlLeftAndRightJoin from '../courses/sql-server/phase-2-querying/joins-and-relationships/left-and-right-join.json';
-import sqlFullOuterAndCrossJoin from '../courses/sql-server/phase-2-querying/joins-and-relationships/full-outer-and-cross-join.json';
-import sqlSelfJoin from '../courses/sql-server/phase-2-querying/joins-and-relationships/self-join.json';
-
-// SQL Server — phase-2-querying — aggregation-and-grouping
-import sqlAggregateFunctions from '../courses/sql-server/phase-2-querying/aggregation-and-grouping/aggregate-functions.json';
-import sqlGroupByHaving from '../courses/sql-server/phase-2-querying/aggregation-and-grouping/group-by-having.json';
-import sqlRollupCubeGroupingSets from '../courses/sql-server/phase-2-querying/aggregation-and-grouping/rollup-cube-grouping-sets.json';
-
-// SQL Server — phase-3-advanced — subqueries-and-ctes
-import sqlSubqueriesBasics from '../courses/sql-server/phase-3-advanced/subqueries-and-ctes/subqueries-basics.json';
-import sqlCorrelatedSubqueries from '../courses/sql-server/phase-3-advanced/subqueries-and-ctes/correlated-subqueries-exists.json';
-import sqlCommonTableExpressions from '../courses/sql-server/phase-3-advanced/subqueries-and-ctes/common-table-expressions.json';
-
-// SQL Server — phase-3-advanced — modifying-data
-import sqlInsertStatements from '../courses/sql-server/phase-3-advanced/modifying-data/insert-statements.json';
-import sqlUpdateAndDelete from '../courses/sql-server/phase-3-advanced/modifying-data/update-and-delete.json';
-import sqlMergeStatements from '../courses/sql-server/phase-3-advanced/modifying-data/merge-statements.json';
-
-// SQL Server — phase-3-advanced — database-objects
-import sqlViewsAndStoredProcedures from '../courses/sql-server/phase-3-advanced/database-objects/views-and-stored-procedures.json';
-import sqlIndexesTriggersFunctions from '../courses/sql-server/phase-3-advanced/database-objects/indexes-triggers-functions.json';
-
-// SQL Server — phase-3-advanced — performance-and-security
-import sqlQueryOptimization from '../courses/sql-server/phase-3-advanced/performance-and-security/query-optimization.json';
-import sqlBackupRecoverySecurity from '../courses/sql-server/phase-3-advanced/performance-and-security/backup-recovery-security.json';
-
-// SQL Server — phase-4-advanced-programming — control-flow-and-error-handling
-import sqlControlFlowStatements from '../courses/sql-server/phase-4-advanced-programming/control-flow-and-error-handling/control-flow-statements.json';
-import sqlErrorHandling from '../courses/sql-server/phase-4-advanced-programming/control-flow-and-error-handling/error-handling.json';
-import sqlDynamicSql from '../courses/sql-server/phase-4-advanced-programming/control-flow-and-error-handling/dynamic-sql.json';
-
-// SQL Server — phase-4-advanced-programming — ddl-schema-management
-import sqlDdlSchemaManagement from '../courses/sql-server/phase-4-advanced-programming/ddl-schema-management/ddl-schema-management.json';
-
-// SQL Server — phase-4-advanced-programming — temp-storage
-import sqlTempStorage from '../courses/sql-server/phase-4-advanced-programming/temp-storage/temp-storage.json';
-
-// SQL Server — phase-4-advanced-programming — advanced-query-features
-import sqlAdvancedQueryFeatures from '../courses/sql-server/phase-4-advanced-programming/advanced-query-features/advanced-query-features.json';
-
-// SQL Server — phase-4-advanced-programming — cursors-and-concurrency
-import sqlCursorsAndConcurrency from '../courses/sql-server/phase-4-advanced-programming/cursors-and-concurrency/cursors-and-concurrency.json';
-
 const rawLessons = [
   aiVsMlVsGenerativeAi,
   howLlmsWorkSimply,
@@ -245,41 +182,6 @@ const rawLessons = [
   writingTestsWithAi,
   agenticCodingIntro,
   aiSecurityRisks,
-  // SQL Server course
-  sqlWhatIsSqlServer,
-  sqlInstallAndManagementTools,
-  sqlUnderstandingDatabases,
-  sqlCreatingYourFirstTable,
-  sqlDataTypes,
-  sqlConstraintsAndNull,
-  sqlSelectAndWhere,
-  sqlOrderingAndPaging,
-  sqlSetOperations,
-  sqlInnerJoin,
-  sqlLeftAndRightJoin,
-  sqlFullOuterAndCrossJoin,
-  sqlSelfJoin,
-  sqlAggregateFunctions,
-  sqlGroupByHaving,
-  sqlRollupCubeGroupingSets,
-  sqlSubqueriesBasics,
-  sqlCorrelatedSubqueries,
-  sqlCommonTableExpressions,
-  sqlInsertStatements,
-  sqlUpdateAndDelete,
-  sqlMergeStatements,
-  sqlViewsAndStoredProcedures,
-  sqlIndexesTriggersFunctions,
-  sqlQueryOptimization,
-  sqlBackupRecoverySecurity,
-  // SQL Server course — phase 4
-  sqlControlFlowStatements,
-  sqlErrorHandling,
-  sqlDynamicSql,
-  sqlDdlSchemaManagement,
-  sqlTempStorage,
-  sqlAdvancedQueryFeatures,
-  sqlCursorsAndConcurrency,
 ];
 
 export const lessons: Lesson[] = rawLessons as unknown as Lesson[];

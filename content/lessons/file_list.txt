@@ -67,44 +67,6 @@ writing-and-content-tools\ai-writing-assistant
 writing-and-content-tools\editing-with-ai
 
 
-# SQL Server course lessons
-getting-started\what-is-sql-server
-getting-started\install-and-management-tools
-database-basics\understanding-databases
-database-basics\creating-your-first-table
-data-types-and-constraints\sql-server-data-types
-data-types-and-constraints\constraints-and-null
-select-and-filtering\select-and-where
-select-and-filtering\ordering-and-paging
-select-and-filtering\set-operations
-joins-and-relationships\inner-join
-joins-and-relationships\left-and-right-join
-joins-and-relationships\full-outer-and-cross-join
-joins-and-relationships\self-join
-aggregation-and-grouping\aggregate-functions
-aggregation-and-grouping\group-by-having
-aggregation-and-grouping\rollup-cube-grouping-sets
-subqueries-and-ctes\subqueries-basics
-subqueries-and-ctes\correlated-subqueries-exists
-subqueries-and-ctes\common-table-expressions
-modifying-data\insert-statements
-modifying-data\update-and-delete
-modifying-data\merge-statements
-database-objects\views-and-stored-procedures
-database-objects\indexes-triggers-functions
-performance-and-security\query-optimization
-performance-and-security\backup-recovery-security
-
-# SQL Server course lessons — phase 4: Advanced Programming and Administration
-control-flow-and-error-handling\control-flow-statements
-control-flow-and-error-handling\error-handling
-control-flow-and-error-handling\dynamic-sql
-ddl-schema-management\ddl-schema-management
-temp-storage\temp-storage
-advanced-query-features\advanced-query-features
-cursors-and-concurrency\cursors-and-concurrency
-
-
 Here is json that I want to update. You can refer moduleSlug and slug to identify which file's contents are those.
 
 {
