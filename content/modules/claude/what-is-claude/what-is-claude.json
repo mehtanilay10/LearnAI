@@ -7,23 +7,40 @@
   "order": 1,
   "difficulty": "beginner",
   "estimatedMinutes": 12,
-  "tags": ["claude", "introduction", "anthropic", "overview"],
+  "tags": [
+    "claude",
+    "introduction",
+    "anthropic",
+    "overview"
+  ],
   "blocks": [
     {
       "type": "heading",
-      "data": { "level": 2, "text": "Meet Claude", "anchor": "meet-claude" }
+      "data": {
+        "level": 2,
+        "text": "Meet Claude",
+        "anchor": "meet-claude"
+      }
     },
     {
       "type": "paragraph",
-      "data": { "text": "Claude is an AI assistant created by Anthropic, a company founded in 2021 by former OpenAI researchers. Unlike many AI assistants that are built primarily to be engaging or to drive engagement metrics, Claude was designed with a specific priority: to be helpful, harmless, and honest. This is not just a marketing tagline — it is the core principle behind every technical decision Anthropic makes." }
+      "data": {
+        "text": "Claude is an AI assistant created by Anthropic, a company founded in 2021 by former OpenAI researchers. Unlike many AI assistants that are built primarily to be engaging or to drive engagement metrics, Claude was designed with a specific priority: to be helpful, harmless, and honest. This is not just a marketing tagline — it is the core principle behind every technical decision Anthropic makes."
+      }
     },
     {
       "type": "heading",
-      "data": { "level": 2, "text": "What Claude Does", "anchor": "what-claude-does" }
+      "data": {
+        "level": 2,
+        "text": "What Claude Does",
+        "anchor": "what-claude-does"
+      }
     },
     {
       "type": "paragraph",
-      "data": { "text": "Claude is a general-purpose AI assistant accessible through a web interface, mobile apps, and an API. In plain language: you type or speak a request, and Claude responds with text, code, analysis, or structured content. It can read documents, write essays, debug code, analyze data, and hold long, nuanced conversations." }
+      "data": {
+        "text": "Claude is a general-purpose AI assistant accessible through a web interface, mobile apps, and an API. In plain language: you type or speak a request, and Claude responds with text, code, analysis, or structured content. It can read documents, write essays, debug code, analyze data, and hold long, nuanced conversations."
+      }
     },
     {
       "type": "callout",
@@ -35,7 +52,11 @@
     },
     {
       "type": "heading",
-      "data": { "level": 2, "text": "Claude's Capabilities at a Glance", "anchor": "capabilities" }
+      "data": {
+        "level": 2,
+        "text": "Claude's Capabilities at a Glance",
+        "anchor": "capabilities"
+      }
     },
     {
       "type": "bullet-list",
@@ -54,7 +75,11 @@
     },
     {
       "type": "heading",
-      "data": { "level": 2, "text": "What Claude Cannot Do (Yet)", "anchor": "limitations-intro" }
+      "data": {
+        "level": 2,
+        "text": "What Claude Cannot Do (Yet)",
+        "anchor": "limitations-intro"
+      }
     },
     {
       "type": "bullet-list",
@@ -79,7 +104,11 @@
     },
     {
       "type": "heading",
-      "data": { "level": 2, "text": "Key Vocabulary", "anchor": "key-vocabulary" }
+      "data": {
+        "level": 2,
+        "text": "Key Vocabulary",
+        "anchor": "key-vocabulary"
+      }
     },
     {
       "type": "key-terms",
@@ -125,8 +154,98 @@
           "Claude cannot generate images or browse the web in its free tier"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "claude-vs-others",
+      "data": {
+        "level": 3,
+        "text": "Claude vs other AI assistants",
+        "anchor": "claude-vs-others"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Claude vs ChatGPT vs Gemini",
+        "cards": [
+          {
+            "title": "Claude",
+            "description": "Built by Anthropic. Strength: long-context reasoning, careful instruction-following, large context window (200k tokens). Best for: document analysis, long-form writing, nuanced reasoning.",
+            "tags": [
+              "anthropic"
+            ]
+          },
+          {
+            "title": "ChatGPT",
+            "description": "Built by OpenAI. Strength: plugin ecosystem, browsing, code interpreter, wide adoption. Best for: research, web browsing, coding with built-in tools.",
+            "tags": [
+              "openai"
+            ]
+          },
+          {
+            "title": "Gemini",
+            "description": "Built by Google. Strength: multimodal understanding, Google Workspace integration, large context. Best for: image analysis, Workspace users, research with Google Search.",
+            "tags": [
+              "google"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": [
+          "Model",
+          "Context window",
+          "Strengths",
+          "Best for"
+        ],
+        "rows": [
+          [
+            "Claude Sonnet",
+            "200k tokens",
+            "Long-form reasoning, careful following",
+            "Documents, essays, analysis"
+          ],
+          [
+            "Claude Opus",
+            "200k tokens",
+            "Most capable, nuanced reasoning",
+            "Complex tasks, creative work"
+          ],
+          [
+            "ChatGPT GPT-4o",
+            "128k tokens",
+            "Browsing, plugins, code interpreter",
+            "Research, coding, web tasks"
+          ],
+          [
+            "Gemini 1.5 Pro",
+            "1M tokens",
+            "Multimodal, Workspace integration",
+            "Image analysis, long documents"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "More real-world Claude use cases",
+        "content": "A technical writer uses Claude to analyze a 300-page API reference and generate a 10-page getting-started guide.\n\nA startup founder uses Claude to review a 40-page pitch deck and suggest improvements for investor clarity.\n\nA researcher uses Claude to compare 15 research papers and synthesize the key disagreements in the field.\n\nAll of these work well because of Claude's ability to hold large documents in context and reason across them carefully."
+      }
     }
   ],
-  "relatedLessons": ["claude-vs-other-chatbots", "claude-philosophy-and-safety"],
-  "relatedGlossaryTerms": ["large-language-model", "token", "context-window", "api"]
+  "relatedLessons": [
+    "claude-vs-other-chatbots",
+    "claude-philosophy-and-safety"
+  ],
+  "relatedGlossaryTerms": [
+    "large-language-model",
+    "token",
+    "context-window",
+    "api"
+  ]
 }

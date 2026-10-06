@@ -204,6 +204,62 @@
           ]
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "bad-vs-good-prompts",
+      "data": {
+        "level": 3,
+        "text": "Bad prompt vs good prompt",
+        "anchor": "bad-vs-good-prompts"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Side-by-side: Bad prompt vs good prompt",
+        "cards": [
+          {
+            "title": "Bad prompt",
+            "description": "Vague, no context, no format. The AI has to guess what you want.",
+            "tags": [
+              "avoid"
+            ]
+          },
+          {
+            "title": "Good prompt",
+            "description": "Specific context, clear task, explicit format, and constraints. The AI can aim at a target.",
+            "tags": [
+              "recommended"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Common mistake",
+        "text": "The #1 prompting mistake is treating the AI like a mind reader. If you would not give these instructions to a new hire, do not give them to an AI either."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Code-style prompt example",
+        "content": "BAD: \"Write a function.\"\nGOOD: \"Write a Python function called calculate_discount(price, discount_percent) that returns the discounted price rounded to 2 decimals. Include type hints and a docstring. If discount_percent is over 100, raise a ValueError.\"",
+        "code": "def calculate_discount(price: float, discount_percent: float) -> float:\n    \"\"\"Return price after discount, rounded to 2 decimals.\"\"\"\n    if discount_percent > 100:\n        raise ValueError(\"discount_percent cannot exceed 100\")\n    return round(price * (1 - discount_percent / 100), 2)",
+        "language": "python"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Quick fix",
+        "text": "Before hitting send, ask yourself: 'If I gave this to a smart but literal human, would they know exactly what to do?' If not, add one sentence of context."
+      }
     }
   ],
   "relatedLessons": [

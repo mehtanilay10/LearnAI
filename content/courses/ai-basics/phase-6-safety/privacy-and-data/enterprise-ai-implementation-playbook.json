@@ -186,6 +186,74 @@
           "Scale proven patterns, retire weak pilots quickly"
         ]
       }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Implementation phases",
+        "cards": [
+          {
+            "title": "Pilot",
+            "description": "2-3 workflows, clear ROI, low regulatory risk. Goal: prove value and learn what breaks.",
+            "tags": [
+              "phase-1"
+            ]
+          },
+          {
+            "title": "Stabilize",
+            "description": "Document playbooks, train users, define quality metrics. Goal: make success repeatable.",
+            "tags": [
+              "phase-2"
+            ]
+          },
+          {
+            "title": "Scale",
+            "description": "Expand to more teams, add advanced features, tighten governance. Goal: multiply proven value safely.",
+            "tags": [
+              "phase-3"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Enterprise rollout example",
+        "content": "A 500-person SaaS company rolled out AI in three phases over 9 months.\n\nPhase 1 (Pilot, 60 days):\n- Selected workflows: support ticket summarization, sales email drafting, internal search\n- Defined policy: no customer PII in prompts, all outputs reviewed before sending\n- Trained 25 pilot users\n- Result: 30% time savings, 2 minor incidents (both caught by review)\n\nPhase 2 (Stabilize, 90 days):\n- Documented playbooks for each workflow\n- Added quality scorecards and weekly review meetings\n- Expanded to 100 users\n- Result: 35% time savings, 0 incidents\n\nPhase 3 (Scale, 90 days):\n- Rolled out to all customer-facing teams\n- Added advanced guardrails and custom model access\n- Result: 40% time savings, enterprise-wide adoption"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "Compliance reminder",
+        "text": "Before any enterprise rollout, check data residency requirements, industry regulations (GDPR, HIPAA, SOC 2), and internal security policies. A pilot that violates compliance can create bigger problems than it solves."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "scaling-mistakes",
+      "data": {
+        "level": 3,
+        "text": "Common scaling mistakes",
+        "anchor": "scaling-mistakes"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Enterprise scaling example",
+        "content": "A retail company scaled AI from 1 pilot to 200 users in 6 months.\n\nWhat went well:\n- Started with support ticket summarization (low risk, high volume)\n- Trained a champion in each department\n- Tracked time savings weekly\n\nWhat went wrong:\n- Skipped data classification for one workflow — customer PII ended up in prompts\n- Did not update policy when new tools were adopted — shadow IT grew\n- Scaled before measuring pilot success — some teams reverted to old workflows\n\nLesson: Scale only workflows that passed the pilot, and update policy before adding new tools."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Warning",
+        "text": "The fastest way to kill an AI program is to scale weak pilots. A failed pilot that gets company-wide attention creates resistance that takes months to overcome. Retire weak pilots quickly and celebrate the ones that work."
+      }
     }
   ],
   "relatedLessons": [
