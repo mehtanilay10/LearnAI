@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getAllCourses, getAllModules, getAllLessons, getCourseForModule } from '@/lib/content';
+import { advancedConcepts } from '@/content/advanced';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://learnai.dev';
 
@@ -11,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
     '/',
     '/courses',
+    '/roadmap',
     '/glossary',
     '/tools',
     '/projects',
@@ -60,5 +62,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
     .filter((r): r is { url: string; lastModified: Date; changeFrequency: 'monthly'; priority: number } => r !== null);
 
-  return [...staticRoutes, ...courseRoutes, ...moduleRoutes, ...lessonRoutes];
+  const advancedConceptRoutes = advancedConcepts.map((concept) => ({
+    url: `${BASE_URL}/advanced/${concept.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...courseRoutes, ...moduleRoutes, ...lessonRoutes, ...advancedConceptRoutes];
 }

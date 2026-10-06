@@ -1,4 +1,4 @@
-import type { Lesson, Module, Course, GlossaryTerm, Phase, PromptTemplate } from '@/types';
+import type { Lesson, Module, Course, GlossaryTerm, Phase, PromptTemplate, AdvancedConcept } from '@/types';
 
 export function isLessonArray(value: unknown): value is Lesson[] {
   return Array.isArray(value) && value.every(isLesson);
@@ -119,4 +119,22 @@ export function isPromptTemplate(value: unknown): value is PromptTemplate {
     typeof v.template === 'string' &&
     Array.isArray(v.tags)
   );
+}
+
+export function isAdvancedConcept(value: unknown): value is AdvancedConcept {
+  if (!value || typeof value !== 'object') return false;
+  const v = value as Record<string, unknown>;
+  return (
+    typeof v.id === 'string' &&
+    typeof v.slug === 'string' &&
+    typeof v.title === 'string' &&
+    typeof v.description === 'string' &&
+    typeof v.category === 'string' &&
+    typeof v.difficulty === 'string' &&
+    Array.isArray(v.blocks)
+  );
+}
+
+export function isAdvancedConceptArray(value: unknown): value is AdvancedConcept[] {
+  return Array.isArray(value) && value.every(isAdvancedConcept);
 }
