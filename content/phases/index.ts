@@ -1,4 +1,5 @@
 import type { Phase } from '@/types';
+import { isPhaseArray } from '@/lib/typeGuards';
 
 // AI Basics course phases
 import phase1Foundations from '../courses/ai-basics/phase-1-foundations/content.json';
@@ -17,6 +18,12 @@ import codexPhase2Tools from '../courses/codex/phase-2-tools/content.json';
 import codexPhase3Workflows from '../courses/codex/phase-3-workflows/content.json';
 import codexPhase4AdvancedTechniques from '../courses/codex/phase-4-advanced-techniques/content.json';
 
+// Claude course phases
+import claudePhase1Foundations from '../phases/phase-1-foundations-claude/content.json';
+import claudePhase2CoreFeatures from '../phases/phase-2-core-features-claude/content.json';
+import claudePhase3AdvancedUsage from '../phases/phase-3-advanced-usage-claude/content.json';
+import claudePhase4BestPractices from '../phases/phase-4-best-practices-claude/content.json';
+
 const rawPhases = [
   phase1Foundations,
   phase2KeyConcepts,
@@ -31,9 +38,13 @@ const rawPhases = [
   codexPhase2Tools,
   codexPhase3Workflows,
   codexPhase4AdvancedTechniques,
+  claudePhase1Foundations,
+  claudePhase2CoreFeatures,
+  claudePhase3AdvancedUsage,
+  claudePhase4BestPractices,
 ];
 
-export const phases: Phase[] = rawPhases as unknown as Phase[];
+export const phases: Phase[] = isPhaseArray(rawPhases) ? rawPhases : [];
 
 export function getPhaseBySlug(slug: string): Phase | undefined {
   return phases.find((p) => p.slug === slug);

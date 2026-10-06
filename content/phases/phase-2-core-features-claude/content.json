@@ -1,0 +1,16 @@
+{
+  "id": "phase-claude-2",
+  "slug": "phase-2-core-features",
+  "courseSlug": "claude",
+  "title": "Phase 2: Core Features",
+  "subtitle": "Writing, research, and document understanding with Claude",
+  "description": "Explore Claude's most powerful everyday capabilities: crafting polished writing, conducting research, and understanding long documents.",
+  "order": 2,
+  "icon": "✨",
+  "color": "accent",
+  "moduleSlug": [
+    "claude-for-writing",
+    "claude-for-research"
+  ],
+  "estimatedWeeks": 3
+}

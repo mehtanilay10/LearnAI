@@ -10,7 +10,9 @@
   "icon": "💬",
   "tags": ["prompting", "communication", "best-practices"],
   "lessonSlugs": [
-    "basic-prompting-for-code"
+    "basic-prompting-for-code",
+    "advanced-prompting-patterns",
+    "prompting-for-debugging"
   ],
   "whatYouLearn": [
     "Core principles of prompting for coding tasks",

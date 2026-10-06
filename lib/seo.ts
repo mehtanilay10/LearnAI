@@ -46,24 +46,26 @@ export function buildMetadata({
 export function buildLessonMetadata(opts: {
   title: string;
   description: string;
+  courseSlug: string;
   moduleSlug: string;
   lessonSlug: string;
 }): Metadata {
   return buildMetadata({
     title: opts.title,
     description: opts.description,
-    path: `/modules/${opts.moduleSlug}/${opts.lessonSlug}`,
+    path: `/courses/${opts.courseSlug}/${opts.moduleSlug}/${opts.lessonSlug}`,
   });
 }
 
 export function buildModuleMetadata(opts: {
   title: string;
   description: string;
+  courseSlug: string;
   moduleSlug: string;
 }): Metadata {
   return buildMetadata({
     title: opts.title,
     description: opts.description,
-    path: `/modules/${opts.moduleSlug}`,
+    path: `/courses/${opts.courseSlug}/${opts.moduleSlug}`,
   });
 }

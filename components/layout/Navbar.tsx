@@ -11,10 +11,13 @@ import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
 	{ href: "/courses", label: "Courses" },
+	{ href: "/roadmap", label: "Roadmap" },
 	{ href: "/glossary", label: "Glossary" },
 	{ href: "/tools", label: "Tools" },
 	{ href: "/prompts", label: "Prompts" },
 	{ href: "/projects", label: "Projects" },
+	{ href: "/advanced", label: "Advanced" },
+	{ href: "/safety", label: "Safety" },
 ];
 
 export function Navbar() {
