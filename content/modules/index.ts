@@ -1,4 +1,5 @@
 import type { Module } from '@/types';
+import { isModuleArray } from '@/lib/typeGuards';
 
 // AI Basics — phase-1-foundations
 import whatIsAi from '../courses/ai-basics/phase-1-foundations/what-is-ai/content.json';
@@ -80,7 +81,7 @@ const rawModules = [
   codexSecurityAndTesting,
 ];
 
-export const modules: Module[] = rawModules as unknown as Module[];
+export const modules: Module[] = isModuleArray(rawModules) ? rawModules : [];
 
 export function getModuleBySlug(slug: string): Module | undefined {
   return modules.find((m) => m.slug === slug);

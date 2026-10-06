@@ -1,4 +1,5 @@
 import type { GlossaryTerm } from '@/types';
+import { isGlossaryTermArray } from '@/lib/typeGuards';
 
 import coreConceptsArtificialIntelligence from './core-concepts/artificial-intelligence.json';
 import modelsAndTrainingMachineLearning from './models-and-training/machine-learning.json';
@@ -144,7 +145,7 @@ const rawGlossaryTerms = [
   evaluationModelCard,
 ];
 
-export const glossaryTerms: GlossaryTerm[] = rawGlossaryTerms as unknown as GlossaryTerm[];
+export const glossaryTerms: GlossaryTerm[] = isGlossaryTermArray(rawGlossaryTerms) ? rawGlossaryTerms : [];
 
 export function getGlossaryTermBySlug(slug: string): GlossaryTerm | undefined {
   return glossaryTerms.find((t) => t.slug === slug);

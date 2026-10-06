@@ -15,6 +15,8 @@ const NAV_LINKS = [
 	{ href: "/tools", label: "Tools" },
 	{ href: "/prompts", label: "Prompts" },
 	{ href: "/projects", label: "Projects" },
+	{ href: "/advanced", label: "Advanced" },
+	{ href: "/safety", label: "Safety" },
 ];
 
 export function Navbar() {

@@ -1,4 +1,5 @@
 import type { Phase } from '@/types';
+import { isPhaseArray } from '@/lib/typeGuards';
 
 // AI Basics course phases
 import phase1Foundations from '../courses/ai-basics/phase-1-foundations/content.json';
@@ -33,7 +34,7 @@ const rawPhases = [
   codexPhase4AdvancedTechniques,
 ];
 
-export const phases: Phase[] = rawPhases as unknown as Phase[];
+export const phases: Phase[] = isPhaseArray(rawPhases) ? rawPhases : [];
 
 export function getPhaseBySlug(slug: string): Phase | undefined {
   return phases.find((p) => p.slug === slug);

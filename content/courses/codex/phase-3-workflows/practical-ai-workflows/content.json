@@ -11,7 +11,9 @@
   "tags": ["debugging", "testing", "refactoring", "practical"],
   "lessonSlugs": [
     "debugging-with-ai",
-    "writing-tests-with-ai"
+    "writing-tests-with-ai",
+    "refactoring-with-ai",
+    "code-review-with-ai"
   ],
   "whatYouLearn": [
     "How to use AI to find the root cause of complex bugs",

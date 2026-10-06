@@ -1,4 +1,5 @@
 import type { Lesson } from '@/types';
+import { isLessonArray } from '@/lib/typeGuards';
 
 // AI Basics — phase-1-foundations — what-is-ai
 import aiVsMlVsGenerativeAi from '../courses/ai-basics/phase-1-foundations/what-is-ai/ai-vs-ml-vs-generative-ai.json';
@@ -99,24 +100,35 @@ import stayingCurrentInAi from '../courses/ai-basics/phase-9-capstone/staying-cu
 
 // Codex — phase-1-foundations — intro-to-ai-coding
 import whatIsAiCoding from '../courses/codex/phase-1-foundations/intro-to-ai-coding/what-is-ai-coding.json';
+import historyOfAiCoding from '../courses/codex/phase-1-foundations/intro-to-ai-coding/history-of-ai-coding.json';
+import settingUpAiCodingEnvironment from '../courses/codex/phase-1-foundations/intro-to-ai-coding/setting-up-ai-coding-environment.json';
 
 // Codex — phase-1-foundations — prompt-engineering-for-code
 import basicPromptingForCode from '../courses/codex/phase-1-foundations/prompt-engineering-for-code/basic-prompting-for-code.json';
+import advancedPromptingPatterns from '../courses/codex/phase-1-foundations/prompt-engineering-for-code/advanced-prompting-patterns.json';
+import promptingForDebugging from '../courses/codex/phase-1-foundations/prompt-engineering-for-code/prompting-for-debugging.json';
 
 // Codex — phase-2-tools — ai-coding-tools
 import githubCopilotGuide from '../courses/codex/phase-2-tools/ai-coding-tools/github-copilot-guide.json';
 import cursorIdeGuide from '../courses/codex/phase-2-tools/ai-coding-tools/cursor-ide-guide.json';
 import chatAssistantsForCoding from '../courses/codex/phase-2-tools/ai-coding-tools/chat-assistants-for-coding.json';
+import claudeForCode from '../courses/codex/phase-2-tools/ai-coding-tools/claude-for-code.json';
+import windsurfAndAlternatives from '../courses/codex/phase-2-tools/ai-coding-tools/windsurf-and-alternatives.json';
 
 // Codex — phase-3-workflows — practical-ai-workflows
 import debuggingWithAi from '../courses/codex/phase-3-workflows/practical-ai-workflows/debugging-with-ai.json';
 import writingTestsWithAi from '../courses/codex/phase-3-workflows/practical-ai-workflows/writing-tests-with-ai.json';
+import refactoringWithAi from '../courses/codex/phase-3-workflows/practical-ai-workflows/refactoring-with-ai.json';
+import codeReviewWithAi from '../courses/codex/phase-3-workflows/practical-ai-workflows/code-review-with-ai.json';
 
 // Codex — phase-3-workflows — agentic-workflows
 import agenticCodingIntro from '../courses/codex/phase-3-workflows/agentic-workflows/agentic-coding-intro.json';
+import buildingAiAgents from '../courses/codex/phase-3-workflows/agentic-workflows/building-ai-agents.json';
+import multiFileWorkflows from '../courses/codex/phase-3-workflows/agentic-workflows/multi-file-workflows.json';
 
 // Codex — phase-4-advanced-techniques — security-and-testing
 import aiSecurityRisks from '../courses/codex/phase-4-advanced-techniques/security-and-testing/ai-security-risks.json';
+import testingStrategies from '../courses/codex/phase-4-advanced-techniques/security-and-testing/testing-strategies.json';
 
 const rawLessons = [
   aiVsMlVsGenerativeAi,
@@ -174,17 +186,28 @@ const rawLessons = [
   aiProjectPortfolioAndCapstoneAssessments,
   // Codex course
   whatIsAiCoding,
+  historyOfAiCoding,
+  settingUpAiCodingEnvironment,
   basicPromptingForCode,
+  advancedPromptingPatterns,
+  promptingForDebugging,
   githubCopilotGuide,
   cursorIdeGuide,
   chatAssistantsForCoding,
+  claudeForCode,
+  windsurfAndAlternatives,
   debuggingWithAi,
   writingTestsWithAi,
+  refactoringWithAi,
+  codeReviewWithAi,
   agenticCodingIntro,
+  buildingAiAgents,
+  multiFileWorkflows,
   aiSecurityRisks,
+  testingStrategies,
 ];
 
-export const lessons: Lesson[] = rawLessons as unknown as Lesson[];
+export const lessons: Lesson[] = isLessonArray(rawLessons) ? rawLessons : [];
 
 export function getLessonBySlug(slug: string): Lesson | undefined {
   return lessons.find((l) => l.slug === slug);
