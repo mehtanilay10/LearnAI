@@ -1,0 +1,15 @@
+{
+  "id": "phase-claude-4",
+  "slug": "phase-4-best-practices",
+  "courseSlug": "claude",
+  "title": "Phase 4: Best Practices",
+  "subtitle": "Prompt engineering, limitations, and building your toolkit",
+  "description": "Master Claude with advanced prompting techniques, understand its limitations honestly, and assemble a personal toolkit that fits your workflow.",
+  "order": 4,
+  "icon": "🏆",
+  "color": "accent",
+  "moduleSlug": [
+    "mastering-claude"
+  ],
+  "estimatedWeeks": 2
+}

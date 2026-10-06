@@ -1,0 +1,16 @@
+{
+  "id": "phase-claude-1",
+  "slug": "phase-1-foundations",
+  "courseSlug": "claude",
+  "title": "Phase 1: Claude Foundations",
+  "subtitle": "Understand what Claude is and how to get started",
+  "description": "Build a solid understanding of Claude's unique approach to AI assistance, set up your access, and have your first meaningful conversation.",
+  "order": 1,
+  "icon": "🏛️",
+  "color": "accent",
+  "moduleSlug": [
+    "what-is-claude",
+    "getting-started"
+  ],
+  "estimatedWeeks": 2
+}

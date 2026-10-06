@@ -130,6 +130,40 @@ import multiFileWorkflows from '../courses/codex/phase-3-workflows/agentic-workf
 import aiSecurityRisks from '../courses/codex/phase-4-advanced-techniques/security-and-testing/ai-security-risks.json';
 import testingStrategies from '../courses/codex/phase-4-advanced-techniques/security-and-testing/testing-strategies.json';
 
+// Claude — phase-1-foundations — what-is-claude
+import claudeWhatIsClaude from '../modules/claude/what-is-claude/what-is-claude.json';
+import claudeVsOtherChatbots from '../modules/claude/what-is-claude/claude-vs-other-chatbots.json';
+import claudePhilosophyAndSafety from '../modules/claude/what-is-claude/claude-philosophy-and-safety.json';
+
+// Claude — phase-1-foundations — getting-started
+import settingUpClaude from '../modules/claude/getting-started/setting-up-claude.json';
+import claudeInterfaceTour from '../modules/claude/getting-started/claude-interface-tour.json';
+import yourFirstClaudeConversation from '../modules/claude/getting-started/your-first-claude-conversation.json';
+
+// Claude — phase-2-core-features — claude-for-writing
+import writingWithClaude from '../modules/claude/claude-for-writing/writing-with-claude.json';
+import editingAndPolishing from '../modules/claude/claude-for-writing/editing-and-polishing.json';
+import toneAndStyle from '../modules/claude/claude-for-writing/tone-and-style.json';
+
+// Claude — phase-2-core-features — claude-for-research
+import researchAndAnalysis from '../modules/claude/claude-for-research/research-and-analysis.json';
+import documentUnderstanding from '../modules/claude/claude-for-research/document-understanding.json';
+
+// Claude — phase-3-advanced-usage — claude-artifacts
+import artifactsIntro from '../modules/claude/claude-artifacts/artifacts-intro.json';
+import buildingWithArtifacts from '../modules/claude/claude-artifacts/building-with-artifacts.json';
+import artifactsWorkflows from '../modules/claude/claude-artifacts/artifacts-workflows.json';
+
+// Claude — phase-3-advanced-usage — claude-api-and-integrations
+import claudeApiBasics from '../modules/claude/claude-api-and-integrations/claude-api-basics.json';
+import promptCaching from '../modules/claude/claude-api-and-integrations/prompt-caching.json';
+import claudeInYourWorkflow from '../modules/claude/claude-api-and-integrations/claude-in-your-workflow.json';
+
+// Claude — phase-4-best-practices — mastering-claude
+import promptEngineeringForClaude from '../modules/claude/mastering-claude/prompt-engineering-for-claude.json';
+import claudeLimitations from '../modules/claude/mastering-claude/claude-limitations.json';
+import buildingYourClaudeToolkit from '../modules/claude/mastering-claude/building-your-claude-toolkit.json';
+
 const rawLessons = [
   aiVsMlVsGenerativeAi,
   howLlmsWorkSimply,
@@ -205,6 +239,27 @@ const rawLessons = [
   multiFileWorkflows,
   aiSecurityRisks,
   testingStrategies,
+  // Claude course
+  claudeWhatIsClaude,
+  claudeVsOtherChatbots,
+  claudePhilosophyAndSafety,
+  settingUpClaude,
+  claudeInterfaceTour,
+  yourFirstClaudeConversation,
+  writingWithClaude,
+  editingAndPolishing,
+  toneAndStyle,
+  researchAndAnalysis,
+  documentUnderstanding,
+  artifactsIntro,
+  buildingWithArtifacts,
+  artifactsWorkflows,
+  claudeApiBasics,
+  promptCaching,
+  claudeInYourWorkflow,
+  promptEngineeringForClaude,
+  claudeLimitations,
+  buildingYourClaudeToolkit,
 ];
 
 export const lessons: Lesson[] = isLessonArray(rawLessons) ? rawLessons : [];

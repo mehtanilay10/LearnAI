@@ -3,8 +3,9 @@ import { isCourseArray } from '@/lib/typeGuards';
 
 import aiBasics from './ai-basics/content.json';
 import codex from './codex/content.json';
+import claude from './claude/content.json';
 
-const rawCourses = [aiBasics, codex];
+const rawCourses = [aiBasics, codex, claude];
 
 export const courses: Course[] = isCourseArray(rawCourses) ? rawCourses : [];
 

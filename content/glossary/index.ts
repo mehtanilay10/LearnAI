@@ -71,6 +71,34 @@ import architectureRetrieval from './architecture/retrieval.json';
 import agentsAndAutomationAgenticWorkflow from './agents-and-automation/agentic-workflow.json';
 import toolsAndApisNoCode from './tools-and-apis/no-code.json';
 import evaluationModelCard from './evaluation/model-card.json';
+import agentsAndAutomationAutonomousAgent from './agents-and-automation/autonomous-agent.json';
+import agentsAndAutomationMultiAgentSystem from './agents-and-automation/multi-agent-system.json';
+import agentsAndAutomationToolUse from './agents-and-automation/tool-use.json';
+import architectureAttentionMechanism from './architecture/attention-mechanism.json';
+import architectureContextWindow from './architecture/context-window.json';
+import architectureTransformerArchitecture from './architecture/transformer-architecture.json';
+import coreConceptsAgi from './core-concepts/agi.json';
+import coreConceptsAiAgent from './core-concepts/ai-agent.json';
+import coreConceptsAiLiteracy from './core-concepts/ai-literacy.json';
+import coreConceptsDigitalTransformation from './core-concepts/digital-transformation.json';
+import evaluationHumanEvaluation from './evaluation/human-evaluation.json';
+import modelsAndTrainingEmbeddings from './models-and-training/embeddings.json';
+import modelsAndTrainingFoundationModel from './models-and-training/foundation-model.json';
+import modelsAndTrainingInstructionTuning from './models-and-training/instruction-tuning.json';
+import modelsAndTrainingTokenization from './models-and-training/tokenization.json';
+import multimodalMultimodalAi from './multimodal/multimodal-ai.json';
+import multimodalSpeechRecognition from './multimodal/speech-recognition.json';
+import multimodalTextToSpeech from './multimodal/text-to-speech.json';
+import promptingPromptInjection from './prompting/prompt-injection.json';
+import promptingTemperature from './prompting/temperature.json';
+import promptingTopP from './prompting/top-p.json';
+import promptingZeroShotPrompting from './prompting/zero-shot-prompting.json';
+import safetyAndEthicsAiBias from './safety-and-ethics/ai-bias.json';
+import safetyAndEthicsAiHallucination from './safety-and-ethics/ai-hallucination.json';
+import safetyAndEthicsDataPrivacy from './safety-and-ethics/data-privacy.json';
+import toolsAndApisMcp from './tools-and-apis/mcp.json';
+import toolsAndApisSdk from './tools-and-apis/sdk.json';
+import toolsAndApisWebhook from './tools-and-apis/webhook.json';
 
 const rawGlossaryTerms = [
   coreConceptsArtificialIntelligence,
@@ -143,6 +171,34 @@ const rawGlossaryTerms = [
   agentsAndAutomationAgenticWorkflow,
   toolsAndApisNoCode,
   evaluationModelCard,
+  toolsAndApisWebhook,
+  toolsAndApisSdk,
+  toolsAndApisMcp,
+  safetyAndEthicsDataPrivacy,
+  safetyAndEthicsAiHallucination,
+  safetyAndEthicsAiBias,
+  promptingZeroShotPrompting,
+  promptingTopP,
+  promptingTemperature,
+  promptingPromptInjection,
+  multimodalTextToSpeech,
+  multimodalSpeechRecognition,
+  multimodalMultimodalAi,
+  modelsAndTrainingTokenization,
+  modelsAndTrainingInstructionTuning,
+  modelsAndTrainingFoundationModel,
+  modelsAndTrainingEmbeddings,
+  evaluationHumanEvaluation,
+  coreConceptsDigitalTransformation,
+  coreConceptsAiLiteracy,
+  coreConceptsAiAgent,
+  coreConceptsAgi,
+  architectureTransformerArchitecture,
+  architectureContextWindow,
+  architectureAttentionMechanism,
+  agentsAndAutomationToolUse,
+  agentsAndAutomationMultiAgentSystem,
+  agentsAndAutomationAutonomousAgent,
 ];
 
 export const glossaryTerms: GlossaryTerm[] = isGlossaryTermArray(rawGlossaryTerms) ? rawGlossaryTerms : [];
@@ -164,3 +220,4 @@ export function searchGlossary(query: string): GlossaryTerm[] {
       t.alsoKnownAs?.some((aka) => aka.toLowerCase().includes(q))
   );
 }
+

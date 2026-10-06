@@ -14,6 +14,9 @@ const CATEGORIES = [
   { key: 'search', label: 'AI Search', emoji: '🔍' },
   { key: 'coding', label: 'Coding', emoji: '💻' },
   { key: 'automation', label: 'Automation', emoji: '🔄' },
+  { key: 'video', label: 'Video', emoji: '🎬' },
+  { key: 'voice', label: 'Voice', emoji: '🎙️' },
+  { key: 'productivity', label: 'Productivity', emoji: '📝' },
 ];
 
 export default function ToolsPage() {
@@ -44,7 +47,7 @@ export default function ToolsPage() {
             <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-fg-default">
               <span aria-hidden="true">{cat.emoji}</span> {cat.label}
             </h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
               {cat.tools.map((tool) => (
                 <ToolComparisonCard key={tool.id} tool={tool} />
               ))}
