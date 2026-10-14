@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-6-2",
+  "slug": "dotnet-testing-strategies",
+  "phaseSlug": "dotnet-phase-6-security-testing",
+  "title": "Testing Strategies",
+  "description": "Master unit testing, integration testing, E2E testing, and test-driven development.",
+  "longDescription": "Build comprehensive test suites: unit testing with xUnit/NUnit, integration testing with TestServer, E2E testing with Playwright/Cypress, test-driven development, and testing strategies for AI applications.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedHours": 10,
+  "icon": "🧪",
+  "tags": ["testing", "unit-testing", "integration-testing", "e2e", "tdd"],
+  "lessonSlugs": [
+    "dotnet-unit-testing",
+    "dotnet-integration-testing",
+    "dotnet-e2e-testing",
+    "dotnet-tdd-best-practices"
+  ],
+  "whatYouLearn": [
+    "Unit testing with xUnit",
+    "Integration testing with TestServer",
+    "E2E testing with Playwright",
+    "Test-driven development",
+    "Testing AI applications"
+  ]
+}

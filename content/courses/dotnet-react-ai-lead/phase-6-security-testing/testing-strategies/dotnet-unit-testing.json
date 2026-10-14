@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-6-5",
+  "slug": "dotnet-unit-testing",
+  "moduleSlug": "dotnet-testing-strategies",
+  "title": "Unit Testing",
+  "description": "Master unit testing with xUnit and best practices.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["unit-testing", "xunit", "testing"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Unit Testing"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Unit tests verify individual components. Use xUnit, mock dependencies, and follow AAA pattern."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Unit tests verify individual components",
+          "xUnit for .NET testing",
+          "Mock dependencies with Moq",
+          "Follow AAA pattern",
+          "Test boundary conditions"
+        ],
+        "takeaway": "Unit tests provide fast feedback. Write tests for business logic and edge cases, mock external dependencies."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-integration-testing"],
+  "relatedGlossaryTerms": ["unit-testing", "xunit", "mocking"]
+}

@@ -1,0 +1,77 @@
+{
+  "id": "dotnet-lesson-1-6",
+  "slug": "dotnet-microservices-patterns",
+  "moduleSlug": "dotnet-system-design",
+  "title": "Microservices Patterns",
+  "description": "Learn microservices decomposition strategies, communication patterns, service discovery, and how to avoid distributed monoliths.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["microservices", "service-discovery", "decomposition", "communication"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Microservices vs Monolith"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Microservices decompose applications into small, independent services. This improves scalability and deployment flexibility but adds complexity in communication, data consistency, and operations."
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Architecture Comparison",
+        "cards": [
+          {
+            "title": "Monolith",
+            "description": "Single deployable unit with shared database. Simpler to develop initially, harder to scale independently.",
+            "pros": ["Simple deployment", "Shared transactions", "Easier testing", "Lower latency"],
+            "cons": ["Tight coupling", "Difficult to scale parts", "Technology lock-in", "Slower CI/CD"],
+            "tags": ["architecture"]
+          },
+          {
+            "title": "Microservices",
+            "description": "Independent services with own databases. Complex to manage but enables independent scaling and deployment.",
+            "pros": ["Independent scaling", "Technology diversity", "Fault isolation", "Faster deployments"],
+            "cons": ["Network complexity", "Distributed transactions", "Operational overhead", "Higher latency"],
+            "tags": ["architecture"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Service Decomposition"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Decompose by domain-driven design bounded contexts. Avoid拆分 too early - start with a modular monolith and extract services when clear boundaries emerge."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Microservices trade operational complexity for deployment flexibility",
+          "Decompose by bounded contexts, not technical layers",
+          "Start with modular monolith, extract when boundaries are clear",
+          "Avoid distributed monolith - services must be truly independent",
+          "Service discovery is essential for dynamic service resolution"
+        ],
+        "takeaway": "Microservices are not a silver bullet. Use them when you need independent scaling and deployment, not by default. Proper decomposition is critical to avoid creating a distributed monolith."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-distributed-systems-fundamentals", "dotnet-api-design-best-practices"],
+  "relatedGlossaryTerms": ["microservices", "bounded-context", "service-discovery"]
+}

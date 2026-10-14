@@ -1,0 +1,176 @@
+{
+  "id": "dotnet-lesson-1-4",
+  "slug": "dotnet-modern-csharp-features",
+  "moduleSlug": "dotnet-advanced-csharp",
+  "title": "Modern C# Features & Source Generators",
+  "description": "Master records, pattern matching enhancements, source generators, and functional-style programming in modern C#.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["csharp", "records", "pattern-matching", "source-generators", "functional"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Records: Immutable Data Types"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Records (C# 9+) provide a concise syntax for immutable data types with built-in equality comparison, deconstruction, and with-expressions for non-destructive mutation. They're ideal for DTOs, value objects, and domain models."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Records vs Classes",
+        "code": "// ❌ Traditional class with boilerplate\npublic class Person\n{\n    public string FirstName { get; }\n    public string LastName { get; }\n    public int Age { get; }\n    \n    public Person(string firstName, string lastName, int age)\n    {\n        FirstName = firstName;\n        LastName = lastName;\n        Age = age;\n    }\n    \n    // Need to override Equals, GetHashCode, ToString...\n}\n\n// ✅ Record - concise, immutable, value-based equality\npublic record Person(string FirstName, string LastName, int Age);\n\n// Usage\nvar person1 = new Person(\"John\", \"Doe\", 30);\nvar person2 = new Person(\"John\", \"Doe\", 30);\n\nConsole.WriteLine(person1 == person2); // True (value-based equality)\nConsole.WriteLine(person1); // Person { FirstName = John, LastName = Doe, Age = 30 }\n\n// With-expression for non-destructive mutation\nvar olderPerson = person1 with { Age = 31 };\nConsole.WriteLine(person1.Age); // 30 (unchanged)\nConsole.WriteLine(olderPerson.Age); // 31 (new record)",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Record Structs",
+        "text": "Use record struct for value-type records that should be stack-allocated. Use record for reference-type records. Record structs are great for small, immutable data like coordinates or measurements."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Pattern Matching Enhancements"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "C# has progressively enhanced pattern matching with relational patterns, logical patterns, list patterns, and property patterns. These enable expressive, declarative code."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Modern Pattern Matching",
+        "code": "// Relational patterns\npublic string GetGrade(int score) => score switch\n{\n    >= 90 => \"A\",\n    >= 80 => \"B\",\n    >= 70 => \"C\",\n    >= 60 => \"D\",\n    _ => \"F\"\n};\n\n// Logical patterns\npublic bool IsValid(User user) => user switch\n{\n    { IsActive: true, Age: >= 18 and < 65 } => true,\n    _ => false\n};\n\n// List patterns (C# 11+)\npublic int Sum(List<int> numbers) => numbers switch\n{\n    [] => 0,\n    [var first] => first,\n    [var first, .. var rest] => first + Sum(rest.ToList())\n};\n\n// Property patterns\npublic string FormatAddress(Address address) => address switch\n{\n    { Country: \"US\" } => $\"{address.City}, {address.State} {address.Zip}\",\n    { Country: \"CA\" } => $\"{address.City}, {address.Province} {address.Postal}\",\n    _ => $\"{address.City}, {address.Country}\"\n};",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Source Generators"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Source generators (C# 9+) compile code that generates additional source files during build. They're used for reducing boilerplate, improving performance, and implementing compile-time metaprogramming."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Implementing a Simple Source Generator",
+        "code": "// Generator attribute\n[AttributeUsage(AttributeTargets.Class)]\npublic class AutoNotifyAttribute : Attribute { }\n\n// Generator implementation (simplified)\n[Generator]\npublic class AutoNotifyGenerator : ISourceGenerator\n{\n    public void Execute(GeneratorExecutionContext context)\n    {\n        var compilation = context.Compilation;\n        var receiver = context.SyntaxReceiver as AutoNotifyReceiver;\n        \n        foreach (var classSyntax in receiver.CandidateClasses)\n        {\n            var model = compilation.GetSemanticModel(classSyntax.SyntaxTree);\n            var classSymbol = model.GetDeclaredSymbol(classSyntax);\n            \n            var source = GenerateNotifyPropertyChanged(classSymbol);\n            context.AddSource($\"{classSymbol.Name}_AutoNotify.g.cs\", source);\n        }\n    }\n    \n    private string GenerateNotifyPropertyChanged(INamedTypeSymbol classSymbol)\n    {\n        // Generate INotifyPropertyChanged implementation\n        return $\"// Auto-generated code\npartial class {classSymbol.Name} : INotifyPropertyChanged\n{{\n    public event PropertyChangedEventHandler PropertyChanged;\n    protected void OnPropertyChanged([CallerMemberName] string propertyName = null)\n    {{\n        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));\n    }}\n}}\";\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "title": "Popular Source Generator Libraries",
+        "text": "CommunityToolkit.Mvvm, Mapperly, StronglyTypedId, and Scrutor use source generators to reduce boilerplate. Consider using these before writing your own generators."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Functional-Style C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Modern C# supports functional programming patterns with immutability, expression-bodied members, local functions, and declarative code. These patterns reduce bugs and improve readability."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Functional-Style Code",
+        "code": "// Expression-bodied members\npublic class Calculator\n{\n    public int Add(int a, int b) => a + b;\n    public int Multiply(int a, int b) => a * b;\n}\n\n// Local functions for encapsulation\npublic IEnumerable<int> GetPrimes(int max)\n{\n    bool IsPrime(int n)\n    {\n        if (n < 2) return false;\n        for (int i = 2; i <= Math.Sqrt(n); i++)\n        {\n            if (n % i == 0) return false;\n        }\n        return true;\n    }\n    \n    return Enumerable.Range(2, max).Where(IsPrime);\n}\n\n// Pipelining with method chaining\npublic string ProcessText(string input) => input\n    .Trim()\n    .ToLower()\n    .Split(' ')\n    .Where(word => word.Length > 3)\n    .OrderBy(word => word)\n    .Aggregate((a, b) => $\"{a}, {b}\");\n\n// Option/Maybe pattern with records\npublic record Option<T>(T Value, bool IsSome);\n\npublic static class OptionExtensions\n{\n    public static Option<T> Some<T>(T value) => new(value, true);\n    public static Option<T> None<T>() => new(default, false);\n    \n    public static Option<TResult> Map<T, TResult>(\n        this Option<T> option, \n        Func<T, TResult> mapper) => \n        option.IsSome ? Some(mapper(option.Value)) : None<TResult>();\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Other Modern Features"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "C# 10-12 Features",
+        "cards": [
+          {
+            "title": "File-Scoped Namespaces",
+            "description": "Use namespace MyNamespace; instead of nesting braces. Reduces indentation.",
+            "pros": ["Less nesting", "Cleaner files", "Easier to read"],
+            "cons": ["Cannot have multiple namespaces in file"],
+            "tags": ["csharp10"]
+          },
+          {
+            "title": "Required Members",
+            "description": "Mark properties as required to enforce initialization via object initializer.",
+            "pros": ["Compile-time safety", "Clear requirements", "Better APIs"],
+            "cons": ["Requires C# 11+"],
+            "tags": ["csharp11"]
+          },
+          {
+            "title": "Primary Constructors",
+            "description": "Define constructor parameters directly on class/record declaration.",
+            "pros": ["Less boilerplate", "Clearer intent", "Immutable by default"],
+            "cons": ["Takes getting used to"],
+            "tags": ["csharp12"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Modern Syntax Examples",
+        "code": "// File-scoped namespace (C# 10)\nnamespace MyApp.Services;\n\npublic class UserService { }\n\n// Required members (C# 11)\npublic class User\n{\n    public required string Name { get; init; }\n    public required int Age { get; init; }\n}\n\n// Usage - compiler error if required props not set\nvar user = new User { Name = \"John\", Age = 30 };\n\n// Primary constructors (C# 12)\npublic class UserService(IUserRepository repository)\n{\n    private readonly IUserRepository _repo = repository;\n    \n    public User GetById(int id) => _repo.Find(id);\n}\n\n// Record with primary constructor\npublic record User(string Name, int Age);\n\n// Using expressions on auto-properties (C# 12)\npublic class Config\n{\n    public string ConnectionString { get; } = GetConnectionString();\n    \n    private static string GetConnectionString() => \"...\";\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Records provide immutable data types with value-based equality and minimal boilerplate",
+          "Pattern matching enables expressive, declarative code with relational, logical, and list patterns",
+          "Source generators compile code that generates additional source files during build",
+          "Use source generators to reduce boilerplate (e.g., INotifyPropertyChanged, mappers)",
+          "Functional-style C# uses immutability, expression-bodied members, and local functions",
+          "File-scoped namespaces reduce nesting and improve readability",
+          "Required members enforce initialization at compile time",
+          "Primary constructors reduce boilerplate in class and record definitions"
+        ],
+        "takeaway": "Modern C# features enable cleaner, more expressive code with less boilerplate. Records, pattern matching, and source generators are particularly powerful for reducing repetitive code while maintaining type safety and performance."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-async-deep-dive", "dotnet-memory-management"],
+  "relatedGlossaryTerms": ["record", "pattern-matching", "source-generator"]
+}

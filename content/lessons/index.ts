@@ -1,5 +1,104 @@
 import type { Lesson } from '@/types';
 
+// .NET + React AI Lead course lessons
+// Phase 1: Advanced .NET & System Design
+import dotnetAsyncDeepDive from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/advanced-csharp-patterns/dotnet-async-deep-dive.json';
+import dotnetMemoryManagement from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/advanced-csharp-patterns/dotnet-memory-management.json';
+import dotnetDiPatterns from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/advanced-csharp-patterns/dotnet-di-patterns.json';
+import dotnetModernCsharpFeatures from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/advanced-csharp-patterns/dotnet-modern-csharp-features.json';
+import dotnetDistributedSystemsFundamentals from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/system-design-architecture/dotnet-distributed-systems-fundamentals.json';
+import dotnetMicroservicesPatterns from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/system-design-architecture/dotnet-microservices-patterns.json';
+import dotnetApiDesignBestPractices from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/system-design-architecture/dotnet-api-design-best-practices.json';
+import dotnetEventDrivenArchitecture from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/system-design-architecture/dotnet-event-driven-architecture.json';
+import dotnetProfilingBenchmarking from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/performance-scaling/dotnet-profiling-benchmarking.json';
+import dotnetCachingStrategies from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/performance-scaling/dotnet-caching-strategies.json';
+import dotnetMessageQueues from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/performance-scaling/dotnet-message-queues.json';
+import dotnetHorizontalVerticalScaling from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/performance-scaling/dotnet-horizontal-vertical-scaling.json';
+
+// Phase 2: React/TypeScript & Modern Frontend
+import dotnetReactInternals from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/advanced-react-patterns/dotnet-react-internals.json';
+import dotnetCustomHooksPatterns from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/advanced-react-patterns/dotnet-custom-hooks-patterns.json';
+import dotnetReactPerformanceOptimization from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/advanced-react-patterns/dotnet-react-performance-optimization.json';
+import dotnetAdvancedComponentPatterns from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/advanced-react-patterns/dotnet-advanced-component-patterns.json';
+import dotnetTypescriptGenerics from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/typescript-advanced/dotnet-typescript-generics.json';
+import dotnetTypescriptUtilityTypes from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/typescript-advanced/dotnet-typescript-utility-types.json';
+import dotnetTypescriptConditionalTypes from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/typescript-advanced/dotnet-typescript-conditional-types.json';
+import dotnetTypescriptTypeSafetyPatterns from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/typescript-advanced/dotnet-typescript-type-safety-patterns.json';
+import dotnetContextAndRedux from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/state-management-architecture/dotnet-context-and-redux.json';
+import dotnetReactQueryServerState from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/state-management-architecture/dotnet-react-query-server-state.json';
+import dotnetFormStateManagement from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/state-management-architecture/dotnet-form-state-management.json';
+import dotnetStateArchitecturePatterns from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/state-management-architecture/dotnet-state-architecture-patterns.json';
+
+// Phase 3: Generative AI & LLM Integration
+import dotnetTransformerArchitecture from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/llm-fundamentals/dotnet-transformer-architecture.json';
+import dotnetTokenizationEmbeddings from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/llm-fundamentals/dotnet-tokenization-embeddings.json';
+import dotnetContextWindowParameters from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/llm-fundamentals/dotnet-context-window-parameters.json';
+import dotnetModelSelectionEvaluation from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/llm-fundamentals/dotnet-model-selection-evaluation.json';
+import dotnetSystemPrompts from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/prompt-engineering/dotnet-system-prompts.json';
+import dotnetFewShotPrompting from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/prompt-engineering/dotnet-few-shot-prompting.json';
+import dotnetChainOfThought from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/prompt-engineering/dotnet-chain-of-thought.json';
+import dotnetStructuredOutputPrompts from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/prompt-engineering/dotnet-structured-output-prompts.json';
+import dotnetOpenaiSdkBasics from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/llm-integration-dotnet/dotnet-openai-sdk-basics.json';
+import dotnetAzureOpenaiIntegration from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/llm-integration-dotnet/dotnet-azure-openai-integration.json';
+import dotnetLocalModelsOllama from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/llm-integration-dotnet/dotnet-local-models-ollama.json';
+import dotnetStreamingErrorHandling from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/llm-integration-dotnet/dotnet-streaming-error-handling.json';
+import dotnetSemanticKernelBasics from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/ai-sdk-semantic-kernel/dotnet-semantic-kernel-basics.json';
+import dotnetSkillsPlugins from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/ai-sdk-semantic-kernel/dotnet-skills-plugins.json';
+import dotnetPlannersConnectors from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/ai-sdk-semantic-kernel/dotnet-planners-connectors.json';
+import dotnetSkMemoryEmbeddings from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/ai-sdk-semantic-kernel/dotnet-sk-memory-embeddings.json';
+
+// Phase 4: RAG, Agents & MCP
+import dotnetRagArchitecture from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/dotnet-rag-architecture.json';
+import dotnetVectorDatabases from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/dotnet-vector-databases.json';
+import dotnetChunkingStrategies from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/dotnet-chunking-strategies.json';
+import dotnetHybridSearch from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/dotnet-hybrid-search.json';
+import dotnetAgentFundamentals from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/ai-agents/dotnet-agent-fundamentals.json';
+import dotnetToolCalling from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/ai-agents/dotnet-tool-calling.json';
+import dotnetAgentPlanning from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/ai-agents/dotnet-agent-planning.json';
+import dotnetMultiAgentSystems from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/ai-agents/dotnet-multi-agent-systems.json';
+import dotnetMcpFundamentals from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/mcp-integration/dotnet-mcp-fundamentals.json';
+import dotnetBuildingMcpServers from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/mcp-integration/dotnet-building-mcp-servers.json';
+import dotnetMcpClientIntegration from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/mcp-integration/dotnet-mcp-client-integration.json';
+import dotnetMcpToolsResources from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/mcp-integration/dotnet-mcp-tools-resources.json';
+
+// Phase 5: Azure Cloud & DevOps
+import dotnetAzureAppService from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/azure-fundamentals/dotnet-azure-app-service.json';
+import dotnetAzureFunctions from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/azure-fundamentals/dotnet-azure-functions.json';
+import dotnetCosmosDb from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/azure-fundamentals/dotnet-cosmos-db.json';
+import dotnetAzureSql from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/azure-fundamentals/dotnet-azure-sql.json';
+import dotnetDockerContainerization from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/devops-cicd/dotnet-docker-containerization.json';
+import dotnetKubernetesAks from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/devops-cicd/dotnet-kubernetes-aks.json';
+import dotnetGithubActions from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/devops-cicd/dotnet-github-actions.json';
+import dotnetInfrastructureAsCode from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/devops-cicd/dotnet-infrastructure-as-code.json';
+import dotnetApplicationInsights from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/monitoring-observability/dotnet-application-insights.json';
+import dotnetStructuredLogging from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/monitoring-observability/dotnet-structured-logging.json';
+import dotnetMetricsDashboards from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/monitoring-observability/dotnet-metrics-dashboards.json';
+import dotnetDistributedTracing from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/monitoring-observability/dotnet-distributed-tracing.json';
+
+// Phase 6: Security, Testing & AI-Assisted Dev
+import dotnetAuthenticationAuthorization from '../courses/dotnet-react-ai-lead/phase-6-security-testing/security-fundamentals/dotnet-authentication-authorization.json';
+import dotnetOwaspTop10 from '../courses/dotnet-react-ai-lead/phase-6-security-testing/security-fundamentals/dotnet-owasp-top-10.json';
+import dotnetSecureCoding from '../courses/dotnet-react-ai-lead/phase-6-security-testing/security-fundamentals/dotnet-secure-coding.json';
+import dotnetSecretsManagement from '../courses/dotnet-react-ai-lead/phase-6-security-testing/security-fundamentals/dotnet-secrets-management.json';
+import dotnetUnitTesting from '../courses/dotnet-react-ai-lead/phase-6-security-testing/testing-strategies/dotnet-unit-testing.json';
+import dotnetIntegrationTesting from '../courses/dotnet-react-ai-lead/phase-6-security-testing/testing-strategies/dotnet-integration-testing.json';
+import dotnetE2eTesting from '../courses/dotnet-react-ai-lead/phase-6-security-testing/testing-strategies/dotnet-e2e-testing.json';
+import dotnetTddBestPractices from '../courses/dotnet-react-ai-lead/phase-6-security-testing/testing-strategies/dotnet-tdd-best-practices.json';
+import dotnetGithubCopilot from '../courses/dotnet-react-ai-lead/phase-6-security-testing/ai-assisted-development/dotnet-github-copilot.json';
+import dotnetAiCodeReview from '../courses/dotnet-react-ai-lead/phase-6-security-testing/ai-assisted-development/dotnet-ai-code-review.json';
+import dotnetAiRefactoring from '../courses/dotnet-react-ai-lead/phase-6-security-testing/ai-assisted-development/dotnet-ai-refactoring.json';
+import dotnetAiDebugging from '../courses/dotnet-react-ai-lead/phase-6-security-testing/ai-assisted-development/dotnet-ai-debugging.json';
+
+// Phase 7: Capstone Project
+import dotnetCapstoneArchitecture from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-design/dotnet-capstone-architecture.json';
+import dotnetCapstoneDataModel from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-design/dotnet-capstone-data-model.json';
+import dotnetCapstoneRagDesign from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-design/dotnet-capstone-rag-design.json';
+import dotnetCapstoneSecurityDesign from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-design/dotnet-capstone-security-design.json';
+import dotnetCapstoneBackend from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-implementation/dotnet-capstone-backend.json';
+import dotnetCapstoneFrontend from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-implementation/dotnet-capstone-frontend.json';
+import dotnetCapstoneRagImplementation from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-implementation/dotnet-capstone-rag-implementation.json';
+import dotnetCapstoneDeployment from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-implementation/dotnet-capstone-deployment.json';
+
 // AI Basics — phase-1-foundations — what-is-ai
 import aiVsMlVsGenerativeAi from '../courses/ai-basics/phase-1-foundations/what-is-ai/ai-vs-ml-vs-generative-ai.json';
 import howLlmsWorkSimply from '../courses/ai-basics/phase-1-foundations/what-is-ai/how-llms-work-simply.json';
@@ -182,6 +281,98 @@ const rawLessons = [
   writingTestsWithAi,
   agenticCodingIntro,
   aiSecurityRisks,
+  // .NET + React AI Lead course
+  // Phase 1: Advanced .NET & System Design
+  dotnetAsyncDeepDive,
+  dotnetMemoryManagement,
+  dotnetDiPatterns,
+  dotnetModernCsharpFeatures,
+  dotnetDistributedSystemsFundamentals,
+  dotnetMicroservicesPatterns,
+  dotnetApiDesignBestPractices,
+  dotnetEventDrivenArchitecture,
+  dotnetProfilingBenchmarking,
+  dotnetCachingStrategies,
+  dotnetMessageQueues,
+  dotnetHorizontalVerticalScaling,
+  // Phase 2: React/TypeScript & Modern Frontend
+  dotnetReactInternals,
+  dotnetCustomHooksPatterns,
+  dotnetReactPerformanceOptimization,
+  dotnetAdvancedComponentPatterns,
+  dotnetTypescriptGenerics,
+  dotnetTypescriptUtilityTypes,
+  dotnetTypescriptConditionalTypes,
+  dotnetTypescriptTypeSafetyPatterns,
+  dotnetContextAndRedux,
+  dotnetReactQueryServerState,
+  dotnetFormStateManagement,
+  dotnetStateArchitecturePatterns,
+  // Phase 3: Generative AI & LLM Integration
+  dotnetTransformerArchitecture,
+  dotnetTokenizationEmbeddings,
+  dotnetContextWindowParameters,
+  dotnetModelSelectionEvaluation,
+  dotnetSystemPrompts,
+  dotnetFewShotPrompting,
+  dotnetChainOfThought,
+  dotnetStructuredOutputPrompts,
+  dotnetOpenaiSdkBasics,
+  dotnetAzureOpenaiIntegration,
+  dotnetLocalModelsOllama,
+  dotnetStreamingErrorHandling,
+  dotnetSemanticKernelBasics,
+  dotnetSkillsPlugins,
+  dotnetPlannersConnectors,
+  dotnetSkMemoryEmbeddings,
+  // Phase 4: RAG, Agents & MCP
+  dotnetRagArchitecture,
+  dotnetVectorDatabases,
+  dotnetChunkingStrategies,
+  dotnetHybridSearch,
+  dotnetAgentFundamentals,
+  dotnetToolCalling,
+  dotnetAgentPlanning,
+  dotnetMultiAgentSystems,
+  dotnetMcpFundamentals,
+  dotnetBuildingMcpServers,
+  dotnetMcpClientIntegration,
+  dotnetMcpToolsResources,
+  // Phase 5: Azure Cloud & DevOps
+  dotnetAzureAppService,
+  dotnetAzureFunctions,
+  dotnetCosmosDb,
+  dotnetAzureSql,
+  dotnetDockerContainerization,
+  dotnetKubernetesAks,
+  dotnetGithubActions,
+  dotnetInfrastructureAsCode,
+  dotnetApplicationInsights,
+  dotnetStructuredLogging,
+  dotnetMetricsDashboards,
+  dotnetDistributedTracing,
+  // Phase 6: Security, Testing & AI-Assisted Dev
+  dotnetAuthenticationAuthorization,
+  dotnetOwaspTop10,
+  dotnetSecureCoding,
+  dotnetSecretsManagement,
+  dotnetUnitTesting,
+  dotnetIntegrationTesting,
+  dotnetE2eTesting,
+  dotnetTddBestPractices,
+  dotnetGithubCopilot,
+  dotnetAiCodeReview,
+  dotnetAiRefactoring,
+  dotnetAiDebugging,
+  // Phase 7: Capstone Project
+  dotnetCapstoneArchitecture,
+  dotnetCapstoneDataModel,
+  dotnetCapstoneRagDesign,
+  dotnetCapstoneSecurityDesign,
+  dotnetCapstoneBackend,
+  dotnetCapstoneFrontend,
+  dotnetCapstoneRagImplementation,
+  dotnetCapstoneDeployment,
 ];
 
 export const lessons: Lesson[] = rawLessons as unknown as Lesson[];

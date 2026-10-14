@@ -1,0 +1,22 @@
+{
+  "id": "dotnet-lesson-2-4",
+  "slug": "dotnet-advanced-component-patterns",
+  "moduleSlug": "dotnet-advanced-react",
+  "title": "Advanced Component Patterns",
+  "description": "Master compound components, render props, higher-order components, and container/presentational patterns.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["react", "patterns", "compound-components", "render-props"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {"level": 2, "text": "Component Patterns"}
+    },
+    {
+      "type": "paragraph",
+      "data": {"text": "Advanced component patterns enable flexible, reusable UI components. Compound components share state implicitly, render props allow function children, and HOCs enhance component behavior."}}
+  ],
+  "relatedLessons": ["dotnet-custom-hooks-patterns"],
+  "relatedGlossaryTerms": ["compound-components", "render-props", "hoc"]
+}

@@ -1,0 +1,105 @@
+{
+  "id": "dotnet-lesson-1-5",
+  "slug": "dotnet-distributed-systems-fundamentals",
+  "moduleSlug": "dotnet-system-design",
+  "title": "Distributed Systems Fundamentals",
+  "description": "Understand CAP theorem, consistency models, distributed transactions, and the fundamentals of building reliable distributed systems.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["distributed-systems", "cap-theorem", "consistency", "reliability"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "CAP Theorem"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The CAP theorem states that a distributed system can only provide two of three guarantees: Consistency, Availability, and Partition Tolerance. Understanding this tradeoff is fundamental to distributed system design."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "cap-theorem",
+        "caption": "CAP theorem tradeoffs",
+        "definition": "graph TD\n    A[CAP Theorem] --> B[Consistency]\n    A --> C[Availability]\n    A --> D[Partition Tolerance]\n    B --> E[CP Systems]\n    D --> E\n    C --> F[AP Systems]\n    D --> F\n    B --> G[CA Systems]\n    C --> G\n    style G fill:#f99\n    style E fill:#9f9\n    style F fill:#ff9"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "Partition Tolerance is Mandatory",
+        "text": "In distributed systems, network partitions are inevitable. Therefore, you must choose between CP (consistency over availability) or AP (availability over consistency). CA is not possible in true distributed systems."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Consistency Models"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Different consistency models offer different tradeoffs between consistency and availability. Strong consistency ensures all nodes see the same data simultaneously, while eventual consistency allows temporary divergence."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Model", "Guarantee", "Use Case", "Example"],
+        "rows": [
+          ["Strong", "All nodes see same data simultaneously", "Financial transactions", "SQL databases with ACID"],
+          ["Eventual", "Converges over time", "Social media feeds", "Cassandra, DynamoDB"],
+          ["Causal", "Causally related operations seen in order", "Collaborative editing", "Riak"],
+          ["Read Your Writes", "See your own writes", "User profiles", "Many NoSQL databases"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Distributed Transactions"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Two-phase commit (2PC) provides ACID transactions across distributed services but has significant performance and availability costs. The saga pattern provides eventual consistency with better availability."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Saga Pattern Implementation",
+        "code": "// Saga coordinator\npublic class OrderSaga\n{\n    private readonly IOrderService _orderService;\n    private readonly IPaymentService _paymentService;\n    private readonly IInventoryService _inventoryService;\n    \n    public async Task ExecuteAsync(Order order)\n    {\n        try\n        {\n            // Step 1: Create order\n            await _orderService.CreateOrderAsync(order);\n            \n            // Step 2: Process payment\n            await _paymentService.ProcessPaymentAsync(order.Payment);\n            \n            // Step 3: Reserve inventory\n            await _inventoryService.ReserveInventoryAsync(order.Items);\n            \n            // Saga complete\n            await _orderService.MarkAsCompletedAsync(order.Id);\n        }\n        catch (Exception ex)\n        {\n            // Compensating transactions\n            await CompensateAsync(order);\n            throw;\n        }\n    }\n    \n    private async Task CompensateAsync(Order order)\n    {\n        try\n        {\n            await _inventoryService.ReleaseInventoryAsync(order.Items);\n            await _paymentService.RefundPaymentAsync(order.Payment);\n            await _orderService.MarkAsFailedAsync(order.Id);\n        }\n        catch (Exception ex)\n        {\n            // Log and handle compensation failure\n            // May require manual intervention\n        }\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "CAP theorem: Choose between CP (consistency) or AP (availability) when partitions occur",
+          "Strong consistency is simpler but less available; eventual consistency is more available but more complex",
+          "Two-phase commit provides ACID but has poor availability and performance",
+          "Saga pattern provides eventual consistency with better availability and scalability",
+          "Compensating transactions are essential for saga rollback",
+          "Choose consistency model based on business requirements, not technical preference"
+        ],
+        "takeaway": "Distributed systems require different thinking than monolithic applications. Understand CAP theorem, choose appropriate consistency models, and use patterns like saga to handle distributed transactions."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-microservices-patterns", "dotnet-event-driven-architecture"],
+  "relatedGlossaryTerms": ["cap-theorem", "eventual-consistency", "saga-pattern"]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-7-2",
+  "slug": "dotnet-capstone-implementation",
+  "phaseSlug": "dotnet-phase-7-capstone",
+  "title": "Capstone Implementation",
+  "description": "Implement the enterprise AI knowledge assistant with .NET, React, Azure, and deploy to production.",
+  "longDescription": "Build the capstone project: .NET backend with AI integration, React frontend, RAG implementation, Azure deployment, CI/CD pipeline, monitoring and observability, and production hardening.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedHours": 20,
+  "icon": "🚀",
+  "tags": ["implementation", "deployment", "capstone"],
+  "lessonSlugs": [
+    "dotnet-capstone-backend",
+    "dotnet-capstone-frontend",
+    "dotnet-capstone-rag-implementation",
+    "dotnet-capstone-deployment"
+  ],
+  "whatYouLearn": [
+    ".NET backend with AI integration",
+    "React frontend for AI applications",
+    "RAG implementation with vector databases",
+    "Azure deployment and CI/CD",
+    "Production monitoring and hardening"
+  ]
+}

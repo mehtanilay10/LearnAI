@@ -1,0 +1,50 @@
+{
+  "id": "dotnet-lesson-1-9",
+  "slug": "dotnet-profiling-benchmarking",
+  "moduleSlug": "dotnet-performance-scaling",
+  "title": "Profiling & Benchmarking",
+  "description": "Learn to profile .NET applications, use BenchmarkDotNet for micro-benchmarks, and identify performance bottlenecks.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 40,
+  "tags": ["profiling", "benchmarking", "performance", "benchmarkdotnet"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Profiling Tools"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Use dotnet-counters for real-time metrics, dotnet-trace for detailed tracing, and Visual Studio Profiler for deep analysis. Identify CPU, memory, and I/O bottlenecks."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "BenchmarkDotNet Example",
+        "code": "[MemoryDiagnoser]\n[SimpleJob(warmupCount: 3, iterationCount: 10)]\npublic class StringBenchmarks\n{\n    private readonly string[] _data = Enumerable.Range(0, 1000)\n        .Select(i => $\"item-{i}\").ToArray();\n    \n    [Benchmark]\n    public string StringConcatenation()\n    {\n        var result = \"\";\n        foreach (var item in _data)\n        {\n            result += item;\n        }\n        return result;\n    }\n    \n    [Benchmark]\n    public string StringBuilder()\n    {\n        var sb = new StringBuilder();\n        foreach (var item in _data)\n        {\n            sb.Append(item);\n        }\n        return sb.ToString();\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Profile before optimizing - measure, don't guess",
+          "BenchmarkDotNet provides reliable micro-benchmarks with statistical analysis",
+          "Use dotnet-counters for production monitoring",
+          "dotnet-trace captures detailed performance traces",
+          "Look for hot paths, memory allocations, and I/O bottlenecks"
+        ],
+        "takeaway": "Performance optimization requires measurement. Use profiling tools to identify actual bottlenecks before optimizing. BenchmarkDotNet is the gold standard for .NET micro-benchmarks."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-memory-management", "dotnet-caching-strategies"],
+  "relatedGlossaryTerms": ["profiling", "benchmarking"]
+}

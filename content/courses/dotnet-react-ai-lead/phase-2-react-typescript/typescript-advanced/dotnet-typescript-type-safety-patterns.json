@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-2-8",
+  "slug": "dotnet-typescript-type-safety-patterns",
+  "moduleSlug": "dotnet-typescript-advanced",
+  "title": "Type Safety Patterns",
+  "description": "Build type-safe APIs, use discriminated unions, type guards, and brand types for enhanced type safety.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["typescript", "type-safety", "discriminated-unions", "type-guards"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Type Safety Patterns"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Discriminated unions use a common property to distinguish between types. Type guards narrow types at runtime. Brand types prevent accidental type coercion."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Discriminated unions distinguish types with a common property",
+          "Type guards narrow types with runtime checks",
+          "Brand types prevent accidental type coercion",
+          "Exhaustive checking ensures all cases are handled",
+          "Strict mode catches more errors at compile time"
+        ],
+        "takeaway": "Type safety patterns prevent entire classes of bugs. Use discriminated unions for state machines, type guards for runtime validation, and brand types for opaque types."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-typescript-conditional-types"],
+  "relatedGlossaryTerms": ["discriminated-unions", "type-guards", "brand-types"]
+}

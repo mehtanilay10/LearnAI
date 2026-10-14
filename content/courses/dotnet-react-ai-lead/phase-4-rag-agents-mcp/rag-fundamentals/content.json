@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-4-1",
+  "slug": "dotnet-rag-fundamentals",
+  "phaseSlug": "dotnet-phase-4-rag-agents-mcp",
+  "title": "RAG Fundamentals",
+  "description": "Master retrieval-augmented generation with vector databases, chunking strategies, and relevance scoring.",
+  "longDescription": "Build RAG systems: embedding generation, vector databases (Azure AI Search, Pinecone, Qdrant), document chunking strategies, retrieval with relevance scoring, and hybrid search with keyword and semantic search.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedHours": 12,
+  "icon": "📚",
+  "tags": ["rag", "vector-database", "embeddings", "retrieval"],
+  "lessonSlugs": [
+    "dotnet-rag-architecture",
+    "dotnet-vector-databases",
+    "dotnet-chunking-strategies",
+    "dotnet-hybrid-search"
+  ],
+  "whatYouLearn": [
+    "RAG architecture and workflow",
+    "Vector database integration",
+    "Document chunking strategies",
+    "Hybrid search with keyword and semantic",
+    "Relevance scoring and ranking"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-3-5",
+  "slug": "dotnet-system-prompts",
+  "moduleSlug": "dotnet-prompt-engineering",
+  "title": "System Prompts",
+  "description": "Master system prompts for controlling model behavior, personality, and output format.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 40,
+  "tags": ["system-prompts", "behavior-control", "personality"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "System Prompts"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "System prompts set the behavior and personality of the model. They define the role, constraints, and output format for all interactions."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "System prompts define model behavior and personality",
+          "Set role, constraints, and output format",
+          "System prompt applies to all user messages",
+          "Test system prompts thoroughly",
+          "Include examples in system prompt for consistency"
+        ],
+        "takeaway": "System prompts are the foundation of reliable LLM interactions. Define clear roles, constraints, and output formats to get consistent results."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-few-shot-prompting"],
+  "relatedGlossaryTerms": ["system-prompt", "role-prompting"]
+}

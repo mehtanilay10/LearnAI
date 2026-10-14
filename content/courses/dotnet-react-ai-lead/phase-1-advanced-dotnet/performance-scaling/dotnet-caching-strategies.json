@@ -1,0 +1,59 @@
+{
+  "id": "dotnet-lesson-1-10",
+  "slug": "dotnet-caching-strategies",
+  "moduleSlug": "dotnet-performance-scaling",
+  "title": "Caching Strategies",
+  "description": "Implement multi-layer caching with in-memory, distributed (Redis), and CDN caching. Understand cache invalidation and patterns.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["caching", "redis", "memory-cache", "cache-invalidation"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Caching Layers"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Multi-layer caching reduces load on downstream systems. Browser cache → CDN → application cache → distributed cache → database. Each layer has different tradeoffs."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "caching-layers",
+        "caption": "Multi-layer caching architecture",
+        "definition": "graph TD\n    A[Client] --> B[Browser Cache]\n    B -->|Miss| C[CDN]\n    C -->|Miss| D[App Memory Cache]\n    D -->|Miss| E[Redis/Distributed Cache]\n    E -->|Miss| F[Database]\n    F --> G[Cache Populate]\n    G --> E\n    E --> D\n    D --> C\n    C --> B"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "IMemoryCache Implementation",
+        "code": "public class CachedUserService\n{\n    private readonly IUserService _inner;\n    private readonly IMemoryCache _cache;\n    \n    public CachedUserService(IUserService inner, IMemoryCache cache)\n    {\n        _inner = inner;\n        _cache = cache;\n    }\n    \n    public async Task<User> GetUserAsync(int id)\n    {\n        string key = $\"user:{id}\";\n        \n        return await _cache.GetOrCreateAsync(key, async entry =>\n        {\n            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);\n            entry.SlidingExpiration = TimeSpan.FromMinutes(2);\n            entry.RegisterPostEvictionCallback((key, value, reason, state) =>\n            {\n                _logger.LogInformation(\"Cache evicted: {Key}, Reason: {Reason}\", key, reason);\n            });\n            \n            return await _inner.GetUserAsync(id);\n        });\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Multi-layer caching reduces load and improves response times",
+          "Use IMemoryCache for single-server scenarios, IDistributedCache for multi-server",
+          "Set appropriate expiration policies: absolute, sliding, or both",
+          "Cache invalidation is one of the hardest problems in CS - consider TTL-based invalidation",
+          "Use cache-aside pattern: check cache, miss then load and populate",
+          "CDN caching for static assets reduces origin server load"
+        ],
+        "takeaway": "Caching is one of the most effective performance optimizations. Use multiple layers, set appropriate expiration policies, and handle cache invalidation carefully."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-profiling-benchmarking", "dotnet-horizontal-vertical-scaling"],
+  "relatedGlossaryTerms": ["caching", "redis", "cache-invalidation"]
+}

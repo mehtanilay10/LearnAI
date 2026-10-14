@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-2-3",
+  "slug": "dotnet-state-management",
+  "phaseSlug": "dotnet-phase-2-react-typescript",
+  "title": "State Management Architecture",
+  "description": "Design scalable state management with Context API, Redux Toolkit, Zustand, React Query, and server state patterns.",
+  "longDescription": "Learn state management patterns: client state with Context, Redux Toolkit, Zustand; server state with React Query; form state with React Hook Form; and architectural patterns for separating concerns.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedHours": 10,
+  "icon": "🔄",
+  "tags": ["state-management", "redux", "react-query", "context", "architecture"],
+  "lessonSlugs": [
+    "dotnet-context-and-redux",
+    "dotnet-react-query-server-state",
+    "dotnet-form-state-management",
+    "dotnet-state-architecture-patterns"
+  ],
+  "whatYouLearn": [
+    "Context API for prop drilling avoidance",
+    "Redux Toolkit for complex client state",
+    "React Query for server state caching and synchronization",
+    "React Hook Form for performant form handling",
+    "State architecture patterns and separation of concerns"
+  ]
+}

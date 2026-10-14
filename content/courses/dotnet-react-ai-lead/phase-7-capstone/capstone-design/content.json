@@ -1,0 +1,25 @@
+{
+  "id": "dotnet-module-7-1",
+  "slug": "dotnet-capstone-design",
+  "phaseSlug": "dotnet-phase-7-capstone",
+  "title": "Capstone Design",
+  "description": "Design the enterprise AI knowledge assistant architecture, data model, and integration points.",
+  "longDescription": "Design the capstone project: system architecture, technology stack, data model, API design, RAG architecture, security model, deployment strategy, and monitoring approach.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedHours": 10,
+  "icon": "📐",
+  "tags": ["architecture", "design", "capstone"],
+  "lessonSlugs": [
+    "dotnet-capstone-architecture",
+    "dotnet-capstone-data-model",
+    "dotnet-capstone-rag-design",
+    "dotnet-capstone-security-design"
+  ],
+  "whatYouLearn": [
+    "Enterprise system architecture",
+    "Data modeling for AI applications",
+    "RAG system design",
+    "Security architecture design"
+  ]
+}

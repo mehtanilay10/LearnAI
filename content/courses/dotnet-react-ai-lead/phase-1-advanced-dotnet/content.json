@@ -1,0 +1,17 @@
+{
+  "id": "dotnet-phase-1",
+  "slug": "dotnet-phase-1-advanced-dotnet",
+  "courseSlug": "dotnet-react-ai-lead",
+  "title": "Phase 1: Advanced .NET & System Design",
+  "subtitle": "Master modern C# patterns, distributed systems, and performance optimization",
+  "description": "Deep dive into advanced C#/.NET features, design patterns for large-scale systems, distributed architecture principles, caching strategies, message queues, and performance tuning for high-throughput applications.",
+  "order": 1,
+  "icon": "🔧",
+  "color": "purple",
+  "moduleSlug": [
+    "dotnet-advanced-csharp",
+    "dotnet-system-design",
+    "dotnet-performance-scaling"
+  ],
+  "estimatedWeeks": 2
+}

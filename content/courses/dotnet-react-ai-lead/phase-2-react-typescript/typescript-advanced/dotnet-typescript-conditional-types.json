@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-2-7",
+  "slug": "dotnet-typescript-conditional-types",
+  "moduleSlug": "dotnet-typescript-advanced",
+  "title": "Conditional Types & Type Inference",
+  "description": "Master conditional types, infer keyword, template literal types, and advanced type-level programming.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["typescript", "conditional-types", "type-inference"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Conditional Types"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Conditional types select types based on conditions. Use the infer keyword to extract types from other types. Template literal types enable string manipulation at the type level."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Conditional types select types based on conditions",
+          "infer keyword extracts types from other types",
+          "Template literal types manipulate strings at type level",
+          "Distributive conditional types work with unions",
+          "Type inference enables automatic type deduction"
+        ],
+        "takeaway": "Conditional types and type inference enable powerful type-level programming. Use them to build sophisticated type systems that catch errors at compile time."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-typescript-generics"],
+  "relatedGlossaryTerms": ["conditional-types", "type-inference", "template-literal-types"]
+}

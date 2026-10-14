@@ -1,0 +1,22 @@
+{
+  "id": "dotnet-lesson-2-11",
+  "slug": "dotnet-form-state-management",
+  "moduleSlug": "dotnet-state-management",
+  "title": "Form State Management",
+  "description": "Master React Hook Form for performant form handling, validation, and integration with UI libraries.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 40,
+  "tags": ["react", "forms", "react-hook-form", "validation"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {"level": 2, "text": "React Hook Form"}
+    },
+    {
+      "type": "paragraph",
+      "data": {"text": "React Hook Form provides performant form handling with minimal re-renders. It integrates with validation libraries and UI component libraries."}}
+  ],
+  "relatedLessons": ["dotnet-context-and-redux"],
+  "relatedGlossaryTerms": ["react-hook-form", "form-validation", "zod"]
+}

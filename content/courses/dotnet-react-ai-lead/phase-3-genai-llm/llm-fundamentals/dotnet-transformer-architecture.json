@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-3-1",
+  "slug": "dotnet-transformer-architecture",
+  "moduleSlug": "dotnet-llm-fundamentals",
+  "title": "Transformer Architecture",
+  "description": "Understand the transformer architecture, self-attention, and how modern LLMs process and generate text.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["transformer", "attention", "architecture", "llm"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Transformer Architecture"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The transformer architecture revolutionized NLP with self-attention mechanisms. Understanding attention, multi-head attention, and the encoder-decoder structure is essential for effective LLM usage."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Self-attention allows the model to weigh importance of input tokens",
+          "Multi-head attention captures different relationships",
+          "Positional encoding provides sequence information",
+          "Encoder-decoder vs decoder-only architectures",
+          "Understanding internals helps with prompting and debugging"
+        ],
+        "takeaway": "Transformer architecture is the foundation of modern LLMs. Understanding self-attention and the overall architecture helps you write better prompts and debug model behavior."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-tokenization-embeddings"],
+  "relatedGlossaryTerms": ["transformer", "self-attention", "encoder-decoder"]
+}

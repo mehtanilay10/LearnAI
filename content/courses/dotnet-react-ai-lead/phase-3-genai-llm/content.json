@@ -1,0 +1,18 @@
+{
+  "id": "dotnet-phase-3",
+  "slug": "dotnet-phase-3-genai-llm",
+  "courseSlug": "dotnet-react-ai-lead",
+  "title": "Phase 3: Generative AI & LLM Integration",
+  "subtitle": "Master LLM fundamentals, prompt engineering, and integrate AI into .NET applications",
+  "description": "Deep dive into Large Language Models: transformer architecture, tokenization, embeddings, prompt engineering techniques, and integrate OpenAI, Azure OpenAI, and local models into .NET applications using AI SDKs and Semantic Kernel.",
+  "order": 3,
+  "icon": "🤖",
+  "color": "green",
+  "moduleSlug": [
+    "dotnet-llm-fundamentals",
+    "dotnet-prompt-engineering",
+    "dotnet-llm-integration",
+    "dotnet-ai-sdk-semantickernel"
+  ],
+  "estimatedWeeks": 3
+}

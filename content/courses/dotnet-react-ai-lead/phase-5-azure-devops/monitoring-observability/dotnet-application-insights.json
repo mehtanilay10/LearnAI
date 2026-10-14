@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-5-9",
+  "slug": "dotnet-application-insights",
+  "moduleSlug": "dotnet-monitoring-observability",
+  "title": "Application Insights",
+  "description": "Integrate Application Insights for application monitoring.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["application-insights", "monitoring", "azure"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Application Insights"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Application Insights provides APM for Azure. Monitor performance, dependencies, exceptions, and user behavior."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Application Insights provides APM",
+          "Monitor performance and dependencies",
+          "Track exceptions and errors",
+          "User behavior analytics",
+          "Alert on metrics"
+        ],
+        "takeaway": "Application Insights provides comprehensive monitoring. Set up alerts and dashboards for proactive issue detection."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-structured-logging"],
+  "relatedGlossaryTerms": ["application-insights", "apm", "monitoring"]
+}

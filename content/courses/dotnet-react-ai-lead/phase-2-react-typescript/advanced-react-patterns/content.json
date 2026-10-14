@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-2-1",
+  "slug": "dotnet-advanced-react",
+  "phaseSlug": "dotnet-phase-2-react-typescript",
+  "title": "Advanced React Patterns",
+  "description": "Master React internals, custom hooks, performance optimization, and advanced component patterns for production applications.",
+  "longDescription": "Go beyond basic React: understand the virtual DOM, reconciliation, Fiber architecture, custom hooks patterns, render optimization, memoization, compound components, and render props for complex UI architectures.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedHours": 12,
+  "icon": "⚛️",
+  "tags": ["react", "hooks", "performance", "render-optimization", "patterns"],
+  "lessonSlugs": [
+    "dotnet-react-internals",
+    "dotnet-custom-hooks-patterns",
+    "dotnet-react-performance-optimization",
+    "dotnet-advanced-component-patterns"
+  ],
+  "whatYouLearn": [
+    "React Fiber architecture and reconciliation",
+    "Custom hooks for reusable logic",
+    "Render optimization with memo, useMemo, useCallback",
+    "Compound components and render props patterns",
+    "Server components and Next.js 15 features"
+  ]
+}

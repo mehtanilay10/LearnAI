@@ -1,0 +1,18 @@
+{
+  "id": "dotnet-lesson-2-12",
+  "slug": "dotnet-state-architecture-patterns",
+  "moduleSlug": "dotnet-state-management",
+  "title": "State Architecture Patterns",
+  "description": "Design scalable state architecture separating client state, server state, and form state with clear boundaries.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["react", "architecture", "state-management", "patterns"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {"level": 2, "text": "State Architecture"}}
+  ],
+  "relatedLessons": ["dotnet-context-and-redux", "dotnet-react-query-server-state"],
+  "relatedGlossaryTerms": ["state-architecture", "client-state", "server-state"]
+}

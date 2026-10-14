@@ -1,0 +1,56 @@
+{
+  "id": "dotnet-lesson-1-12",
+  "slug": "dotnet-horizontal-vertical-scaling",
+  "moduleSlug": "dotnet-performance-scaling",
+  "title": "Horizontal vs Vertical Scaling",
+  "description": "Understand scaling strategies, load balancing, auto-scaling configurations, and when to scale horizontally vs vertically.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 40,
+  "tags": ["scaling", "load-balancing", "auto-scaling", "horizontal-vertical"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Scaling Strategies"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Vertical scaling adds resources to a single machine. Horizontal scaling adds more machines. Horizontal scaling provides better fault tolerance and unlimited scaling potential."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Aspect", "Vertical Scaling", "Horizontal Scaling"],
+        "rows": [
+          ["Cost", "Expensive at high end", "Linear cost scaling"],
+          ["Complexity", "Simple", "Complex (state, coordination)"],
+          ["Fault Tolerance", "Single point of failure", "High"],
+          ["Max Scale", "Limited by hardware", "Unlimited"],
+          ["Use Case", "Single database, stateful apps", "Stateless web apps, microservices"]
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Vertical scaling: simpler but limited, good for databases",
+          "Horizontal scaling: more complex but unlimited, good for stateless services",
+          "Load balancers distribute traffic across instances",
+          "Auto-scale based on CPU, memory, or custom metrics",
+          "Stateless services scale horizontally easily",
+          "Stateful services require careful design for horizontal scaling"
+        ],
+        "takeaway": "Horizontal scaling is preferred for modern cloud applications due to fault tolerance and unlimited scale. Vertical scaling is still useful for databases and stateful components."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-caching-strategies", "dotnet-distributed-systems-fundamentals"],
+  "relatedGlossaryTerms": ["horizontal-scaling", "vertical-scaling", "load-balancing"]
+}

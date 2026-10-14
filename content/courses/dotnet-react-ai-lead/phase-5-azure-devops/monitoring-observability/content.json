@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-5-3",
+  "slug": "dotnet-monitoring-observability",
+  "phaseSlug": "dotnet-phase-5-azure-devops",
+  "title": "Monitoring & Observability",
+  "description": "Master Application Insights, logging, metrics, distributed tracing, and alerting.",
+  "longDescription": "Implement observability: Application Insights for monitoring, structured logging with Serilog, metrics with Prometheus/Grafana, distributed tracing with OpenTelemetry, and alerting and dashboards.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedHours": 10,
+  "icon": "📊",
+  "tags": ["monitoring", "observability", "application-insights", "logging", "tracing"],
+  "lessonSlugs": [
+    "dotnet-application-insights",
+    "dotnet-structured-logging",
+    "dotnet-metrics-dashboards",
+    "dotnet-distributed-tracing"
+  ],
+  "whatYouLearn": [
+    "Application Insights integration",
+    "Structured logging best practices",
+    "Metrics collection and visualization",
+    "Distributed tracing with OpenTelemetry",
+    "Alerting and incident response"
+  ]
+}

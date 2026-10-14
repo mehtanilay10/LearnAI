@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-4-2",
+  "slug": "dotnet-ai-agents",
+  "phaseSlug": "dotnet-phase-4-rag-agents-mcp",
+  "title": "AI Agents",
+  "description": "Build autonomous AI agents with tool calling, planning, and multi-agent collaboration.",
+  "longDescription": "Create AI agents: tool calling with function APIs, agent frameworks (AutoGen, LangChain), planning and reasoning, multi-agent collaboration, and guardrails for safe agent behavior.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedHours": 12,
+  "icon": "🤖",
+  "tags": ["agents", "tool-calling", "planning", "multi-agent"],
+  "lessonSlugs": [
+    "dotnet-agent-fundamentals",
+    "dotnet-tool-calling",
+    "dotnet-agent-planning",
+    "dotnet-multi-agent-systems"
+  ],
+  "whatYouLearn": [
+    "Agent architecture and design",
+    "Tool calling with function APIs",
+    "Planning and reasoning frameworks",
+    "Multi-agent collaboration patterns",
+    "Agent guardrails and safety"
+  ]
+}

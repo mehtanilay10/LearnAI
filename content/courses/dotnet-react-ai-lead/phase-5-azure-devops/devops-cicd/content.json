@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-5-2",
+  "slug": "dotnet-devops-cicd",
+  "phaseSlug": "dotnet-phase-5-azure-devops",
+  "title": "DevOps & CI/CD",
+  "description": "Master Docker, Kubernetes (AKS), GitHub Actions, and infrastructure as code.",
+  "longDescription": "Build CI/CD pipelines: Docker containerization, Kubernetes with AKS, GitHub Actions workflows, infrastructure as code with Bicep and Terraform, and deployment strategies like blue-green and canary.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedHours": 12,
+  "icon": "🔄",
+  "tags": ["docker", "kubernetes", "github-actions", "iac", "cicd"],
+  "lessonSlugs": [
+    "dotnet-docker-containerization",
+    "dotnet-kubernetes-aks",
+    "dotnet-github-actions",
+    "dotnet-infrastructure-as-code"
+  ],
+  "whatYouLearn": [
+    "Docker containerization for .NET",
+    "Kubernetes deployment with AKS",
+    "GitHub Actions CI/CD pipelines",
+    "Infrastructure as code with Bicep/Terraform",
+    "Deployment strategies"
+  ]
+}

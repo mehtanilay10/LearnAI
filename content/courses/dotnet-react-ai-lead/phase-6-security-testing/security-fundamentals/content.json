@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-6-1",
+  "slug": "dotnet-security-fundamentals",
+  "phaseSlug": "dotnet-phase-6-security-testing",
+  "title": "Security Fundamentals",
+  "description": "Master authentication, authorization, OWASP Top 10, and secure coding practices.",
+  "longDescription": "Implement security: authentication with OAuth2/OpenID Connect, authorization with RBAC, OWASP Top 10 mitigation, secure coding practices, input validation, output encoding, and secrets management.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedHours": 10,
+  "icon": "🔒",
+  "tags": ["security", "authentication", "authorization", "owasp"],
+  "lessonSlugs": [
+    "dotnet-authentication-authorization",
+    "dotnet-owasp-top-10",
+    "dotnet-secure-coding",
+    "dotnet-secrets-management"
+  ],
+  "whatYouLearn": [
+    "OAuth2 and OpenID Connect",
+    "Role-based access control",
+    "OWASP Top 10 vulnerabilities",
+    "Secure coding practices",
+    "Secrets management"
+  ]
+}

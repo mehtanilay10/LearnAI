@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-3-2",
+  "slug": "dotnet-prompt-engineering",
+  "phaseSlug": "dotnet-phase-3-genai-llm",
+  "title": "Advanced Prompt Engineering",
+  "description": "Master system prompts, few-shot learning, chain-of-thought, and advanced prompting techniques for reliable outputs.",
+  "longDescription": "Deep dive into prompt engineering: system prompts, few-shot learning, chain-of-thought prompting, role prompting, structured output prompting, prompt templates, and evaluation techniques for measuring prompt effectiveness.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedHours": 12,
+  "icon": "✍️",
+  "tags": ["prompt-engineering", "system-prompts", "few-shot", "chain-of-thought"],
+  "lessonSlugs": [
+    "dotnet-system-prompts",
+    "dotnet-few-shot-prompting",
+    "dotnet-chain-of-thought",
+    "dotnet-structured-output-prompts"
+  ],
+  "whatYouLearn": [
+    "System prompts for behavior control",
+    "Few-shot learning with examples",
+    "Chain-of-thought for complex reasoning",
+    "Structured output with JSON or XML",
+    "Prompt evaluation and iteration"
+  ]
+}

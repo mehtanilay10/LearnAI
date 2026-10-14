@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-4-9",
+  "slug": "dotnet-mcp-fundamentals",
+  "moduleSlug": "dotnet-mcp-integration",
+  "title": "MCP Fundamentals",
+  "description": "Understand Model Context Protocol architecture and use cases.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["mcp", "model-context-protocol", "architecture"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "MCP Protocol"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "MCP enables extensible AI tool integrations. Understand the protocol, servers, clients, and resource model."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "MCP standardizes AI tool integrations",
+          "Servers expose tools and resources",
+          "Clients consume MCP services",
+          "Resources provide data access",
+          "Transport layer for communication"
+        ],
+        "takeaway": "MCP provides a standard for AI tool integrations. Build servers to expose tools and clients to consume them for extensible AI applications."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-building-mcp-servers"],
+  "relatedGlossaryTerms": ["mcp", "model-context-protocol", "mcp-server"]
+}

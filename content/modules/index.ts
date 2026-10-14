@@ -48,6 +48,42 @@ import codexPracticalAiWorkflows from '../courses/codex/phase-3-workflows/practi
 import codexAgenticWorkflows from '../courses/codex/phase-3-workflows/agentic-workflows/content.json';
 import codexSecurityAndTesting from '../courses/codex/phase-4-advanced-techniques/security-and-testing/content.json';
 
+// .NET + React AI Lead course modules
+// Phase 1: Advanced .NET & System Design
+import dotnetAdvancedCsharp from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/advanced-csharp-patterns/content.json';
+import dotnetSystemDesign from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/system-design-architecture/content.json';
+import dotnetPerformanceScaling from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/performance-scaling/content.json';
+
+// Phase 2: React/TypeScript & Modern Frontend
+import dotnetAdvancedReact from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/advanced-react-patterns/content.json';
+import dotnetTypescriptAdvanced from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/typescript-advanced/content.json';
+import dotnetStateManagement from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/state-management-architecture/content.json';
+
+// Phase 3: Generative AI & LLM Integration
+import dotnetLlmFundamentals from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/llm-fundamentals/content.json';
+import dotnetPromptEngineering from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/prompt-engineering/content.json';
+import dotnetLlmIntegration from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/llm-integration-dotnet/content.json';
+import dotnetAiSdkSemantickernel from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/ai-sdk-semantic-kernel/content.json';
+
+// Phase 4: RAG, Agents & MCP
+import dotnetRagFundamentals from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/content.json';
+import dotnetAiAgents from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/ai-agents/content.json';
+import dotnetMcpIntegration from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/mcp-integration/content.json';
+
+// Phase 5: Azure Cloud & DevOps
+import dotnetAzureFundamentals from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/azure-fundamentals/content.json';
+import dotnetDevopsCicd from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/devops-cicd/content.json';
+import dotnetMonitoringObservability from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/monitoring-observability/content.json';
+
+// Phase 6: Security, Testing & AI-Assisted Dev
+import dotnetSecurityFundamentals from '../courses/dotnet-react-ai-lead/phase-6-security-testing/security-fundamentals/content.json';
+import dotnetTestingStrategies from '../courses/dotnet-react-ai-lead/phase-6-security-testing/testing-strategies/content.json';
+import dotnetAiAssistedDev from '../courses/dotnet-react-ai-lead/phase-6-security-testing/ai-assisted-development/content.json';
+
+// Phase 7: Capstone Project
+import dotnetCapstoneDesign from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-design/content.json';
+import dotnetCapstoneImplementation from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-implementation/content.json';
+
 const rawModules = [
   whatIsAi,
   aiToolsOverview,
@@ -78,6 +114,28 @@ const rawModules = [
   codexPracticalAiWorkflows,
   codexAgenticWorkflows,
   codexSecurityAndTesting,
+  // .NET + React AI Lead course
+  dotnetAdvancedCsharp,
+  dotnetSystemDesign,
+  dotnetPerformanceScaling,
+  dotnetAdvancedReact,
+  dotnetTypescriptAdvanced,
+  dotnetStateManagement,
+  dotnetLlmFundamentals,
+  dotnetPromptEngineering,
+  dotnetLlmIntegration,
+  dotnetAiSdkSemantickernel,
+  dotnetRagFundamentals,
+  dotnetAiAgents,
+  dotnetMcpIntegration,
+  dotnetAzureFundamentals,
+  dotnetDevopsCicd,
+  dotnetMonitoringObservability,
+  dotnetSecurityFundamentals,
+  dotnetTestingStrategies,
+  dotnetAiAssistedDev,
+  dotnetCapstoneDesign,
+  dotnetCapstoneImplementation,
 ];
 
 export const modules: Module[] = rawModules as unknown as Module[];

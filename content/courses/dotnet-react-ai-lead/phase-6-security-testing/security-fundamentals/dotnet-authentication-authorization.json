@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-6-1",
+  "slug": "dotnet-authentication-authorization",
+  "moduleSlug": "dotnet-security-fundamentals",
+  "title": "Authentication & Authorization",
+  "description": "Implement OAuth2, OpenID Connect, and RBAC in .NET applications.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["authentication", "authorization", "oauth2", "oidc"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Auth"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Authentication verifies identity, authorization grants access. Use OAuth2 for delegated access and OpenID Connect for identity."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "OAuth2 for delegated access",
+          "OpenID Connect for identity",
+          "RBAC for authorization",
+          "Use ASP.NET Core Identity",
+          "Implement JWT validation"
+        ],
+        "takeaway": "Authentication and authorization are foundational to security. Use OAuth2/OIDC for modern auth and RBAC for fine-grained access control."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-owasp-top-10"],
+  "relatedGlossaryTerms": ["oauth2", "openid-connect", "rbac"]
+}

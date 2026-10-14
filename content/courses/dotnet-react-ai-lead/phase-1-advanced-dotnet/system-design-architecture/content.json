@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-1-2",
+  "slug": "dotnet-system-design",
+  "phaseSlug": "dotnet-phase-1-advanced-dotnet",
+  "title": "System Design & Distributed Architecture",
+  "description": "Design scalable distributed systems, understand CAP theorem, implement microservices patterns, and handle consistency in distributed environments.",
+  "longDescription": "Learn to architect systems that scale: microservices vs monoliths, service mesh patterns, eventual consistency, saga pattern for distributed transactions, event-driven architecture, and API design principles (REST, GraphQL, gRPC).",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedHours": 15,
+  "icon": "🏗️",
+  "tags": ["architecture", "microservices", "distributed-systems", "api-design", "cap-theorem"],
+  "lessonSlugs": [
+    "dotnet-distributed-systems-fundamentals",
+    "dotnet-microservices-patterns",
+    "dotnet-api-design-best-practices",
+    "dotnet-event-driven-architecture"
+  ],
+  "whatYouLearn": [
+    "CAP theorem and distributed consistency tradeoffs",
+    "Microservices decomposition strategies",
+    "Event-driven architecture and message brokers",
+    "API design patterns and documentation",
+    "Saga pattern for distributed transactions"
+  ]
+}

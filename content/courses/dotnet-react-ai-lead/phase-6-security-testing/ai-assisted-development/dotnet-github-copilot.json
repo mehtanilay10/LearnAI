@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-6-9",
+  "slug": "dotnet-github-copilot",
+  "moduleSlug": "dotnet-ai-assisted-dev",
+  "title": "GitHub Copilot",
+  "description": "Master GitHub Copilot for AI-assisted coding.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 40,
+  "tags": ["github-copilot", "ai-assisted", "coding"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "GitHub Copilot"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "GitHub Copilot provides AI-powered code suggestions. Use it for boilerplate, patterns, and exploration."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Copilot provides code suggestions",
+          "Use for boilerplate and patterns",
+          "Review suggestions before accepting",
+          "Use comments to guide Copilot",
+          "Combine with pair programming"
+        ],
+        "takeaway": "GitHub Copilot accelerates development. Use it for boilerplate and patterns, but always review suggestions for correctness and security."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-ai-code-review"],
+  "relatedGlossaryTerms": ["github-copilot", "ai-coding"]
+}

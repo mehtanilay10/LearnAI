@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-5-1",
+  "slug": "dotnet-azure-fundamentals",
+  "phaseSlug": "dotnet-phase-5-azure-devops",
+  "title": "Azure Fundamentals",
+  "description": "Master Azure App Service, Functions, Cosmos DB, Azure SQL, and Azure architecture patterns.",
+  "longDescription": "Build on Azure: App Service for web apps, Azure Functions for serverless, Cosmos DB for NoSQL, Azure SQL for relational data, storage accounts, and Azure architecture patterns like serverless and microservices.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedHours": 12,
+  "icon": "☁️",
+  "tags": ["azure", "app-service", "functions", "cosmos-db", "azure-sql"],
+  "lessonSlugs": [
+    "dotnet-azure-app-service",
+    "dotnet-azure-functions",
+    "dotnet-cosmos-db",
+    "dotnet-azure-sql"
+  ],
+  "whatYouLearn": [
+    "Azure App Service deployment and scaling",
+    "Azure Functions for serverless compute",
+    "Cosmos DB for NoSQL data",
+    "Azure SQL for relational data",
+    "Azure architecture patterns"
+  ]
+}

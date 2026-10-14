@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-1-3",
+  "slug": "dotnet-performance-scaling",
+  "phaseSlug": "dotnet-phase-1-advanced-dotnet",
+  "title": "Performance & Scaling Strategies",
+  "description": "Optimize application performance, implement caching strategies, use message queues for throughput, and scale horizontally and vertically.",
+  "longDescription": "Master performance engineering: profiling and benchmarking, caching strategies (in-memory, distributed, CDN), message queues (RabbitMQ, Azure Service Bus), database scaling (read replicas, sharding), and horizontal vs vertical scaling decisions.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedHours": 12,
+  "icon": "🚀",
+  "tags": ["performance", "caching", "scaling", "message-queues", "optimization"],
+  "lessonSlugs": [
+    "dotnet-profiling-benchmarking",
+    "dotnet-caching-strategies",
+    "dotnet-message-queues",
+    "dotnet-horizontal-vertical-scaling"
+  ],
+  "whatYouLearn": [
+    "Profiling tools and performance counters",
+    "Multi-layer caching strategies",
+    "Message queue patterns for async processing",
+    "Database scaling techniques",
+    "Load balancing and auto-scaling configurations"
+  ]
+}

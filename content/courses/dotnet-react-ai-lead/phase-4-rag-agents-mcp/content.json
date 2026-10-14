@@ -1,0 +1,17 @@
+{
+  "id": "dotnet-phase-4",
+  "slug": "dotnet-phase-4-rag-agents-mcp",
+  "courseSlug": "dotnet-react-ai-lead",
+  "title": "Phase 4: RAG, Agents & MCP",
+  "subtitle": "Build retrieval-augmented generation, AI agents, and Model Context Protocol integrations",
+  "description": "Master RAG architecture with vector databases, build autonomous AI agents with tool calling, implement MCP servers and clients, and create sophisticated AI-native applications.",
+  "order": 4,
+  "icon": "🔍",
+  "color": "orange",
+  "moduleSlug": [
+    "dotnet-rag-fundamentals",
+    "dotnet-ai-agents",
+    "dotnet-mcp-integration"
+  ],
+  "estimatedWeeks": 2
+}

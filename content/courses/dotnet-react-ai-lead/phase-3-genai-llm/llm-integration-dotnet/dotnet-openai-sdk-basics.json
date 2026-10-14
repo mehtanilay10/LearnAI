@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-3-9",
+  "slug": "dotnet-openai-sdk-basics",
+  "moduleSlug": "dotnet-llm-integration",
+  "title": "OpenAI SDK Basics",
+  "description": "Integrate OpenAI models into .NET applications with the official SDK.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["openai", "sdk", "dotnet", "integration"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "OpenAI .NET SDK"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The OpenAI .NET SDK provides a clean interface for accessing GPT models. Configure API keys, handle responses, and manage error scenarios."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Configure API key securely",
+          "Use chat completion for text generation",
+          "Handle rate limits and errors",
+          "Stream responses for better UX",
+          "Monitor token usage and costs"
+        ],
+        "takeaway": "The OpenAI SDK is straightforward to use. Secure your API keys, handle errors gracefully, and monitor costs in production."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-azure-openai-integration"],
+  "relatedGlossaryTerms": ["openai-sdk", "api-key", "rate-limiting"]
+}

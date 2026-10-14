@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-3-3",
+  "slug": "dotnet-llm-integration",
+  "phaseSlug": "dotnet-phase-3-genai-llm",
+  "title": "LLM Integration in .NET",
+  "description": "Integrate OpenAI, Azure OpenAI, and local models into .NET applications with proper error handling and streaming.",
+  "longDescription": "Build production-ready LLM integrations: OpenAI and Azure OpenAI SDKs, local model integration with Ollama or llama.cpp, streaming responses, error handling, retry logic, rate limiting, and cost optimization.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedHours": 12,
+  "icon": "🔌",
+  "tags": ["openai", "azure-openai", "integration", "streaming", "dotnet"],
+  "lessonSlugs": [
+    "dotnet-openai-sdk-basics",
+    "dotnet-azure-openai-integration",
+    "dotnet-local-models-ollama",
+    "dotnet-streaming-error-handling"
+  ],
+  "whatYouLearn": [
+    "OpenAI .NET SDK usage",
+    "Azure OpenAI deployment and integration",
+    "Local model integration with Ollama",
+    "Streaming responses in .NET",
+    "Error handling, retries, and rate limiting"
+  ]
+}

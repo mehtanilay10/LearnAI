@@ -1,0 +1,17 @@
+{
+  "id": "dotnet-phase-6",
+  "slug": "dotnet-phase-6-security-testing",
+  "courseSlug": "dotnet-react-ai-lead",
+  "title": "Phase 6: Security, Testing & AI-Assisted Dev",
+  "subtitle": "Master application security, testing strategies, and AI-assisted development workflows",
+  "description": "Deep dive into security: authentication, authorization, OWASP Top 10, secure coding, and AI security. Testing: unit testing, integration testing, E2E testing, and test-driven development. AI-assisted development: using AI tools for code generation, review, and debugging.",
+  "order": 6,
+  "icon": "🔒",
+  "color": "red",
+  "moduleSlug": [
+    "dotnet-security-fundamentals",
+    "dotnet-testing-strategies",
+    "dotnet-ai-assisted-dev"
+  ],
+  "estimatedWeeks": 2
+}

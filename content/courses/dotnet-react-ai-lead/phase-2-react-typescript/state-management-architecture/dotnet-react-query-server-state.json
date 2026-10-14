@@ -1,0 +1,22 @@
+{
+  "id": "dotnet-lesson-2-10",
+  "slug": "dotnet-react-query-server-state",
+  "moduleSlug": "dotnet-state-management",
+  "title": "React Query for Server State",
+  "description": "Master React Query (TanStack Query) for server state caching, synchronization, and automatic refetching.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["react", "react-query", "server-state", "caching"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {"level": 2, "text": "Server State with React Query"}
+    },
+    {
+      "type": "paragraph",
+      "data": {"text": "React Query manages server state with caching, automatic refetching, and optimistic updates. It separates server state from client state, simplifying your application."}}
+  ],
+  "relatedLessons": ["dotnet-context-and-redux"],
+  "relatedGlossaryTerms": ["react-query", "server-state", "tanstack-query"]
+}

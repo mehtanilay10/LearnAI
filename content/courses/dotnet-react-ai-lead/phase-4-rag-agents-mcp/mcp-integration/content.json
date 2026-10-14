@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-4-3",
+  "slug": "dotnet-mcp-integration",
+  "phaseSlug": "dotnet-phase-4-rag-agents-mcp",
+  "title": "MCP Integration",
+  "description": "Implement Model Context Protocol servers and clients for extensible AI tool integrations.",
+  "longDescription": "Master MCP: MCP protocol fundamentals, building MCP servers, MCP client integration, resource and tool definitions, and building extensible AI tool ecosystems.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedHours": 10,
+  "icon": "🔌",
+  "tags": ["mcp", "model-context-protocol", "tools", "integration"],
+  "lessonSlugs": [
+    "dotnet-mcp-fundamentals",
+    "dotnet-building-mcp-servers",
+    "dotnet-mcp-client-integration",
+    "dotnet-mcp-tools-resources"
+  ],
+  "whatYouLearn": [
+    "MCP protocol and architecture",
+    "Building MCP servers in .NET",
+    "MCP client integration",
+    "Defining tools and resources",
+    "Building extensible AI ecosystems"
+  ]
+}

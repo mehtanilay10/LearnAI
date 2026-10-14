@@ -1,0 +1,225 @@
+{
+  "id": "dotnet-lesson-1-1",
+  "slug": "dotnet-async-deep-dive",
+  "moduleSlug": "dotnet-advanced-csharp",
+  "title": "Async/Await Deep Dive",
+  "description": "Understand async/await internals, state machines, synchronization contexts, and common pitfalls in asynchronous programming.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["async", "await", "state-machine", "synchronization-context", "deadlocks"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "How Async/Await Really Works"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Async/await is syntactic sugar that the C# compiler transforms into a state machine. Understanding this transformation is crucial for writing efficient async code and avoiding common pitfalls like deadlocks and performance issues."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "async-state-machine",
+        "caption": "Async state machine execution flow",
+        "definition": "graph TD\n    A[Method called] --> B{Is task completed?}\n    B -->|Yes| C[Return result]\n    B -->|No| D[Capture context]\n    D --> E[Await continuation]\n    E --> F[Task completes]\n    F --> G[Post back to context]\n    G --> C\n    H[No ConfigureAwait false] --> I[ThreadPool thread]\n    I --> E"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The State Machine Transformation"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When you mark a method as async, the compiler generates a struct that implements IAsyncStateMachine. This struct maintains the method's state between await points, including local variables and the current position in execution."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Before and After: What the Compiler Generates",
+        "code": "// Your code:\npublic async Task<string> GetDataAsync()\n{\n    var client = new HttpClient();\n    var response = await client.GetAsync(\"https://api.example.com/data\");\n    return await response.Content.ReadAsStringAsync();\n}\n\n// What the compiler generates (simplified):\npublic Task<string> GetDataAsync()\n{\n    var stateMachine = new GetDataAsyncStateMachine();\n    stateMachine.builder = AsyncTaskMethodBuilder<string>.Create();\n    stateMachine.state = -1;\n    stateMachine.builder.Start(ref stateMachine);\n    return stateMachine.builder.Task;\n}\n\nprivate struct GetDataAsyncStateMachine : IAsyncStateMachine\n{\n    public int state;\n    public AsyncTaskMethodBuilder<string> builder;\n    private HttpClient client;\n    private HttpResponseMessage response;\n    private TaskAwaiter<HttpResponseMessage> awaiter;\n\n    public void MoveNext()\n    {\n        try\n        {\n            if (state == -1)\n            {\n                client = new HttpClient();\n                var task = client.GetAsync(\"https://api.example.com/data\");\n                awaiter = task.GetAwaiter();\n                if (!awaiter.IsCompleted)\n                {\n                    state = 0;\n                    builder.AwaitUnsafeOnCompleted(ref awaiter, ref this);\n                    return;\n                }\n            }\n            response = awaiter.GetResult();\n            var readTask = response.Content.ReadAsStringAsync();\n            var readAwaiter = readTask.GetAwaiter();\n            if (!readAwaiter.IsCompleted)\n            {\n                state = 1;\n                builder.AwaitUnsafeOnCompleted(ref readAwaiter, ref this);\n                return;\n            }\n            var result = readAwaiter.GetResult();\n            state = -2;\n            builder.SetResult(result);\n        }\n        catch (Exception ex)\n        {\n            state = -2;\n            builder.SetException(ex);\n        }\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Key Insight",
+        "text": "The state machine allocates on the stack when possible. Only when an await suspends execution does it potentially box to the heap. This is why async methods that complete synchronously have minimal overhead."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "SynchronizationContext and Deadlocks"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The synchronization context determines where async continuations run. In UI applications (WPF, WinForms, MAUI), the context marshals continuations back to the UI thread. This can cause deadlocks if you block on async code."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Classic Deadlock Scenario",
+        "code": "// ❌ DEADLOCK in UI applications:\npublic string GetData()\n{\n    // Blocking on async method\n    var task = GetDataAsync();\n    task.Wait(); // Deadlock here!\n    return task.Result;\n}\n\npublic async Task<string> GetDataAsync()\n{\n    await Task.Delay(1000); // Posts continuation to UI thread\n    return \"data\";\n}\n\n// ✅ Solution 1: Use ConfigureAwait(false)\npublic async Task<string> GetDataAsync()\n{\n    await Task.Delay(1000).ConfigureAwait(false);\n    return \"data\";\n}\n\n// ✅ Solution 2: Make calling method async\npublic async Task<string> GetData()\n{\n    return await GetDataAsync();\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Library Code Rule",
+        "text": "Always use ConfigureAwait(false) in library code. You don't know the synchronization context of the calling application, and you don't need to capture it for library operations."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Common Async Pitfalls"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Async Anti-Patterns vs Best Practices",
+        "cards": [
+          {
+            "title": "Async Void",
+            "description": "Using async void causes unhandled exceptions to crash the process. Only use for event handlers.",
+            "pros": [],
+            "cons": ["Exceptions cannot be caught", "Hard to test", "Can crash the application"],
+            "tags": ["anti-pattern"]
+          },
+          {
+            "title": "Async All the Way",
+            "description": "Never mix sync and async. If you start async, propagate it all the way up the call stack.",
+            "pros": ["Prevents deadlocks", "Maintains scalability", "Cleaner code"],
+            "cons": ["Requires architectural changes in legacy code"],
+            "tags": ["best-practice"]
+          },
+          {
+            "title": "Fire and Forget",
+            "description": "Starting a task without awaiting it is dangerous. Exceptions are swallowed.",
+            "pros": [],
+            "cons": ["Silent failures", "Resource leaks", "Hard to debug"],
+            "tags": ["anti-pattern"]
+          },
+          {
+            "title": "Task.Run for I/O",
+            "description": "Using Task.Run for I/O operations wastes ThreadPool threads. Use truly async APIs instead.",
+            "pros": [],
+            "cons": ["Reduced scalability", "Thread pool starvation", "Higher latency"],
+            "tags": ["anti-pattern"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "ValueTask for Performance"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Task is a reference type with allocation overhead. For high-throughput scenarios where operations often complete synchronously, ValueTask<T> can reduce allocations significantly."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "When to Use ValueTask",
+        "code": "// Use ValueTask when:\n// 1. The operation often completes synchronously\n// 2. The method is called in a tight loop\n// 3. You want to avoid allocations\n\npublic ValueTask<int> GetValueAsync()\n{\n    // Fast path: cached value\n    if (_cachedValue.HasValue)\n    {\n        return new ValueTask<int>(_cachedValue.Value);\n    }\n    \n    // Slow path: async operation\n    return new ValueTask<int>(LoadValueAsync());\n}\n\nprivate async Task<int> LoadValueAsync()\n{\n    await Task.Delay(100);\n    _cachedValue = 42;\n    return _cachedValue.Value;\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "ValueTask Tradeoff",
+        "text": "ValueTask can only be awaited once. If you need to await multiple times or store the task, convert to Task first. Also, ValueTask has slightly higher call overhead than Task."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Parallel vs Concurrent Async"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Async enables concurrency, not parallelism. For CPU-bound parallel work, use Task.Parallel or Parallel.ForEach. For I/O-bound concurrent operations, use Task.WhenAll."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Concurrent I/O Operations",
+        "code": "// ❌ Sequential await (slow)\npublic async Task<List<string>> GetDataSequential()\n{\n    var results = new List<string>();\n    foreach (var url in urls)\n    {\n        var data = await client.GetStringAsync(url);\n        results.Add(data);\n    }\n    return results;\n}\n\n// ✅ Concurrent with Task.WhenAll (fast)\npublic async Task<List<string>> GetDataConcurrent()\n{\n    var tasks = urls.Select(url => client.GetStringAsync(url));\n    var results = await Task.WhenAll(tasks);\n    return results.ToList();\n}\n\n// ✅ With degree of parallelism control\npublic async Task<List<string>> GetDataConcurrentBounded()\n{\n    var semaphore = new SemaphoreSlim(10); // Max 10 concurrent\n    var tasks = urls.Select(async url =>\n    {\n        await semaphore.WaitAsync();\n        try\n        {\n            return await client.GetStringAsync(url);\n        }\n        finally\n        {\n            semaphore.Release();\n        }\n    });\n    return (await Task.WhenAll(tasks)).ToList();\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Cancellation and Timeouts"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Always pass CancellationToken to async methods. Cooperatively cancel long-running operations to provide responsive UI and prevent resource waste."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Cancellation Patterns",
+        "code": "// Pass cancellation token through the call chain\npublic async Task ProcessDataAsync(CancellationToken ct = default)\n{\n    var data = await LoadDataAsync(ct);\n    var processed = await TransformAsync(data, ct);\n    await SaveAsync(processed, ct);\n}\n\n// With timeout using CancellationTokenSource\npublic async Task<string> GetDataWithTimeout()\n{\n    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));\n    try\n    {\n        return await client.GetStringAsync(url, cts.Token);\n    }\n    catch (OperationCanceledException) when (!cts.Token.IsCancellationRequested)\n    {\n        // Timeout occurred\n        throw new TimeoutException(\"Request timed out after 5 seconds\");\n    }\n}\n\n// Linked cancellation sources\npublic async Task ProcessWithUserCancellation(CancellationToken userToken)\n{\n    using var cts = CancellationTokenSource.CreateLinkedTokenSource(\n        userToken,\n        new CancellationTokenSource(TimeSpan.FromMinutes(30)).Token\n    );\n    \n    await LongRunningOperationAsync(cts.Token);\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Async/await compiles to a state machine that manages execution state between await points",
+          "SynchronizationContext determines where continuations run - understand your context to avoid deadlocks",
+          "Always use ConfigureAwait(false) in library code to avoid capturing unnecessary contexts",
+          "ValueTask<T> reduces allocations for high-frequency operations that often complete synchronously",
+          "Pass CancellationToken through async call chains for responsive cancellation",
+          "Use Task.WhenAll for concurrent I/O, not Task.Run or Parallel.ForEach",
+          "Never use async void except for event handlers",
+          "Avoid fire-and-forget - always await or properly handle Task exceptions"
+        ],
+        "takeaway": "Async programming requires understanding the underlying mechanics to write efficient, deadlock-free code. The compiler does a lot of work for you, but you still need to make informed decisions about synchronization contexts, cancellation, and when to use ValueTask."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-memory-management"],
+  "relatedGlossaryTerms": ["async-await", "synchronization-context", "task"]
+}

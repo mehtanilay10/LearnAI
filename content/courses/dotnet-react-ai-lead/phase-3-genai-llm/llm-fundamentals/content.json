@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-3-1",
+  "slug": "dotnet-llm-fundamentals",
+  "phaseSlug": "dotnet-phase-3-genai-llm",
+  "title": "LLM Fundamentals",
+  "description": "Understand transformer architecture, tokenization, embeddings, context windows, and how LLMs generate text.",
+  "longDescription": "Learn the internals of Large Language Models: transformer architecture, attention mechanisms, tokenization, embeddings, context windows, temperature, top-p sampling, and the tradeoffs between different model sizes and capabilities.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedHours": 10,
+  "icon": "🧠",
+  "tags": ["llm", "transformers", "tokenization", "embeddings", "context-window"],
+  "lessonSlugs": [
+    "dotnet-transformer-architecture",
+    "dotnet-tokenization-embeddings",
+    "dotnet-context-window-parameters",
+    "dotnet-model-selection-evaluation"
+  ],
+  "whatYouLearn": [
+    "Transformer architecture and attention mechanisms",
+    "Tokenization and subword tokenizers",
+    "Embeddings and vector representations",
+    "Context windows and token limits",
+    "Temperature, top-p, and sampling parameters"
+  ]
+}

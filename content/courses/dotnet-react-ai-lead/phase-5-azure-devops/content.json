@@ -1,0 +1,17 @@
+{
+  "id": "dotnet-phase-5",
+  "slug": "dotnet-phase-5-azure-devops",
+  "courseSlug": "dotnet-react-ai-lead",
+  "title": "Phase 5: Azure Cloud & DevOps",
+  "subtitle": "Master Azure services, cloud architecture, and DevOps practices for .NET applications",
+  "description": "Deep dive into Azure: App Service, Azure Functions, Cosmos DB, Azure SQL, containerization with Docker, Kubernetes (AKS), CI/CD with GitHub Actions, and infrastructure as code with Bicep/Terraform.",
+  "order": 5,
+  "icon": "☁️",
+  "color": "sky",
+  "moduleSlug": [
+    "dotnet-azure-fundamentals",
+    "dotnet-devops-cicd",
+    "dotnet-monitoring-observability"
+  ],
+  "estimatedWeeks": 2
+}

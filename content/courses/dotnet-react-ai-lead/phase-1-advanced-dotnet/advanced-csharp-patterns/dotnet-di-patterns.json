@@ -1,0 +1,224 @@
+{
+  "id": "dotnet-lesson-1-3",
+  "slug": "dotnet-di-patterns",
+  "moduleSlug": "dotnet-advanced-csharp",
+  "title": "Dependency Injection Patterns",
+  "description": "Master advanced DI patterns, service lifetimes, decorator pattern, and build testable, maintainable architectures.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["dependency-injection", "ioc", "service-lifetime", "decorator", "testability"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Dependency Injection Fundamentals"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Dependency Injection (DI) is a design pattern that implements Inversion of Control (IoC). It decouples components by injecting dependencies rather than having components create them directly. This improves testability, maintainability, and flexibility."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "di-patterns",
+        "caption": "DI pattern comparison",
+        "definition": "graph TD\n    A[Service A] -->|Constructor Injection| B[Service B]\n    B -->|Constructor Injection| C[Service C]\n    D[Controller] -->|Property Injection| E[Logger]\n    F[Method] -->|Parameter Injection| G[Context]\n    H[Service Locator] -->|Resolve| I[Service]\n    style H fill:#f99\n    style A fill:#9f9\n    style D fill:#ff9"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Avoid Service Locator",
+        "text": "Service Locator is an anti-pattern. It hides dependencies and makes code harder to test. Prefer constructor injection for required dependencies."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Service Lifetimes in .NET DI"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": ".NET's built-in DI container supports three service lifetimes: Transient (new instance each time), Scoped (one instance per scope), and Singleton (one instance for app lifetime). Choosing the right lifetime is critical for correctness and performance."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Lifetime", "When to Use", "Thread Safety", "Example"],
+        "rows": [
+          ["Transient", "Stateless services, lightweight objects", "Not required", "HttpClientFactory, services with no state"],
+          ["Scoped", "Per-request data, DbContext, unit of work", "Required if stateful", "DbContext, HttpContext, repositories"],
+          ["Singleton", "Stateless services, caches, configuration", "Required", "MemoryCache, configuration, stateless services"]
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Service Lifetime Configuration",
+        "code": "// Program.cs - Configure services\nvar builder = WebApplication.CreateBuilder(args);\n\n// Transient: New instance each time\nbuilder.Services.AddTransient<IEmailService, SmtpEmailService>();\n\n// Scoped: One per HTTP request\nbuilder.Services.AddScoped<IRepository, EfRepository>();\nbuilder.Services.AddScoped<AppDbContext>();\n\n// Singleton: One for app lifetime\nbuilder.Services.AddSingleton<ICacheService, MemoryCacheService>();\nbuilder.Services.AddSingleton<IMetrics, PrometheusMetrics>();\n\n// Singleton with factory\nbuilder.Services.AddSingleton<IRateLimiter>(sp => \n    new TokenBucketRateLimiter(1000, TimeSpan.FromSeconds(1)));",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "Capturing Scoped Services in Singletons",
+        "text": "Never inject a scoped service into a singleton. This causes the scoped service to become effectively singleton, leading to incorrect behavior and potential thread safety issues. Use IServiceProvider or factory pattern instead."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Correct Pattern: Singleton Using Scoped Service",
+        "code": "// ❌ WRONG: Captures scoped service in singleton\npublic class BackgroundProcessor\n{\n    private readonly IRepository _repo; // Scoped in singleton!\n    \n    public BackgroundProcessor(IRepository repo)\n    {\n        _repo = repo;\n    }\n}\n\n// ✅ CORRECT: Create scope when needed\npublic class BackgroundProcessor\n{\n    private readonly IServiceProvider _services;\n    \n    public BackgroundProcessor(IServiceProvider services)\n    {\n        _services = services;\n    }\n    \n    public async Task ProcessAsync()\n    {\n        using var scope = _services.CreateScope();\n        var repo = scope.ServiceProvider.GetRequiredService<IRepository>();\n        await repo.DoWorkAsync();\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Decorator Pattern with DI"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The decorator pattern allows you to add behavior to services without modifying them. This is useful for caching, logging, retry logic, authentication, and other cross-cutting concerns."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Decorator Pattern Implementation",
+        "code": "// Base interface\npublic interface IUserService\n{\n    Task<User> GetUserAsync(int id);\n}\n\n// Base implementation\npublic class UserService : IUserService\n{\n    private readonly IUserRepository _repo;\n    \n    public UserService(IUserRepository repo)\n    {\n        _repo = repo;\n    }\n    \n    public async Task<User> GetUserAsync(int id)\n    {\n        return await _repo.GetByIdAsync(id);\n    }\n}\n\n// Caching decorator\npublic class CachedUserService : IUserService\n{\n    private readonly IUserService _inner;\n    private readonly IMemoryCache _cache;\n    \n    public CachedUserService(IUserService inner, IMemoryCache cache)\n    {\n        _inner = inner;\n        _cache = cache;\n    }\n    \n    public async Task<User> GetUserAsync(int id)\n    {\n        string key = $\"user:{id}\";\n        return await _cache.GetOrCreateAsync(key, async entry =>\n        {\n            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);\n            return await _inner.GetUserAsync(id);\n        });\n    }\n}\n\n// Logging decorator\npublic class LoggingUserService : IUserService\n{\n    private readonly IUserService _inner;\n    private readonly ILogger<LoggingUserService> _logger;\n    \n    public LoggingUserService(IUserService inner, ILogger<LoggingUserService> logger)\n    {\n        _inner = inner;\n        _logger = logger;\n    }\n    \n    public async Task<User> GetUserAsync(int id)\n    {\n        _logger.LogInformation(\"Getting user {UserId}\", id);\n        try\n        {\n            var user = await _inner.GetUserAsync(id);\n            _logger.LogInformation(\"Got user {UserId}\", id);\n            return user;\n        }\n        catch (Exception ex)\n        {\n            _logger.LogError(ex, \"Failed to get user {UserId}\", id);\n            throw;\n        }\n    }\n}\n\n// Registration with decorators\nbuilder.Services.AddTransient<IUserService, UserService>();\nbuilder.Services.Decorate<IUserService, CachedUserService>();\nbuilder.Services.Decorate<IUserService, LoggingUserService>();",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Scrutor for Easy Decoration",
+        "text": "The Scrutor library provides fluent syntax for decorator registration. Use .Decorate<>() instead of manual registration for cleaner code."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Factory Pattern with DI"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When you need to create instances with runtime parameters, use the factory pattern. .NET provides built-in support for factory-based service creation."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Factory Pattern",
+        "code": "// Define factory interface\npublic interface IReportGeneratorFactory\n{\n    IReportGenerator Create(ReportType type);\n}\n\n// Implementation\npublic class ReportGeneratorFactory : IReportGeneratorFactory\n{\n    private readonly IServiceProvider _services;\n    \n    public ReportGeneratorFactory(IServiceProvider services)\n    {\n        _services = services;\n    }\n    \n    public IReportGenerator Create(ReportType type)\n    {\n        return type switch\n        {\n            ReportType.Pdf => _services.GetRequiredService<PdfReportGenerator>(),\n            ReportType.Excel => _services.GetRequiredService<ExcelReportGenerator>(),\n            _ => throw new ArgumentException($\"Unknown report type: {type}\")\n        };\n    }\n}\n\n// Usage\npublic class ReportService\n{\n    private readonly IReportGeneratorFactory _factory;\n    \n    public ReportService(IReportGeneratorFactory factory)\n    {\n        _factory = factory;\n    }\n    \n    public async Task GenerateReportAsync(ReportType type, ReportData data)\n    {\n        var generator = _factory.Create(type);\n        await generator.GenerateAsync(data);\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Testability and Mocking"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "DI makes testing easy by allowing you to inject mock implementations. Use mocking frameworks like Moq, NSubstitute, or FakeItEasy to create test doubles."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Testing with DI and Mocks",
+        "code": "[Test]\npublic async Task GetUserAsync_WhenUserExists_ReturnsUser()\n{\n    // Arrange\n    var mockRepo = new Mock<IUserRepository>();\n    var expectedUser = new User { Id = 1, Name = \"Test\" };\n    mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(expectedUser);\n    \n    var service = new UserService(mockRepo.Object);\n    \n    // Act\n    var result = await service.GetUserAsync(1);\n    \n    // Assert\n    Assert.AreEqual(expectedUser, result);\n    mockRepo.Verify(r => r.GetByIdAsync(1), Times.Once);\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Advanced DI Patterns"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Advanced DI Techniques",
+        "cards": [
+          {
+            "title": "Open Generic Registration",
+            "description": "Register all implementations of a generic interface at once using RegisterAssemblyOpenGeneric.",
+            "pros": ["Less boilerplate", "Auto-discovers implementations", "Clean configuration"],
+            "cons": ["Less explicit", "Potential for unintended registrations"],
+            "tags": ["pattern"]
+          },
+          {
+            "title": "Keyed Services",
+            "description": "Register multiple implementations of the same interface with keys to distinguish them.",
+            "pros": ["Multiple implementations", "Explicit selection", "Type-safe"],
+            "cons": ["Requires .NET 8+", "More complex registration"],
+            "tags": ["pattern"]
+          },
+          {
+            "title": "TryAdd Pattern",
+            "description": "Use TryAdd... methods to allow overriding default registrations without conflicts.",
+            "pros": ["Allows overrides", "No duplicate errors", "Flexible configuration"],
+            "cons": ["Last registration wins", "Can be confusing"],
+            "tags": ["pattern"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Advanced DI Registration",
+        "code": "// Open generic registration\nbuilder.Services.RegisterAssemblyOpenGeneric(typeof(IHandler<>))\n    .AsImplementedInterfaces()\n    .WithScopedLifetime();\n\n// Keyed services (.NET 8+)\nbuilder.Services.AddKeyedSingleton<ICache, MemoryCache>(\"local\");\nbuilder.Services.AddKeyedSingleton<ICache, RedisCache>(\"distributed\");\n\n// Resolve by key\nvar cache = sp.GetRequiredKeyedService<ICache>(\"distributed\");\n\n// TryAdd to allow overrides\nbuilder.Services.TryAddTransient<ILogger, ConsoleLogger>();\n// Test project can override:\nbuilder.Services.AddTransient<ILogger, TestLogger>();",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Use constructor injection for required dependencies, avoid service locator",
+          "Choose service lifetimes carefully: Transient for stateless, Scoped for per-request, Singleton for app-wide",
+          "Never inject scoped services into singletons - create scopes when needed",
+          "Decorator pattern enables clean cross-cutting concerns (caching, logging, retry)",
+          "Factory pattern handles runtime parameter creation",
+          "DI enables easy testing with mock implementations",
+          "Use keyed services (.NET 8+) for multiple implementations of the same interface",
+          "TryAdd pattern allows clean override of default registrations"
+        ],
+        "takeaway": "Dependency Injection is fundamental to modern .NET architecture. Understanding service lifetimes, avoiding common anti-patterns, and using advanced patterns like decorators and factories will help you build maintainable, testable applications."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-system-design"],
+  "relatedGlossaryTerms": ["dependency-injection", "ioc-container", "service-lifetime"]
+}

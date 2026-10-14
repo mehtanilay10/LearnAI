@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-2-2",
+  "slug": "dotnet-typescript-advanced",
+  "phaseSlug": "dotnet-phase-2-react-typescript",
+  "title": "Advanced TypeScript",
+  "description": "Master TypeScript generics, utility types, conditional types, and build type-safe, maintainable frontend code.",
+  "longDescription": "Deep dive into TypeScript: advanced generics, mapped types, conditional types, template literal types, type guards, discriminated unions, and building robust type systems for large-scale applications.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedHours": 10,
+  "icon": "📘",
+  "tags": ["typescript", "generics", "types", "type-safety", "utility-types"],
+  "lessonSlugs": [
+    "dotnet-typescript-generics",
+    "dotnet-typescript-utility-types",
+    "dotnet-typescript-conditional-types",
+    "dotnet-typescript-type-safety-patterns"
+  ],
+  "whatYouLearn": [
+    "Advanced generic patterns and constraints",
+    "Utility types for type transformations",
+    "Conditional types and type inference",
+    "Type guards and discriminated unions",
+    "Building type-safe APIs and component libraries"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-4-5",
+  "slug": "dotnet-agent-fundamentals",
+  "moduleSlug": "dotnet-ai-agents",
+  "title": "Agent Fundamentals",
+  "description": "Understand AI agent architecture and design patterns.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["agents", "architecture", "design-patterns"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Agent Architecture"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI agents use LLMs to reason and act. Understand agent loops, memory, perception, and action patterns."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Agents reason and act autonomously",
+          "Agent loops: perceive, reason, act",
+          "Memory maintains context",
+          "Tools enable external actions",
+          "Plan before acting for complex tasks"
+        ],
+        "takeaway": "Agents extend LLMs with reasoning and action capabilities. Design clear loops, memory, and tool integrations for reliable agents."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-tool-calling"],
+  "relatedGlossaryTerms": ["ai-agents", "agent-loop", "memory"]
+}

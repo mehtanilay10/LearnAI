@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-6-3",
+  "slug": "dotnet-ai-assisted-dev",
+  "phaseSlug": "dotnet-phase-6-security-testing",
+  "title": "AI-Assisted Development",
+  "description": "Use AI tools for code generation, review, refactoring, and debugging.",
+  "longDescription": "Leverage AI in development: GitHub Copilot, Cursor, AI code review, automated refactoring, AI-assisted debugging, and prompt engineering for coding tasks.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedHours": 8,
+  "icon": "🤖",
+  "tags": ["ai-assisted", "github-copilot", "cursor", "code-review"],
+  "lessonSlugs": [
+    "dotnet-github-copilot",
+    "dotnet-ai-code-review",
+    "dotnet-ai-refactoring",
+    "dotnet-ai-debugging"
+  ],
+  "whatYouLearn": [
+    "GitHub Copilot best practices",
+    "AI-assisted code review",
+    "Automated refactoring with AI",
+    "AI-assisted debugging",
+    "Prompt engineering for coding"
+  ]
+}

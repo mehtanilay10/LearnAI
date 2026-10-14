@@ -1,0 +1,17 @@
+{
+  "id": "dotnet-phase-2",
+  "slug": "dotnet-phase-2-react-typescript",
+  "courseSlug": "dotnet-react-ai-lead",
+  "title": "Phase 2: React/TypeScript & Modern Frontend",
+  "subtitle": "Master advanced React patterns, TypeScript deep dives, and scalable frontend architecture",
+  "description": "Deep dive into React internals, custom hooks, performance optimization, advanced TypeScript patterns, state management architecture, and building scalable, type-safe frontend applications.",
+  "order": 2,
+  "icon": "⚛️",
+  "color": "blue",
+  "moduleSlug": [
+    "dotnet-advanced-react",
+    "dotnet-typescript-advanced",
+    "dotnet-state-management"
+  ],
+  "estimatedWeeks": 2
+}

@@ -1,0 +1,22 @@
+{
+  "id": "dotnet-lesson-2-3",
+  "slug": "dotnet-react-performance-optimization",
+  "moduleSlug": "dotnet-advanced-react",
+  "title": "React Performance Optimization",
+  "description": "Optimize React renders with memo, useMemo, useCallback, code splitting, and virtualization for large lists.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["react", "performance", "optimization", "memoization"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {"level": 2, "text": "Render Optimization"}
+    },
+    {
+      "type": "paragraph",
+      "data": {"text": "React re-renders components when state or props change. Use memoization techniques to prevent unnecessary renders and improve performance."}}
+  ],
+  "relatedLessons": ["dotnet-react-internals"],
+  "relatedGlossaryTerms": ["react-memo", "usememo", "usecallback"]
+}

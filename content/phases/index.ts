@@ -17,6 +17,15 @@ import codexPhase2Tools from '../courses/codex/phase-2-tools/content.json';
 import codexPhase3Workflows from '../courses/codex/phase-3-workflows/content.json';
 import codexPhase4AdvancedTechniques from '../courses/codex/phase-4-advanced-techniques/content.json';
 
+// .NET + React AI Lead course phases
+import dotnetPhase1AdvancedDotnet from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/content.json';
+import dotnetPhase2ReactTypescript from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/content.json';
+import dotnetPhase3GenaiLlm from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/content.json';
+import dotnetPhase4RagAgentsMcp from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/content.json';
+import dotnetPhase5AzureDevops from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/content.json';
+import dotnetPhase6SecurityTesting from '../courses/dotnet-react-ai-lead/phase-6-security-testing/content.json';
+import dotnetPhase7Capstone from '../courses/dotnet-react-ai-lead/phase-7-capstone/content.json';
+
 const rawPhases = [
   phase1Foundations,
   phase2KeyConcepts,
@@ -31,6 +40,13 @@ const rawPhases = [
   codexPhase2Tools,
   codexPhase3Workflows,
   codexPhase4AdvancedTechniques,
+  dotnetPhase1AdvancedDotnet,
+  dotnetPhase2ReactTypescript,
+  dotnetPhase3GenaiLlm,
+  dotnetPhase4RagAgentsMcp,
+  dotnetPhase5AzureDevops,
+  dotnetPhase6SecurityTesting,
+  dotnetPhase7Capstone,
 ];
 
 export const phases: Phase[] = rawPhases as unknown as Phase[];

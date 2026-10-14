@@ -1,0 +1,86 @@
+{
+  "id": "dotnet-lesson-1-8",
+  "slug": "dotnet-event-driven-architecture",
+  "moduleSlug": "dotnet-system-design",
+  "title": "Event-Driven Architecture",
+  "description": "Implement event-driven systems with message brokers, event sourcing, CQRS, and handle eventual consistency in distributed environments.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["event-driven", "message-broker", "event-sourcing", "cqrs"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Event-Driven Architecture"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Event-driven architecture decouples services through events. Services emit events when state changes, and other services react to those events. This enables loose coupling and scalability."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "event-driven-arch",
+        "caption": "Event-driven architecture flow",
+        "definition": "graph LR\n    A[Order Service] -->|OrderCreated| B[Message Broker]\n    B -->|OrderCreated| C[Inventory Service]\n    B -->|OrderCreated| D[Notification Service]\n    B -->|OrderCreated| E[Analytics Service]\n    C -->|InventoryReserved| B\n    D -->|NotificationSent| B"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Message Brokers"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Message brokers (RabbitMQ, Azure Service Bus, Kafka) provide reliable message delivery, routing, and durability. Choose based on throughput requirements, ordering needs, and infrastructure."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Event Publishing with MassTransit",
+        "code": "// Define event\npublic record OrderCreated\n{\n    public Guid OrderId { get; init; }\n    public Guid CustomerId { get; init; }\n    public decimal Total { get; init; }\n    public DateTime CreatedAt { get; init; }\n}\n\n// Publish event\npublic class OrderService\n{\n    private readonly IPublishEndpoint _publishEndpoint;\n    \n    public OrderService(IPublishEndpoint publishEndpoint)\n    {\n        _publishEndpoint = publishEndpoint;\n    }\n    \n    public async Task CreateOrderAsync(Order order)\n    {\n        // Save order\n        await _repository.SaveAsync(order);\n        \n        // Publish event\n        await _publishEndpoint.Publish(new OrderCreated\n        {\n            OrderId = order.Id,\n            CustomerId = order.CustomerId,\n            Total = order.Total,\n            CreatedAt = DateTime.UtcNow\n        });\n    }\n}\n\n// Consume event\npublic class InventoryConsumer : IConsumer<OrderCreated>\n{\n    public async Task Consume(ConsumeContext<OrderCreated> context)\n    {\n        var @event = context.Message;\n        await _inventoryService.ReserveAsync(@event.OrderId);\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Event Sourcing & CQRS"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Event sourcing stores all state changes as events. CQRS separates read and write models. Together, they provide auditability, temporal queries, and optimized read/write paths."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Event-driven architecture decouples services through asynchronous events",
+          "Message brokers provide reliable, durable message delivery",
+          "Events should be immutable and represent facts that occurred",
+          "Event sourcing stores state changes as an event log",
+          "CQRS separates read and write models for optimization",
+          "Eventual consistency is inherent in event-driven systems",
+          "Idempotent consumers are essential for handling duplicate messages"
+        ],
+        "takeaway": "Event-driven architecture enables loose coupling and scalability. Use message brokers for reliable delivery, event sourcing for auditability, and CQRS for optimized read/write paths. Embrace eventual consistency."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-distributed-systems-fundamentals", "dotnet-microservices-patterns"],
+  "relatedGlossaryTerms": ["event-driven-architecture", "event-sourcing", "cqrs", "message-broker"]
+}

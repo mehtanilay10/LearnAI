@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-2-5",
+  "slug": "dotnet-typescript-generics",
+  "moduleSlug": "dotnet-typescript-advanced",
+  "title": "TypeScript Generics",
+  "description": "Master generic types, generic constraints, and build reusable, type-safe components and utilities.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["typescript", "generics", "constraints"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Generics Fundamentals"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Generics enable reusable components that work with multiple types while maintaining type safety. Use constraints to limit acceptable types."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Generics work with multiple types while maintaining type safety",
+          "Constraints limit acceptable types with extends",
+          "Default type parameters provide sensible defaults",
+          "Conditional types enable type logic",
+          "Utility types transform types declaratively"
+        ],
+        "takeaway": "Generics are TypeScript's most powerful feature for building reusable, type-safe code. Master them to build flexible APIs and component libraries."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-typescript-utility-types"],
+  "relatedGlossaryTerms": ["generics", "type-constraints"]
+}

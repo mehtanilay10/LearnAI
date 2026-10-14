@@ -1,0 +1,37 @@
+{
+  "id": "dotnet-lesson-2-9",
+  "slug": "dotnet-context-and-redux",
+  "moduleSlug": "dotnet-state-management",
+  "title": "Context API & Redux Toolkit",
+  "description": "Master React Context for global state and Redux Toolkit for complex state management with TypeScript.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["react", "context", "redux", "redux-toolkit"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {"level": 2, "text": "Context API"}
+    },
+    {
+      "type": "paragraph",
+      "data": {"text": "React Context provides a way to pass data through the component tree without prop drilling. Use it for global theme, user, or app-wide state."}
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Context avoids prop drilling for global state",
+          "Create context with createContext, provide with Provider",
+          "Consume with useContext hook",
+          "Split contexts by domain to avoid unnecessary re-renders",
+          "Redux Toolkit simplifies Redux with createSlice and configureStore"
+        ],
+        "takeaway": "Use Context for simple global state and Redux Toolkit for complex state with actions, reducers, and middleware. Both work well with TypeScript."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-state-architecture-patterns"],
+  "relatedGlossaryTerms": ["react-context", "redux", "redux-toolkit"]
+}

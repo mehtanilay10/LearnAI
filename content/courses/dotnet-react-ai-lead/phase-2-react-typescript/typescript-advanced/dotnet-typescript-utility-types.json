@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-2-6",
+  "slug": "dotnet-typescript-utility-types",
+  "moduleSlug": "dotnet-typescript-advanced",
+  "title": "TypeScript Utility Types",
+  "description": "Master Partial, Pick, Omit, Record, and other utility types for type transformations.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 40,
+  "tags": ["typescript", "utility-types", "type-transformations"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Built-in Utility Types"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "TypeScript provides utility types for common type transformations: Partial makes all properties optional, Pick selects properties, Omit removes properties, and more."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Partial<T> makes all properties optional",
+          "Pick<T, K> selects specific properties",
+          "Omit<T, K> removes specific properties",
+          "Record<K, T> creates object type from keys",
+          "Readonly<T> makes all properties readonly"
+        ],
+        "takeaway": "Utility types provide powerful type transformations without manual definition. Use them to derive types from existing types declaratively."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-typescript-generics"],
+  "relatedGlossaryTerms": ["utility-types", "partial", "pick", "omit"]
+}

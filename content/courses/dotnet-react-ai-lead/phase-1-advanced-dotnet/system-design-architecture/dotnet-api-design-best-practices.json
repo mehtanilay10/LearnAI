@@ -1,0 +1,72 @@
+{
+  "id": "dotnet-lesson-1-7",
+  "slug": "dotnet-api-design-best-practices",
+  "moduleSlug": "dotnet-system-design",
+  "title": "API Design Best Practices",
+  "description": "Master RESTful API design, GraphQL, gRPC, API versioning, and documentation strategies for public and internal APIs.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["rest", "graphql", "grpc", "api-design", "documentation"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "RESTful API Design"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "REST APIs use HTTP verbs, resource-based URLs, and standard status codes. Good REST design is intuitive, consistent, and leverages HTTP correctly."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "REST API Design Example",
+        "code": "// Resource-based URLs\nGET    /api/users              // List users\nGET    /api/users/{id}         // Get specific user\nPOST   /api/users              // Create user\nPUT    /api/users/{id}         // Replace user\nPATCH  /api/users/{id}         // Partial update\nDELETE /api/users/{id}         // Delete user\n\n// Nested resources\nGET    /api/users/{id}/orders  // Get user's orders\nPOST   /api/users/{id}/orders  // Create order for user\n\n// Query parameters for filtering\nGET /api/users?role=admin&active=true&page=1&pageSize=20\n\n// Proper status codes\n200 OK           // Success\n201 Created      // Resource created\n204 No Content   // Successful delete\n400 Bad Request  // Invalid input\n401 Unauthorized // Not authenticated\n403 Forbidden    // Authenticated but not authorized\n404 Not Found    // Resource doesn't exist\n409 Conflict     // Resource already exists\n422 Unprocessable // Valid format but semantic error\n500 Internal Error // Server error",
+        "language": "http"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "GraphQL vs REST vs gRPC"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Aspect", "REST", "GraphQL", "gRPC"],
+        "rows": [
+          ["Data Fetching", "Fixed endpoints", "Client queries exact data", "Fixed protobuf schema"],
+          ["Overfetching", "Common problem", "Solved by queries", "Fixed schema"],
+          ["Real-time", "Webhooks/polling", "Subscriptions", "Bidirectional streaming"],
+          ["Performance", "JSON overhead", "JSON overhead", "Binary (efficient)"],
+          ["Browser Support", "Native", "Native", "Requires polyfill"],
+          ["Use Case", "General purpose", "Complex data needs", "Internal microservices"]
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "REST: Use resource-based URLs, proper HTTP verbs, and meaningful status codes",
+          "GraphQL: Ideal for complex data requirements and mobile apps with bandwidth constraints",
+          "gRPC: Best for internal microservices communication with high performance needs",
+          "API versioning is critical for public APIs - use URL versioning or headers",
+          "Document APIs with OpenAPI/Swagger for REST, Schema for GraphQL",
+          "Use consistent naming conventions and error response formats"
+        ],
+        "takeaway": "Choose API style based on use case: REST for general APIs, GraphQL for complex data needs, gRPC for high-performance internal services. Good documentation and versioning are essential."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-microservices-patterns"],
+  "relatedGlossaryTerms": ["rest-api", "graphql", "grpc"]
+}

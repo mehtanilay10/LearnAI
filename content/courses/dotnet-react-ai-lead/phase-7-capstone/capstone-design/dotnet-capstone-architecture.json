@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-7-1",
+  "slug": "dotnet-capstone-architecture",
+  "moduleSlug": "dotnet-capstone-design",
+  "title": "Capstone Architecture",
+  "description": "Design the enterprise AI knowledge assistant system architecture.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["architecture", "capstone", "design"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "System Architecture"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Design the complete system architecture for the enterprise AI knowledge assistant, including backend, frontend, data layer, AI services, and infrastructure."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Design microservices or modular monolith",
+          "Define API boundaries and contracts",
+          "Plan data flow and integration points",
+          "Design for scalability and reliability",
+          "Document architecture decisions"
+        ],
+        "takeaway": "A well-designed architecture is the foundation of a successful project. Document decisions and plan for scalability from the start."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-capstone-data-model"],
+  "relatedGlossaryTerms": ["architecture", "microservices", "api-design"]
+}

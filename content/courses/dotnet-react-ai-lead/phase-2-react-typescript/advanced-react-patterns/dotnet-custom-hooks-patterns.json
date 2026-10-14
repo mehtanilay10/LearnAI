@@ -1,0 +1,37 @@
+{
+  "id": "dotnet-lesson-2-2",
+  "slug": "dotnet-custom-hooks-patterns",
+  "moduleSlug": "dotnet-advanced-react",
+  "title": "Custom Hooks Patterns",
+  "description": "Master custom hooks for reusable logic, data fetching, form handling, and common UI patterns.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 40,
+  "tags": ["react", "hooks", "custom-hooks", "reusability"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {"level": 2, "text": "Custom Hooks Fundamentals"}
+    },
+    {
+      "type": "paragraph",
+      "data": {"text": "Custom hooks extract reusable logic from components. They start with 'use' and can call other hooks. This enables composition and code reuse."}
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Custom hooks extract and reuse stateful logic",
+          "Follow naming convention: useXxx",
+          "Hooks can compose other hooks",
+          "Test hooks with @testing-library/react-hooks",
+          "Common patterns: useFetch, useForm, useDebounce, useLocalStorage"
+        ],
+        "takeaway": "Custom hooks are the primary way to reuse stateful logic in React. Build a library of well-tested hooks for common patterns in your application."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-react-internals"],
+  "relatedGlossaryTerms": ["custom-hooks", "react-hooks"]
+}

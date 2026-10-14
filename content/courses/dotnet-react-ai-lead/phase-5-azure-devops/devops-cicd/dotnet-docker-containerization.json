@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-5-5",
+  "slug": "dotnet-docker-containerization",
+  "moduleSlug": "dotnet-devops-cicd",
+  "title": "Docker Containerization",
+  "description": "Containerize .NET applications with Docker.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["docker", "containers", "dotnet"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Docker"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Docker packages applications with dependencies. Create Dockerfiles for .NET, optimize image size, and use multi-stage builds."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Docker packages apps with dependencies",
+          "Use multi-stage builds for smaller images",
+          "Optimize layer caching",
+          "Docker Compose for local development",
+          "Use .NET SDK image for build, runtime for run"
+        ],
+        "takeaway": "Docker provides consistent environments. Use multi-stage builds to minimize image size and layer caching to speed up builds."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-kubernetes-aks"],
+  "relatedGlossaryTerms": ["docker", "containers", "multi-stage-builds"]
+}

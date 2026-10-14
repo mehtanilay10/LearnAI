@@ -1,0 +1,225 @@
+{
+  "id": "dotnet-lesson-1-2",
+  "slug": "dotnet-memory-management",
+  "moduleSlug": "dotnet-advanced-csharp",
+  "title": "Memory Management & Performance",
+  "description": "Master memory pooling, stack allocation with Span<T>, ref structs, and avoid common GC pressure issues.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["memory", "gc", "span", "memory-pool", "stack-allocation"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Understanding .NET Memory Management"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": ".NET uses a generational garbage collector with three generations (0, 1, 2). Understanding how objects are allocated and collected is essential for writing high-performance code, especially in high-throughput scenarios."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "gc-generations",
+        "caption": "Generational GC flow",
+        "definition": "graph TD\n    A[New object] --> B[Gen 0]\n    B -->|Survives collection| C[Gen 1]\n    C -->|Survives collection| D[Gen 2]\n    D -->|Survives collection| D\n    B -->|Collected| E[Freed]\n    C -->|Collected| E\n    D -->|Collected| E\n    F[Large object heap] -->|LOH collection| E"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "title": "GC Generations Explained",
+        "text": "Gen 0: Short-lived objects, collected frequently. Gen 1: Buffer between short-lived and long-lived. Gen 2: Long-lived objects, collected infrequently. LOH: Objects > 85KB, collected with Gen 2."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Stack vs Heap Allocation"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Value types (struct, int, bool, etc.) are allocated on the stack when local variables. Reference types (class, string, etc.) are allocated on the heap. Stack allocation is faster and doesn't pressure the GC."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Value Types vs Reference Types",
+        "code": "// Value type - stack allocated (when local)\nstruct Point\n{\n    public int X;\n    public int Y;\n}\n\nvoid Process()\n{\n    var p = new Point(); // Stack allocated\n    p.X = 10;\n    // No GC pressure\n}\n\n// Reference type - heap allocated\nclass PointRef\n{\n    public int X;\n    public int Y;\n}\n\nvoid Process()\n{\n    var p = new PointRef(); // Heap allocated\n    p.X = 10;\n    // Creates GC pressure\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Span<T> and Stack Allocation"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Span<T> provides a safe view into contiguous memory without allocation. It enables stack-based operations on arrays, stackalloc memory, and other memory regions. This is critical for parsing, string manipulation, and high-performance scenarios."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Span<T> for Zero-Allocation Parsing",
+        "code": "// ❌ Allocates substrings (GC pressure)\npublic string[] ParseLegacy(string input)\n{\n    return input.Split(',');\n}\n\n// ✅ Zero allocation with Span\npublic void ParseWithSpan(ReadOnlySpan<char> input)\n{\n    var reader = new SpanReader(input);\n    while (!reader.IsEnd)\n    {\n        var item = reader.ReadUntil(',');\n        ProcessItem(item); // item is a span, no allocation\n    }\n}\n\npublic ref struct SpanReader\n{\n    private ReadOnlySpan<char> _input;\n    private int _position;\n    \n    public SpanReader(ReadOnlySpan<char> input)\n    {\n        _input = input;\n        _position = 0;\n    }\n    \n    public ReadOnlySpan<char> ReadUntil(char delimiter)\n    {\n        var start = _position;\n        while (_position < _input.Length && _input[_position] != delimiter)\n        {\n            _position++;\n        }\n        var result = _input.Slice(start, _position - start);\n        _position++; // Skip delimiter\n        return result;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "Ref Structs",
+        "text": "Span<T> is a ref struct, meaning it can only live on the stack. It cannot be boxed, stored in fields of classes, or used in async methods. These restrictions ensure it cannot escape the stack frame."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Memory Pooling with ArrayPool<T>"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "ArrayPool<T> rents arrays from a shared pool, reducing allocations for temporary buffers. Instead of allocating new arrays repeatedly, rent from the pool and return when done."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "ArrayPool<T> for Buffer Reuse",
+        "code": "// ❌ Allocates new buffer each time\npublic byte[] ProcessDataLegacy(byte[] input)\n{\n    var buffer = new byte[input.Length * 2]; // Allocation\n    // Process data...\n    return buffer;\n}\n\n// ✅ Reuses pooled buffers\npublic byte[] ProcessDataWithPool(byte[] input)\n{\n    var pool = ArrayPool<byte>.Shared;\n    var buffer = pool.Rent(input.Length * 2);\n    try\n    {\n        // Process data into buffer\n        var result = new byte[actualLength];\n        Buffer.BlockCopy(buffer, 0, result, 0, actualLength);\n        return result;\n    }\n    finally\n    {\n        pool.Return(buffer); // Return to pool\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "MemoryPool<T> and IMemoryOwner<T>"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "For custom memory pools or unmanaged memory, use MemoryPool<T> and IMemoryOwner<T>. This pattern is especially useful when working with native libraries or custom allocation strategies."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Custom Memory Pool",
+        "code": "public class PagedBuffer : IMemoryOwner<byte>, IDisposable\n{\n    private readonly List<byte[]> _pages = new();\n    private int _length;\n    \n    public PagedBuffer(int initialCapacity)\n    {\n        var pageSize = 4096;\n        var pageCount = (initialCapacity + pageSize - 1) / pageSize;\n        for (int i = 0; i < pageCount; i++)\n        {\n            _pages.Add(new byte[pageSize]);\n        }\n    }\n    \n    public Memory<byte> Memory => new PagedMemory(_pages, _length);\n    \n    public void Dispose()\n    {\n        foreach (var page in _pages)\n        {\n            ArrayPool<byte>.Shared.Return(page);\n        }\n        _pages.Clear();\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Common Memory Pitfalls"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Memory Anti-Patterns",
+        "cards": [
+          {
+            "title": "Boxing",
+            "description": "Converting value types to object causes heap allocation. Use generics or avoid boxing.",
+            "pros": [],
+            "cons": ["Unnecessary allocations", "GC pressure", "Performance degradation"],
+            "tags": ["anti-pattern"]
+          },
+          {
+            "title": "String Concatenation in Loops",
+            "description": "Using + in loops creates many intermediate strings. Use StringBuilder instead.",
+            "pros": [],
+            "cons": ["O(n²) allocations", "Memory fragmentation", "Slow performance"],
+            "tags": ["anti-pattern"]
+          },
+          {
+            "title": "Closure Capture",
+            "description": "Capturing variables in closures allocates closure classes. Be aware of what you capture.",
+            "pros": [],
+            "cons": ["Hidden allocations", "Lifetime extension", "Potential memory leaks"],
+            "tags": ["anti-pattern"]
+          },
+          {
+            "title": "LINQ in Hot Paths",
+            "description": "LINQ allocates iterators and delegates. In performance-critical code, use loops.",
+            "pros": [],
+            "cons": ["Iterator allocations", "Delegate allocations", "Indirect execution"],
+            "tags": ["anti-pattern"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Avoiding Common Pitfalls",
+        "code": "// ❌ Boxing\nvoid Process(object value) { }\nProcess(42); // Boxes int\n\n// ✅ Generic\nvoid Process<T>(T value) where T : struct { }\nProcess(42); // No boxing\n\n// ❌ String concatenation in loop\nvar result = \"\";\nforeach (var item in items)\n{\n    result += item; // Allocates new string each iteration\n}\n\n// ✅ StringBuilder\nvar sb = new StringBuilder();\nforeach (var item in items)\n{\n    sb.Append(item);\n}\nvar result = sb.ToString();\n\n// ❌ LINQ in hot path\nvar sum = data.Where(x => x > 0).Sum();\n\n// ✅ Manual loop\nint sum = 0;\nforeach (var x in data)\n{\n    if (x > 0) sum += x;\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Profiling Memory Usage"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Use diagnostic tools to identify memory issues: dotnet-counters for real-time metrics, dotnet-dump for crash dumps, and Visual Studio Profiler for detailed allocation analysis."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Memory Diagnostics Commands",
+        "code": "# Real-time GC metrics\ndotnet-counters monitor --process-id <pid> System.Runtime\n\n# Collect a memory dump\ndotnet-dump collect -p <pid> -o crash.dmp\n\n# Analyze dump\ndotnet-dump analyze crash.dmp\n> clrstack\n> dumpheap -stat\n> gcroot <address>",
+        "language": "bash"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Understand GC generations: Gen 0 for short-lived, Gen 2 for long-lived objects",
+          "Use Span<T> and stackalloc for zero-allocation operations on contiguous memory",
+          "Ref structs (like Span<T>) cannot escape the stack - use within methods only",
+          "ArrayPool<T> reduces allocations by reusing temporary buffers",
+          "Avoid boxing, string concatenation in loops, and unnecessary closures",
+          "Use StringBuilder instead of string concatenation in loops",
+          "Prefer manual loops over LINQ in performance-critical paths",
+          "Profile with dotnet-counters and dotnet-dump to identify memory issues"
+        ],
+        "takeaway": "Memory management in .NET is mostly automatic, but understanding how allocations and the GC work is essential for high-performance applications. Use stack allocation, memory pooling, and avoid common pitfalls to minimize GC pressure."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-async-deep-dive", "dotnet-profiling-benchmarking"],
+  "relatedGlossaryTerms": ["garbage-collection", "memory-pool", "stack-heap"]
+}

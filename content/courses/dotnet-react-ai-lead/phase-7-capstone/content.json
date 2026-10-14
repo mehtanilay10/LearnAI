@@ -1,0 +1,16 @@
+{
+  "id": "dotnet-phase-7",
+  "slug": "dotnet-phase-7-capstone",
+  "courseSlug": "dotnet-react-ai-lead",
+  "title": "Phase 7: Capstone Project",
+  "subtitle": "Build an Enterprise AI Knowledge Assistant end-to-end",
+  "description": "Apply all learned skills to build a production-ready enterprise AI knowledge assistant with .NET backend, React frontend, Azure deployment, security, monitoring, and CI/CD.",
+  "order": 7,
+  "icon": "🎯",
+  "color": "purple",
+  "moduleSlug": [
+    "dotnet-capstone-design",
+    "dotnet-capstone-implementation"
+  ],
+  "estimatedWeeks": 2
+}

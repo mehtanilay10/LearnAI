@@ -1,0 +1,37 @@
+{
+  "id": "dotnet-lesson-2-1",
+  "slug": "dotnet-react-internals",
+  "moduleSlug": "dotnet-advanced-react",
+  "title": "React Internals & Fiber Architecture",
+  "description": "Understand React's virtual DOM, reconciliation algorithm, Fiber architecture, and how React updates the DOM efficiently.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["react", "fiber", "virtual-dom", "reconciliation"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {"level": 2, "text": "Virtual DOM and Reconciliation"}
+    },
+    {
+      "type": "paragraph",
+      "data": {"text": "React uses a virtual DOM to minimize actual DOM manipulations. The reconciliation algorithm determines the minimal set of changes needed to update the UI."}
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Virtual DOM is an in-memory representation of the actual DOM",
+          "Reconciliation compares virtual DOM trees to find minimal changes",
+          "Fiber architecture enables incremental rendering and prioritization",
+          "React batches updates for performance",
+          "Understanding internals helps with performance optimization"
+        ],
+        "takeaway": "React's virtual DOM and Fiber architecture enable efficient UI updates. Understanding these internals helps debug performance issues and write more optimized React code."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-react-performance-optimization"],
+  "relatedGlossaryTerms": ["virtual-dom", "reconciliation", "fiber"]
+}

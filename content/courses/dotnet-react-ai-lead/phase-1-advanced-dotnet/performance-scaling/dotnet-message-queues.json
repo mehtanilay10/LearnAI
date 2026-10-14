@@ -1,0 +1,72 @@
+{
+  "id": "dotnet-lesson-1-11",
+  "slug": "dotnet-message-queues",
+  "moduleSlug": "dotnet-performance-scaling",
+  "title": "Message Queues for Async Processing",
+  "description": "Use message queues (RabbitMQ, Azure Service Bus) for async processing, load leveling, and decoupling services.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 40,
+  "tags": ["message-queue", "rabbitmq", "azure-service-bus", "async-processing"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Message Queue Patterns"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Message queues enable asynchronous processing, load leveling, and service decoupling. Producers send messages to queues, and consumers process them at their own pace."
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Queue Patterns",
+        "cards": [
+          {
+            "title": "Work Queue",
+            "description": "Multiple consumers compete for messages. Good for parallel processing of independent tasks.",
+            "pros": ["Load distribution", "Parallel processing", "Simple pattern"],
+            "cons": ["Message ordering not guaranteed", "Consumer coordination needed"],
+            "tags": ["pattern"]
+          },
+          {
+            "title": "Pub/Sub",
+            "description": "Messages broadcast to multiple subscribers. Good for fan-out scenarios like notifications.",
+            "pros": ["Multiple consumers", "Loose coupling", "Event distribution"],
+            "cons": ["Message ordering not guaranteed", "Ack complexity"],
+            "tags": ["pattern"]
+          },
+          {
+            "title": "Dead Letter Queue",
+            "description": "Failed messages routed to DLQ for inspection and retry. Essential for reliability.",
+            "pros": ["Error handling", "Inspection", "Retry capability"],
+            "cons": ["Additional complexity", "Requires monitoring"],
+            "tags": ["pattern"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Message queues enable async processing and load leveling",
+          "Work queue pattern distributes work across consumers",
+          "Pub/Sub pattern broadcasts to multiple subscribers",
+          "Dead letter queues handle failed messages gracefully",
+          "Ack/Nack mechanisms ensure reliable delivery",
+          "Choose broker based on throughput, ordering, and durability requirements"
+        ],
+        "takeaway": "Message queues are essential for scalable, decoupled systems. Use them for async processing, load leveling, and event distribution. Handle failures with dead letter queues."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-event-driven-architecture", "dotnet-performance-scaling"],
+  "relatedGlossaryTerms": ["message-queue", "work-queue", "dead-letter-queue"]
+}

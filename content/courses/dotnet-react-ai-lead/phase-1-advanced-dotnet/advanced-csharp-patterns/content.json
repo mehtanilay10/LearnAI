@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-1-1",
+  "slug": "dotnet-advanced-csharp",
+  "phaseSlug": "dotnet-phase-1-advanced-dotnet",
+  "title": "Advanced C# Patterns & Modern .NET",
+  "description": "Master async/await deep dives, memory management, dependency injection patterns, and advanced language features for production-grade applications.",
+  "longDescription": "Go beyond basics to understand C# internals: async state machines, memory pools, Span<T>, ref structs, pattern matching enhancements, records, source generators, and how to design clean, testable architectures with DI containers.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedHours": 12,
+  "icon": "⚙️",
+  "tags": ["csharp", ".net", "async", "memory", "di", "patterns"],
+  "lessonSlugs": [
+    "dotnet-async-deep-dive",
+    "dotnet-memory-management",
+    "dotnet-di-patterns",
+    "dotnet-modern-csharp-features"
+  ],
+  "whatYouLearn": [
+    "Async/await internals and state machine behavior",
+    "Memory pooling and stack allocation techniques",
+    "Advanced DI patterns and service lifetimes",
+    "Source generators and compile-time code generation",
+    "Records, pattern matching, and functional-style C#"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-5-1",
+  "slug": "dotnet-azure-app-service",
+  "moduleSlug": "dotnet-azure-fundamentals",
+  "title": "Azure App Service",
+  "description": "Deploy and scale .NET applications on Azure App Service.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["azure", "app-service", "deployment"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Azure App Service"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Azure App Service provides managed hosting for web apps. Deploy from GitHub, configure scaling slots, and use deployment slots for safe releases."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "App Service provides managed hosting",
+          "Use deployment slots for safe releases",
+          "Configure auto-scaling based on metrics",
+          "Integration with GitHub for CI/CD",
+          "Monitor with Application Insights"
+        ],
+        "takeaway": "Azure App Service simplifies web app deployment. Use deployment slots for zero-downtime releases and auto-scaling for cost optimization."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-azure-functions"],
+  "relatedGlossaryTerms": ["azure-app-service", "deployment-slots", "auto-scaling"]
+}

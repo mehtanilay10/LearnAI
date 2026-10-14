@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-7-5",
+  "slug": "dotnet-capstone-backend",
+  "moduleSlug": "dotnet-capstone-implementation",
+  "title": "Capstone Backend",
+  "description": "Implement the .NET backend with AI integration.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["backend", "dotnet", "ai-integration"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Backend Implementation"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Implement the .NET backend with API endpoints, AI integration, data access, and business logic."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Implement RESTful API endpoints",
+          "Integrate Azure OpenAI or OpenAI",
+          "Implement data access layer",
+          "Add business logic and validation",
+          "Implement error handling"
+        ],
+        "takeaway": "The backend is the foundation of the application. Implement clean architecture, proper error handling, and secure AI integration."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-capstone-frontend"],
+  "relatedGlossaryTerms": ["backend", "api", "ai-integration"]
+}

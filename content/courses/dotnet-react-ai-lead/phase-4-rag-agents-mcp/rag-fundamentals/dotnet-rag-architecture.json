@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-4-1",
+  "slug": "dotnet-rag-architecture",
+  "moduleSlug": "dotnet-rag-fundamentals",
+  "title": "RAG Architecture",
+  "description": "Understand retrieval-augmented generation architecture and workflow.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["rag", "architecture", "workflow"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "RAG Architecture"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "RAG enhances LLMs with external knowledge retrieval. Index documents, embed chunks, retrieve relevant context, and generate responses with citations."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "RAG combines retrieval with generation",
+          "Index documents into vector database",
+          "Retrieve relevant chunks for queries",
+          "Generate responses with context",
+          "Provide citations for answers"
+        ],
+        "takeaway": "RAG enables LLMs to access external knowledge. Build robust indexing and retrieval pipelines for accurate, cited responses."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-vector-databases"],
+  "relatedGlossaryTerms": ["rag", "retrieval", "citations"]
+}
