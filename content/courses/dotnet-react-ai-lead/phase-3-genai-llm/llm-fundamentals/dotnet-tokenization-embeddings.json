@@ -1,1 +1,85 @@
-{"id":"dotnet-lesson-3-2","slug":"dotnet-tokenization-embeddings","moduleSlug":"dotnet-llm-fundamentals","title":"Tokenization & Embeddings","description":"Master tokenization, subword tokenizers, embeddings, and vector representations of text.","order":2,"difficulty":"advanced","estimatedMinutes":45,"tags":["tokenization","embeddings","vectors","subword"],"blocks":[{"type":"heading","data":{"level":2,"text":"Tokenization"}},{"type":"paragraph","data":{"text":"Tokenization converts text to tokens. Subword tokenizers like BPE and WordPiece balance vocabulary size and coverage. Embeddings convert tokens to dense vector representations."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Tokenization breaks text into model-readable units","Subword tokenizers handle unknown words via subword pieces","Embeddings represent tokens as dense vectors","Similar tokens have similar embeddings in vector space","Token count affects cost and context window usage"],"takeaway":"Understanding tokenization and embeddings is crucial for cost optimization and effective prompting. Count tokens before sending to APIs to manage costs."}}],"relatedLessons":["dotnet-transformer-architecture"],"relatedGlossaryTerms":["tokenization","embeddings","subword-tokenizer","bpe"]}
+{
+  "id": "dotnet-lesson-3-2",
+  "slug": "dotnet-tokenization-embeddings",
+  "moduleSlug": "dotnet-llm-fundamentals",
+  "title": "Tokenization, Latent Spaces & Embeddings",
+  "description": "Master Byte-Pair Encoding (BPE), tiktoken tokenizers, token budgeting, and high-dimensional vector embeddings in .NET.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["tokenization", "bpe", "embeddings", "tiktoken", "latent-space", "csharp"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "How Models Process Text: Byte-Pair Encoding"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Neural networks cannot process raw strings or Unicode characters directly; they operate exclusively on numbers. Text is first converted into numeric IDs through tokenization. Modern LLMs use Byte-Pair Encoding (BPE), an algorithm that iteratively merges the most frequently co-occurring byte pairs into single subword tokens. In English, a token represents approximately 4 characters or 0.75 words."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "The Multilingual and Code Token Penalty",
+        "text": "Because BPE vocabularies are trained predominantly on English datasets, non-English languages (such as Japanese, Arabic, or Hindi) and formatted code with whitespace often split into significantly more tokens for the exact same semantic content. A 100-word paragraph in English might consume 130 tokens, while the same text in Hindi could consume 400 tokens, directly inflating API cost and latency 3x."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Token Counting in .NET using Microsoft.ML.Tokenizers"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Microsoft provides the high-performance Microsoft.ML.Tokenizers library for accurate local token counting, preventing surprise 400 ContextWindowExceeded errors before sending HTTP payloads."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Exact Token Counting with Microsoft.ML.Tokenizers in C#",
+        "content": "Counts exact tokens using the official cl100k_base / o200k_base BPE vocabulary:",
+        "code": "using Microsoft.ML.Tokenizers;\n\npublic class TokenBudgetCalculator\n{\n    private readonly TiktokenTokenizer _tokenizer;\n\n    public TokenBudgetCalculator()\n    {\n        // Load standard OpenAI cl100k_base (used by GPT-4 / GPT-3.5) or o200k_base (GPT-4o)\n        _tokenizer = TiktokenTokenizer.CreateForModel(\"gpt-4o\");\n    }\n\n    public int CountTokens(string text)\n    {\n        return _tokenizer.CountTokens(text);\n    }\n\n    public bool FitsWithinBudget(string prompt, int maxContextTokens = 8192)\n    {\n        int tokenCount = _tokenizer.CountTokens(prompt);\n        return tokenCount <= maxContextTokens;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "What Are Vector Embeddings?"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "While tokenization breaks text into discrete numeric tokens, embedding models (such as text-embedding-3-small) map entire passages into continuous, dense geometric vectors (e.g. 1536 floating-point coordinates). Words and documents with similar meanings are located near each other in this high-dimensional latent space, enabling semantic retrieval, clustering, and anomaly detection."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "LLMs operate on numeric tokens generated via Byte-Pair Encoding (BPE)",
+          "Character counts and word counts do not equal token counts: 1 token ≈ 4 characters in English",
+          "Non-English languages and code incur higher tokenization ratios and increased cost",
+          "Use Microsoft.ML.Tokenizers in .NET to compute exact token budgets prior to cloud dispatch",
+          "Vector embeddings capture semantic relationships by projecting text into continuous latent coordinates"
+        ],
+        "takeaway": "Tokens are the fundamental currency and computational unit of LLMs. Mastering tokenization and vector geometry allows .NET developers to control API costs and engineer high-precision search systems."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-transformer-architecture", "dotnet-context-window-parameters", "dotnet-vector-databases"],
+  "relatedGlossaryTerms": ["token", "embedding", "inference"]
+}

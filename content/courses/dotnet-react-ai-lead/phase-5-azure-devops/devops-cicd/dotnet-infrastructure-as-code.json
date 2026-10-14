@@ -1,1 +1,77 @@
-{"id":"dotnet-lesson-5-8","slug":"dotnet-infrastructure-as-code","moduleSlug":"dotnet-devops-cicd","title":"Infrastructure as Code","description":"Define infrastructure with Bicep and Terraform.","order":4,"difficulty":"advanced","estimatedMinutes":50,"tags":["iac","bicep","terraform","infrastructure"],"blocks":[{"type":"heading","data":{"level":2,"text":"Infrastructure as Code"}},{"type":"paragraph","data":{"text":"IaC defines infrastructure declaratively. Use Bicep for Azure-native or Terraform for multi-cloud."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["IaC defines infrastructure declaratively","Bicep for Azure-native IaC","Terraform for multi-cloud","Version control infrastructure","Drift detection and compliance"],"takeaway":"Infrastructure as code enables reproducible deployments. Use Bicep for Azure or Terraform for multi-cloud scenarios."}}],"relatedLessons":["dotnet-github-actions"],"relatedGlossaryTerms":["iac","bicep","terraform"]}
+{
+  "id": "dotnet-lesson-5-8",
+  "slug": "dotnet-infrastructure-as-code",
+  "moduleSlug": "dotnet-devops-cicd",
+  "title": "Infrastructure as Code with Azure Bicep",
+  "description": "Provision and automate enterprise Azure OpenAI, AI Search, Cosmos DB, and networking infrastructure idempotently using Azure Bicep.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["bicep", "infrastructure-as-code", "iac", "azure-openai", "ai-search", "automation"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Declarative Cloud Infrastructure for AI"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Provisioning enterprise AI infrastructure manually via the Azure Portal ('ClickOps') is error-prone, impossible to audit, and fails to guarantee parity between development, staging, and production environments. Infrastructure as Code (IaC) treats cloud architecture as version-controlled software. In the Azure ecosystem, Azure Bicep is the native domain-specific language (DSL) providing first-class type safety, zero state-file drift headaches (unlike Terraform), and instant same-day support for new Azure OpenAI model versions."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Declarative Azure OpenAI & AI Search Bicep Module"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The Bicep template below provisions an Azure OpenAI Cognitive Services account with a GPT-4o model deployment alongside an Azure AI Search service configured for semantic hybrid ranking."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Enterprise AI Infrastructure Template in Azure Bicep",
+        "content": "Provisions Azure OpenAI, model deployment, and Azure AI Search with zero secrets:",
+        "code": "@description('Location for all resources')\nparam location string = resourceGroup().location\n\n@description('Environment name (dev, staging, prod)')\nparam environmentName string = 'prod'\n\nvar openAiAccountName = 'oai-learnai-${environmentName}'\nvar searchServiceName = 'search-learnai-${environmentName}'\n\n// 1. Provision Azure OpenAI Service Account\nresource openAiAccount 'Microsoft.CognitiveServices/accounts@2024-10-01' = {\n  name: openAiAccountName\n  location: location\n  sku: {\n    name: 'S0'\n  }\n  kind: 'OpenAI'\n  properties: {\n    customSubDomainName: openAiAccountName\n    publicNetworkAccess: 'Enabled' // In production, set to Disabled and attach Private Endpoints\n    disableLocalAuth: true         // Enforce Azure Managed Identity; disable static API keys\n  }\n}\n\n// 2. Deploy GPT-4o Model onto OpenAI Account\nresource gpt4oDeployment 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = {\n  parent: openAiAccount\n  name: 'gpt-4o'\n  sku: {\n    name: 'Standard'\n    capacity: 30 // 30K Tokens Per Minute (TPM)\n  }\n  properties: {\n    model: {\n      format: 'OpenAI'\n      name: 'gpt-4o'\n      version: '2024-08-06'\n    }\n    versionUpgradeOption: 'OnceNewDefaultVersionAvailable'\n  }\n}\n\n// 3. Provision Azure AI Search with Semantic Ranker\nresource searchService 'Microsoft.Search/searchServices@2024-06-01-preview' = {\n  name: searchServiceName\n  location: location\n  sku: {\n    name: 'standard'\n  }\n  properties: {\n    semanticSearch: 'standard' // Enables cross-encoder semantic reranker\n    publicNetworkAccess: 'Enabled'\n    authOptions: {\n      aadOrApiKey: {\n        aadAuthFailureMode: 'http401WithBearerChallenge'\n      }\n    }\n  }\n}\n\noutput openAiEndpoint string = openAiAccount.properties.endpoint\noutput searchEndpoint string = 'https://${searchServiceName}.search.windows.net'",
+        "language": "bicep"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Parameterizing Environments with .bicepparam"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "By separating templates from environment parameters using .bicepparam files, your CI/CD pipeline deploys a lightweight dev configuration (lower capacity quotas, standard search SKU) during pull requests, while deploying high-capacity, multi-region PTU infrastructure to production."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Eliminate manual ClickOps: define all AI cloud resources declaratively in Azure Bicep",
+          "Bicep provides native Azure type validation without external state file management",
+          "Set disableLocalAuth: true to enforce passwordless Azure Managed Identity at the infrastructure layer",
+          "Model deployments (GPT-4o, embeddings) are codified as first-class child resources",
+          "Parameterize environments with .bicepparam files to scale quotas seamlessly from dev to prod"
+        ],
+        "takeaway": "Infrastructure as Code turns enterprise AI architecture into repeatable, auditable software. Using Azure Bicep guarantees consistent, secure environments across the entire development lifecycle."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-azure-ai-services", "dotnet-github-actions", "dotnet-kubernetes-aks"],
+  "relatedGlossaryTerms": ["deployment", "azure-openai", "security"]
+}

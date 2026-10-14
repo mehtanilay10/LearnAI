@@ -1,1 +1,89 @@
-{"id":"dotnet-lesson-5-4","slug":"dotnet-azure-sql","moduleSlug":"dotnet-azure-fundamentals","title":"Azure SQL","description":"Use Azure SQL Database for relational data in the cloud.","order":4,"difficulty":"advanced","estimatedMinutes":45,"tags":["azure-sql","sql-database","relational"],"blocks":[{"type":"heading","data":{"level":2,"text":"Azure SQL"}},{"type":"paragraph","data":{"text":"Azure SQL Database is a managed relational database. Use vCore or DTU purchasing models, configure geo-replication, and integrate with EF Core."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Azure SQL provides managed relational database","vCore or DTU purchasing models","Geo-replication for disaster recovery","EF Core integration","Always Encrypted for data security"],"takeaway":"Azure SQL simplifies database management. Choose vCore for predictable performance and configure geo-replication for high availability."}}],"relatedLessons":["dotnet-cosmos-db"],"relatedGlossaryTerms":["azure-sql","vcore","dtu","geo-replication"]}
+{
+  "id": "dotnet-lesson-5-4",
+  "slug": "dotnet-azure-sql",
+  "moduleSlug": "dotnet-azure-fundamentals",
+  "title": "Azure SQL Database: Vectors, Row-Level Security & Text-to-SQL",
+  "description": "Integrate Azure SQL Database with AI workflows: native vector functions, Row-Level Security (RLS), Dynamic Data Masking, and safe Text-to-SQL generation.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["azure-sql", "text-to-sql", "vectors", "row-level-security", "data-masking", "ef-core"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Relational Backbone of Enterprise AI"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "While vector databases power semantic retrieval, the vast majority of enterprise operational data—financial ledgers, ERP transactions, customer records, and inventory catalogs—resides in relational databases like Azure SQL Database and SQL Server. Integrating AI with Azure SQL requires combining relational ACID constraints with native vector search, Row-Level Security (RLS) to enforce data boundaries, and safe Text-to-SQL generation patterns."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Native Vector Support in Azure SQL Database"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Azure SQL Database introduces native vector functions, allowing developers to store vector embeddings in standard VARBINARY or JSON columns and calculate similarity directly inside T-SQL queries using VECTOR_DISTANCE."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Querying Vectors with T-SQL VECTOR_DISTANCE in C#",
+        "content": "Executes relational filtering joined with vector distance calculations via EF Core / Dapper:",
+        "code": "using Microsoft.Data.SqlClient;\nusing Dapper;\n\npublic class SqlVectorCatalogService\n{\n    private readonly string _connectionString;\n\n    public SqlVectorCatalogService(string connectionString)\n    {\n        _connectionString = connectionString;\n    }\n\n    public async Task<List<ProductCatalogDto>> SearchProductsAsync(\n        float[] queryVector,\n        string categoryFilter,\n        int topCount = 5,\n        CancellationToken ct = default)\n    {\n        await using var connection = new SqlConnection(_connectionString);\n        var vectorJson = JsonSerializer.Serialize(queryVector);\n\n        // Uses T-SQL VECTOR_DISTANCE function with cosine metric\n        var sql = \"\"\"\n            SELECT TOP (@topCount) \n                p.Id, p.Title, p.Price, p.Category,\n                VECTOR_DISTANCE('cosine', p.EmbeddingVector, JSON_ARRAY_TO_VECTOR(@vectorJson)) AS Distance\n            FROM Products p\n            WHERE p.Category = @categoryFilter\n            ORDER BY Distance ASC\n        \"\"\";\n\n        var results = await connection.QueryAsync<ProductCatalogDto>(\n            sql,\n            new { topCount, vectorJson, categoryFilter });\n\n        return results.ToList();\n    }\n}\n\npublic record ProductCatalogDto(int Id, string Title, decimal Price, string Category, double Distance);",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Safe Text-to-SQL Architecture"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Allowing an LLM to generate SQL queries directly against a production database without guardrails is a severe security risk (SQL injection, accidental drops, data leaks). Safe enterprise Text-to-SQL follows a 4-tier defense architecture:"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Text-to-SQL Security Guardrails",
+        "items": [
+          "Read-Only Service Account: Connect using a database user with strict SELECT-only permissions. Deny all INSERT, UPDATE, DELETE, and DDL permissions.",
+          "AST Query Sanitization: Parse the LLM's generated SQL with TSqlParser from Microsoft.SqlServer.DacFx; reject any query containing semicolons, unions, or unauthorized system tables.",
+          "Row-Level Security (RLS): Enforce database-level session contexts (sp_set_session_context) so the query can only see rows belonging to the caller's TenantId.",
+          "Dynamic Data Masking (DDM): Mask sensitive customer columns (credit cards, emails) at the database layer so even SELECT queries return masked values to the model."
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Azure SQL Database natively supports vector operations alongside relational tables using VECTOR_DISTANCE",
+          "Combine relational filters (WHERE Category = ...) with vector similarity in a single ACID transaction",
+          "Never execute raw LLM-generated SQL without a read-only role, AST parser validation, and statement timeouts",
+          "Enforce Row-Level Security (RLS) to guarantee multi-tenant isolation at the engine level",
+          "Leverage Dynamic Data Masking to protect PII from being ingested into AI context windows"
+        ],
+        "takeaway": "Azure SQL unites relational transactional data with vector search. With strict read-only roles, AST validation, and Row-Level Security, .NET teams can build secure, enterprise-grade Text-to-SQL solutions."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-cosmos-db", "dotnet-vector-databases", "dotnet-ai-security-governance"],
+  "relatedGlossaryTerms": ["database", "vector-database", "security"]
+}

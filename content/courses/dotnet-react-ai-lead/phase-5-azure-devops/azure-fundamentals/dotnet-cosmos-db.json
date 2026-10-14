@@ -1,1 +1,96 @@
-{"id":"dotnet-lesson-5-3","slug":"dotnet-cosmos-db","moduleSlug":"dotnet-azure-fundamentals","title":"Cosmos DB","description":"Use Cosmos DB for NoSQL data with global distribution.","order":3,"difficulty":"advanced","estimatedMinutes":50,"tags":["cosmos-db","nosql","global-distribution"],"blocks":[{"type":"heading","data":{"level":2,"text":"Cosmos DB"}},{"type":"paragraph","data":{"text":"Cosmos DB is a globally distributed NoSQL database. Choose API (SQL, MongoDB, Cassandra, Table, Gremlin), configure consistency, and use change feed."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Cosmos DB provides global NoSQL","Multiple API options available","Consistency levels: strong to eventual","Change feed for real-time updates","Partition keys for scalability"],"takeaway":"Cosmos DB provides globally distributed NoSQL with multiple APIs. Choose consistency level based on use case and design partition keys carefully."}}],"relatedLessons":["dotnet-azure-sql"],"relatedGlossaryTerms":["cosmos-db","nosql","consistency-levels"]}
+{
+  "id": "dotnet-lesson-5-3",
+  "slug": "dotnet-cosmos-db",
+  "moduleSlug": "dotnet-azure-fundamentals",
+  "title": "Azure Cosmos DB: Vector Search & Global Conversational State",
+  "description": "Architect globally distributed conversational state and vector search using Azure Cosmos DB NoSQL API in .NET.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["cosmos-db", "nosql", "vector-search", "partitioning", "conversation-state", "request-units"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Role of Cosmos DB in AI Architectures"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Generative AI applications require a database that can handle semi-structured chat transcripts, fast point-reads for user sessions, global distribution for multi-region frontends, and native vector search. Azure Cosmos DB for NoSQL delivers single-digit millisecond latency at any scale, SLA-backed 99.999% availability, and integrated vector indexing capabilities (DiskANN and IVFFlat), making it an ideal repository for agent memory and conversation state."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Partition Key Strategy for AI Chat Sessions"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Choosing the wrong partition key in Cosmos DB causes 'hot partitions' that throttle throughput (HTTP 429). In conversational AI, partitioning by TenantId or UserId ensures that all chat messages for a user are grouped together, enabling fast query performance for recent message history while evenly distributing reads across physical partitions."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Integrated Vector Search in Azure Cosmos DB NoSQL"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Cosmos DB NoSQL allows storing vector embeddings directly alongside document properties in the same JSON document, eliminating the need to maintain separate synchronizations between a relational database and an external vector engine."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Querying Vectors with VectorDistance in Cosmos DB via .NET SDK",
+        "content": "Executes hybrid JSON filtering and vector distance queries in a single query:",
+        "code": "using Microsoft.Azure.Cosmos;\n\npublic class CosmosMemoryStore\n{\n    private readonly Container _container;\n\n    public CosmosMemoryStore(CosmosClient cosmosClient)\n    {\n        _container = cosmosClient.GetContainer(\"EnterpriseDb\", \"UserMemories\");\n    }\n\n    public async Task<List<MemoryRecord>> SearchSimilarMemoriesAsync(\n        string userId,\n        float[] queryEmbedding,\n        int limit = 5,\n        CancellationToken ct = default)\n    {\n        // Cosmos DB SQL VectorDistance function\n        var queryDef = new QueryDefinition(\n            \"SELECT TOP @limit c.id, c.text, c.category, VectorDistance(c.embedding, @vector) AS similarityScore \" +\n            \"FROM c \" +\n            \"WHERE c.userId = @userId \" +\n            \"ORDER BY VectorDistance(c.embedding, @vector)\")\n            .WithParameter(\"@limit\", limit)\n            .WithParameter(\"@userId\", userId)\n            .WithParameter(\"@vector\", queryEmbedding);\n\n        var options = new QueryRequestOptions\n        {\n            PartitionKey = new PartitionKey(userId)\n        };\n\n        using var feedIterator = _container.GetItemQueryIterator<MemoryRecord>(queryDef, requestOptions: options);\n        var results = new List<MemoryRecord>();\n\n        while (feedIterator.HasMoreResults)\n        {\n            var response = await feedIterator.ReadNextAsync(ct);\n            results.AddRange(response);\n        }\n\n        return results;\n    }\n}\n\npublic record MemoryRecord(string Id, string Text, string Category, double SimilarityScore);",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Cosmos DB Consistency Levels Compared"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Consistency Level", "Data Guarantee", "RU Cost & Latency", "Best AI Fit"],
+        "rows": [
+          ["Session (Default)", "Read-your-own-writes guaranteed within single client session", "Low RU cost, sub-10ms latency", "Conversational AI chat histories and user session management"],
+          ["Strong", "Guaranteed linearizability across all global regions", "Highest RU cost (reads read 2 replicas)", "Financial ledger balance updates and token credit accounting"],
+          ["Bounded Staleness", "Reads lag behind writes by maximum N seconds or K versions", "Moderate RU cost", "Multi-region global knowledge base synchronization"],
+          ["Eventual", "No ordering guarantees; eventual convergence", "Lowest RU cost", "Non-critical telemetry and logging streams"]
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Azure Cosmos DB provides global low-latency storage for agent memory and session transcripts",
+          "Partition by TenantId or UserId to avoid hot partitions and guarantee point-read efficiency",
+          "Integrated vector search allows querying vectors and JSON metadata in a single SQL statement",
+          "Session consistency provides the optimal balance of read-your-own-writes accuracy and low RU cost",
+          "Use the Cosmos DB Change Feed to trigger event-driven background vector sync pipelines"
+        ],
+        "takeaway": "Azure Cosmos DB combines global scale with native vector search, providing a unified storage backbone for enterprise conversational state and long-term agent memory."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-azure-app-service", "dotnet-vector-databases", "dotnet-conversation-state"],
+  "relatedGlossaryTerms": ["cosmos-db", "vector-database", "database"]
+}

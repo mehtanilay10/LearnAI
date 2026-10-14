@@ -2,24 +2,120 @@
   "id": "dotnet-lesson-6-14",
   "slug": "dotnet-ai-evaluation",
   "moduleSlug": "dotnet-testing-strategies",
-  "title": "AI Evaluation & LLMOps",
-  "description": "Implement dataset-based evaluation, retrieval metrics, adversarial testing, and prompt regression tests.",
+  "title": "LLMOps & Systematic AI Evaluation",
+  "description": "Evaluate AI systems systematically in .NET using Microsoft.Extensions.AI.Evaluation, golden datasets, retrieval metrics, and regression testing.",
   "order": 5,
   "difficulty": "advanced",
-  "estimatedMinutes": 60,
-  "tags": ["evaluation", "llmops", "retrieval-metrics", "adversarial-testing"],
+  "estimatedMinutes": 65,
+  "tags": ["llmops", "evaluation", "microsoft-extensions-ai-evaluation", "golden-datasets", "mrr", "recall-at-k"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "AI Evaluation & LLMOps"
+        "text": "Why LLMOps and Systematic Evaluation Are Non-Negotiable"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Implement systematic evaluation: dataset-based testing, retrieval metrics (Recall@k, MRR), adversarial testing, and regression tests for prompts and models."
+        "text": "In traditional software, deterministic unit tests verify that f(x) == y. But LLMs are probabilistic: a prompt tweak that improves answer quality on one edge case might secretly cause severe regressions across twenty other common questions. Furthermore, model upgrades (such as migrating from GPT-4o to o3-mini or fine-tuned weights) can alter reasoning styles, token outputs, and structured JSON reliability."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "The Core Questions of LLMOps in .NET",
+        "text": "Every production AI lead must be able to answer: 1) How do we prove a new prompt is objectively better? 2) Did switching models introduce subtle regressions? 3) Is our retrieval failing or is the LLM hallucinating? 4) How do we trace multi-step agent failures across tool calls? 5) How do we systematically investigate incorrect answers reported in production?"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Measuring Retrieval vs. Measuring Generation"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In RAG systems, you must measure retrieval performance independently from generation performance. If retrieval fetches irrelevant documents, no LLM can generate an accurate response."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Metric Category", "Metric Name", "Definition", "Target Threshold"],
+        "rows": [
+          ["Retrieval", "Recall@k", "Percentage of ground-truth relevant documents retrieved in top-k results", "> 0.85 @ Top 5"],
+          ["Retrieval", "Mean Reciprocal Rank (MRR)", "Average of reciprocal ranks (1/rank) of the first relevant document", "> 0.70"],
+          ["Retrieval", "NDCG (Normalized Discounted Cumulative Gain)", "Evaluates ranking quality, giving higher weight to top positions", "> 0.80"],
+          ["Generation", "Groundedness / Faithfulness", "Percentage of claims in the generated answer directly supported by retrieved context", "> 0.95 (Zero tolerance for hallucinations)"],
+          ["Generation", "Context Relevance", "Degree to which retrieved chunks actually pertain to the user's question", "> 0.80"],
+          ["Generation", "Answer Relevance", "Degree to which the final response directly addresses user intent", "> 0.90"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Using Microsoft.Extensions.AI.Evaluation in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Microsoft provides Microsoft.Extensions.AI.Evaluation as a first-class NuGet package for evaluating AI models and RAG workflows directly within .NET test suites. It integrates with xUnit, NUnit, and CI/CD pipelines."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Automated Groundedness & Relevance Evaluation in xUnit",
+        "content": "Running systematic evaluation against a golden benchmark dataset using Microsoft.Extensions.AI.Evaluation:",
+        "code": "using Microsoft.Extensions.AI;\nusing Microsoft.Extensions.AI.Evaluation;\nusing Microsoft.Extensions.AI.Evaluation.Quality;\nusing Xunit;\n\npublic class RagQualityEvaluationTests\n{\n    private readonly IChatConfiguration _evalChatConfig;\n    private readonly IEvaluator _groundednessEvaluator;\n    private readonly IEvaluator _relevanceEvaluator;\n\n    public RagQualityEvaluationTests()\n    {\n        // Configure judge model for evaluation\n        var judgeClient = new OpenAIClient(Environment.GetEnvironmentVariable(\"OPENAI_API_KEY\"))\n            .AsChatClient(\"gpt-4o\");\n            \n        _evalChatConfig = new ChatConfiguration(judgeClient);\n        _groundednessEvaluator = new GroundednessEvaluator();\n        _relevanceEvaluator = new RelevanceEvaluator();\n    }\n\n    [Theory]\n    [InlineData(\"How do I enable auto-scaling on AKS?\", \"aks-docs-autoscaler.md\")]\n    [InlineData(\"What is the token limit for gpt-4o?\", \"openai-model-limits.md\")]\n    public async Task EvaluateGoldenDatasetAsync(string userQuestion, string expectedDocKey)\n    {\n        // 1. Run production RAG pipeline under test\n        var ragService = TestFixture.GetProductionRagService();\n        RagResponse response = await ragService.AskAsync(userQuestion);\n\n        // 2. Assert Retrieval Quality (Recall check)\n        Assert.Contains(response.RetrievedSources, s => s.DocumentKey == expectedDocKey);\n\n        // 3. Evaluate Groundedness using Microsoft.Extensions.AI.Evaluation\n        EvaluationResult groundednessResult = await _groundednessEvaluator.EvaluateAsync(\n            messages: [new ChatMessage(ChatRole.User, userQuestion)],\n            modelResponse: new ChatResponse(response.AnswerText),\n            chatConfiguration: _evalChatConfig,\n            additionalContext: [new EvaluationMetricContext(\"GroundingContext\", string.Join(\"\\n\", response.RetrievedChunks))]);\n\n        var score = groundednessResult.Get<NumericMetric>(\"Groundedness\").Value;\n        Assert.True(score >= 4.0, $\"Groundedness score {score} fell below acceptable threshold for: {userQuestion}\");\n\n        // 4. Assert Latency budget\n        Assert.True(response.LatencyMs < 2500, $\"Response took {response.LatencyMs}ms, exceeding 2.5s budget.\");\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Tracing Failed Agent Runs with OpenTelemetry & .NET Aspire"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When an agent fails or produces an incorrect answer across a 6-step loop, looking only at the final response makes debugging impossible. By emitting OpenTelemetry spans conforming to OpenTelemetry GenAI Semantic Conventions, you can inspect:"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Observability Tracing Checklist for AI Diagnostics",
+        "items": [
+          "Exact input prompt and system instructions for every internal step",
+          "Raw tool-call names, JSON argument payloads, and return values",
+          "Token usage breakdown (input prompt tokens vs output generation tokens vs cached tokens)",
+          "Step-by-step latency showing whether bottleneck was database retrieval or LLM inference",
+          "Aspire dashboard visualization showing parent-child spans linking HTTP request -> Agent -> Tools -> LLM calls"
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Building a Human-Reviewed Golden Dataset"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Never evaluate prompts purely on intuition. Maintain a versioned JSON/CSV 'Golden Dataset' containing 100-500 representative questions with expected facts, required citations, and forbidden inaccuracies. When engineers open a pull request changing a prompt or model deployment, a GitHub Actions workflow executes the evaluation suite and posts a metric comparison table to the PR."
       }
     },
     {
@@ -27,16 +123,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "Dataset-based evaluation with golden datasets",
-          "Retrieval metrics: Recall@k, MRR, precision",
-          "Task-specific correctness checks",
-          "Adversarial testing for robustness",
-          "Regression tests for model and prompt changes"
+          "Prompt engineering without systematic evaluation is guesswork",
+          "Decouple retrieval metrics (Recall@k, MRR) from generation metrics (Groundedness, Relevance)",
+          "Use Microsoft.Extensions.AI.Evaluation for automated testing in standard .NET test frameworks",
+          "Trace multi-step agent tool calls using OpenTelemetry and .NET Aspire to debug failures",
+          "Automate evaluation gates in CI/CD to prevent quality, latency, and cost regressions"
         ],
-        "takeaway": "LLMOps requires systematic evaluation. Use dataset-based testing, retrieval metrics, and regression tests to measure quality and detect regressions."
+        "takeaway": "LLMOps brings rigor to generative AI. By testing with Microsoft.Extensions.AI.Evaluation and tracing with OpenTelemetry, .NET developers ensure production AI features are measurable, auditable, and resilient to regressions."
       }
     }
   ],
-  "relatedLessons": ["dotnet-tdd-best-practices"],
-  "relatedGlossaryTerms": ["evaluation", "llmops", "retrieval-metrics"]
+  "relatedLessons": ["dotnet-testing-strategies", "dotnet-unit-testing", "dotnet-distributed-tracing", "dotnet-advanced-retrieval"],
+  "relatedGlossaryTerms": ["evaluation", "benchmark", "grounding", "latency"]
 }

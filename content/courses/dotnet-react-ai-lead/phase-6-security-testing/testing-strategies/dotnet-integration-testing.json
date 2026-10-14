@@ -1,1 +1,77 @@
-{"id":"dotnet-lesson-6-6","slug":"dotnet-integration-testing","moduleSlug":"dotnet-testing-strategies","title":"Integration Testing","description":"Implement integration testing with TestServer and real databases.","order":2,"difficulty":"advanced","estimatedMinutes":50,"tags":["integration-testing","testserver","testing"],"blocks":[{"type":"heading","data":{"level":2,"text":"Integration Testing"}},{"type":"paragraph","data":{"text":"Integration tests verify component interactions. Use TestServer for in-memory hosting and test databases."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Integration tests verify interactions","TestServer for in-memory hosting","Use test databases","Test API endpoints","Configure test environments"],"takeaway":"Integration tests catch issues unit tests miss. Use TestServer for API testing and test databases for data layer testing."}}],"relatedLessons":["dotnet-unit-testing"],"relatedGlossaryTerms":["integration-testing","testserver"]}
+{
+  "id": "dotnet-lesson-6-6",
+  "slug": "dotnet-integration-testing",
+  "moduleSlug": "dotnet-testing-strategies",
+  "title": "Integration Testing with WebApplicationFactory & Testcontainers",
+  "description": "Test end-to-end ASP.NET Core API pipelines with WebApplicationFactory, spin up real vector databases via Testcontainers, and stub AI models using WireMock.Net.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["integration-testing", "webapplicationfactory", "testcontainers", "wiremock", "aspnetcore"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Role of Integration Testing in AI Applications"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "While unit tests verify isolated classes with mocked interfaces, Integration Tests verify that all pieces of your ASP.NET Core application work harmoniously together: middleware routing, JWT authentication, dependency injection lifetimes, database connection pooling, and real vector index queries. Using WebApplicationFactory and Testcontainers for .NET, you can spin up an in-memory test server and real containerized databases on the fly during test execution."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Spinning Up Real Vector Databases with Testcontainers for .NET"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Instead of relying on fragile shared staging databases or in-memory mocks that don't support true vector math, Testcontainers manages lightweight Docker containers (such as Qdrant or PostgreSQL pgvector) automatically during the test fixture lifecycle."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Integration Test with WebApplicationFactory & Testcontainers in C#",
+        "content": "Spins up a real Qdrant container and tests the /api/knowledge/search endpoint end-to-end:",
+        "code": "using Microsoft.AspNetCore.Mvc.Testing;\nusing Testcontainers.Qdrant;\nusing Xunit;\nusing System.Net.Http.Json;\n\npublic class KnowledgeApiIntegrationTests : IAsyncLifetime\n{\n    private readonly QdrantContainer _qdrantContainer = new QdrantBuilder()\n        .WithImage(\"qdrant/qdrant:v1.11.0\")\n        .Build();\n\n    private WebApplicationFactory<Program> _factory = null!;\n    private HttpClient _client = null!;\n\n    public async Task InitializeAsync()\n    {\n        // 1. Start real Qdrant container\n        await _qdrantContainer.StartAsync();\n\n        // 2. Configure WebApplicationFactory with containerized endpoint\n        _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>\n        {\n            builder.ConfigureServices(services =>\n            {\n                // Point vector store registration to container\n                services.AddSingleton(new QdrantClient(new Uri(_qdrantContainer.GetConnectionString())));\n            });\n        });\n\n        _client = _factory.CreateClient();\n    }\n\n    [Fact]\n    public async Task SearchEndpoint_ReturnsHttp200AndMatchingChunks()\n    {\n        // Act: Invoke actual HTTP endpoint through entire pipeline\n        var response = await _client.PostAsJsonAsync(\"/api/knowledge/search\", new\n        {\n            Query = \"Kubernetes autoscaling\",\n            TenantId = \"tenant-test-1\"\n        });\n\n        // Assert\n        response.EnsureSuccessStatusCode();\n        var results = await response.Content.ReadFromJsonAsync<List<KnowledgeItemResult>>();\n        Assert.NotNull(results);\n    }\n\n    public async Task DisposeAsync()\n    {\n        await _qdrantContainer.DisposeAsync();\n        _factory.Dispose();\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Mocking Cloud LLM HTTP Traffic with WireMock.Net"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "To verify that your ASP.NET Core resilience policies (Polly retries, circuit breakers) respond correctly when Azure OpenAI returns HTTP 429 Too Many Requests or 503 Service Unavailable, use WireMock.Net to simulate exact HTTP responses and headers locally without calling live cloud APIs."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "WebApplicationFactory<Program> hosts your entire ASP.NET Core pipeline in memory for testing",
+          "Testcontainers for .NET spins up real Qdrant, Redis, or PostgreSQL containers automatically during test runs",
+          "Stub external AI provider endpoints using WireMock.Net to test 429 throttling and retry policies",
+          "Verify that authentication, model binding, authorization, and error handling work together seamlessly",
+          "Clean up container fixtures with IAsyncLifetime to ensure zero orphaned Docker containers in CI"
+        ],
+        "takeaway": "Integration testing bridges the gap between unit mocks and production reality. Combining WebApplicationFactory, Testcontainers, and WireMock.Net enables deterministic full-stack verification."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-unit-testing", "dotnet-resilient-ai-clients", "dotnet-e2e-testing"],
+  "relatedGlossaryTerms": ["evaluation", "vector-database", "api"]
+}

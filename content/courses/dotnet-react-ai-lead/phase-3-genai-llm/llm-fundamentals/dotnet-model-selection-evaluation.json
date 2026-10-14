@@ -1,1 +1,101 @@
-{"id":"dotnet-lesson-3-4","slug":"dotnet-model-selection-evaluation","moduleSlug":"dotnet-llm-fundamentals","title":"Model Selection & Evaluation","description":"Choose the right model for your use case and evaluate LLM outputs effectively.","order":4,"difficulty":"advanced","estimatedMinutes":45,"tags":["model-selection","evaluation","benchmarks","cost-optimization"],"blocks":[{"type":"heading","data":{"level":2,"text":"Model Selection"}},{"type":"paragraph","data":{"text":"Choose models based on task requirements, cost, latency, and quality. Evaluate outputs with automated metrics and human evaluation for production systems."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Smaller models are faster and cheaper for simple tasks","Larger models perform better on complex reasoning","Evaluate with automated metrics and human review","Consider latency, cost, and quality tradeoffs","Fine-tune smaller models for specific tasks"],"takeaway":"Model selection is a tradeoff between cost, latency, and quality. Start with smaller models and scale up only when needed. Evaluate thoroughly before production deployment."}}],"relatedLessons":["dotnet-llm-integration"],"relatedGlossaryTerms":["model-selection","evaluation-metrics","fine-tuning"]}
+{
+  "id": "dotnet-lesson-3-4",
+  "slug": "dotnet-model-selection-evaluation",
+  "moduleSlug": "dotnet-llm-fundamentals",
+  "title": "Model Selection Matrix & Benchmark Evaluation",
+  "description": "Evaluate foundation models across MMLU, HumanEval, and SWE-bench, balancing latency, reasoning depth, cost, and hosting constraints.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["model-selection", "benchmarks", "mmlu", "swe-bench", "trade-offs", "evaluation"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Enterprise Model Landscape"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Selecting the right AI model is an architectural trade-off balancing reasoning capabilities, latency, per-token cost, context capacity, and compliance boundaries. Defaulting to the largest available frontier model for every task leads to exorbitant cloud bills and sluggish UI performance; conversely, relying solely on small models results in hallucinations and failed tool calls."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Model Tiers Compared"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Model Tier", "Representative Models", "Pricing (Input/Output per 1M tokens)", "Latency (TTFT)", "Best Enterprise Fit"],
+        "rows": [
+          ["Lightweight / Fast", "GPT-4o-mini, Claude 3.5 Haiku, Gemini 1.5 Flash", "$0.15 / $0.60", "< 400 ms", "High-volume classification, triage, routing, formatting, simple entity extraction"],
+          ["Frontier Generalist", "GPT-4o, Claude 3.5 Sonnet", "$2.50 / $10.00", "600 - 1200 ms", "Complex agentic reasoning, code synthesis, advanced RAG, enterprise customer support"],
+          ["Deep Reasoning", "OpenAI o1, o3-mini", "$15.00 / $60.00 (o1), $1.10 / $4.40 (o3-mini)", "3000 - 15000 ms", "Formal mathematical proofs, multi-file code refactoring, complex legal/financial audits"],
+          ["On-Premises / Open-Weights", "Llama 3.2 (3B/8B/70B), Phi-3.5", "Free (Hardware compute cost)", "Hardware dependent", "Air-gapped compliance, local developer workstations, zero-data-retention needs"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Understanding Academic & Engineering Benchmarks"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Core Evaluation Benchmarks",
+        "items": [
+          "MMLU (Massive Multitask Language Understanding): Measures broad factual knowledge and problem-solving across 57 academic subjects (STEM, humanities, medicine).",
+          "HumanEval: Evaluates Python and algorithmic coding ability through automated unit test pass rates.",
+          "SWE-bench: Real-world software engineering benchmark evaluating a model's ability to resolve end-to-end GitHub issues in actual repositories.",
+          "MATH & GSM8K: Measures multi-step mathematical reasoning and quantitative problem solving.",
+          "Needle In A Haystack (NIAH): Tests retrieval accuracy when a specific fact is buried within long context windows."
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The Enterprise Selection Decision Tree"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Model Selection Checklist",
+        "items": [
+          {"text": "Data Residency & Sovereignty", "hint": "Can data leave company premises? If no, select Llama 3 or Phi-3 via on-prem hardware. If yes, choose Azure OpenAI with region pinning."},
+          {"text": "Task Complexity", "hint": "Is it simple keyword extraction or multi-step logic? For simple parsing, use GPT-4o-mini. For complex orchestration, use GPT-4o or Sonnet."},
+          {"text": "Latency Budget (SLO)", "hint": "Does the user interface require sub-second streaming? Lightweight models deliver 2x-3x higher tokens per second."},
+          {"text": "Cost & Volume Projections", "hint": "At 100,000 queries per day, switching from GPT-4o to GPT-4o-mini saves over $15,000 per month."},
+          {"text": "Tool Calling Fidelity", "hint": "Verify model benchmark accuracy on structured JSON schema conformance before selecting smaller open-weights models for agentic loops."}
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Adopt a multi-model strategy: match model cost and latency to specific task complexity",
+          "Use lightweight models (GPT-4o-mini) for high-frequency extraction, classification, and routing",
+          "Reserve frontier generalists (GPT-4o, Claude 3.5 Sonnet) for agentic planning and synthesis",
+          "Deploy deep reasoning models (o1, o3-mini) for complex analytical logic where latency is secondary",
+          "Benchmark candidate models on your own domain-specific dataset rather than relying solely on public leaderboards"
+        ],
+        "takeaway": "Pragmatic model selection separates successful enterprise AI from expensive experiments. Choosing the right tier ensures high accuracy, fast user response, and sustainable unit economics."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-transformer-architecture", "dotnet-model-routing", "dotnet-cost-monitoring"],
+  "relatedGlossaryTerms": ["benchmark", "evaluation", "latency"]
+}

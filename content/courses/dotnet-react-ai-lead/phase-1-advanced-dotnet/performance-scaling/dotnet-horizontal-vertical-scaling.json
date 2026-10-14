@@ -2,55 +2,197 @@
   "id": "dotnet-lesson-1-12",
   "slug": "dotnet-horizontal-vertical-scaling",
   "moduleSlug": "dotnet-performance-scaling",
-  "title": "Horizontal vs Vertical Scaling",
-  "description": "Understand scaling strategies, load balancing, auto-scaling configurations, and when to scale horizontally vs vertically.",
+  "title": "Scaling Topologies: Horizontal vs Vertical Scaling in Cloud & AI Workloads",
+  "description": "Master scalability patterns for modern .NET & AI systems: stateless API scale-out, stateful session routing, distributed caching with Redis, read replicas with EF Core, and autoscaling topologies on Kubernetes / Azure.",
   "order": 4,
   "difficulty": "advanced",
-  "estimatedMinutes": 40,
-  "tags": ["scaling", "load-balancing", "auto-scaling", "horizontal-vertical"],
+  "estimatedMinutes": 45,
+  "tags": ["scaling", "load-balancing", "auto-scaling", "horizontal-vertical", "redis", "kubernetes"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Scaling Strategies"
+        "text": "The Architecture of Scalability in Modern Systems"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Vertical scaling adds resources to a single machine. Horizontal scaling adds more machines. Horizontal scaling provides better fault tolerance and unlimited scaling potential."
+        "text": "Scalability is the ability of a system to maintain acceptable latency and throughput as workload increases by dynamically adding compute or memory resources. In enterprise .NET and AI systems, scaling demands a nuanced hybrid approach: vertical scaling (scaling up) provides instant relief for write-heavy relational databases and large in-memory caches, while horizontal scaling (scaling out) provides fault-tolerant, elastic, and economically viable growth for web APIs, document ingestion pipelines, and agent orchestration engines."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "scaling-topology",
+        "caption": "Stateless Horizontal Scale-Out with Shared Distributed State",
+        "code": "flowchart TD\n    Traffic[Incoming Client Traffic] --> LB[Azure Front Door / Cloud Load Balancer]\n    \n    subgraph StatelessCompute[\"Horizontally Scaled .NET 9 API Nodes (N Replicas)\"]\n        Node1[\"API Pod 1 (Stateless)\"]\n        Node2[\"API Pod 2 (Stateless)\"]\n        NodeN[\"API Pod N (Stateless)\"]\n    end\n    \n    LB --> Node1\n    LB --> Node2\n    LB --> NodeN\n    \n    subgraph SharedDataLayer[\"Shared Distributed State & Storage\"]\n        RedisCluster[(\"Redis Cluster\\n(Sessions, Semantic Cache, Rate Limits)\")]\n        PrimaryDB[(\"PostgreSQL Primary\\n(Writes / Transactions)\")]\n        ReplicaDB[(\"PostgreSQL Read Replica\\n(Heavy Read Queries)\")]\n    end\n    \n    Node1 --> RedisCluster\n    Node2 --> RedisCluster\n    NodeN --> RedisCluster\n    Node1 -->|Writes| PrimaryDB\n    Node1 -->|Reads| ReplicaDB\n    Node2 -->|Writes| PrimaryDB\n    Node2 -->|Reads| ReplicaDB\n    NodeN -->|Writes| PrimaryDB\n    NodeN -->|Reads| ReplicaDB\n    PrimaryDB -.->|Streaming Replication| ReplicaDB"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Stateless API Design & Shared Data Protection"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "To scale an ASP.NET Core application horizontally behind a load balancer, instances must share zero local state. Any in-memory session, local file uploads, or local ASP.NET Core Data Protection keys (used to encrypt auth cookies and anti-forgery tokens) will cause random authentication failures when requests alternate between nodes."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Configuring Distributed Data Protection & Redis in ASP.NET Core",
+        "content": "This configuration stores cryptographic keys in Azure Blob Storage with Key Vault encryption and uses Redis for shared distributed caching.",
+        "language": "csharp",
+        "code": "var builder = WebApplication.CreateBuilder(args);\n\n// 1. Configure Redis Distributed Caching\nbuilder.Services.AddStackExchangeRedisCache(options =>\n{\n    options.Configuration = builder.Configuration.GetConnectionString(\"RedisCache\");\n    options.InstanceName = \"NexusProd_\";\n});\n\n// 2. Share Data Protection Keys across all horizontal nodes\nbuilder.Services.AddDataProtection()\n    .PersistKeysToAzureBlobStorage(\n        new Uri(builder.Configuration[\"Storage:DataProtectionBlobUri\"]!),\n        new DefaultAzureCredential())\n    .ProtectKeysWithAzureKeyVault(\n        new Uri(builder.Configuration[\"KeyVault:KeyEncryptionKeyUri\"]!),\n        new DefaultAzureCredential());\n\n// 3. Register Stateless Session State backed by Redis\nbuilder.Services.AddSession(options =>\n{\n    options.IdleTimeout = TimeSpan.FromMinutes(30);\n    options.Cookie.HttpOnly = true;\n    options.Cookie.IsEssential = true;\n});"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Database Scale-Out with EF Core Read Replicas"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Relational databases cannot scale writes horizontally across multiple nodes without distributed locking overhead. The industry standard is vertical scaling of the primary node for ACID writes, coupled with horizontal read replicas for queries."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Routing Queries to Read Replicas in EF Core",
+        "content": "Registering separate DbContext instances for read-only vs read-write operations.",
+        "language": "csharp",
+        "code": "public interface IReadOnlyAppDbContext : IDisposable\n{\n    IQueryable<DocumentChunk> DocumentChunks { get; }\n    IQueryable<ConversationSession> ConversationSessions { get; }\n}\n\n// In Program.cs: Register Write Context\nbuilder.Services.AddDbContext<AppDbContext>(options =>\n    options.UseNpgsql(builder.Configuration.GetConnectionString(\"PrimaryWriteConnection\")));\n\n// Register Read-Only Context pointing to Read Replica\nbuilder.Services.AddDbContext<ReadOnlyAppDbContext>(options =>\n    options.UseNpgsql(builder.Configuration.GetConnectionString(\"ReadReplicaConnection\"))\n           .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Horizontal vs Vertical Scaling Comparison"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Scaling Strategy Trade-offs",
+        "cards": [
+          {
+            "title": "Vertical Scaling (Scale Up)",
+            "description": "Increase CPU cores, RAM, and NVMe disk speed on a single machine.",
+            "pros": [
+              "Zero application architecture changes required",
+              "No distributed concurrency or network latency issues",
+              "Simple operations with a single deployment target"
+            ],
+            "cons": [
+              "Harsh hardware ceilings and exponential cost curves at high tiers",
+              "Single point of failure during hardware reboots or maintenance",
+              "Cannot scale beyond the largest available machine size"
+            ],
+            "tags": ["databases", "stateful-apps"]
+          },
+          {
+            "title": "Horizontal Scaling (Scale Out)",
+            "description": "Add multiple identical application instances behind a load balancer.",
+            "pros": [
+              "Virtually unlimited elastic scaling capacity in public clouds",
+              "High availability: failing nodes are automatically recycled",
+              "Linear cost scaling — add capacity incrementally"
+            ],
+            "cons": [
+              "Requires strictly stateless application tier architecture",
+              "Demands distributed caching, locks, and external session state",
+              "More complex operational tooling (Kubernetes, KEDA, YARP)"
+            ],
+            "tags": ["stateless-apis", "microservices", "ai-workers"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Autoscaling AI Workloads with KEDA"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Traditional CPU-based autoscaling fails for AI workloads. An ingestion worker processing large PDFs might be network-bound or waiting on OpenAI rate limits while CPU remains at 15%. Kubernetes Event-driven Autoscaling (KEDA) scales pods based on message queue depth (RabbitMQ, Azure Service Bus, or Redis list size)."
       }
     },
     {
       "type": "table",
       "data": {
-        "headers": ["Aspect", "Vertical Scaling", "Horizontal Scaling"],
+        "caption": "Autoscaling Metrics and Scaling Dimensions",
+        "headers": ["Subsystem", "Scaling Metric", "Autoscaler Type", "Scaling Action"],
         "rows": [
-          ["Cost", "Expensive at high end", "Linear cost scaling"],
-          ["Complexity", "Simple", "Complex (state, coordination)"],
-          ["Fault Tolerance", "Single point of failure", "High"],
-          ["Max Scale", "Limited by hardware", "Unlimited"],
-          ["Use Case", "Single database, stateful apps", "Stateless web apps, microservices"]
+          [
+            "Web / Chat API",
+            "Concurrent HTTP Requests / Active SSE Streams (>50 per pod)",
+            "HPA / Container Apps HTTP Rule",
+            "Scale pods from 2 to 20 instances"
+          ],
+          [
+            "Document Ingestion Worker",
+            "Pending queue messages in Azure Service Bus (>5 jobs per pod)",
+            "KEDA ScaledObject",
+            "Scale pods from 0 to 10 instances (Scale to Zero)"
+          ],
+          [
+            "Redis Semantic Cache",
+            "Memory utilization (>75% maxmemory threshold)",
+            "Cloud Platform Autoscaler",
+            "Vertical resize cache tier or add Redis cluster shards"
+          ],
+          [
+            "PostgreSQL Database",
+            "Read IOPS & Connection Pool saturation (>80%)",
+            "Database Read Replica Auto-pool",
+            "Spin up additional read replicas and enlarge write compute"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Horizontal Scaling Readiness Checklist",
+        "items": [
+          "No in-memory state or static dictionaries used for user sessions or cached data",
+          "ASP.NET Core Data Protection configured with external blob storage and Key Vault",
+          "Database connection pools managed using PgBouncer or Azure Database Connection Pooler",
+          "Read queries routed to database read replicas with NoTracking enabled",
+          "Health checks implement proper Readiness vs Liveness probe semantics",
+          "KEDA or equivalent event-driven autoscaling configured for background job workers"
         ]
       }
     },
     {
       "type": "summary-box",
       "data": {
-        "title": "Key Takeaways",
+        "title": "Summary & Next Steps",
         "points": [
-          "Vertical scaling: simpler but limited, good for databases",
-          "Horizontal scaling: more complex but unlimited, good for stateless services",
-          "Load balancers distribute traffic across instances",
-          "Auto-scale based on CPU, memory, or custom metrics",
-          "Stateless services scale horizontally easily",
-          "Stateful services require careful design for horizontal scaling"
+          "Stateless application architecture is the non-negotiable prerequisite for horizontal scaling.",
+          "Shared distributed state (Redis, Blob Storage) decouples compute from persistence.",
+          "Event-driven autoscaling (KEDA) handles bursty AI ingestion better than traditional CPU metrics.",
+          "Next, we learn how to benchmark and profile .NET code using BenchmarkDotNet and diagnostic tools."
         ],
-        "takeaway": "Horizontal scaling is preferred for modern cloud applications due to fault tolerance and unlimited scale. Vertical scaling is still useful for databases and stateful components."
+        "takeaway": "Design every service to be stateless from the start: compute should be ephemeral, disposable, and horizontally elastically scalable."
       }
     }
   ],
-  "relatedLessons": ["dotnet-caching-strategies", "dotnet-distributed-systems-fundamentals"],
-  "relatedGlossaryTerms": ["horizontal-scaling", "vertical-scaling", "load-balancing"]
+  "relatedLessons": ["dotnet-profiling-benchmarking", "dotnet-memory-management", "dotnet-caching-strategies"],
+  "relatedGlossaryTerms": ["horizontal-scaling", "vertical-scaling", "load-balancing", "keda", "redis"]
 }

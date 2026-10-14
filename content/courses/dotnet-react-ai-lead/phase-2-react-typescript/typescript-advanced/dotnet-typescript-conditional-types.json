@@ -2,41 +2,129 @@
   "id": "dotnet-lesson-2-7",
   "slug": "dotnet-typescript-conditional-types",
   "moduleSlug": "dotnet-typescript-advanced",
-  "title": "Conditional Types & Type Inference",
-  "description": "Master conditional types, infer keyword, template literal types, and advanced type-level programming.",
+  "title": "Conditional Types, infer & Template Literal Types",
+  "description": "Master advanced type-level programming: conditional types with T extends U ? X : Y, the infer keyword for type extraction, distributive conditionals, and template literal types for string-based type manipulation.",
   "order": 3,
   "difficulty": "advanced",
-  "estimatedMinutes": 50,
-  "tags": ["typescript", "conditional-types", "type-inference"],
+  "estimatedMinutes": 55,
+  "tags": ["typescript", "conditional-types", "infer", "template-literal-types", "type-programming"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Conditional Types"
+        "text": "Type-Level Logic: Conditional Types"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Conditional types select types based on conditions. Use the infer keyword to extract types from other types. Template literal types enable string manipulation at the type level."
+        "text": "TypeScript conditional types (`T extends U ? X : Y`) bring if-then-else logic to the type system. Unlike simple type aliases, conditional types can examine the shape of an input type and branch to different output types. This enables building utility types that automatically adapt their output based on the input type's structure—a critical capability when typing complex AI streaming event systems, MCP tool call payloads, or agent action discriminants."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Conditional Type: Unwrap Async or Sync Values Uniformly",
+        "content": "A universal Awaited-like type that unwraps any level of Promise nesting.",
+        "language": "typescript",
+        "code": "// Basic conditional: if T is a Promise, unwrap it; else keep T\ntype Unwrap<T> = T extends Promise<infer U> ? Unwrap<U> : T;\n\n// Tests:\ntype A = Unwrap<Promise<string>>;            // string\ntype B = Unwrap<Promise<Promise<number>>>;    // number\ntype C = Unwrap<string>;                     // string (already unwrapped)\n\n// More powerful: extract the element type from any iterable\ntype ElementOf<T> =\n  T extends ReadonlyArray<infer E> ? E :\n  T extends Set<infer E> ? E :\n  T extends Map<any, infer E> ? E :\n  never;\n\ntype DocIds = ElementOf<string[]>;       // string\ntype TokenSet = ElementOf<Set<number>>;  // number\ntype MetaVal = ElementOf<Map<string, { score: number }>>; // { score: number }"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The infer Keyword: Extracting Types from Type Patterns"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "`infer` can only appear inside the `extends` clause of a conditional type. It introduces a type variable that TypeScript infers from the matched structure—like pattern matching in functional languages."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Extracting Types from Function and Tuple Structures",
+        "content": "Using infer to extract argument types from event handler signatures without importing them.",
+        "language": "typescript",
+        "code": "// Extract the first argument type of any function\ntype FirstArg<T> = T extends (first: infer A, ...rest: any[]) => any ? A : never;\n\ntype Handler = (event: MouseEvent, context: { userId: string }) => void;\ntype HandlerFirstArg = FirstArg<Handler>; // MouseEvent\n\n// Extract a tuple's head and tail\ntype Head<T extends any[]> = T extends [infer H, ...any[]] ? H : never;\ntype Tail<T extends any[]> = T extends [any, ...infer T] ? T : never;\n\ntype Coords = [number, number, string];\ntype X = Head<Coords>;  // number\ntype Rest = Tail<Coords>; // [number, string]\n\n// Practical: extract the item type from useQuery's return type\nimport type { UseQueryResult } from '@tanstack/react-query';\ntype QueryData<T extends UseQueryResult<any, any>> =\n  T extends UseQueryResult<infer D, any> ? D : never;\n\n// If useConversations() returns UseQueryResult<Conversation[], Error>\n// QueryData<ReturnType<typeof useConversations>> = Conversation[]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Distributive Conditionals over Unions"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When a generic conditional type receives a union type as its parameter, TypeScript automatically distributes the condition over each member of the union. This powers many of the built-in utility types like `Exclude` and `Extract`."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Distributive Conditional for Nullable Stripping",
+        "content": "Creating a NonNullableDeep utility that recursively removes null/undefined from nested types.",
+        "language": "typescript",
+        "code": "// NonNullable<T> is defined as: T extends null | undefined ? never : T\n// The distribution happens automatically over union types\ntype NonNullable<T> = T extends null | undefined ? never : T;\n\n// Distributed over union: each member evaluated independently\ntype Clean = NonNullable<string | null | undefined | number>;\n// = string | number (null and undefined became never, collapsed)\n\n// Turn off distribution with tuple wrapping [T] when you DON'T want distribution\ntype IsString<T> = T extends string ? true : false;\ntype D1 = IsString<string | number>; // boolean (distributed: true | false)\n\ntype IsStringExact<T> = [T] extends [string] ? true : false;\ntype D2 = IsStringExact<string | number>; // false (union as whole, not distributed)"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Template Literal Types: String Pattern Types"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Template literal types construct string types by combining string unions. They are invaluable for typing event names, CSS class patterns, API route paths, and SSE event type identifiers."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Type-Safe SSE Event Namespacing with Template Literals",
+        "content": "Automatically deriving all valid namespaced event type strings from union components.",
+        "language": "typescript",
+        "code": "type AgentPhase = 'retrieval' | 'reasoning' | 'generation';\ntype EventKind = 'start' | 'progress' | 'complete' | 'error';\n\n// Cartesian product of all combinations\ntype AgentEventType = `agent.${AgentPhase}.${EventKind}`;\n// = 'agent.retrieval.start' | 'agent.retrieval.progress' | ... (12 combinations)\n\ninterface AgentEvent {\n  type: AgentEventType;\n  timestamp: number;\n  payload: unknown;\n}\n\n// TypeScript now catches typos at compile time:\nconst evt: AgentEvent = {\n  type: 'agent.retrieval.start', // ✅ valid\n  timestamp: Date.now(),\n  payload: { query: 'AI policy' }\n};\n// type: 'agent.retrievel.start' // ❌ compile error - typo caught\n\n// Capitalize / Uppercase / Lowercase / Uncapitalize for string manipulation\ntype EventKey = 'onSuccess' | 'onError' | 'onPending';\ntype HandlerName = `handle${Capitalize<EventKey>}`;\n// = 'handleOnSuccess' | 'handleOnError' | 'handleOnPending'"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Conditional & Template Literal Types Mastery",
+        "items": [
+          "Use conditional types with infer to extract nested types without importing private SDK types",
+          "Wrap type parameter in tuple [T] to disable distribution when testing entire unions",
+          "Use template literal types to construct exhaustive string union types for events and routes",
+          "Test conditional type edge cases with @ts-expect-error to verify compile-time errors",
+          "Use recursive conditional types to unwrap arbitrarily nested Promises or arrays",
+          "Avoid overly complex conditional type chains that degrade TypeScript compilation performance"
+        ]
       }
     },
     {
       "type": "summary-box",
       "data": {
-        "title": "Key Takeaways",
+        "title": "Summary & Next Steps",
         "points": [
-          "Conditional types select types based on conditions",
-          "infer keyword extracts types from other types",
-          "Template literal types manipulate strings at type level",
-          "Distributive conditional types work with unions",
-          "Type inference enables automatic type deduction"
+          "Conditional types enable if-then-else logic at the type level using T extends U ? X : Y.",
+          "The infer keyword extracts type information from matching structures inside conditional types.",
+          "Distributive conditionals automatically map over union types for type filtering.",
+          "Template literal types generate exhaustive string union types for events, routes, and namespaces."
         ],
-        "takeaway": "Conditional types and type inference enable powerful type-level programming. Use them to build sophisticated type systems that catch errors at compile time."
+        "takeaway": "Conditional types and template literals elevate TypeScript from a type annotator to a full type-level programming language—enabling APIs that are self-validating at compile time."
       }
     }
   ],
-  "relatedLessons": ["dotnet-typescript-generics"],
-  "relatedGlossaryTerms": ["conditional-types", "type-inference", "template-literal-types"]
+  "relatedLessons": ["dotnet-typescript-generics", "dotnet-typescript-utility-types", "dotnet-typescript-type-safety-patterns"],
+  "relatedGlossaryTerms": ["conditional-types", "infer", "template-literal-types", "distributive-conditionals"]
 }

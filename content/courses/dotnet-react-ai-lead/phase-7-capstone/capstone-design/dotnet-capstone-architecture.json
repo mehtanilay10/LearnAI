@@ -2,41 +2,144 @@
   "id": "dotnet-lesson-7-1",
   "slug": "dotnet-capstone-architecture",
   "moduleSlug": "dotnet-capstone-design",
-  "title": "Capstone Architecture",
-  "description": "Design the enterprise AI knowledge assistant system architecture.",
+  "title": "Enterprise AI Knowledge Assistant: System Architecture",
+  "description": "Architect an enterprise-grade AI knowledge platform combining .NET 9 Clean Architecture, .NET Aspire orchestration, React 19 frontend, semantic hybrid search, resilient agent pipelines, and event-driven document ingestion.",
   "order": 1,
   "difficulty": "advanced",
   "estimatedMinutes": 50,
-  "tags": ["architecture", "capstone", "design"],
+  "tags": ["architecture", "capstone", "system-design", "clean-architecture", "dotnet-aspire", "microservices"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "System Architecture"
+        "text": "Enterprise AI Architecture Blueprint"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Design the complete system architecture for the enterprise AI knowledge assistant, including backend, frontend, data layer, AI services, and infrastructure."
+        "text": "The Capstone project represents the culmination of this curriculum: building an enterprise-grade, secure, multi-tenant AI Knowledge Assistant and Workflow Agent named 'EnterpriseNexus'. Unlike toy chatbot applications, an enterprise AI assistant must deliver sub-second token streaming, resilient failover across multiple LLM providers, granular document-level access control (ACLs), durable multi-step agent execution, and comprehensive OpenTelemetry tracing across all AI interactions."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "capstone-system-topology",
+        "caption": "EnterpriseNexus System Architecture & Component Interaction Flow",
+        "code": "flowchart TB\n    subgraph ClientLayer[\"Client Layer\"]\n        ReactUI[\"React 19 + TypeScript SPA\\n(Streaming Chat, Citations, Tool Approvals)\"]\n    end\n\n    subgraph GatewayLayer[\"Gateway & Host (.NET Aspire Orchestration)\"]\n        YarpGateway[\"YARP Reverse Proxy / API Gateway\"]\n        AspireHost[\".NET Aspire AppHost\\n(Service Discovery & Observability)\"]\n    end\n\n    subgraph BackendCore[\"Core Backend (.NET 9 Clean Architecture)\"]\n        ApiApp[\"EnterpriseNexus.WebApi\\n(Minimal APIs, Auth, SSE Streaming)\"]\n        AgentOrchestrator[\"Agent & Workflow Engine\\n(Semantic Kernel / Microsoft.Extensions.AI)\"]\n        IngestionWorker[\"Document Ingestion Worker\\n(BackgroundService, Chunking, OCR)\"]\n    end\n\n    subgraph DataAndAI[\"Data & AI Infrastructure\"]\n        AzureAI[\"Azure OpenAI / Ollama Gateway\"]\n        AISearch[\"Azure AI Search / Qdrant\\n(Hybrid BM25 + HNSW + RRF)\"]\n        CosmosDB[\"Azure Cosmos DB / PostgreSQL\\n(Tenant Data, Conversation Sessions)\"]\n        RedisCache[\"Redis Cache\\n(Semantic Cache, Distributed Locks)\"]\n    end\n\n    ReactUI -->|HTTPS / SSE| YarpGateway\n    YarpGateway --> ApiApp\n    ApiApp --> AgentOrchestrator\n    ApiApp --> RedisCache\n    AgentOrchestrator --> AzureAI\n    AgentOrchestrator --> AISearch\n    AgentOrchestrator --> CosmosDB\n    IngestionWorker --> AISearch\n    IngestionWorker --> CosmosDB\n    AspireHost -.->|OpenTelemetry Spans| ApiApp\n    AspireHost -.->|Health Checks| IngestionWorker"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Clean Architecture Layer Partitioning"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "To guarantee maintainability, testability, and technology independence, the solution strictly enforces Clean Architecture boundaries. Core business rules (domain entities, value objects, evaluation thresholds) have zero external dependencies. External abstractions like LLM providers, vector databases, and message brokers are isolated behind domain interfaces."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "EnterpriseNexus Layer Responsibilities & Dependencies",
+        "headers": ["Architectural Layer", "Project Name", "Responsibilities", "Allowed Dependencies"],
+        "rows": [
+          [
+            "Domain",
+            "EnterpriseNexus.Domain",
+            "Core Entities (ConversationSession, Message, Citation, DocumentChunk), Domain Events, Enums, Value Objects",
+            "None (Pure .NET standard library)"
+          ],
+          [
+            "Application",
+            "EnterpriseNexus.Application",
+            "CQRS Commands/Queries (MediatR), Pipeline Behaviors (Validation, Logging, Metering), IChatClient Abstractions",
+            "EnterpriseNexus.Domain"
+          ],
+          [
+            "Infrastructure",
+            "EnterpriseNexus.Infrastructure",
+            "Azure OpenAI clients, Azure AI Search vector store, EF Core DbContext, Redis semantic cache, Blob storage",
+            "Application, Domain, external SDKs (Azure, Semantic Kernel)"
+          ],
+          [
+            "Web / Presentation",
+            "EnterpriseNexus.WebApi",
+            "Minimal API route definitions, Server-Sent Events (SSE) endpoints, Entra ID JWT verification, Rate limiting",
+            "Application, Infrastructure (for DI composition root only)"
+          ],
+          [
+            "AppHost",
+            "EnterpriseNexus.AppHost",
+            ".NET Aspire orchestration, container definitions, local dev environment wiring, telemetry dashboard",
+            "References all deployable project hosts"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": ".NET Aspire Service Orchestration"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": ".NET Aspire serves as the local development and cloud orchestration backbone. It seamlessly provisions databases, caches, and AI mocks, while injecting connection strings and OpenTelemetry collectors automatically into all services."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "EnterpriseNexus.AppHost Program.cs",
+        "content": "This Aspire definition configures Redis, PostgreSQL with pgvector, Azure OpenAI endpoints, the backend API, the ingestion worker, and the React frontend.",
+        "language": "csharp",
+        "code": "var builder = DistributedApplication.CreateBuilder(args);\n\n// Infrastructure Dependencies\nvar redis = builder.AddRedis(\"cache\");\n\nvar postgres = builder.AddPostgres(\"postgres\")\n    .WithPgAdmin()\n    .AddDatabase(\"enterprise-nexus-db\");\n\n// Backend API Service\nvar backendApi = builder.AddProject<Projects.EnterpriseNexus_WebApi>(\"backend-api\")\n    .WithReference(redis)\n    .WithReference(postgres)\n    .WithEnvironment(\"AI__Provider\", \"AzureOpenAI\")\n    .WithEnvironment(\"AI__ModelDeployment\", \"gpt-4o\");\n\n// Document Ingestion Background Worker\nbuilder.AddProject<Projects.EnterpriseNexus_IngestionWorker>(\"ingestion-worker\")\n    .WithReference(postgres)\n    .WithReference(redis)\n    .WaitFor(postgres);\n\n// React 19 Frontend SPA\nbuilder.AddNpmApp(\"frontend\", \"../EnterpriseNexus.Frontend\", \"dev\")\n    .WithReference(backendApi)\n    .WithHttpEndpoint(port: 3000, targetPort: 5173, env: \"PORT\")\n    .PublishAsDockerFile();\n\nbuilder.Build().Run();"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "type": "note",
+        "title": "Architectural Decision: Modular Monolith vs Distributed Microservices",
+        "content": "For this enterprise AI assistant, a modular monolith with in-process message dispatch (using MediatR and System.Threading.Channels) is chosen for the primary query path, paired with an asynchronous background worker for document ingestion. This avoids distributed transaction complexities and network hop latency during token-critical LLM streaming while keeping clear component boundaries for future extraction."
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "System Architecture Readiness Checklist",
+        "items": [
+          "Zero circular dependencies between Clean Architecture layers verified via ArchUnitNET or Roslyn analyzers",
+          "Streaming endpoints configured with HTTP/2 and Server-Sent Events (SSE) to prevent response buffering",
+          "Distributed tracing enabled across frontend, backend API, and AI provider calls using W3C TraceContext",
+          "Multi-tenant data isolation enforced at the database and vector index level with partition keys",
+          "Circuit breakers and bulkhead isolation configured for all external LLM provider calls",
+          "Graceful shutdown handlers configured on background workers to avoid terminating in-flight document embeddings"
+        ]
       }
     },
     {
       "type": "summary-box",
       "data": {
-        "title": "Key Takeaways",
+        "title": "Summary & Next Steps",
         "points": [
-          "Design microservices or modular monolith",
-          "Define API boundaries and contracts",
-          "Plan data flow and integration points",
-          "Design for scalability and reliability",
-          "Document architecture decisions"
+          "EnterpriseNexus integrates .NET 9 Clean Architecture, .NET Aspire, and React 19.",
+          "Clear layer separation isolates LLM and vector database dependencies behind domain abstractions.",
+          ".NET Aspire standardizes local orchestrations, telemetry, and container lifecycle.",
+          "Next, we define the relational and vector data schemas to support multi-tenant conversations and embeddings."
         ],
-        "takeaway": "A well-designed architecture is the foundation of a successful project. Document decisions and plan for scalability from the start."
+        "takeaway": "A resilient architecture treats AI models as unreliable external network dependencies, surrounding them with clean abstractions, circuit breakers, and comprehensive telemetry."
       }
     }
   ],
-  "relatedLessons": ["dotnet-capstone-data-model"],
-  "relatedGlossaryTerms": ["architecture", "microservices", "api-design"]
+  "relatedLessons": ["dotnet-capstone-data-model", "dotnet-capstone-rag-design", "dotnet-capstone-security-design"],
+  "relatedGlossaryTerms": ["clean-architecture", "dotnet-aspire", "microservices", "event-driven"]
 }

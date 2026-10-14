@@ -1,1 +1,108 @@
-{"id":"dotnet-lesson-4-4","slug":"dotnet-hybrid-search","moduleSlug":"dotnet-rag-fundamentals","title":"Hybrid Search","description":"Combine keyword and semantic search for better retrieval.","order":4,"difficulty":"advanced","estimatedMinutes":45,"tags":["hybrid-search","keyword-search","semantic-search"],"blocks":[{"type":"heading","data":{"level":2,"text":"Hybrid Search"}},{"type":"paragraph","data":{"text":"Hybrid search combines keyword and semantic search for better relevance. Use reciprocal rank fusion to merge results."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Hybrid search combines keyword and semantic","Keyword search for exact matches","Semantic search for meaning","RRF merges result rankings","Tune weights for optimal relevance"],"takeaway":"Hybrid search provides the best of both worlds. Combine keyword and semantic search with RRF for optimal retrieval."}}],"relatedLessons":["dotnet-vector-databases"],"relatedGlossaryTerms":["hybrid-search","rrf","keyword-search"]}
+{
+  "id": "dotnet-lesson-4-4",
+  "slug": "dotnet-hybrid-search",
+  "moduleSlug": "dotnet-rag-fundamentals",
+  "title": "Hybrid Search: Combining BM25 and Vector Search",
+  "description": "Combine sparse keyword search (BM25) with dense vector search (HNSW) using score fusion and weighting in .NET.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["hybrid-search", "bm25", "vector-search", "rrf", "elasticsearch", "azure-search"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Hybrid Search Imperative"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "For enterprise search, relying solely on dense vector search or solely on traditional keyword search leads to systematic retrieval failures. Keyword search (like BM25) excels at exact token matches—part numbers, error codes, legal statute numbers, and rare terminology—but fails completely when users employ synonyms or conceptual descriptions. Conversely, dense vector search understands conceptual context but frequently misses exact identifiers because embeddings compress tokens into generalized geometric representations."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Sparse vs Dense Retrieval Strengths"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Scenario", "BM25 (Sparse Keyword)", "HNSW (Dense Vector)", "Hybrid (Merged)"],
+        "rows": [
+          ["Exact Product Code: 'XG-9020-REV3'", "✅ Perfect match on token", "❌ Fails; embedding maps to generic 'electronics'", "✅ Retrieved at top rank via BM25"],
+          ["Conceptual Query: 'How to recover from power failure?'", "❌ Misses docs using 'blackout', 'outage', 'uninterruptible'", "✅ Perfect match on semantic intent", "✅ Retrieved at top rank via vector"],
+          ["Acronyms & Abbreviations: 'PTU limits on AOAI'", "✅ Matches exact 'PTU' token", "⚠️ Variable depending on model training", "✅ Robust across both representations"],
+          ["Typo Resilience", "⚠️ Requires fuzzy/Levenshtein matching", "✅ Strong semantic proximity", "✅ Balanced tolerance without noise"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Score Fusion Strategies: Convex Combination vs RRF"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When combining sparse and dense results, search engines employ one of two strategies:"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Score Fusion Methods",
+        "cards": [
+          {
+            "title": "Linear Convex Combination (Alpha Tuning)",
+            "description": "Calculates CombinedScore = (alpha * NormalizedVectorScore) + ((1 - alpha) * NormalizedBM25Score). Requires score normalization (e.g. MinMax or Sigmoid) because BM25 is unbounded while Cosine is bounded between -1 and 1.",
+            "tags": ["Tunable alpha (0.0 to 1.0)", "Sensitive to score distribution"]
+          },
+          {
+            "title": "Reciprocal Rank Fusion (RRF)",
+            "description": "Operates purely on ranks rather than raw scores: Score = sum(1 / (k + rank)). It does not require score normalization, making it robust against varying score scales across different search engines.",
+            "tags": ["Parameter-free", "Industry standard in Azure AI Search & Elastic"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Executing Hybrid Queries in Azure AI Search with .NET"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Hybrid Query with Semantic Reranking in C#",
+        "content": "Executing simultaneous vector and text search in Azure AI Search using the official Azure SDK:",
+        "code": "using Azure.Search.Documents;\nusing Azure.Search.Documents.Models;\n\npublic class AzureHybridSearchService\n{\n    private readonly SearchClient _searchClient;\n\n    public AzureHybridSearchService(SearchClient searchClient)\n    {\n        _searchClient = searchClient;\n    }\n\n    public async Task<List<SearchResultDoc>> SearchHybridAsync(\n        string searchText,\n        ReadOnlyMemory<float> searchVector,\n        string tenantId,\n        int topCount = 5,\n        CancellationToken ct = default)\n    {\n        var options = new SearchOptions\n        {\n            Filter = $\"TenantId eq '{tenantId}'\",\n            Size = topCount,\n            QueryType = SearchQueryType.Semantic,\n            SemanticSearch = new SemanticSearchOptions\n            {\n                SemanticConfigurationName = \"default-semantic-config\",\n                QueryCaption = new QueryCaption(QueryCaptionType.Extractive)\n            }\n        };\n\n        // Configure dense vector query\n        options.VectorSearch = new VectorSearchOptions();\n        options.VectorSearch.Queries.Add(new VectorizedQuery(searchVector)\n        {\n            KNearestNeighborsCount = 50,\n            Fields = { \"Embedding\" }\n        });\n\n        // Azure AI Search automatically combines BM25 searchText and Embedding vector query using RRF\n        SearchResults<SearchDocument> response = await _searchClient.SearchAsync<SearchDocument>(\n            searchText,\n            options,\n            ct);\n\n        var results = new List<SearchResultDoc>();\n        await foreach (SearchResult<SearchDocument> result in response.GetResultsAsync())\n        {\n            results.Add(new SearchResultDoc\n            {\n                Id = result.Document[\"Id\"].ToString()!,\n                Content = result.Document[\"Content\"].ToString()!,\n                Score = result.Score ?? 0.0,\n                RerankerScore = result.SemanticSearch?.RerankerScore\n            });\n        }\n\n        return results;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Hybrid search solves the precision blindspots of pure vector search and the vocabulary limitations of BM25",
+          "BM25 handles exact entity identifiers, codes, and domain acronyms with zero false positives",
+          "Dense vector search handles conceptual understanding, synonyms, and natural language phrasing",
+          "Reciprocal Rank Fusion (RRF) merges rankings reliably without requiring complex score normalization",
+          "Enterprise search engines like Azure AI Search and Elasticsearch provide native hybrid pipelines out of the box"
+        ],
+        "takeaway": "Never deploy enterprise RAG with single-vector search alone. Combining BM25 keyword matching with dense HNSW vector search delivers the highest retrieval fidelity."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-vector-databases", "dotnet-advanced-retrieval", "dotnet-rag-architecture"],
+  "relatedGlossaryTerms": ["hybrid-search", "semantic-search", "vector-database"]
+}

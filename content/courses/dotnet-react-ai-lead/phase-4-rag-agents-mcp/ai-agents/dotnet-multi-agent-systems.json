@@ -1,1 +1,98 @@
-{"id":"dotnet-lesson-4-8","slug":"dotnet-multi-agent-systems","moduleSlug":"dotnet-ai-agents","title":"Multi-Agent Systems","description":"Build multi-agent systems with collaboration and specialization.","order":4,"difficulty":"advanced","estimatedMinutes":50,"tags":["multi-agent","collaboration","specialization"],"blocks":[{"type":"heading","data":{"level":2,"text":"Multi-Agent Systems"}},{"type":"paragraph","data":{"text":"Multi-agent systems use specialized agents collaborating on tasks. Define roles, communication protocols, and coordination."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Multi-agent systems use specialized roles","Define clear agent responsibilities","Communication protocols for coordination","Orchestration layers manage workflows","Monitor and debug multi-agent interactions"],"takeaway":"Multi-agent systems enable complex task decomposition. Define clear roles and communication protocols for effective collaboration."}}],"relatedLessons":["dotnet-agent-planning"],"relatedGlossaryTerms":["multi-agent","collaboration","orchestration"]}
+{
+  "id": "dotnet-lesson-4-8",
+  "slug": "dotnet-multi-agent-systems",
+  "moduleSlug": "dotnet-ai-agents",
+  "title": "Multi-Agent Collaboration, Swarms & Supervisors",
+  "description": "Architect specialized multi-agent teams using supervisor-worker hierarchies, handoffs, and consensus patterns in .NET.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["multi-agent", "supervisor-pattern", "agent-teams", "handoff", "csharp", "orchestration"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Single Agent vs Multi-Agent: When to Divide and Conquer"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A common anti-pattern is attempting to build a 'god agent'—a single system prompt with 30 distinct tools, 50 rules, and multiple competing objectives. As tool count and prompt size grow, LLMs experience 'tool confusion' (selecting the wrong function), context window dilution, and instruction degradation. Multi-agent systems solve this by decomposing large problem domains into focused, specialized roles: a legal reviewer, a data analyst, an editor, coordinated by a supervisor."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Multi-Agent Architectures"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "multi-agent-supervisor-topology",
+        "caption": "The Supervisor-Worker Orchestration Topology with Specialized Agents",
+        "definition": "graph TD\n    UserMessage[\"User Goal: 'Audit Q3 cloud spending and draft executive briefing'\"] --> Supervisor[\"Supervisor / Triage Agent\"]\n    \n    subgraph SpecializedWorkerAgents [\"Specialized Worker Agents\"]\n        Supervisor -- Delegate Data Ingestion --> FinAnalyst[\"Financial Analyst Agent (SQL / Billing Tools)\"]\n        Supervisor -- Delegate Tech Audit --> TechArch[\"Cloud Architect Agent (Azure Resource Graph)\"]\n        Supervisor -- Delegate Synthesis --> BriefingWriter[\"Executive Copywriter Agent (Markdown / Citations)\"]\n    end\n    \n    FinAnalyst -- Cost Data Findings --> Supervisor\n    TechArch -- Architecture Waste Findings --> Supervisor\n    Supervisor -- Consolidate Context --> BriefingWriter\n    BriefingWriter --> FinalBriefing[\"Final Polished Executive Briefing Delivered\"]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Multi-Agent Collaboration Topologies Compared"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Topology", "Coordination Logic", "Token Cost", "Autonomy Level", "Best Use Case"],
+        "rows": [
+          ["Supervisor / Router", "Central manager assigns sub-tasks to workers and collects results", "Moderate (controlled communication)", "Hierarchical", "Enterprise business workflows, customer service escalation"],
+          ["Sequential Handoff", "Agent A completes work, hands off state directly to Agent B, then to Agent C", "Low to Moderate", "Chained", "Drafting -> Review -> Legal Compliance -> Translation pipelines"],
+          ["Dynamic Group Chat / Swarm", "Agents converse in a shared channel, self-selecting when their specialty is needed", "High (exponential transcript growth)", "Emergent", "Complex brainstorming, creative design, open-ended research"],
+          ["Debate & Consensus", "Two agents argue opposing viewpoints; a judge agent renders verdict", "High", "Adversarial", "Risk analysis, contract scrutiny, fact-checking"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Implementing a Supervisor-Worker Multi-Agent System in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The C# implementation below demonstrates a supervisor agent that analyzes incoming enterprise requests, determines which specialized sub-agent to invoke, executes the worker, and synthesizes the final response."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Supervisor Multi-Agent Coordinator in C#",
+        "content": "Routes requests between specialized agents and aggregates findings:",
+        "code": "public interface ISpecializedAgent\n{\n    string Name { get; }\n    string CapabilitiesDescription { get; }\n    Task<string> ExecuteTaskAsync(string taskDescription, CancellationToken ct = default);\n}\n\npublic class MultiAgentSupervisor\n{\n    private readonly IChatClient _routerClient;\n    private readonly Dictionary<string, ISpecializedAgent> _agents;\n\n    public MultiAgentSupervisor(IChatClient routerClient, IEnumerable<ISpecializedAgent> agents)\n    {\n        _routerClient = routerClient;\n        _agents = agents.ToDictionary(a => a.Name, StringComparer.OrdinalIgnoreCase);\n    }\n\n    public async Task<string> CoordinateAsync(string userGoal, CancellationToken ct = default)\n    {\n        var agentCatalog = string.Join(\"\\n\", _agents.Values.Select(a => $\"- {a.Name}: {a.CapabilitiesDescription}\"));\n\n        var routingPrompt = \n            $\"You are the supervisor of an enterprise agent team.\\n\" +\n            $\"Available Agents:\\n{agentCatalog}\\n\\n\" +\n            $\"User Request: '{userGoal}'\\n\" +\n            $\"Return JSON with: { 'selectedAgent': 'Name', 'subtaskInstructions': 'refined instructions' }\";\n\n        var routingResponse = await _routerClient.CompleteAsync(routingPrompt, cancellationToken: ct);\n        var route = JsonSerializer.Deserialize<AgentRouteDecision>(routingResponse.Message.Text!)!;\n\n        if (!_agents.TryGetValue(route.SelectedAgent, out var workerAgent))\n        {\n            throw new InvalidOperationException($\"Agent '{route.SelectedAgent}' not recognized.\");\n        }\n\n        // Worker executes its specialized domain tools\n        var workerOutput = await workerAgent.ExecuteTaskAsync(route.SubtaskInstructions, ct);\n\n        // Supervisor synthesizes final response\n        var finalPrompt = $\"User Request: {userGoal}\\nWorker '{workerAgent.Name}' Output: {workerOutput}\\n\" +\n                          $\"Synthesize a clear, verified final response for the user.\";\n\n        var finalResponse = await _routerClient.CompleteAsync(finalPrompt, cancellationToken: ct);\n        return finalResponse.Message.Text ?? string.Empty;\n    }\n}\n\npublic record AgentRouteDecision(string SelectedAgent, string SubtaskInstructions);",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Avoid 'god agents': divide complex domains into focused, specialized agent roles",
+          "The Supervisor pattern provides controlled, deterministic governance over worker agents",
+          "Keep agent communication channels bounded to prevent exponential token inflation",
+          "Ensure each worker agent possesses only the specific tools required for its narrow responsibility",
+          "Use handoffs for pipeline workflows and supervisor routing for multi-domain triage"
+        ],
+        "takeaway": "Multi-agent systems provide modularity, higher reasoning accuracy, and reduced tool hallucination by distributing complex enterprise workflows among focused specialist agents."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-agent-fundamentals", "dotnet-agent-planning", "dotnet-agent-orchestration"],
+  "relatedGlossaryTerms": ["agent", "orchestration", "workflow"]
+}

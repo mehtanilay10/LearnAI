@@ -1,1 +1,95 @@
-{"id":"dotnet-lesson-3-15","slug":"dotnet-planners-connectors","moduleSlug":"dotnet-ai-sdk-semantickernel","title":"Planners & Connectors","description":"Use planners for automatic orchestration and connectors for external integrations.","order":3,"difficulty":"advanced","estimatedMinutes":45,"tags":["planners","connectors","orchestration","automation"],"blocks":[{"type":"heading","data":{"level":2,"text":"Planners and Connectors"}},{"type":"paragraph","data":{"text":"Planners automatically orchestrate skills to achieve goals. Connectors integrate with external services and data sources."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Planners automatically orchestrate skills","Handle planner loops and limits","Connectors integrate external services","Use for multi-step workflows","Monitor planner execution"],"takeaway":"Planners enable automatic orchestration of AI workflows. Use them for complex multi-step tasks that require reasoning."}}],"relatedLessons":["dotnet-skills-plugins"],"relatedGlossaryTerms":["planners","connectors","orchestration"]}
+{
+  "id": "dotnet-lesson-3-15",
+  "slug": "dotnet-planners-connectors",
+  "moduleSlug": "dotnet-ai-sdk-semantickernel",
+  "title": "Semantic Kernel Planners & AI Connectors",
+  "description": "Master automated multi-step planning with Stepwise and Handlebars planners and configure multi-provider AI connectors in .NET.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["semantic-kernel", "planners", "connectors", "stepwise-planner", "multi-provider"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Automated Orchestration with Planners"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In complex enterprise applications, a user's goal might require orchestrating multiple tools across different plugins—for example: 'Find the top 3 customers with outstanding invoices over $5,000, calculate their late penalties, and generate draft reminder emails.' Manually coding every permutation of tool calls is impossible. Semantic Kernel Planners solve this by taking a user goal and a registry of available plugins, and using the LLM to dynamically generate and execute an orchestration plan."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Comparing Semantic Kernel Planners"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Planner", "Mechanism", "Pros", "Cons", "Optimal Use Case"],
+        "rows": [
+          ["Function Calling Stepwise Planner", "Iterative ReAct loop leveraging native OpenAI/Azure function calling", "Highly reliable, self-correcting on tool errors, handles dynamic branching", "Higher token overhead per step", "Enterprise default for multi-step data lookups and tool actions"],
+          ["Handlebars Planner", "Generates an entire Handlebars template representing the full execution plan upfront", "Fast (single planning call), supports loops and conditionals natively", "Less adaptive if an early step returns unexpected data", "Structured multi-stage workflows with known intermediate shapes"],
+          ["Action Planner (Legacy)", "Single-step tool selector", "Very fast and inexpensive", "Cannot chain multiple sequential operations", "Simple intent-to-single-tool routing"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Implementing FunctionCallingStepwisePlanner in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The Function Calling Stepwise Planner uses modern model tool-calling capabilities to plan, execute, observe, and adjust execution steps."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Configuring and Running a Stepwise Planner in C#",
+        "content": "Executes a multi-plugin workflow to answer complex business inquiries:",
+        "code": "using Microsoft.SemanticKernel;\nusing Microsoft.SemanticKernel.Planning;\n\n// 1. Build kernel with required plugins\nvar kernel = Kernel.CreateBuilder()\n    .AddAzureOpenAIChatCompletion(\"gpt-4o\", endpoint, credential)\n    .Build();\n\nkernel.Plugins.AddFromType<DatabaseQueryPlugin>(\"Database\");\nkernel.Plugins.AddFromType<CurrencyConverterPlugin>(\"Currency\");\nkernel.Plugins.AddFromType<EmailDraftingPlugin>(\"Email\");\n\n// 2. Configure Stepwise Planner with safety guardrails\nvar plannerOptions = new FunctionCallingStepwisePlannerOptions\n{\n    MaxTokens = 4000,\n    MaxIterations = 10,\n    ExecutionTimeLimit = TimeSpan.FromSeconds(60)\n};\n\nvar planner = new FunctionCallingStepwisePlanner(plannerOptions);\n\n// 3. Execute plan for complex goal\nvar goal = \"Find customer #502's outstanding EUR invoice, convert the total to USD, and draft a payment receipt notice.\";\nvar result = await planner.ExecuteAsync(kernel, goal);\n\nConsole.WriteLine($\"Final Result: {result.FinalAnswer}\");\nConsole.WriteLine($\"Iterations executed: {result.Iterations}\");",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Multi-Provider AI Connectors"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Semantic Kernel abstracts provider endpoints via Connectors. You can configure multiple connectors simultaneously—for example, Azure OpenAI for production chat, a local Ollama connector for offline development, and Mistral or Anthropic as secondary failover providers."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Planners dynamically orchestrate multi-plugin steps from high-level natural language goals",
+          "FunctionCallingStepwisePlanner is the enterprise recommendation for reliable, self-correcting plans",
+          "Always set MaxIterations and ExecutionTimeLimit to safeguard against infinite planning loops",
+          "Inspect the planner's intermediate execution transcript for auditing and debugging",
+          "AI connectors abstract model providers, allowing seamless switching between Azure OpenAI, Anthropic, and local models"
+        ],
+        "takeaway": "Semantic Kernel Planners bring true autonomy to .NET applications. By combining multiple plugins with a Stepwise Planner, you transform isolated C# methods into an adaptive, self-orchestrating system."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-skills-plugins", "dotnet-semantic-kernel-basics", "dotnet-agent-planning"],
+  "relatedGlossaryTerms": ["semantic-kernel", "orchestration", "plugin"]
+}

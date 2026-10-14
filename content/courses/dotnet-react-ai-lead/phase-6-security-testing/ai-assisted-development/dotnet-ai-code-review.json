@@ -1,1 +1,84 @@
-{"id":"dotnet-lesson-6-10","slug":"dotnet-ai-code-review","moduleSlug":"dotnet-ai-assisted-dev","title":"AI Code Review","description":"Use AI for automated code review and refactoring suggestions.","order":2,"difficulty":"advanced","estimatedMinutes":45,"tags":["ai-review","code-review","refactoring"],"blocks":[{"type":"heading","data":{"level":2,"text":"AI Code Review"}},{"type":"paragraph","data":{"text":"AI can assist with code review. Use it for detecting bugs, suggesting improvements, and identifying security issues."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["AI assists with code review","Detect bugs and anti-patterns","Suggest refactoring opportunities","Identify security issues","Complement human review, don't replace"],"takeaway":"AI code review augments human review. Use it to catch issues humans might miss, but always have human oversight."}}],"relatedLessons":["dotnet-github-copilot"],"relatedGlossaryTerms":["ai-review","code-review"]}
+{
+  "id": "dotnet-lesson-6-10",
+  "slug": "dotnet-ai-code-review",
+  "moduleSlug": "dotnet-ai-assisted-dev",
+  "title": "Automated AI Code Review in CI/CD",
+  "description": "Deploy automated AI code review bots in GitHub Actions to detect security vulnerabilities, anti-patterns, and EF Core N+1 queries in C# pull requests.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["code-review", "pull-requests", "github-actions", "static-analysis", "security-audit", "csharp"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Automating Code Quality in GitHub Pull Requests"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Human code review is critical for architectural alignment and mentoring, but human reviewers frequently miss subtle concurrency deadlocks, unhandled CancellationToken propagation, or Entity Framework Core N+1 query traps. Deploying an automated AI code review bot directly in your GitHub Actions PR workflow provides instant, objective static analysis on every pull request before human engineers begin their review."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "High-Value Code Smells for AI Review in .NET"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Anti-Pattern / Bug", "C# Mechanism", "Risk Severity", "AI Review Flag Example"],
+        "rows": [
+          ["Sync-over-Async Blocking", ".Result or .Wait() called on async Tasks", "Critical", "Blocking on Task.Result can cause thread pool exhaustion and deadlocks."],
+          ["EF Core N+1 Query", "Lazy loading navigation properties inside a foreach loop", "High", "Querying related entities inside loop causes N database roundtrips. Use .Include()."],
+          ["Missing CancellationToken", "Async method accepts ct but fails to pass it downstream", "Medium", "Downstream HTTP client or database query will not abort if client disconnects."],
+          ["Unsanitized Dynamic SQL", "String interpolation in FromSqlRaw() or Dapper", "Critical", "Potential SQL injection vulnerability. Use parameterized arguments."],
+          ["Memory Leak in Event Handlers", "Subscribing to long-lived static events without unsubscribe", "Medium", "Publisher holds reference preventing garbage collection."]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "GitHub Actions Workflow for Automated AI Review"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The GitHub Actions workflow below fetches the git diff of the PR, prompts Azure OpenAI with .NET enterprise rules, and posts constructive comments directly to the pull request."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "GitHub Actions AI Code Review Workflow (YAML)",
+        "content": "Extracts git diff and posts automated AI review feedback:",
+        "code": "name: AI Pull Request Reviewer\n\non:\n  pull_request:\n    types: [opened, synchronize]\n    paths:\n      - '**.cs'\n\njobs:\n  review:\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v4\n      with:\n        fetch-depth: 0\n\n    - name: Get PR Diff\n      id: diff\n      run: |\n        git diff origin/${{ github.base_ref }}...HEAD -- '*.cs' > pr_diff.txt\n\n    - name: Run .NET AI Code Review Bot\n      env:\n        AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}\n        AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}\n        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n      run: |\n        dotnet run --project tools/AiReviewBot -- --diff pr_diff.txt --pr ${{ github.event.pull_request.number }}",
+        "language": "yaml"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Automate initial PR code reviews to catch common C# bugs before human review",
+          "Train prompts to detect sync-over-async (.Result), EF Core N+1 queries, and unhandled tokens",
+          "Ensure AI review feedback is constructive, specific, and includes proposed code snippets",
+          "Require human approval for all PR merges: treat AI reviews as an automated first pass",
+          "Integrate directly with GitHub Checks API to surface inline line comments"
+        ],
+        "takeaway": "Automated AI code review acts as a continuous quality filter, catching security bugs and performance traps early while freeing senior engineers to focus on architectural design."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-github-copilot", "dotnet-ai-refactoring", "dotnet-secure-coding"],
+  "relatedGlossaryTerms": ["copilot", "security", "evaluation"]
+}

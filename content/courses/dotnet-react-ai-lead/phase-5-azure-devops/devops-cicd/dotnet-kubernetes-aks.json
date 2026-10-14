@@ -1,1 +1,77 @@
-{"id":"dotnet-lesson-5-6","slug":"dotnet-kubernetes-aks","moduleSlug":"dotnet-devops-cicd","title":"Kubernetes & AKS","description":"Deploy to Kubernetes with Azure Kubernetes Service.","order":2,"difficulty":"advanced","estimatedMinutes":50,"tags":["kubernetes","aks","orchestration"],"blocks":[{"type":"heading","data":{"level":2,"text":"Kubernetes"}},{"type":"paragraph","data":{"text":"Kubernetes orchestrates containers. Deploy to AKS, configure deployments, services, ingress, and Helm charts."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Kubernetes orchestrates containers","AKS provides managed Kubernetes","Deployments manage pod lifecycle","Services expose applications","Ingress for HTTP routing"],"takeaway":"Kubernetes provides container orchestration. Use AKS for managed Kubernetes and Helm for templating deployments."}}],"relatedLessons":["dotnet-docker-containerization"],"relatedGlossaryTerms":["kubernetes","aks","helm"]}
+{
+  "id": "dotnet-lesson-5-6",
+  "slug": "dotnet-kubernetes-aks",
+  "moduleSlug": "dotnet-devops-cicd",
+  "title": "Kubernetes & Azure Kubernetes Service (AKS)",
+  "description": "Deploy, scale, and secure .NET AI microservices on Azure Kubernetes Service with KEDA autoscaling and Workload Identity.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["kubernetes", "aks", "keda", "autoscaling", "workload-identity", "devops"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Enterprise Container Orchestration on AKS"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When an enterprise AI solution scales to dozens of microservices—API gateways, retrieval workers, vector indexers, and evaluation runners—Azure Kubernetes Service (AKS) provides the industrial-grade orchestration backbone. AKS manages container scheduling, automated self-healing, rolling updates with zero downtime, and dynamic pod autoscaling based on incoming token traffic."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Production Kubernetes Deployment Manifest for ASP.NET Core"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The manifest below defines an enterprise Deployment with liveness/readiness probes, strict CPU/memory resource limits, and Azure Workload Identity integration."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Kubernetes Deployment & Service Manifest (YAML)",
+        "content": "Configures hardened pods with health probes, non-root security context, and resource quotas:",
+        "code": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: learnai-api-deployment\n  namespace: production\n  labels:\n    app: learnai-api\n    azure.workload.identity/use: \"true\"\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: learnai-api\n  template:\n    metadata:\n      labels:\n        app: learnai-api\n    spec:\n      serviceAccountName: learnai-workload-identity-sa\n      containers:\n      - name: api\n        image: acrlearnai.azurecr.io/learnai-api:v1.2.0\n        ports:\n        - containerPort: 8080\n        resources:\n          requests:\n            cpu: \"250m\"\n            memory: \"512Mi\"\n          limits:\n            cpu: \"1000m\"\n            memory: \"1Gi\"\n        livenessProbe:\n          httpGet:\n            path: /healthz/live\n            port: 8080\n          initialDelaySeconds: 10\n          periodSeconds: 15\n        readinessProbe:\n          httpGet:\n            path: /healthz/ready\n            port: 8080\n          initialDelaySeconds: 5\n          periodSeconds: 10\n        securityContext:\n          allowPrivilegeEscalation: false\n          readOnlyRootFilesystem: true\n          runAsNonRoot: true\n--- \napiVersion: v1\nkind: Service\nmetadata:\n  name: learnai-api-service\n  namespace: production\nspec:\n  type: ClusterIP\n  selector:\n    app: learnai-api\n  ports:\n  - port: 80\n    targetPort: 8080",
+        "language": "yaml"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Event-Driven Pod Autoscaling with KEDA"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Standard Kubernetes Horizontal Pod Autoscaler (HPA) scales only on CPU and memory utilization. However, background document ingestion workers can be idle while 10,000 PDF documents sit in an Azure Service Bus queue. KEDA (Kubernetes Event-driven Autoscaling) allows AKS pods to scale directly on external event metrics—such as queue depth or HTTP token requests—scaling from 0 to 50 pods instantly when a burst of documents arrives."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "AKS provides self-healing, rolling deployments, and multi-region cluster management",
+          "Always define explicit resource requests and limits to prevent noisy-neighbor memory eviction",
+          "Configure liveness and readiness probes to ensure traffic only routes to healthy .NET pods",
+          "Use Azure Workload Identity to grant pods direct access to Azure OpenAI without static secrets",
+          "Leverage KEDA to scale ingestion worker pods dynamically based on Service Bus queue length"
+        ],
+        "takeaway": "AKS empowers enterprise .NET teams to deploy, scale, and orchestrate complex AI microservice architectures with zero downtime and fine-grained resource control."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-docker-containerization", "dotnet-infrastructure-as-code", "dotnet-azure-ai-services"],
+  "relatedGlossaryTerms": ["deployment", "auto-scaling", "api"]
+}

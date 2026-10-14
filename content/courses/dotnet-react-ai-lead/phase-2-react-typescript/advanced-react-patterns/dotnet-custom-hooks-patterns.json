@@ -2,36 +2,150 @@
   "id": "dotnet-lesson-2-2",
   "slug": "dotnet-custom-hooks-patterns",
   "moduleSlug": "dotnet-advanced-react",
-  "title": "Custom Hooks Patterns",
-  "description": "Master custom hooks for reusable logic, data fetching, form handling, and common UI patterns.",
+  "title": "Advanced Custom Hooks: Composition, Lifecycle & Event-Driven Patterns",
+  "description": "Design robust, type-safe custom React hooks: state composition, event-driven subscriptions, useSyncExternalStore for non-React stores, debouncing/throttling, and lifecycle resilience.",
   "order": 2,
   "difficulty": "advanced",
-  "estimatedMinutes": 40,
-  "tags": ["react", "hooks", "custom-hooks", "reusability"],
+  "estimatedMinutes": 45,
+  "tags": ["react", "hooks", "custom-hooks", "typescript", "usesyncexternalstore", "testing"],
   "blocks": [
     {
       "type": "heading",
-      "data": {"level": 2, "text": "Custom Hooks Fundamentals"}
+      "data": {
+        "level": 2,
+        "text": "The Headless Logic Architecture"
+      }
     },
     {
       "type": "paragraph",
-      "data": {"text": "Custom hooks extract reusable logic from components. They start with 'use' and can call other hooks. This enables composition and code reuse."}
+      "data": {
+        "text": "Custom hooks are React's primary mechanism for abstracting stateful behavior away from visual presentation. By decoupling business logic, network subscriptions, and state machines into headless hooks, components become purely declarative renderers. When building enterprise AI frontends, custom hooks prevent UI components from drowning in AbortController cleanup logic, SSE buffer parsing, and complex asynchronous state machines."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "custom-hook-composition",
+        "caption": "Composable Custom Hook Architecture in an Enterprise Application",
+        "code": "flowchart TD\n    UI[React View Component: ChatAssistantView] --> HookMain[useStreamingAssistant]\n    HookMain --> Hook1[useDebounce: Input throttling]\n    HookMain --> Hook2[useSyncExternalStore: WebSocket / Network Health]\n    HookMain --> Hook3[useLocalStorage: Client Conversation Cache]\n    HookMain --> Hook4[useReducer: Multi-step Tool State Machine]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Pattern 1: High-Performance Debouncing with Generic Types"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When users type into AI search boxes, sending vector embeddings on every keystroke exhausts API rate limits. A type-safe `useDebounce` hook guarantees that values only propagate after typing pauses."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Generic useDebounce Hook in TypeScript",
+        "content": "Fully type-safe generic hook with automated timer cleanup on unmount.",
+        "language": "typescript",
+        "code": "import { useState, useEffect } from 'react';\n\nexport function useDebounce<T>(value: T, delayMs: number = 300): T {\n  const [debouncedValue, setDebouncedValue] = useState<T>(value);\n\n  useEffect(() => {\n    const timer = setTimeout(() => {\n      setDebouncedValue(value);\n    }, delayMs);\n\n    // Clean up timeout if value changes before delay expires\n    return () => {\n      clearTimeout(timer);\n    };\n  }, [value, delayMs]);\n\n  return debouncedValue;\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Pattern 2: useSyncExternalStore for Tearing-Free External Subscriptions"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Subscribing to browser APIs (like `navigator.onLine` or window resize) inside `useEffect` can lead to 'tearing' in React concurrent mode, where different parts of the screen render inconsistent values during the same frame. `useSyncExternalStore` guarantees synchronous, atomic reads from any external mutable store."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Network Connectivity Hook with useSyncExternalStore",
+        "content": "Subscribing to online/offline network events with zero tearing and SSR safety.",
+        "language": "typescript",
+        "code": "import { useSyncExternalStore } from 'react';\n\nfunction subscribe(callback: () => void) {\n  window.addEventListener('online', callback);\n  window.addEventListener('offline', callback);\n  return () => {\n    window.removeEventListener('online', callback);\n    window.removeEventListener('offline', callback);\n  };\n}\n\nfunction getSnapshot(): boolean {\n  return navigator.onLine;\n}\n\nfunction getServerSnapshot(): boolean {\n  return true; // Default assumption during Server-Side Rendering\n}\n\nexport function useOnlineStatus(): boolean {\n  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Pattern 3: State Machine Hook with useReducer"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "For complex workflows—such as agent tool execution with human approvals—multiple `useState` variables lead to impossible states (e.g., `isLoading = false` while `isPendingApproval = true`). A discriminated union action reducer eliminates invalid state combinations."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Agent Execution State Machine Hook",
+        "content": "Encapsulating tool invocation state, approvals, and error handling in a disciplined reducer.",
+        "language": "typescript",
+        "code": "type AgentStatus = 'idle' | 'executing' | 'awaiting_approval' | 'completed' | 'failed';\n\ninterface AgentState {\n  status: AgentStatus;\n  activeTool: string | null;\n  approvalPayload: any | null;\n  error: string | null;\n}\n\ntype AgentAction =\n  | { type: 'START_TOOL'; toolName: string }\n  | { type: 'REQUIRE_APPROVAL'; toolName: string; payload: any }\n  | { type: 'APPROVE_AND_RESUME' }\n  | { type: 'COMPLETE' }\n  | { type: 'FAIL'; error: string };\n\nfunction agentReducer(state: AgentState, action: AgentAction): AgentState {\n  switch (action.type) {\n    case 'START_TOOL':\n      return { status: 'executing', activeTool: action.toolName, approvalPayload: null, error: null };\n    case 'REQUIRE_APPROVAL':\n      return { status: 'awaiting_approval', activeTool: action.toolName, approvalPayload: action.payload, error: null };\n    case 'APPROVE_AND_RESUME':\n      return { ...state, status: 'executing', approvalPayload: null };\n    case 'COMPLETE':\n      return { status: 'completed', activeTool: null, approvalPayload: null, error: null };\n    case 'FAIL':\n      return { status: 'failed', activeTool: null, approvalPayload: null, error: action.error };\n    default:\n      return state;\n  }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Unit Testing Custom Hooks with renderHook"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Because custom hooks cannot be invoked outside of React component rendering, use `@testing-library/react`'s `renderHook` utility to assert on hook outputs and state transitions."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Testing useDebounce with Vitest / Jest",
+        "content": "Using fake timers and act() to verify that the debounced value only updates after the delay threshold.",
+        "language": "typescript",
+        "code": "import { renderHook, act } from '@testing-library/react';\nimport { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';\nimport { useDebounce } from './useDebounce';\n\ndescribe('useDebounce Hook', () => {\n  beforeEach(() => { vi.useFakeTimers(); });\n  afterEach(() => { vi.useRealTimers(); });\n\n  it('should return initial value immediately and delay updates', () => {\n    const { result, rerender } = renderHook(({ val, delay }) => useDebounce(val, delay), {\n      initialProps: { val: 'alpha', delay: 300 },\n    });\n\n    expect(result.current).toBe('alpha');\n\n    // Rerender with new value\n    rerender({ val: 'beta', delay: 300 });\n    expect(result.current).toBe('alpha'); // Still old value before timer\n\n    // Fast-forward 300ms\n    act(() => {\n      vi.advanceTimersByTime(300);\n    });\n\n    expect(result.current).toBe('beta');\n  });\n});"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Custom Hook Engineering Standards",
+        "items": [
+          "Always prefix hook function name with 'use' (enforces ESLint react-hooks rules)",
+          "Return object or tuple with consistent naming (prefer objects for >2 return values)",
+          "Never violate the Rules of Hooks: no conditional hooks, no loops, call only at top level",
+          "Use useSyncExternalStore when reading from external browser APIs or non-React state stores",
+          "Clean up all event listeners, intervals, and network abort controllers in effect cleanup functions",
+          "Verify hook behavior with isolated renderHook unit tests covering edge cases"
+        ]
+      }
     },
     {
       "type": "summary-box",
       "data": {
-        "title": "Key Takeaways",
+        "title": "Summary & Next Steps",
         "points": [
-          "Custom hooks extract and reuse stateful logic",
-          "Follow naming convention: useXxx",
-          "Hooks can compose other hooks",
-          "Test hooks with @testing-library/react-hooks",
-          "Common patterns: useFetch, useForm, useDebounce, useLocalStorage"
+          "Custom hooks decouple complex stateful logic from presentation components.",
+          "Generic typing allows hooks like useDebounce to operate safely across arbitrary data types.",
+          "useSyncExternalStore prevents concurrent rendering tearing when reading external state.",
+          "Next, we explore performance optimization techniques: memoization, virtualization, and bundle tuning."
         ],
-        "takeaway": "Custom hooks are the primary way to reuse stateful logic in React. Build a library of well-tested hooks for common patterns in your application."
+        "takeaway": "Great React code is composed of headless, type-safe custom hooks that encapsulate complex lifecycles and leave UI components small, clean, and declarative."
       }
     }
   ],
-  "relatedLessons": ["dotnet-react-internals"],
-  "relatedGlossaryTerms": ["custom-hooks", "react-hooks"]
+  "relatedLessons": ["dotnet-react-internals", "dotnet-react-performance-optimization", "dotnet-advanced-component-patterns"],
+  "relatedGlossaryTerms": ["custom-hooks", "react-hooks", "usesyncexternalstore", "debounce"]
 }

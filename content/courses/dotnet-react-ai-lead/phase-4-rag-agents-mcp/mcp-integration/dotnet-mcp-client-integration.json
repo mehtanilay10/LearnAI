@@ -1,1 +1,72 @@
-{"id":"dotnet-lesson-4-11","slug":"dotnet-mcp-client-integration","moduleSlug":"dotnet-mcp-integration","title":"MCP Client Integration","description":"Integrate MCP clients into AI applications.","order":3,"difficulty":"advanced","estimatedMinutes":45,"tags":["mcp-client","integration","ai-applications"],"blocks":[{"type":"heading","data":{"level":2,"text":"MCP Clients"}},{"type":"paragraph","data":{"text":"MCP clients connect to servers and invoke tools. Handle transport, authentication, and error scenarios."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["MCP clients connect to servers","Handle transport layer","Implement authentication","Invoke tools and resources","Handle errors and retries"],"takeaway":"MCP clients enable AI applications to use extensible tools. Handle transport, authentication, and errors for reliable integration."}}],"relatedLessons":["dotnet-building-mcp-servers"],"relatedGlossaryTerms":["mcp-client","transport","authentication"]}
+{
+  "id": "dotnet-lesson-4-11",
+  "slug": "dotnet-mcp-client-integration",
+  "moduleSlug": "dotnet-mcp-integration",
+  "title": "MCP Client Integration in .NET",
+  "description": "Connect .NET applications to external MCP servers, dynamically discover tools, and integrate them into Microsoft.Extensions.AI and Semantic Kernel.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["mcp-client", "dotnet", "semantic-kernel", "microsoft-extensions-ai", "dynamic-tools"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Consuming MCP Servers from .NET Applications"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "While building MCP servers allows you to expose enterprise tools to external clients, building an MCP Client in .NET allows your own backend AI workflows to dynamically connect to any existing MCP server—such as the official GitHub, PostgreSQL, Brave Search, or filesystem MCP servers. Your .NET application queries the server's tools/list, wraps each discovered tool as an AIFunction in Microsoft.Extensions.AI, and equips your agent with dynamic external capabilities."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "mcp-client-dynamic-bridge",
+        "caption": "Bridging MCP Server Tools into Microsoft.Extensions.AI IChatClient",
+        "definition": "graph LR\n    MCPServer[\"External MCP Server (PostgreSQL / GitHub)\"] -->|\"JSON-RPC: tools/list\"| MCPClient[\"DotNet MCP Client (stdio / SSE)\"]\n    MCPClient -->|\"Convert Schemas\"| AIFunctionBridge[\"AIFunction Adapter\"]\n    AIFunctionBridge -->|\"Register in ChatOptions.Tools\"| ChatClient[\"Microsoft.Extensions.AI IChatClient\"]\n    ChatClient -->|\"Model requests tool call\"| InvocationDispatcher[\"Tool Call Invocation\"]\n    InvocationDispatcher -->|\"JSON-RPC: tools/call\"| MCPServer"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Launching and Managing Stdio MCP Servers in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "To connect to a local stdio MCP server (such as an npm package or compiled binary), the .NET client starts a Process with redirected standard input and output streams."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "C# Client Connecting to Stdio MCP Server and Converting Tools",
+        "content": "Launches an MCP server child process, queries tools, and adapts them into AIFunction instances:",
+        "code": "using System.Diagnostics;\nusing System.Text.Json.Nodes;\nusing Microsoft.Extensions.AI;\n\npublic class DotNetMcpClient : IAsyncDisposable\n{\n    private readonly Process _process;\n    private readonly StreamWriter _stdin;\n    private readonly StreamReader _stdout;\n    private int _requestId = 0;\n\n    public DotNetMcpClient(string command, string arguments)\n    {\n        var psi = new ProcessStartInfo\n        {\n            FileName = command,\n            Arguments = arguments,\n            RedirectStandardInput = true,\n            RedirectStandardOutput = true,\n            UseShellExecute = false,\n            CreateNoWindow = true\n        };\n\n        _process = Process.Start(psi) ?? throw new InvalidOperationException(\"Failed to launch MCP server.\");\n        _stdin = _process.StandardInput;\n        _stdout = _process.StandardOutput;\n    }\n\n    public async Task InitializeAsync(CancellationToken ct = default)\n    {\n        var initRequest = new JsonObject\n        {\n            [\"jsonrpc\"] = \"2.0\",\n            [\"id\"] = Interlocked.Increment(ref _requestId),\n            [\"method\"] = \"initialize\",\n            [\"params\"] = new JsonObject\n            {\n                [\"protocolVersion\"] = \"2024-11-05\",\n                [\"clientInfo\"] = new JsonObject { [\"name\"] = \"LearnAiHost\", [\"version\"] = \"1.0\" }\n            }\n        };\n\n        await _stdin.WriteLineAsync(initRequest.ToJsonString());\n        await _stdout.ReadLineAsync(ct);\n    }\n\n    public async Task<List<AIFunction>> DiscoverToolsAsync(CancellationToken ct = default)\n    {\n        var listRequest = new JsonObject\n        {\n            [\"jsonrpc\"] = \"2.0\",\n            [\"id\"] = Interlocked.Increment(ref _requestId),\n            [\"method\"] = \"tools/list\"\n        };\n\n        await _stdin.WriteLineAsync(listRequest.ToJsonString());\n        var responseLine = await _stdout.ReadLineAsync(ct);\n        var node = JsonNode.Parse(responseLine!);\n        var toolsArray = node?[\"result\"]?[\"tools\"]?.AsArray() ?? new JsonArray();\n\n        var aiFunctions = new List<AIFunction>();\n        foreach (var tool in toolsArray)\n        {\n            var toolName = tool![\"name\"]!.GetValue<string>();\n            var desc = tool[\"description\"]?.GetValue<string>() ?? string.Empty;\n\n            // Wrap MCP tool as a callable AIFunction delegate\n            aiFunctions.Add(AIFunctionFactory.Create(\n                async (string inputJson) => await CallMcpToolAsync(toolName, inputJson, ct),\n                name: toolName,\n                description: desc));\n        }\n\n        return aiFunctions;\n    }\n\n    private async Task<string> CallMcpToolAsync(string name, string argsJson, CancellationToken ct)\n    {\n        var callRequest = new JsonObject\n        {\n            [\"jsonrpc\"] = \"2.0\",\n            [\"id\"] = Interlocked.Increment(ref _requestId),\n            [\"method\"] = \"tools/call\",\n            [\"params\"] = new JsonObject\n            {\n                [\"name\"] = name,\n                [\"arguments\"] = JsonNode.Parse(argsJson)\n            }\n        };\n\n        await _stdin.WriteLineAsync(callRequest.ToJsonString());\n        var responseLine = await _stdout.ReadLineAsync(ct);\n        var resultNode = JsonNode.Parse(responseLine!);\n        return resultNode?[\"result\"]?[\"content\"]?[0]?[\"text\"]?.GetValue<string>() ?? \"{}\";\n    }\n\n    public async ValueTask DisposeAsync()\n    {\n        _process.Kill();\n        await _process.WaitForExitAsync();\n        _process.Dispose();\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "MCP clients allow .NET systems to consume any standard MCP server dynamically",
+          "Manage stdio servers as supervised child processes with redirected I/O streams",
+          "Convert discovered tools dynamically into AIFunction instances for Microsoft.Extensions.AI",
+          "Decouple AI agent logic from third-party APIs by delegating tool execution to modular MCP servers",
+          "Always handle process cancellation and disposal to prevent orphan zombie processes"
+        ],
+        "takeaway": "By implementing an MCP client, your .NET AI workflows gain instant access to an entire open ecosystem of pre-built tools for GitHub, databases, search, and cloud infrastructure."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-mcp-fundamentals", "dotnet-building-mcp-servers", "dotnet-mcp-tools-resources"],
+  "relatedGlossaryTerms": ["mcp", "tool-calling", "agent"]
+}

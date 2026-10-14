@@ -2,36 +2,152 @@
   "id": "dotnet-lesson-2-1",
   "slug": "dotnet-react-internals",
   "moduleSlug": "dotnet-advanced-react",
-  "title": "React Internals & Fiber Architecture",
-  "description": "Understand React's virtual DOM, reconciliation algorithm, Fiber architecture, and how React updates the DOM efficiently.",
+  "title": "React Internals & Fiber Architecture: Render & Commit Phases",
+  "description": "Master React under the hood: the Fiber data structure, work loop, concurrent rendering, lane-based priority scheduling, and understanding how React updates the DOM without blocking the main thread.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["react", "fiber", "virtual-dom", "reconciliation"],
+  "estimatedMinutes": 50,
+  "tags": ["react", "fiber", "virtual-dom", "reconciliation", "concurrency", "typescript"],
   "blocks": [
     {
       "type": "heading",
-      "data": {"level": 2, "text": "Virtual DOM and Reconciliation"}
+      "data": {
+        "level": 2,
+        "text": "The Fiber Reconciler & Concurrent Work Loop"
+      }
     },
     {
       "type": "paragraph",
-      "data": {"text": "React uses a virtual DOM to minimize actual DOM manipulations. The reconciliation algorithm determines the minimal set of changes needed to update the UI."}
+      "data": {
+        "text": "In early versions of React (pre-v16), the reconciler operated synchronously via recursion (the 'Stack Reconciler'). If a component tree was deep or a state update was computationally intensive—such as re-rendering thousands of chat history nodes while streaming AI tokens—the browser main thread was locked, dropping frames and causing unresponsive input fields. React 16 completely rewrote the core engine into Fiber: a virtual call stack where work units can be paused, prioritized, aborted, and resumed across browser animation frames."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "react-fiber-phases",
+        "caption": "The Dual-Phase React Lifecycle: Render (Interruptible) vs Commit (Synchronous)",
+        "code": "flowchart TD\n    Update[State Update / Stream Token / User Action] --> Scheduler[Scheduler: Lane Priority Assignment]\n    Scheduler --> RenderPhase[\"Render Phase (Asynchronous & Interruptible)\\n- Constructs WorkInProgress Tree\\n- Evaluates Component Functions & Hooks\\n- Computes Diff & Assigns Effect Flags\"]\n    RenderPhase -->|Higher Priority User Input Arrives| YieldToMain[\"Yield to Browser Main Thread (60fps)\\nWorkInProgress Tree Paused / Aborted\"]\n    YieldToMain --> Scheduler\n    RenderPhase -->|Work Complete| CommitPhase[\"Commit Phase (Synchronous & Non-interruptible)\\n1. Before Mutation (getSnapshotBeforeUpdate)\\n2. Mutation Phase (Actual DOM node mutations)\\n3. Layout Phase (useLayoutEffect runs)\\n4. Browser Paint (Screen updates)\"]\n    CommitPhase --> PassiveEffects[\"Passive Effects Phase\\n- useEffect callbacks executed asynchronously\"]\n    CommitPhase --> SwapTrees[\"Double Buffering: Current Tree Swapped with WorkInProgress\"]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The Fiber Node Data Structure"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Every React element corresponds to an internal Fiber node. Rather than a recursive tree, fibers form a singly-linked list with three primary pointers: `child` (points to the first child), `sibling` (points to the next sibling), and `return` (points to the parent fiber). This structure allows React to traverse and pause work anywhere without maintaining a deep recursive call stack."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Conceptual TypeScript Fiber Representation",
+        "content": "Understanding the internal fields of a Fiber node clarifies how React manages hooks and double buffering.",
+        "language": "typescript",
+        "code": "interface FiberNode {\n  // Tag identifying element type (FunctionComponent, HostComponent, etc.)\n  tag: number;\n  key: null | string;\n  elementType: any;\n  type: any;\n  stateNode: any; // Actual DOM node or component instance\n\n  // Singly-linked list pointers enabling interruptible traversal\n  return: FiberNode | null;  // Parent Fiber\n  child: FiberNode | null;   // First child Fiber\n  sibling: FiberNode | null; // Sibling Fiber\n  index: number;\n\n  // Props and State\n  pendingProps: any;   // Props being passed into current render\n  memoizedProps: any;  // Props from the last committed render\n  memoizedState: any;  // Head of the Hook linked list (useState, useEffect)\n\n  // Priority and Effects\n  lanes: number;        // Priority bitmask for scheduling\n  flags: number;        // Effect flags (Placement, Update, Deletion)\n\n  // Double Buffering link\n  alternate: FiberNode | null; // Pointer to corresponding node in current/workInProgress tree\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Double Buffering & Zero-Jank Swapping"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "React borrows the double-buffering technique from graphics rendering. At any time, there are two fiber trees: `current` (the tree currently rendered on the screen) and `workInProgress` (the tree being assembled in memory during the render phase). If a render is aborted or superseded by higher-priority work, React simply discards the `workInProgress` tree without the user ever seeing half-rendered or inconsistent UI."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Concurrent Features: useTransition & useDeferredValue"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "React 18 and 19 expose Fiber's lane-based priority scheduling directly to developers. By wrapping heavy non-urgent state updates in `useTransition`, you tell React that user typing, button clicks, and micro-animations should interrupt the heavy render."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Prioritizing Input over AI Streaming Render with useTransition",
+        "content": "Keeps the prompt textarea fluid and responsive at 60fps even while parsing and rendering complex Markdown syntax trees.",
+        "language": "tsx",
+        "code": "import React, { useState, useTransition } from 'react';\n\nexport const HighThroughputChatView: React.FC = () => {\n  const [inputValue, setInputValue] = useState('');\n  const [searchFilter, setSearchFilter] = useState('');\n  const [isPending, startTransition] = useTransition();\n\n  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {\n    // 1. High-priority urgent update: updates immediately so typing never lags\n    setInputValue(e.target.value);\n\n    // 2. Low-priority non-urgent transition: React will pause if user keeps typing\n    startTransition(() => {\n      setSearchFilter(e.target.value);\n    });\n  };\n\n  return (\n    <div className=\"space-y-4\">\n      <input\n        type=\"text\"\n        value={inputValue}\n        onChange={handleInputChange}\n        placeholder=\"Filter conversation messages...\"\n        className=\"w-full px-3 py-2 border rounded border-border bg-canvas-default text-fg-default focus:ring-2 focus:ring-accent\"\n      />\n      {isPending && (\n        <p className=\"text-xs text-fg-muted animate-pulse\">Filtering history...</p>\n      )}\n      {/* Heavy list rendering occurs without blocking input */}\n      <HeavyMessageList filter={searchFilter} />\n    </div>\n  );\n};"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "React Lifecycle Phases and Purity Requirements",
+        "headers": ["Phase", "Is Interruptible?", "Can Have Side Effects?", "What Runs Here"],
+        "rows": [
+          [
+            "Render Phase",
+            "Yes (yielding to browser)",
+            "NO (must be pure)",
+            "Component functions, useState initializers, useMemo, pure recalculations"
+          ],
+          [
+            "Commit: Mutation",
+            "No (synchronous)",
+            "Yes (DOM manipulation)",
+            "DOM mutations, element additions/removals, ref detachment"
+          ],
+          [
+            "Commit: Layout",
+            "No (synchronous)",
+            "Yes (layout reads/writes)",
+            "useLayoutEffect callbacks, DOM layout measurement (getBoundingClientRect)"
+          ],
+          [
+            "Passive Effects",
+            "Yes (scheduled post-paint)",
+            "Yes (I/O, subscriptions)",
+            "useEffect callbacks, network requests, SSE subscriptions"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "React Fiber & Concurrency Best Practices",
+        "items": [
+          "Keep render phase pure: never perform network requests or mutate globals inside component bodies",
+          "Use useTransition for non-urgent UI updates (filtering lists, searching history, tab switching)",
+          "Use useDeferredValue for lagging expensive child components behind immediate prop changes",
+          "Ensure keys are stable, unique IDs across sibling items so reconciliation can preserve DOM nodes",
+          "Never call hooks conditionally; hooks rely on strict linked-list ordering inside Fiber.memoizedState",
+          "Leverage React 19 Actions for asynchronous state transitions and automatic pending state handling"
+        ]
+      }
     },
     {
       "type": "summary-box",
       "data": {
-        "title": "Key Takeaways",
+        "title": "Summary & Next Steps",
         "points": [
-          "Virtual DOM is an in-memory representation of the actual DOM",
-          "Reconciliation compares virtual DOM trees to find minimal changes",
-          "Fiber architecture enables incremental rendering and prioritization",
-          "React batches updates for performance",
-          "Understanding internals helps with performance optimization"
+          "Fiber replaced the synchronous call stack with an interruptible linked-list work loop.",
+          "Double buffering ensures incomplete UI renders are never committed to the screen.",
+          "useTransition and useDeferredValue unlock concurrent lane scheduling for smooth 60fps UIs.",
+          "Next, we master Custom Hook design patterns for reusable, composable React logic."
         ],
-        "takeaway": "React's virtual DOM and Fiber architecture enable efficient UI updates. Understanding these internals helps debug performance issues and write more optimized React code."
+        "takeaway": "Understanding React Fiber transforms performance optimization from guesswork into engineering: keep renders pure, prioritize urgent input, and defer heavy UI workloads."
       }
     }
   ],
-  "relatedLessons": ["dotnet-react-performance-optimization"],
-  "relatedGlossaryTerms": ["virtual-dom", "reconciliation", "fiber"]
+  "relatedLessons": ["dotnet-custom-hooks-patterns", "dotnet-react-performance-optimization", "dotnet-advanced-component-patterns"],
+  "relatedGlossaryTerms": ["fiber", "virtual-dom", "reconciliation", "concurrency", "double-buffering"]
 }

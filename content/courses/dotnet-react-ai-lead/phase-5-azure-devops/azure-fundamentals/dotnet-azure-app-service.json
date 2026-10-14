@@ -2,24 +2,59 @@
   "id": "dotnet-lesson-5-1",
   "slug": "dotnet-azure-app-service",
   "moduleSlug": "dotnet-azure-fundamentals",
-  "title": "Azure App Service",
-  "description": "Deploy and scale .NET applications on Azure App Service.",
+  "title": "Azure App Service: Enterprise Hosting & Scaling",
+  "description": "Deploy, configure, and scale ASP.NET Core applications on Linux App Service with zero-downtime deployment slots, Managed Identity, and VNet integration.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["azure", "app-service", "deployment"],
+  "estimatedMinutes": 55,
+  "tags": ["azure", "app-service", "deployment-slots", "autoscaling", "vnet-integration", "managed-identity"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Azure App Service"
+        "text": "Production ASP.NET Core Hosting on Azure App Service"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Azure App Service provides managed hosting for web apps. Deploy from GitHub, configure scaling slots, and use deployment slots for safe releases."
+        "text": "Azure App Service is Microsoft's fully managed Platform-as-a-Service (PaaS) for hosting enterprise web applications and REST APIs. In modern cloud architectures, deploying ASP.NET Core on Linux App Service plans offers significant cost and performance advantages over legacy Windows plans, while providing built-in operational capabilities: zero-downtime deployment slots, automated TLS certificate rotation, virtual network (VNet) integration, and metric-based autoscaling."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Zero-Downtime Deployment with Staging Slots"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Deployment slots are live web apps with their own hostnames. When deploying a new release, deploy code to a 'staging' slot first, run health checks and smoke tests against it, and then perform a slot swap. The Azure load balancer seamlessly redirects incoming production traffic to the warm staging instance without dropping active HTTP connections or cold-start penalties."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Azure CLI Deployment Slot Creation and Warm-Up Health Check",
+        "content": "Creates a staging slot, binds app settings, and configures health probes:",
+        "code": "# 1. Create staging deployment slot\naz webapp deployment slot create \\\n  --resource-group rg-learnai-prod \\\n  --name app-learnai-api \\\n  --slot staging\n\n# 2. Configure Health Check path so Azure verifies app readiness before swapping\naz webapp config set \\\n  --resource-group rg-learnai-prod \\\n  --name app-learnai-api \\\n  --slot staging \\\n  --generic-configurations '{\"healthCheckPath\": \"/healthz\"}'\n\n# 3. Swap staging slot into production with zero downtime\naz webapp deployment slot swap \\\n  --resource-group rg-learnai-prod \\\n  --name app-learnai-api \\\n  --slot staging \\\n  --target-slot production",
+        "language": "bash"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "VNet Integration for Secure AI Egress"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Enterprise security policies dictate that backend services (Azure OpenAI, Azure AI Search, Azure Cosmos DB) must disable public internet endpoints. By enabling Regional VNet Integration on your App Service plan, outbound HTTP and gRPC traffic from your .NET app is injected directly into your private virtual network, reaching backend AI services via Private Endpoints without traversing the public internet."
       }
     },
     {
@@ -27,16 +62,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "App Service provides managed hosting",
-          "Use deployment slots for safe releases",
-          "Configure auto-scaling based on metrics",
-          "Integration with GitHub for CI/CD",
-          "Monitor with Application Insights"
+          "Host ASP.NET Core on Linux App Service plans for maximum performance and cost efficiency",
+          "Use deployment slots and warmup health probes (/healthz) to ensure zero-downtime releases",
+          "Enable Regional VNet Integration to access private Azure OpenAI instances without public exposure",
+          "Assign System-Assigned Managed Identity for passwordless authentication to Azure Key Vault and AI Search",
+          "Configure metric-based autoscaling rules on CPU, memory, and HTTP queue depth to handle AI traffic spikes"
         ],
-        "takeaway": "Azure App Service simplifies web app deployment. Use deployment slots for zero-downtime releases and auto-scaling for cost optimization."
+        "takeaway": "Azure App Service provides enterprise resilience out of the box. Pairing deployment slots, VNet integration, and Managed Identity delivers a secure, zero-downtime platform for .NET AI applications."
       }
     }
   ],
-  "relatedLessons": ["dotnet-azure-functions"],
-  "relatedGlossaryTerms": ["azure-app-service", "deployment-slots", "auto-scaling"]
+  "relatedLessons": ["dotnet-azure-functions", "dotnet-azure-ai-services", "dotnet-docker-containerization"],
+  "relatedGlossaryTerms": ["azure-app-service", "api"]
 }

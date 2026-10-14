@@ -1,1 +1,112 @@
-{"id":"dotnet-lesson-5-12","slug":"dotnet-distributed-tracing","moduleSlug":"dotnet-monitoring-observability","title":"Distributed Tracing","description":"Implement distributed tracing with OpenTelemetry.","order":4,"difficulty":"advanced","estimatedMinutes":50,"tags":["tracing","opentelemetry","distributed-systems"],"blocks":[{"type":"heading","data":{"level":2,"text":"Distributed Tracing"}},{"type":"paragraph","data":{"text":"Distributed tracing tracks requests across services. Use OpenTelemetry for instrumentation and Jaeger or Zipkin for visualization."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Tracing tracks requests across services","OpenTelemetry provides instrumentation","Propagate context across services","Visualize call graphs","Identify latency bottlenecks"],"takeaway":"Distributed tracing is essential for microservices. Use OpenTelemetry for vendor-neutral instrumentation."}}],"relatedLessons":["dotnet-application-insights"],"relatedGlossaryTerms":["distributed-tracing","opentelemetry","jaeger"]}
+{
+  "id": "dotnet-lesson-5-12",
+  "slug": "dotnet-distributed-tracing",
+  "moduleSlug": "dotnet-monitoring-observability",
+  "title": "Distributed Tracing with OpenTelemetry & .NET Aspire",
+  "description": "Trace multi-step AI pipelines end-to-end using OpenTelemetry GenAI semantic conventions, W3C trace propagation, and the .NET Aspire dashboard.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["distributed-tracing", "opentelemetry", "dotnet-aspire", "w3c-trace-context", "spans", "genai-semantics"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Challenge of Multi-Hop AI Diagnostics"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In a modern AI system, a single user query can trigger a complex distributed waterfall: an HTTP request from a React client hits an API gateway, which invokes an agent in ASP.NET Core, which dispatches three parallel hybrid search queries to a vector database, executes an external tool call against a microservice, and finally waits on an Azure OpenAI completion. When a response takes 7 seconds, which component caused the delay? Distributed tracing answers this by linking every step into a single causal tree of Spans sharing a unique Trace ID."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "distributed-tracing-waterfall",
+        "caption": "End-to-End Distributed Trace Hierarchy Across Frontend, Backend, Tools, and LLM",
+        "definition": "graph TD\n    RootSpan[\"HTTP POST /api/chat (React Client -> ASP.NET Core) [Duration: 2400ms]\"] --> Child1[\"Span 1: Vector Search Query (HNSW + BM25) [Duration: 180ms]\"]\n    RootSpan --> Child2[\"Span 2: Tool Call: GetCustomerSummary [Duration: 220ms]\"]\n    RootSpan --> Child3[\"Span 3: Azure OpenAI Chat Completion [Duration: 1950ms]\"]\n    Child3 --> SubChild[\"SubSpan: Time To First Token [Duration: 380ms]\"]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "OpenTelemetry GenAI Semantic Conventions"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The OpenTelemetry project standardizes attribute naming for generative AI operations, ensuring consistent dashboards across different tools (.NET Aspire, Jaeger, Dynatrace, Honeycomb)."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Semantic Attribute", "Type", "Example Value", "Description"],
+        "rows": [
+          ["gen_ai.system", "string", "azure_openai", "The underlying AI provider platform"],
+          ["gen_ai.request.model", "string", "gpt-4o", "The requested model deployment name"],
+          ["gen_ai.response.model", "string", "gpt-4o-2024-08-06", "The actual model version that resolved the request"],
+          ["gen_ai.usage.input_tokens", "int", "542", "Total prompt tokens consumed by this specific span"],
+          ["gen_ai.usage.output_tokens", "int", "128", "Total completion tokens generated"],
+          ["gen_ai.response.finish_reasons", "string[]", "['stop']", "Reason for termination: stop, tool_calls, content_filter, length"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Instrumenting Custom Spans in C# with ActivitySource"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In .NET, OpenTelemetry traces are instrumented using System.Diagnostics.ActivitySource. This is zero-overhead when tracing is disabled, but captures rich contextual spans when an OpenTelemetry exporter is active."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Creating GenAI Spans with System.Diagnostics.Activity in C#",
+        "content": "Instruments an AI workflow conforming to OpenTelemetry GenAI semantic conventions:",
+        "code": "using System.Diagnostics;\n\npublic class TracedAiPipeline\n{\n    private static readonly ActivitySource s_activitySource = new(\"LearnAI.GenAI.Tracer\", \"1.0.0\");\n\n    public async Task<string> ExecuteAgentTaskAsync(string prompt, CancellationToken ct = default)\n    {\n        // 1. Start root activity representing the AI operation\n        using Activity? activity = s_activitySource.StartActivity(\n            name: \"gen_ai.client.chat\",\n            kind: ActivityKind.Client);\n\n        if (activity != null)\n        {\n            activity.SetTag(\"gen_ai.system\", \"azure_openai\");\n            activity.SetTag(\"gen_ai.request.model\", \"gpt-4o\");\n            activity.SetTag(\"gen_ai.request.temperature\", 0.2);\n        }\n\n        try\n        {\n            // Perform model call\n            var response = await CallDownstreamModelAsync(prompt, ct);\n\n            // Enrich span with completion metadata\n            activity?.SetTag(\"gen_ai.usage.input_tokens\", response.InputTokens);\n            activity?.SetTag(\"gen_ai.usage.output_tokens\", response.OutputTokens);\n            activity?.SetTag(\"gen_ai.response.finish_reasons\", new[] { \"stop\" });\n\n            return response.Text;\n        }\n        catch (Exception ex)\n        {\n            // Record exception details in span\n            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);\n            activity?.RecordException(ex);\n            throw;\n        }\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Debugging AI Workflows in .NET Aspire Dashboard"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": ".NET Aspire provides a world-class local telemetry dashboard. When developing AI applications with Aspire, every trace is visualized in real-time as an interactive waterfall. You can click on any individual tool-call span to inspect exact JSON arguments, review token usage per step, and pinpoint whether latency originated in network transmission, database indexing, or model inference."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Distributed tracing correlates disparate microservices and tool executions under a single Trace ID",
+          "Propagate W3C TraceContext headers (traceparent) across HTTP and messaging boundaries",
+          "Follow OpenTelemetry GenAI semantic conventions (gen_ai.system, gen_ai.usage.input_tokens)",
+          "Use System.Diagnostics.ActivitySource in C# to emit zero-overhead telemetry spans",
+          "Leverage the .NET Aspire dashboard for local real-time debugging of AI latency waterfalls"
+        ],
+        "takeaway": "Distributed tracing eliminates guesswork in complex AI architectures. By following OpenTelemetry GenAI conventions and inspecting spans in .NET Aspire, engineers diagnose bottlenecks with surgical precision."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-application-insights", "dotnet-structured-logging", "dotnet-metrics-dashboards"],
+  "relatedGlossaryTerms": ["latency", "token", "observability"]
+}

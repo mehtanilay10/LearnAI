@@ -2,24 +2,64 @@
   "id": "dotnet-lesson-6-1",
   "slug": "dotnet-authentication-authorization",
   "moduleSlug": "dotnet-security-fundamentals",
-  "title": "Authentication & Authorization",
-  "description": "Implement OAuth2, OpenID Connect, and RBAC in .NET applications.",
+  "title": "OAuth 2.0, OpenID Connect & Policy Authorization",
+  "description": "Secure ASP.NET Core and React applications with OAuth 2.0, OpenID Connect, JWT validation, and custom claims-based authorization policies.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["authentication", "authorization", "oauth2", "oidc"],
+  "estimatedMinutes": 55,
+  "tags": ["oauth2", "oidc", "jwt", "authorization", "rbac", "security", "aspnetcore"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Auth"
+        "text": "The Security Architecture of Modern Web & AI Applications"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Authentication verifies identity, authorization grants access. Use OAuth2 for delegated access and OpenID Connect for identity."
+        "text": "Authentication verifies who a user is; Authorization determines what they are allowed to do. In modern distributed architectures, authentication is externalized to an Identity Provider (such as Microsoft Entra ID, Auth0, or Okta) using OpenID Connect (OIDC), while delegated authorization is governed by OAuth 2.0 access tokens. For AI applications, authorization must not only protect API endpoints, but also govern which documents the user can retrieve from vector databases and which tools an agent can execute on their behalf."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Validating JWT Bearer Tokens in ASP.NET Core"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Every incoming HTTP request to an AI endpoint must present a cryptographically verified JSON Web Token (JWT). The ASP.NET Core JWT Bearer authentication handler validates cryptographic signatures using asymmetric public keys fetched from the identity provider's JWKS endpoint."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Configuring JWT Bearer Authentication in Program.cs",
+        "content": "Configures strict signature, audience, and lifetime validation:",
+        "code": "using Microsoft.AspNetCore.Authentication.JwtBearer;\nusing Microsoft.IdentityModel.Tokens;\n\nvar builder = WebApplication.CreateBuilder(args);\n\nbuilder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)\n    .AddJwtBearer(options =>\n    {\n        options.Authority = builder.Configuration[\"Auth:Authority\"]; // e.g. https://login.microsoftonline.com/{tenantId}/v2.0\n        options.Audience = builder.Configuration[\"Auth:Audience\"];   // api://learnai-backend\n\n        options.TokenValidationParameters = new TokenValidationParameters\n        {\n            ValidateIssuer = true,\n            ValidateAudience = true,\n            ValidateLifetime = true,\n            ValidateIssuerSigningKey = true,\n            ClockSkew = TimeSpan.FromMinutes(1) // Minimize token expiration leeway\n        };\n    });\n\n// Policy-based authorization\nbuilder.Services.AddAuthorization(options =>\n{\n    options.AddPolicy(\"AiAgentExecuteAccess\", policy =>\n        policy.RequireAuthenticatedUser()\n              .RequireClaim(\"scope\", \"ai.agent.execute\")\n              .RequireRole(\"AiOperator\", \"EnterpriseAdmin\"));\n});",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Claims-Based vs Role-Based Access Control"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Model", "Mechanism", "Granularity", "AI Application Role"],
+        "rows": [
+          ["RBAC (Role-Based)", "Static roles assigned to user: Admin, User, Viewer", "Coarse-grained", "Restricting access to admin configuration dashboards"],
+          ["Claims-Based Authorization", "Discrete claims: tenant_id, department, security_clearance", "Fine-grained", "Vector database query filtering; ensuring users only retrieve departmental knowledge"],
+          ["Policy-Based Authorization", "C# requirements and handlers evaluating multiple contextual claims", "Dynamic & context-aware", "Verifying whether an agent tool invocation is permitted for the current user"]
+        ]
       }
     },
     {
@@ -27,16 +67,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "OAuth2 for delegated access",
-          "OpenID Connect for identity",
-          "RBAC for authorization",
-          "Use ASP.NET Core Identity",
-          "Implement JWT validation"
+          "Use OpenID Connect (OIDC) for user identity and OAuth 2.0 for API access delegation",
+          "Always validate JWT signatures, issuers, audiences, and lifetimes in ASP.NET Core",
+          "Never rely solely on coarse roles: use fine-grained claims for data filtering",
+          "Extract tenant and department claims to enforce server-side vector query partitioning",
+          "Gate sensitive AI tool execution behind specific OAuth scopes (ai.tools.execute)"
         ],
-        "takeaway": "Authentication and authorization are foundational to security. Use OAuth2/OIDC for modern auth and RBAC for fine-grained access control."
+        "takeaway": "Authentication and authorization provide the perimeter defense for enterprise systems. Validating JWT claims and enforcing policy-based authorization protects both API endpoints and underlying AI tools."
       }
     }
   ],
-  "relatedLessons": ["dotnet-owasp-top-10"],
-  "relatedGlossaryTerms": ["oauth2", "openid-connect", "rbac"]
+  "relatedLessons": ["dotnet-owasp-top-10", "dotnet-secure-coding", "dotnet-ai-security-governance"],
+  "relatedGlossaryTerms": ["authentication", "authorization", "security"]
 }

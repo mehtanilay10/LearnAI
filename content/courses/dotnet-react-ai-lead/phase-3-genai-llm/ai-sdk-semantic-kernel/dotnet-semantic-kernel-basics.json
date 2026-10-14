@@ -2,24 +2,76 @@
   "id": "dotnet-lesson-3-13",
   "slug": "dotnet-semantic-kernel-basics",
   "moduleSlug": "dotnet-ai-sdk-semantickernel",
-  "title": "Semantic Kernel Basics",
-  "description": "Get started with Microsoft Semantic Kernel for building AI-powered applications.",
+  "title": "Semantic Kernel Architecture & Core Abstractions",
+  "description": "Master Microsoft Semantic Kernel v1.x: Kernel builder, DI integration, ChatCompletionService, streaming, and execution filters in .NET.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["semantic-kernel", "microsoft", "ai-sdk"],
+  "estimatedMinutes": 60,
+  "tags": ["semantic-kernel", "kernel-builder", "dependency-injection", "filters", "chat-completion"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Semantic Kernel"
+        "text": "The Semantic Kernel v1.x Architecture"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Semantic Kernel is Microsoft's SDK for building AI applications. It provides kernels, skills, and connectors for orchestrating AI workflows."
+        "text": "Microsoft Semantic Kernel (SK) is an enterprise open-source SDK that integrates Large Language Models (OpenAI, Azure OpenAI, HuggingFace, local models) with conventional C# code. In SK v1.x, the framework underwent a complete architectural modernization: it aligns directly with standard .NET dependency injection (IServiceCollection), leverages standard Microsoft.Extensions.Logging, and introduces a robust filter pipeline for cross-cutting observability and security."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "semantic-kernel-core-architecture",
+        "caption": "The Semantic Kernel Execution Pipeline: Services, Plugins, and Invocation Filters",
+        "definition": "graph TD\n    App[\"ASP.NET Core App / API Controller\"] --> Kernel[\"Kernel (Central Service & Plugin Registry)\"]\n    \n    subgraph KernelPipeline [\"Kernel Execution & Filter Pipeline\"]\n        PromptFilter[\"IPromptRenderFilter (Audit & Mask Input)\"]\n        FuncFilter[\"IFunctionInvocationFilter (Permission & Rate Limit Check)\"]\n        PromptFilter --> FuncFilter\n    end\n    \n    Kernel --> KernelPipeline\n    KernelPipeline --> Connectors[\"AI Connectors: Azure OpenAI / Local Ollama\"]\n    KernelPipeline --> Plugins[\"Kernel Plugins: Native C# & Semantic Prompts\"]\n    Connectors --> Completion[\"LLM Completion Response\"]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Registering Semantic Kernel with ASP.NET Core Dependency Injection"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In ASP.NET Core applications, register the Kernel and desired AI connectors using Microsoft.SemanticKernel extensions in Program.cs."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Configuring Semantic Kernel with DI and Azure OpenAI in C#",
+        "content": "Registers AzureOpenAIChatCompletion and configures the kernel in Program.cs:",
+        "code": "using Microsoft.SemanticKernel;\nusing Azure.Identity;\n\nvar builder = WebApplication.CreateBuilder(args);\n\n// 1. Add Azure OpenAI Chat Completion service to DI\nbuilder.Services.AddAzureOpenAIChatCompletion(\n    deploymentName: builder.Configuration[\"AzureOpenAI:ChatDeployment\"] ?? \"gpt-4o\",\n    endpoint: builder.Configuration[\"AzureOpenAI:Endpoint\"]!,\n    credential: new DefaultAzureCredential());\n\n// 2. Add Kernel to DI with automatic service injection\nbuilder.Services.AddKernel();\n\n// 3. Inject Kernel into consumer services\npublic class CustomerSupportAssistant\n{\n    private readonly Kernel _kernel;\n\n    public CustomerSupportAssistant(Kernel kernel)\n    {\n        _kernel = kernel;\n    }\n\n    public async Task<string> AnswerInquiryAsync(string userQuestion, CancellationToken ct = default)\n    {\n        var prompt = $\"You are a helpful customer support assistant.\\nUser Question: {userQuestion}\";\n        var result = await _kernel.InvokePromptAsync(prompt, cancellationToken: ct);\n        return result.GetValue<string>() ?? string.Empty;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Cross-Cutting Interception with Kernel Filters"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Similar to ASP.NET Core Action Filters, Semantic Kernel provides IFunctionInvocationFilter and IPromptRenderFilter. These filters allow you to intercept prompt rendering, audit tool executions, track latency, and enforce safety guardrails transparently."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Implementing IFunctionInvocationFilter for Tool Telemetry in C#",
+        "content": "Intercepts all native function calls made by the kernel to log execution duration and enforce permissions:",
+        "code": "using Microsoft.SemanticKernel;\n\npublic class LoggingFunctionInvocationFilter : IFunctionInvocationFilter\n{\n    private readonly ILogger<LoggingFunctionInvocationFilter> _logger;\n\n    public LoggingFunctionInvocationFilter(ILogger<LoggingFunctionInvocationFilter> logger)\n    {\n        _logger = logger;\n    }\n\n    public async Task OnFunctionInvocationAsync(\n        FunctionInvocationContext context,\n        Func<FunctionInvocationContext, Task> next)\n    {\n        var pluginName = context.Function.PluginName;\n        var functionName = context.Function.Name;\n\n        _logger.LogInformation(\"Invoking function {Plugin}.{Function}\", pluginName, functionName);\n        var sw = Stopwatch.StartNew();\n\n        try\n        {\n            // Continue execution pipeline\n            await next(context);\n            sw.Stop();\n            _logger.LogInformation(\"Function {Plugin}.{Function} succeeded in {ElapsedMs}ms\",\n                pluginName, functionName, sw.ElapsedMilliseconds);\n        }\n        catch (Exception ex)\n        {\n            _logger.LogError(ex, \"Function {Plugin}.{Function} failed\", pluginName, functionName);\n            throw;\n        }\n    }\n}\n\n// In Program.cs: Register filter in DI\nbuilder.Services.AddSingleton<IFunctionInvocationFilter, LoggingFunctionInvocationFilter>();",
+        "language": "csharp"
       }
     },
     {
@@ -27,16 +79,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "Kernel is the central orchestrator",
-          "Skills contain reusable AI functions",
-          "Connectors integrate with LLM providers",
-          "Prompts are templates with variables",
-          "Chain skills for complex workflows"
+          "Semantic Kernel v1.x is engineered to integrate natively with standard .NET dependency injection",
+          "The Kernel acts as the central coordinator binding AI connectors, plugins, and execution filters",
+          "Use builder.Services.AddKernel() and builder.Services.AddAzureOpenAIChatCompletion() for clean DI setup",
+          "Implement IFunctionInvocationFilter and IPromptRenderFilter for enterprise auditing, logging, and rate-limiting",
+          "Combine prompt templates and native C# plugins within the same unified execution context"
         ],
-        "takeaway": "Semantic Kernel provides a structured way to build AI applications. Use kernels to orchestrate skills and connectors to integrate with LLM providers."
+        "takeaway": "Semantic Kernel brings enterprise-grade dependency injection, testability, and middleware filtering to AI engineering in .NET, turning raw LLMs into maintainable software components."
       }
     }
   ],
-  "relatedLessons": ["dotnet-skills-plugins"],
-  "relatedGlossaryTerms": ["semantic-kernel", "kernel", "skills"]
+  "relatedLessons": ["dotnet-skills-plugins", "dotnet-planners-connectors", "dotnet-microsoft-extensions-ai"],
+  "relatedGlossaryTerms": ["semantic-kernel", "plugin", "api"]
 }

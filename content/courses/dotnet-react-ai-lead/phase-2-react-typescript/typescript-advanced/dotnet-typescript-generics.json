@@ -2,41 +2,141 @@
   "id": "dotnet-lesson-2-5",
   "slug": "dotnet-typescript-generics",
   "moduleSlug": "dotnet-typescript-advanced",
-  "title": "TypeScript Generics",
-  "description": "Master generic types, generic constraints, and build reusable, type-safe components and utilities.",
+  "title": "TypeScript Generics: Type-Safe APIs, Constraints & Variance",
+  "description": "Master advanced TypeScript generics: constrained type parameters, generic inference, variance (covariance/contravariance), conditional type branching, and building fully type-safe API clients and utility factories.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["typescript", "generics", "constraints"],
+  "estimatedMinutes": 50,
+  "tags": ["typescript", "generics", "constraints", "variance", "type-inference", "api-design"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Generics Fundamentals"
+        "text": "Generics: TypeScript's Most Powerful Abstraction Mechanism"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Generics enable reusable components that work with multiple types while maintaining type safety. Use constraints to limit acceptable types."
+        "text": "TypeScript generics are parameterized types that allow functions, classes, and interfaces to operate on a family of types while preserving full compile-time type safety. Unlike C# generics which have runtime reification, TypeScript generics are erased at compile time—they exist solely to guide the type checker. In enterprise AI frontend code, generics power type-safe API clients, universal hook factories, discriminated response containers, and middleware pipelines."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Generic Result<T, E> Type for AI API Responses",
+        "content": "A generic discriminated union that eliminates try-catch boilerplate and forces callers to handle both success and error cases at the type level.",
+        "language": "typescript",
+        "code": "// Generic Result type: Success<T> | Failure<E>\ntype Result<T, E = Error> =\n  | { success: true; data: T }\n  | { success: false; error: E };\n\n// Generic API function returning Result<T>\nasync function fetchAiResponse<T>(url: string): Promise<Result<T>> {\n  try {\n    const response = await fetch(url);\n    if (!response.ok) {\n      return { success: false, error: new Error(`HTTP ${response.status}: ${response.statusText}`) };\n    }\n    const data: T = await response.json();\n    return { success: true, data };\n  } catch (err) {\n    return { success: false, error: err instanceof Error ? err : new Error(String(err)) };\n  }\n}\n\n// Usage: TypeScript narrows the type after discriminant check\ninterface SearchResult { chunks: Array<{ id: string; content: string }>; }\n\nconst result = await fetchAiResponse<SearchResult>('/api/search?q=AI+policy');\nif (result.success) {\n  // result.data is SearchResult - fully typed\n  console.log(result.data.chunks.length);\n} else {\n  // result.error is Error\n  console.error(result.error.message);\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Constrained Generics with keyof and extends"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Generic constraints narrow the set of types a type parameter accepts, enabling safe property access without runtime guards. The `keyof` operator combined with indexed access types (`T[K]`) creates compile-time verified property lookup utilities."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Type-Safe Object Property Getter with keyof Constraint",
+        "content": "This generic `getProperty` function guarantees at compile time that the key exists on the object, preventing runtime TypeError.",
+        "language": "typescript",
+        "code": "// K extends keyof T: K must be a valid key of T\n// Return type T[K]: the exact type of that property\nfunction getProperty<T extends object, K extends keyof T>(obj: T, key: K): T[K] {\n  return obj[key];\n}\n\ninterface ModelConfig {\n  modelName: string;\n  maxTokens: number;\n  temperature: number;\n  supportsVision: boolean;\n}\n\nconst config: ModelConfig = {\n  modelName: 'gpt-4o',\n  maxTokens: 128000,\n  temperature: 0.7,\n  supportsVision: true,\n};\n\nconst name = getProperty(config, 'modelName');       // type: string ✅\nconst tokens = getProperty(config, 'maxTokens');     // type: number ✅\n// getProperty(config, 'unknownProp');               // Compile error ❌\n\n// Generic factory with multiple constraints\nfunction createTypedStore<TState extends Record<string, unknown>, TKey extends keyof TState>(\n  initialState: TState,\n  persistKeys: TKey[]\n): { get: <K extends keyof TState>(key: K) => TState[K]; persist: () => Partial<TState> } {\n  return {\n    get: (key) => initialState[key],\n    persist: () => Object.fromEntries(\n      persistKeys.map((k) => [k, initialState[k]])\n    ) as Partial<TState>,\n  };\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Generic Inference and Contextual Typing"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "TypeScript's type inference can automatically resolve generic type parameters from function arguments, return types, and contextual types—eliminating the need for explicit type annotations in most call sites."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Generic Hook Factory with Inferred Types",
+        "content": "A factory function that creates typed localStorage hooks where TypeScript infers the stored type from the defaultValue argument.",
+        "language": "typescript",
+        "code": "import { useState } from 'react';\n\n// TypeScript infers T from the defaultValue parameter type\nfunction createStoredState<T>(key: string, defaultValue: T) {\n  return function useStoredState(): [T, (value: T) => void] {\n    const [state, setState] = useState<T>(() => {\n      try {\n        const stored = localStorage.getItem(key);\n        return stored !== null ? (JSON.parse(stored) as T) : defaultValue;\n      } catch {\n        return defaultValue;\n      }\n    });\n\n    const setStoredState = (value: T) => {\n      setState(value);\n      localStorage.setItem(key, JSON.stringify(value));\n    };\n\n    return [state, setStoredState];\n  };\n}\n\n// T inferred as string — no explicit annotation needed\nconst useSelectedModel = createStoredState('selectedModel', 'gpt-4o');\n\n// T inferred as boolean\nconst useStreamingEnabled = createStoredState('streamingEnabled', true);\n\n// Usage: types are fully inferred and checked\nconst [model, setModel] = useSelectedModel();\n// model is string, setModel accepts only string\nsetModel('gpt-4o-mini');"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Variance: Covariance & Contravariance in Practice"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "Covariance vs Contravariance: The Direction of Type Compatibility",
+        "headers": ["Concept", "Definition", "TypeScript Position", "Real-World Example"],
+        "rows": [
+          [
+            "Covariant",
+            "A type is covariant if a subtype can be used where the supertype is expected",
+            "Return types of functions, readonly array members",
+            "Promise<Cat> is assignable to Promise<Animal> when Cat extends Animal"
+          ],
+          [
+            "Contravariant",
+            "A type is contravariant if the supertype can be used where the subtype is expected",
+            "Function parameter types, event handler callbacks",
+            "A handler for Animal events can safely handle Cat events (accepts the broader supertype)"
+          ],
+          [
+            "Invariant",
+            "Neither covariance nor contravariance applies; types must match exactly",
+            "Generic mutable containers by default",
+            "MutableArray<Cat> is NOT assignable to MutableArray<Animal> — mutation would allow pushing a Dog"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "TypeScript Generics Mastery Checklist",
+        "items": [
+          "Use Result<T, E> discriminated unions instead of throwing errors across async API boundaries",
+          "Apply keyof and T[K] constraints to guarantee compile-time property access safety",
+          "Prefer generic inference over explicit type annotations to keep call sites readable",
+          "Mark read-only generic containers with readonly to enable covariant subtype assignment",
+          "Use the infer keyword inside conditional types to extract deeply nested type information",
+          "Test complex generic utilities with type-level tests using @ts-expect-error assertions"
+        ]
       }
     },
     {
       "type": "summary-box",
       "data": {
-        "title": "Key Takeaways",
+        "title": "Summary & Next Steps",
         "points": [
-          "Generics work with multiple types while maintaining type safety",
-          "Constraints limit acceptable types with extends",
-          "Default type parameters provide sensible defaults",
-          "Conditional types enable type logic",
-          "Utility types transform types declaratively"
+          "Generic Result<T,E> types enforce structured error handling without try-catch boilerplate.",
+          "keyof and indexed access types enable compile-time verified property access on generic objects.",
+          "TypeScript's inference engine eliminates verbose explicit type annotations at most call sites.",
+          "Next, we explore Utility Types (Partial, Required, Pick, Omit, ReturnType) for type transformation."
         ],
-        "takeaway": "Generics are TypeScript's most powerful feature for building reusable, type-safe code. Master them to build flexible APIs and component libraries."
+        "takeaway": "TypeScript generics are the backbone of reusable enterprise code: they preserve type safety across boundaries while enabling APIs that work with any compliant type."
       }
     }
   ],
-  "relatedLessons": ["dotnet-typescript-utility-types"],
-  "relatedGlossaryTerms": ["generics", "type-constraints"]
+  "relatedLessons": ["dotnet-typescript-utility-types", "dotnet-typescript-conditional-types", "dotnet-typescript-type-safety-patterns"],
+  "relatedGlossaryTerms": ["generics", "type-constraints", "type-inference", "variance"]
 }

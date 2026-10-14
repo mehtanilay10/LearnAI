@@ -2,24 +2,102 @@
   "id": "dotnet-lesson-4-14",
   "slug": "dotnet-agent-orchestration",
   "moduleSlug": "dotnet-ai-agents",
-  "title": "Agent Orchestration & Human-in-the-Loop",
-  "description": "Implement stateful agent workflows, checkpoints, approval flows, and bounded execution.",
+  "title": "Agent Orchestration, Reliability & Human-in-the-Loop",
+  "description": "Architect stateful agent workflows, checkpointing, tool permissions, human approval gates, and bounded execution in .NET.",
   "order": 5,
   "difficulty": "advanced",
-  "estimatedMinutes": 60,
-  "tags": ["orchestration", "human-in-the-loop", "checkpoints", "approval"],
+  "estimatedMinutes": 65,
+  "tags": ["orchestration", "human-in-the-loop", "state-machine", "checkpoints", "agent-framework", "durability"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Agent Orchestration"
+        "text": "The Architecture of Reliable Agent Systems"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Implement stateful agent workflows with checkpoints for recovery, human approval for consequential actions, bounded retries and timeouts for safety."
+        "text": "A common mistake in early AI development is deploying an unconstrained while-loop that prompts an LLM until it decides to stop. In production enterprise applications, this leads to non-deterministic behavior, infinite loops, runaway API costs, and dangerous actions executed without verification. Enterprise agents need predictable execution, state recovery, and controlled autonomy."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": ".NET Architectural Principle",
+        "text": "Start with an explicit workflow or state machine as the architectural baseline. Introduce LLM-driven autonomous decisions only at specific decision states where flexible judgment provides genuine business value. Keep state transitions, authorization, persistence, and external side-effects strictly governed by deterministic .NET code."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Deterministic Workflows vs Autonomous Agents"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Characteristic", "Deterministic Workflow (State Machine)", "Autonomous LLM Loop", "Hybrid Controlled Agent (Recommended)"],
+        "rows": [
+          ["Control Flow", "Hardcoded DAG / State Machine", "Model decides every next step dynamically", "State machine with LLM evaluation inside designated states"],
+          ["Failure Modes", "Predictable exceptions & retries", "Infinite tool calling, hallucinations, drift", "Bounded retries, loop limiters, and human escalation"],
+          ["Auditability", "100% deterministic audit trail", "Opaque conversation transcripts", "Clear state transition logs with prompt/tool telemetry"],
+          ["Human Oversight", "Manual workflows require manual steps", "Often bypassed for speed", "Human approval gates enforced for all high-risk state changes"],
+          ["Production Readiness", "High, but rigid for unstructured inputs", "Low, risky for enterprise operations", "Highest: combines LLM reasoning with software engineering guardrails"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Agent Orchestration Topologies"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "agent-orchestration-topologies",
+        "caption": "Three Primary Orchestration Patterns: Sequential, Concurrent (Fan-out/Fan-in), and Handoff Routing",
+        "definition": "graph TD\n    subgraph Sequential [1. Sequential Pipeline]\n        S1[\"Agent A: Ingest & Extract\"] --> S2[\"Agent B: Validate & Enrich\"] --> S3[\"Agent C: Summarize & Respond\"]\n    end\n    subgraph Concurrent [2. Concurrent Fan-out / Fan-in]\n        Input[\"User Request\"] --> C1[\"Agent 1: Legal Audit\"]\n        Input --> C2[\"Agent 2: Financial Check\"]\n        Input --> C3[\"Agent 3: Tech Review\"]\n        C1 --> Aggregator[\"Consensus & Synthesizer Agent\"]\n        C2 --> Aggregator\n        C3 --> Aggregator\n    end\n    subgraph Handoff [3. Supervisor & Handoff]\n        User[\"User Message\"] --> Supervisor[\"Router / Supervisor Agent\"]\n        Supervisor -- Routing Decision --> Billing[\"Billing Specialist Agent\"]\n        Supervisor -- Routing Decision --> TechSupport[\"Technical Support Agent\"]\n    end"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Implementing Bounded Execution, Checkpoints & Human Approval in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The implementation below demonstrates a bounded agent runner in .NET that enforces step budgets, strict schema validation, persistent checkpointing, and human confirmation pauses."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Production Stateful Agent Orchestrator with Checkpoints and Human-in-the-Loop",
+        "content": "A resilient agent loop with bounded retries, maximum tool calls, and approval suspension:",
+        "code": "using Microsoft.Extensions.AI;\n\npublic enum AgentExecutionStatus\n{\n    Running,\n    Completed,\n    WaitingForHumanApproval,\n    Failed,\n    ExceededBudget\n}\n\npublic class AgentCheckpoint\n{\n    public string ExecutionId { get; set; } = Guid.NewGuid().ToString();\n    public int CurrentStep { get; set; }\n    public List<ChatMessage> ConversationHistory { get; set; } = new();\n    public AgentExecutionStatus Status { get; set; }\n    public string? PendingToolCallId { get; set; }\n    public string? PendingToolName { get; set; }\n    public Dictionary<string, object>? PendingToolArgs { get; set; }\n}\n\npublic class ResilientAgentRunner\n{\n    private readonly IChatClient _chatClient;\n    private readonly IAgentCheckpointStore _checkpointStore;\n    private readonly IToolDispatcher _toolDispatcher;\n    private const int MaxAllowedSteps = 10;\n    private static readonly TimeSpan StepTimeout = TimeSpan.FromSeconds(30);\n\n    public ResilientAgentRunner(\n        IChatClient chatClient,\n        IAgentCheckpointStore checkpointStore,\n        IToolDispatcher toolDispatcher)\n    {\n        _chatClient = chatClient;\n        _checkpointStore = checkpointStore;\n        _toolDispatcher = toolDispatcher;\n    }\n\n    public async Task<AgentCheckpoint> StepAsync(AgentCheckpoint checkpoint, CancellationToken ct = default)\n    {\n        // 1. Guard against runaway infinite loops\n        if (checkpoint.CurrentStep >= MaxAllowedSteps)\n        {\n            checkpoint.Status = AgentExecutionStatus.ExceededBudget;\n            await _checkpointStore.SaveAsync(checkpoint, ct);\n            return checkpoint;\n        }\n\n        checkpoint.CurrentStep++;\n        checkpoint.Status = AgentExecutionStatus.Running;\n\n        // 2. Invoke model with per-step timeout\n        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);\n        timeoutCts.CancelAfter(StepTimeout);\n\n        var options = new ChatOptions\n        {\n            Tools = _toolDispatcher.GetAvailableTools(),\n            Temperature = 0.2f\n        };\n\n        ChatCompletion response = await _chatClient.CompleteAsync(\n            checkpoint.ConversationHistory,\n            options,\n            timeoutCts.Token);\n\n        checkpoint.ConversationHistory.Add(response.Message);\n\n        // 3. Check for tool invocations\n        var functionCall = response.Message.Contents.OfType<FunctionCallContent>().FirstOrDefault();\n        if (functionCall != null)\n        {\n            // 4. Validate if tool requires human approval (e.g. money transfer, delete, email send)\n            if (_toolDispatcher.RequiresHumanApproval(functionCall.Name))\n            {\n                checkpoint.Status = AgentExecutionStatus.WaitingForHumanApproval;\n                checkpoint.PendingToolCallId = functionCall.CallId;\n                checkpoint.PendingToolName = functionCall.Name;\n                checkpoint.PendingToolArgs = functionCall.Arguments as Dictionary<string, object>;\n                \n                await _checkpointStore.SaveAsync(checkpoint, ct);\n                return checkpoint; // Suspends execution until approved\n            }\n\n            // 5. Execute safe tool directly and record result\n            var toolResult = await _toolDispatcher.ExecuteAsync(functionCall, ct);\n            checkpoint.ConversationHistory.Add(new ChatMessage(ChatRole.Tool, toolResult)\n            {\n                Contents = { new FunctionResultContent(functionCall.CallId, toolResult) }\n            });\n        }\n        else\n        {\n            checkpoint.Status = AgentExecutionStatus.Completed;\n        }\n\n        await _checkpointStore.SaveAsync(checkpoint, ct);\n        return checkpoint;\n    }\n\n    public async Task<AgentCheckpoint> ResumeAfterApprovalAsync(\n        string executionId,\n        bool approved,\n        CancellationToken ct = default)\n    {\n        var checkpoint = await _checkpointStore.LoadAsync(executionId, ct)\n            ?? throw new KeyNotFoundException($\"Checkpoint {executionId} not found.\");\n\n        if (checkpoint.Status != AgentExecutionStatus.WaitingForHumanApproval)\n            throw new InvalidOperationException(\"Agent is not awaiting approval.\");\n\n        if (!approved)\n        {\n            checkpoint.ConversationHistory.Add(new ChatMessage(ChatRole.Tool, \"User rejected this action.\")\n            {\n                Contents = { new FunctionResultContent(checkpoint.PendingToolCallId!, \"REJECTED_BY_OPERATOR\") }\n            });\n            checkpoint.Status = AgentExecutionStatus.Running;\n            return await StepAsync(checkpoint, ct);\n        }\n\n        // Execute approved tool\n        var result = await _toolDispatcher.ExecuteApprovedAsync(\n            checkpoint.PendingToolName!,\n            checkpoint.PendingToolArgs!,\n            ct);\n\n        checkpoint.ConversationHistory.Add(new ChatMessage(ChatRole.Tool, result)\n        {\n            Contents = { new FunctionResultContent(checkpoint.PendingToolCallId!, result) }\n        });\n\n        checkpoint.PendingToolCallId = null;\n        checkpoint.PendingToolName = null;\n        checkpoint.PendingToolArgs = null;\n        checkpoint.Status = AgentExecutionStatus.Running;\n\n        return await StepAsync(checkpoint, ct);\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Microsoft Agent Framework & Semantic Kernel Evolution"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The Microsoft Agent Framework builds upon Semantic Kernel to provide standardized agent abstractions (ChatCompletionAgent, OpenAIAssistantAgent), workflow graphs, and multi-agent group chats. When using experimental agent APIs, maintain an abstraction barrier so that underlying SDK changes don't disrupt your core business logic."
       }
     },
     {
@@ -27,16 +105,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "Stateful workflows with checkpoints",
-          "Human approval for sensitive operations",
-          "Bounded retries and timeouts",
-          "Maximum tool-call counts for safety",
-          "Durable background work for long tasks"
+          "Enterprise agents must be built on deterministic state machines with bounded loops",
+          "Always enforce maximum tool-call step counts and timeouts to prevent runaway loops",
+          "Persist execution state in durable checkpoints to survive application restarts",
+          "Enforce Human-in-the-Loop (HITL) approval gates before executing high-consequence tools",
+          "Choose the appropriate topology: Sequential pipelines, Concurrent evaluation, or Supervisor handoffs"
         ],
-        "takeaway": "Agent orchestration requires guardrails. Implement checkpoints, approvals, and bounds for safe autonomous execution."
+        "takeaway": "Predictable autonomy is the hallmark of enterprise AI engineering. By combining state machines, checkpointing, and human approval gates, you gain the benefits of LLM reasoning without sacrificing system reliability."
       }
     }
   ],
-  "relatedLessons": ["dotnet-multi-agent-systems"],
-  "relatedGlossaryTerms": ["orchestration", "human-in-the-loop", "checkpoints"]
+  "relatedLessons": ["dotnet-multi-agent-systems", "dotnet-tool-calling", "dotnet-durable-workflows"],
+  "relatedGlossaryTerms": ["agent", "orchestration", "human-in-the-loop", "workflow"]
 }

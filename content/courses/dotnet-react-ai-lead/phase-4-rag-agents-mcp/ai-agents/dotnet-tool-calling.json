@@ -1,1 +1,94 @@
-{"id":"dotnet-lesson-4-6","slug":"dotnet-tool-calling","moduleSlug":"dotnet-ai-agents","title":"Tool Calling","description":"Implement tool calling with function APIs for agent actions.","order":2,"difficulty":"advanced","estimatedMinutes":50,"tags":["tool-calling","function-calling","openai-functions"],"blocks":[{"type":"heading","data":{"level":2,"text":"Tool Calling"}},{"type":"paragraph","data":{"text":"Tool calling enables LLMs to invoke functions. Define schemas, handle tool outputs, and chain tool calls."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Tool calling enables function invocation","Define clear function schemas","Handle tool outputs and errors","Chain multiple tool calls","Validate tool parameters"],"takeaway":"Tool calling is the foundation of agent capabilities. Define clear schemas and handle all edge cases for reliable tool use."}}],"relatedLessons":["dotnet-agent-fundamentals"],"relatedGlossaryTerms":["tool-calling","function-calling","openai-functions"]}
+{
+  "id": "dotnet-lesson-4-6",
+  "slug": "dotnet-tool-calling",
+  "moduleSlug": "dotnet-ai-agents",
+  "title": "Tool Calling & Function Invocation in .NET",
+  "description": "Master function calling in .NET using AIFunctionFactory, strongly-typed schemas, parameter validation, and self-correcting error loops.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["tool-calling", "function-calling", "ai-function", "schema-validation", "csharp", "microsoft-extensions-ai"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "How Tool Calling Operates Under the Hood"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Tool calling (or function calling) enables LLMs to take structured actions in the external world. Rather than executing code directly inside the model's neural network, the model acts as an intelligent dispatcher: when presented with a list of available tool schemas, it evaluates the user query and generates a structured JSON payload specifying which function to invoke and what argument values to provide. The hosting .NET application executes the actual method in code and feeds the return value back to the model."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "function-calling-roundtrip",
+        "caption": "The Function Calling Execution Roundtrip in .NET",
+        "definition": "sequenceDiagram\n    participant User as React Frontend / User\n    participant DotNet as ASP.NET Core Application\n    participant Model as LLM (OpenAI / Azure)\n    participant DB as SQL Database / API\n\n    User->>DotNet: 'What is the stock level of SKU-104 in Chicago?'\n    DotNet->>Model: CompleteAsync(messages, tools: [GetStockLevelSchema])\n    Model-->>DotNet: FunctionCall(name: 'GetStockLevel', args: { sku: 'SKU-104', warehouse: 'Chicago' })\n    DotNet->>DB: Execute SQL / API query\n    DB-->>DotNet: { inStock: 42, reserved: 5 }\n    DotNet->>Model: Submit FunctionResultContent({ inStock: 42, reserved: 5 })\n    Model-->>DotNet: 'There are currently 42 units of SKU-104 in stock in Chicago (5 reserved).'\n    DotNet-->>User: Grounded Answer"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Creating Strongly-Typed Tools with AIFunctionFactory"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In Microsoft.Extensions.AI, you can define tools effortlessly from standard C# methods using AIFunctionFactory.Create. The library automatically generates the underlying JSON Schema—including parameter types, nullability, descriptions, and enum options—via reflection and System.ComponentModel Description attributes."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Declaring Strongly-Typed Tools with AIFunctionFactory in C#",
+        "content": "Defines an inventory lookup tool and a notification tool with parameter descriptions:",
+        "code": "using System.ComponentModel;\nusing Microsoft.Extensions.AI;\n\npublic class WarehouseTools\n{\n    [Description(\"Fetches current real-time inventory quantity and reserved count for a specific SKU.\")]\n    public static async Task<InventoryResult> GetInventoryQuantity(\n        [Description(\"The standardized product SKU, e.g. SKU-104\")] string sku,\n        [Description(\"Warehouse regional location (e.g. Chicago, Dallas, Seattle)\")] string warehouse,\n        CancellationToken ct = default)\n    {\n        // Simulated database call\n        await Task.Delay(50, ct);\n        return new InventoryResult(sku, warehouse, InStock: 42, Reserved: 5);\n    }\n\n    [Description(\"Sends an urgent stock replenishment alert to the warehouse procurement manager.\")]\n    public static async Task<bool> SendRestockAlert(\n        [Description(\"The product SKU\")] string sku,\n        [Description(\"Quantity requested to order\")] int orderQuantity,\n        [Description(\"Urgency rating\")] AlertPriority priority)\n    {\n        // Simulated alerting logic\n        return true;\n    }\n}\n\npublic record InventoryResult(string Sku, string Warehouse, int InStock, int Reserved);\npublic enum AlertPriority { Low, Medium, High, Critical }\n\n// Register tools in ChatOptions\nvar tools = new List<AIFunction>\n{\n    AIFunctionFactory.Create(WarehouseTools.GetInventoryQuantity),\n    AIFunctionFactory.Create(WarehouseTools.SendRestockAlert)\n};\n\nvar options = new ChatOptions { Tools = tools };",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Error Handling & The Self-Correction Loop"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When a tool execution throws an exception (for example, due to an invalid SKU format or database connection timeout), never crash the application or return a generic 500 error to the user. Instead, catch the exception and return an informative error message inside the Tool message. Modern LLMs are adept at reading the error feedback, adjusting their input arguments, and retrying the tool call correctly."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Self-Correcting Tool Error Interceptor in C#",
+        "content": "Feeds execution errors back to the model to trigger autonomous parameter correction:",
+        "code": "public async Task<ChatMessage> ExecuteToolSafelyAsync(FunctionCallContent call, CancellationToken ct)\n{\n    try\n    {\n        var result = await _toolDispatcher.InvokeAsync(call.Name, call.Arguments, ct);\n        return new ChatMessage(ChatRole.Tool, JsonSerializer.Serialize(result))\n        {\n            Contents = { new FunctionResultContent(call.CallId, result) }\n        };\n    }\n    catch (ArgumentException ex)\n    {\n        // Return semantic error feedback allowing model to self-correct\n        var errorMessage = $\"Validation Error on tool '{call.Name}': {ex.Message}. Please correct the parameters and retry.\";\n        return new ChatMessage(ChatRole.Tool, errorMessage)\n        {\n            Contents = { new FunctionResultContent(call.CallId, errorMessage) }\n        };\n    }\n    catch (Exception ex)\n    {\n        var errorNotice = $\"System Error: The tool '{call.Name}' temporarily failed: {ex.Message}.\";\n        return new ChatMessage(ChatRole.Tool, errorNotice)\n        {\n            Contents = { new FunctionResultContent(call.CallId, errorNotice) }\n        };\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Tool calling uses the LLM as an intelligent dispatcher while executing verified C# code in the host app",
+          "Use AIFunctionFactory.Create with [Description] attributes to automatically derive precise JSON schemas",
+          "Include clear semantic descriptions on every parameter to guide the model's argument selection",
+          "Return structured validation errors back to the model to empower autonomous self-correction",
+          "Never execute unvalidated tool arguments on database queries without parameterized inputs"
+        ],
+        "takeaway": "Tool calling is the primary mechanism for agentic action. By pairing strongly-typed C# methods with detailed schema descriptions and self-correcting error handling, .NET developers build safe, resilient integrations."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-agent-fundamentals", "dotnet-agent-orchestration", "dotnet-mcp-authorization-security"],
+  "relatedGlossaryTerms": ["tool-calling", "agent", "structured-output"]
+}

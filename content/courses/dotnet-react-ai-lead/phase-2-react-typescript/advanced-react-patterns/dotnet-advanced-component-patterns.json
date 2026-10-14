@@ -2,21 +2,133 @@
   "id": "dotnet-lesson-2-4",
   "slug": "dotnet-advanced-component-patterns",
   "moduleSlug": "dotnet-advanced-react",
-  "title": "Advanced Component Patterns",
-  "description": "Master compound components, render props, higher-order components, and container/presentational patterns.",
+  "title": "Advanced Component Patterns: Compound, Slot, & Controlled Abstraction",
+  "description": "Master enterprise-grade React component patterns: Compound Components with Context, Slot Pattern for flexible composition, Controlled/Uncontrolled abstraction, and Renderless headless UI architecture.",
   "order": 4,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["react", "patterns", "compound-components", "render-props"],
+  "estimatedMinutes": 50,
+  "tags": ["react", "patterns", "compound-components", "render-props", "headless-ui", "typescript"],
   "blocks": [
     {
       "type": "heading",
-      "data": {"level": 2, "text": "Component Patterns"}
+      "data": {
+        "level": 2,
+        "text": "Component API Design for Reusable Enterprise UI"
+      }
     },
     {
       "type": "paragraph",
-      "data": {"text": "Advanced component patterns enable flexible, reusable UI components. Compound components share state implicitly, render props allow function children, and HOCs enhance component behavior."}}
+      "data": {
+        "text": "Building reusable React components for enterprise design systems requires deliberate API design. The naive approach—a monolithic component with 20+ optional boolean props—creates what the React community calls 'prop soup'. Professional component libraries employ structural patterns that separate behavior from presentation, enable flexible composition, and preserve strict TypeScript type safety at every layer."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "component-pattern-spectrum",
+        "caption": "Component Design Pattern Spectrum: From Rigid to Fully Flexible",
+        "code": "flowchart LR\n    A[\"Monolith Component (Prop Soup)\"] -->|More Control| B[\"Controlled Component (Explicit state prop + onChange)\"]\n    B -->|More Composition| C[\"Compound Component (Implicit shared Context)\"]\n    C -->|More Flexibility| D[\"Slot Pattern (Children composition + named slots)\"]\n    D -->|Full Decoupling| E[\"Headless / Renderless Component (Logic only, no styles)\"]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Pattern 1: Compound Components with Context"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Compound components allow a parent to implicitly share state with related children, keeping the consuming JSX readable while hiding complexity. The chat message component in an AI assistant is a perfect candidate: the root `ChatMessage` component manages expansion/citation state, and child components (`ChatMessage.Content`, `ChatMessage.Citations`, `ChatMessage.Actions`) consume it via Context without prop drilling."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Compound ChatMessage Component with TypeScript",
+        "content": "The root component and its children share state via a typed Context. Consumer JSX is clear and readable.",
+        "language": "tsx",
+        "code": "import React, { createContext, useContext, useState, type ReactNode } from 'react';\n\n// --- Private Context ---\ninterface ChatMessageCtx {\n  isExpanded: boolean;\n  role: 'user' | 'assistant';\n  toggleExpanded: () => void;\n}\nconst ChatMessageContext = createContext<ChatMessageCtx | null>(null);\n\nfunction useChatMessageCtx() {\n  const ctx = useContext(ChatMessageContext);\n  if (!ctx) throw new Error('Must be used inside <ChatMessage>');\n  return ctx;\n}\n\n// --- Root ---\nfunction ChatMessage({ role, children }: { role: 'user' | 'assistant'; children: ReactNode }) {\n  const [isExpanded, setIsExpanded] = useState(false);\n  return (\n    <ChatMessageContext.Provider value={{ isExpanded, role, toggleExpanded: () => setIsExpanded((p) => !p) }}>\n      <div className={`rounded-lg p-4 ${role === 'user' ? 'bg-accent-subtle ml-8' : 'bg-canvas-subtle mr-8'}`}>\n        {children}\n      </div>\n    </ChatMessageContext.Provider>\n  );\n}\n\n// --- Sub-components ---\nChatMessage.Content = function Content({ children }: { children: ReactNode }) {\n  const { isExpanded } = useChatMessageCtx();\n  return <div className={isExpanded ? '' : 'line-clamp-5'}>{children}</div>;\n};\n\nChatMessage.Actions = function Actions() {\n  const { isExpanded, toggleExpanded } = useChatMessageCtx();\n  return (\n    <button type=\"button\" onClick={toggleExpanded} className=\"text-xs text-fg-muted hover:text-fg-default mt-2\">\n      {isExpanded ? 'Show less' : 'Show more'}\n    </button>\n  );\n};\n\n// Usage: clean, self-documenting consumer JSX\n// <ChatMessage role=\"assistant\">\n//   <ChatMessage.Content><MarkdownRenderer content={message.text} /></ChatMessage.Content>\n//   <ChatMessage.Actions />\n// </ChatMessage>"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Pattern 2: Controlled/Uncontrolled Abstraction"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A well-designed component should work both as 'uncontrolled' (managing its own internal state for simple use cases) and 'controlled' (deferring to an external state owner for integration with forms, Zustand, or React Query). This mirrors the native HTML input's behavior."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Dual-Mode Controlled/Uncontrolled Component",
+        "content": "The ConversationFilter component works stand-alone with its own state, or can be controlled externally.",
+        "language": "tsx",
+        "code": "import { useState } from 'react';\n\ninterface ConversationFilterProps {\n  // When provided → Controlled mode\n  value?: string;\n  onChange?: (value: string) => void;\n  // Default starting value for Uncontrolled mode\n  defaultValue?: string;\n}\n\nexport function ConversationFilter({ value, onChange, defaultValue = '' }: ConversationFilterProps) {\n  const isControlled = value !== undefined;\n  const [internalValue, setInternalValue] = useState(defaultValue);\n\n  const currentValue = isControlled ? value : internalValue;\n\n  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {\n    if (!isControlled) setInternalValue(e.target.value);\n    onChange?.(e.target.value);\n  };\n\n  return (\n    <input\n      type=\"search\"\n      value={currentValue}\n      onChange={handleChange}\n      placeholder=\"Filter conversations...\"\n      className=\"w-full px-3 py-2 rounded border border-border bg-canvas-default text-fg-default\"\n    />\n  );\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Pattern 3: Headless Renderless Components"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Headless components (popularized by Radix UI, Headless UI, and TanStack) separate behavior from rendering entirely. The component provides interaction logic, keyboard navigation, ARIA attributes, and accessibility wiring—while exposing zero HTML or CSS. Consumers compose any markup they want around the behavior."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "Component Pattern Comparison: Trade-offs in Flexibility and Complexity",
+        "headers": ["Pattern", "Flexibility", "Complexity", "Best Applied To"],
+        "rows": [
+          ["Monolith + Props", "Low", "Low initially (grows quickly)", "Simple one-off components with stable requirements"],
+          ["Compound Components", "Medium-High", "Medium", "Related UI groups like Accordion, Tab panels, Menus"],
+          ["Controlled/Uncontrolled", "High", "Low-Medium", "Form fields, filters, selectors needing integration"],
+          ["Slot / Children Composition", "High", "Low", "Layout shells, Card containers, Dialog frames"],
+          ["Headless / Renderless", "Maximum", "High", "Design system libraries with custom branded styling"]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Component API Design Quality Checklist",
+        "items": [
+          "Components with >5 boolean props are candidates for compound or slot refactoring",
+          "All Compound Component sub-components throw a descriptive error if used outside their Context",
+          "Controlled components accept value + onChange; uncontrolled fallback uses defaultValue + useState",
+          "Every interactive element has explicit aria-label, aria-expanded, or role attributes",
+          "Design system components are tested with Testing Library, asserting semantic HTML not CSS class names",
+          "TypeScript discriminated unions prevent prop combinations that create impossible component states"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Summary & Next Steps",
+        "points": [
+          "Compound Components with Context eliminate prop drilling in related UI structures.",
+          "Dual-mode Controlled/Uncontrolled APIs make components reusable across simple and complex scenarios.",
+          "Headless/Renderless components provide maximum flexibility for design system consumers.",
+          "Next, we master TypeScript generics for building type-safe, composable utilities."
+        ],
+        "takeaway": "Great component design is API design: choose the minimal pattern that satisfies the use case without premature complexity, and preserve strict TypeScript safety at every layer."
+      }
+    }
   ],
-  "relatedLessons": ["dotnet-custom-hooks-patterns"],
-  "relatedGlossaryTerms": ["compound-components", "render-props", "hoc"]
+  "relatedLessons": ["dotnet-custom-hooks-patterns", "dotnet-react-performance-optimization", "dotnet-react-internals"],
+  "relatedGlossaryTerms": ["compound-components", "render-props", "hoc", "headless-ui", "controlled-components"]
 }

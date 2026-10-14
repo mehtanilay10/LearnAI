@@ -2,24 +2,84 @@
   "id": "dotnet-lesson-3-9",
   "slug": "dotnet-openai-sdk-basics",
   "moduleSlug": "dotnet-llm-integration",
-  "title": "OpenAI SDK Basics",
-  "description": "Integrate OpenAI models into .NET applications with the official SDK.",
+  "title": "Official OpenAI .NET SDK (v2.x) Architecture",
+  "description": "Master the official OpenAI .NET SDK v2.x: ChatClient, System.ClientModel primitives, ChatCompletionOptions, and token monitoring.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["openai", "sdk", "dotnet", "integration"],
+  "estimatedMinutes": 55,
+  "tags": ["openai", "sdk", "dotnet", "chat-client", "client-model", "csharp"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "OpenAI .NET SDK"
+        "text": "The Official OpenAI .NET Library (v2.x)"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "The OpenAI .NET SDK provides a clean interface for accessing GPT models. Configure API keys, handle responses, and manage error scenarios."
+        "text": "The official OpenAI .NET SDK (developed jointly by OpenAI and Microsoft) represents a ground-up redesign of AI client libraries in .NET. Built on modern System.ClientModel primitives, it delivers zero-allocation streaming, strongly-typed domain clients (ChatClient, EmbeddingClient, AudioClient, RealtimeClient), and native support for the latest model capabilities including structured outputs, vision, and audio reasoning."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Core Domain Clients in the SDK"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Client Type", "Specialized Capability", "Primary Method", "Key Use Case"],
+        "rows": [
+          ["ChatClient", "Text and multimodal chat completions, tool calling", "CompleteChatAsync / CompleteChatStreamingAsync", "Interactive assistants, reasoning workflows, agents"],
+          ["EmbeddingClient", "Vector embeddings for semantic search and retrieval", "GenerateEmbeddingAsync / GenerateEmbeddingsAsync", "RAG vector database ingestion and search"],
+          ["AudioClient", "Speech-to-text and text-to-speech", "TranscribeAudioAsync / GenerateSpeechFromTextAsync", "Voice bots, automated call transcripts"],
+          ["FineTuningClient", "Custom model fine-tuning job lifecycle", "CreateJobAsync / GetJobAsync", "Enterprise domain specialization and instruction tuning"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Implementing ChatClient in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The example below demonstrates instantiating a ChatClient, configuring sampling options, inspecting token consumption, and handling response choices cleanly."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Chat Completion with Token Accounting in C#",
+        "content": "Uses OpenAI.Chat.ChatClient to execute completions with strict parameters:",
+        "code": "using OpenAI;\nusing OpenAI.Chat;\nusing System.ClientModel;\n\npublic class OpenAiService\n{\n    private readonly ChatClient _chatClient;\n\n    public OpenAiService(string apiKey, string model = \"gpt-4o-mini\")\n    {\n        // Instantiate dedicated ChatClient for model\n        _chatClient = new ChatClient(model, apiKey);\n    }\n\n    public async Task<string> GenerateResponseAsync(string systemInstructions, string userPrompt, CancellationToken ct = default)\n    {\n        var messages = new List<ChatMessage>\n        {\n            new SystemChatMessage(systemInstructions),\n            new UserChatMessage(userPrompt)\n        };\n\n        var options = new ChatCompletionOptions\n        {\n            Temperature = 0.2f,\n            MaxOutputTokenCount = 1000,\n            FrequencyPenalty = 0.0f,\n            PresencePenalty = 0.0f\n        };\n\n        ClientResult<ChatCompletion> result = await _chatClient.CompleteChatAsync(messages, options, ct);\n        ChatCompletion completion = result.Value;\n\n        // Log token usage metrics\n        var usage = completion.Usage;\n        Console.WriteLine($\"Input Tokens: {usage.InputTokenCount}, Output Tokens: {usage.OutputTokenCount}\");\n\n        return completion.Content[0].Text;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Key Inference Parameters Explained"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Prompt Tuning Controls",
+        "items": [
+          "Temperature (0.0 - 2.0): Controls randomness. Use 0.0 - 0.2 for deterministic code/JSON extraction; 0.7 - 1.0 for creative copy.",
+          "TopP (Nucleus Sampling): Alternative to temperature; limits sampling to top cumulative probability mass. Prefer adjusting either Temperature or TopP, not both.",
+          "MaxOutputTokenCount: Hard ceiling on tokens generated. Protects against runaway costs and response truncation.",
+          "StopSequences: Custom string tokens that immediately halt generation when emitted (e.g. ['\\n---', 'END_OF_TRANSCRIPT'])."
+        ]
       }
     },
     {
@@ -27,16 +87,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "Configure API key securely",
-          "Use chat completion for text generation",
-          "Handle rate limits and errors",
-          "Stream responses for better UX",
-          "Monitor token usage and costs"
+          "The official OpenAI .NET SDK v2.x provides modular, lightweight domain clients (ChatClient, EmbeddingClient)",
+          "Built on System.ClientModel for high performance and low allocation overhead",
+          "Inspect ClientResult<ChatCompletion>.Value.Usage for granular input and output token counts",
+          "Tune Temperature and MaxOutputTokenCount to control randomness and prevent cost overruns",
+          "Seamlessly transitions to Azure OpenAI via Azure.AI.OpenAI with identical API structures"
         ],
-        "takeaway": "The OpenAI SDK is straightforward to use. Secure your API keys, handle errors gracefully, and monitor costs in production."
+        "takeaway": "The OpenAI .NET SDK v2.x is the bedrock of modern C# AI engineering, combining raw performance with clean, idiomatic .NET patterns."
       }
     }
   ],
-  "relatedLessons": ["dotnet-azure-openai-integration"],
-  "relatedGlossaryTerms": ["openai-sdk", "api-key", "rate-limiting"]
+  "relatedLessons": ["dotnet-azure-openai-integration", "dotnet-direct-apis-vs-abstractions", "dotnet-streaming-error-handling"],
+  "relatedGlossaryTerms": ["openai-sdk", "token", "inference", "temperature"]
 }

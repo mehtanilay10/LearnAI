@@ -15,7 +15,8 @@
     "dotnet-skills-plugins",
     "dotnet-planners-connectors",
     "dotnet-sk-memory-embeddings",
-    "dotnet-microsoft-extensions-ai"
+    "dotnet-microsoft-extensions-ai",
+    "dotnet-direct-apis-vs-abstractions"
   ],
   "whatYouLearn": [
     "Semantic Kernel architecture and setup",

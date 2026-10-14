@@ -1,1 +1,98 @@
-{"id":"dotnet-lesson-3-7","slug":"dotnet-chain-of-thought","moduleSlug":"dotnet-prompt-engineering","title":"Chain-of-Thought Prompting","description":"Master chain-of-thought prompting for complex reasoning and multi-step problems.","order":3,"difficulty":"advanced","estimatedMinutes":50,"tags":["chain-of-thought","reasoning","complex-tasks"],"blocks":[{"type":"heading","data":{"level":2,"text":"Chain-of-Thought"}},{"type":"paragraph","data":{"text":"Chain-of-thought prompting encourages the model to show its reasoning step-by-step. This improves performance on complex reasoning tasks."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Chain-of-thought shows reasoning step-by-step","Improves performance on complex tasks","Ask model to think step-by-step","Use for math, logic, and multi-step problems","Combine with few-shot for best results"],"takeaway":"Chain-of-thought prompting significantly improves LLM performance on complex reasoning tasks. Encourage the model to show its work step-by-step."}}],"relatedLessons":["dotnet-few-shot-prompting"],"relatedGlossaryTerms":["chain-of-thought","reasoning","zero-shot-cot"]}
+{
+  "id": "dotnet-lesson-3-7",
+  "slug": "dotnet-chain-of-thought",
+  "moduleSlug": "dotnet-prompt-engineering",
+  "title": "Chain-of-Thought & Reasoning Architectures",
+  "description": "Master Chain-of-Thought (CoT), step-by-step reasoning decomposition, Self-Consistency majority voting, and reasoning models (o1/o3-mini) in .NET.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["chain-of-thought", "reasoning", "self-consistency", "prompt-engineering", "cot", "o1"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Token Compute Principle Behind Chain-of-Thought"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In autoregressive transformers, computation is strictly tied to token generation: each generated token represents one forward pass through all attention layers. If you ask a model a complex multi-step logical question and demand an immediate answer in a single token, the model has only one forward pass of compute to solve it. Chain-of-Thought (CoT) prompting prompts the model to generate intermediate reasoning steps ('thinking tokens') before producing the final conclusion, effectively expanding the computational capacity applied to the problem."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Evolution of Reasoning Patterns"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Technique", "Mechanism", "Token Cost", "Accuracy on Complex Logic", "Latency"],
+        "rows": [
+          ["Direct Prompting", "Attempts immediate answer without intermediate steps", "Minimal (lowest cost)", "Low on math, logic, and multi-step deduction", "Fastest (< 1s)"],
+          ["Zero-Shot CoT", "Appends 'Think step by step before answering' to instructions", "Low to Moderate", "Substantial improvement over direct prompting", "Moderate (1-3s)"],
+          ["Self-Consistency (CoT)", "Samples 5 parallel CoT paths at temperature 0.7; takes majority vote", "High (5x completion tokens)", "Very high (filters out random reasoning mistakes)", "High (parallel or sequential)"],
+          ["Native Reasoning Models (o1, o3-mini)", "Trained with reinforcement learning to generate internal hidden reasoning tokens before output", "High (internal reasoning tokens billed as output tokens)", "Highest (doctoral-level benchmarks in math, coding, science)", "Highest (5-20s)"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Implementing Self-Consistency Majority Voting in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "For mission-critical calculations or classification where errors carry high financial or regulatory risk, Self-Consistency generates multiple independent reasoning chains and calculates a statistical consensus."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Self-Consistency Majority Vote Consensus in C#",
+        "content": "Executes concurrent reasoning chains and aggregates the majority conclusion:",
+        "code": "using Microsoft.Extensions.AI;\n\npublic class SelfConsistencyEvaluator\n{\n    private readonly IChatClient _chatClient;\n    private const int SampleCount = 5;\n\n    public SelfConsistencyEvaluator(IChatClient chatClient)\n    {\n        _chatClient = chatClient;\n    }\n\n    public async Task<string> EvaluateWithConsensusAsync(string complexProblem, CancellationToken ct = default)\n    {\n        var prompt = $\"Problem: {complexProblem}\\n\\n\" +\n                     \"Think carefully step by step. Show your reasoning.\\n\" +\n                     \"On the very last line, output exactly: 'FINAL_ANSWER: <conclusion>'\";\n\n        var options = new ChatOptions\n        {\n            Temperature = 0.7f // Sample diverse reasoning paths\n        };\n\n        // 1. Run 5 reasoning paths in parallel\n        var tasks = Enumerable.Range(0, SampleCount)\n            .Select(_ => _chatClient.CompleteAsync(prompt, options, ct));\n\n        ChatCompletion[] results = await Task.WhenAll(tasks);\n\n        // 2. Extract answers from final line\n        var answers = results\n            .Select(r => ExtractFinalAnswer(r.Message.Text ?? string.Empty))\n            .Where(a => !string.IsNullOrEmpty(a))\n            .ToList();\n\n        // 3. Calculate majority vote\n        var majorityAnswer = answers\n            .GroupBy(a => a, StringComparer.OrdinalIgnoreCase)\n            .OrderByDescending(g => g.Count())\n            .First();\n\n        Console.WriteLine($\"Majority consensus: {majorityAnswer.Key} ({majorityAnswer.Count()}/{SampleCount} votes)\");\n        return majorityAnswer.Key;\n    }\n\n    private static string ExtractFinalAnswer(string fullText)\n    {\n        var lines = fullText.Split('\\n');\n        var marker = lines.LastOrDefault(l => l.Contains(\"FINAL_ANSWER:\"));\n        return marker?.Replace(\"FINAL_ANSWER:\", \"\").Trim() ?? string.Empty;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Working with Frontier Reasoning Models (o1 / o3-mini)"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "Reasoning Model Best Practices in .NET",
+        "text": "When using models like OpenAI o1 or o3-mini: 1) Do NOT prompt 'think step by step'—these models already reason internally by default; doing so degrades performance. 2) System prompts are replaced with 'developer' messages. 3) You cannot set Temperature (it is fixed at 1.0). 4) Always allow generous max token limits because internal reasoning tokens consume the completion token budget."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Chain-of-Thought grants the model extra token passes to compute intermediate logic",
+          "Zero-shot CoT ('Think step by step') dramatically boosts multi-step reasoning accuracy",
+          "Self-Consistency samples multiple diverse reasoning paths and selects the statistical majority vote",
+          "Frontier reasoning models (o1 / o3-mini) generate internal reasoning tokens automatically",
+          "Account for internal reasoning tokens in latency budgets and cost monitoring dashboards"
+        ],
+        "takeaway": "Reasoning is token computation. Guiding models through structured step-by-step thinking or using native reasoning models unlocks reliable solutions to complex enterprise problems."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-system-prompts", "dotnet-few-shot-prompting", "dotnet-agent-planning"],
+  "relatedGlossaryTerms": ["chain-of-thought", "reasoning-model", "inference"]
+}

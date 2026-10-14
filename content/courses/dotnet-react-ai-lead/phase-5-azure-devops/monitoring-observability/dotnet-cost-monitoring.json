@@ -2,24 +2,93 @@
   "id": "dotnet-lesson-5-14",
   "slug": "dotnet-cost-monitoring",
   "moduleSlug": "dotnet-monitoring-observability",
-  "title": "AI Cost Monitoring & Optimization",
-  "description": "Monitor AI costs, set budgets, optimize token usage, and track latency budgets.",
+  "title": "AI Cost Monitoring, FinOps & Latency Budgets",
+  "description": "Track token usage, implement FinOps cost attribution, enforce latency SLOs, and alert on runaway AI spending in .NET.",
   "order": 5,
   "difficulty": "advanced",
-  "estimatedMinutes": 50,
-  "tags": ["cost-monitoring", "budgeting", "token-optimization", "latency"],
+  "estimatedMinutes": 55,
+  "tags": ["cost-monitoring", "finops", "tokens", "latency-budget", "opentelemetry", "metrics"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Cost Monitoring"
+        "text": "The Economics of Generative AI in Production"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Monitor AI costs with token tracking, set budgets and alerts, optimize token usage with caching and routing, and track latency budgets."
+        "text": "Unlike traditional software where compute costs scale predictably with CPU and memory, generative AI introduces per-token variable pricing. A single unchecked agent loop or an unoptimized system prompt with bloated few-shot examples can inflate cloud bills by thousands of dollars overnight. Production AI engineering requires strict FinOps practices, token attribution, and latency budgets."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "The Hidden Costs of Multi-Turn Context Windows",
+        "text": "In multi-turn chat applications, prompt token volume grows quadratically if the entire conversation history is blindly resent on every turn. In addition, reasoning models (like OpenAI o1/o3-mini) consume hidden 'reasoning tokens' that are billed at completion token rates. Tracking and caching prompt tokens is essential to maintain sustainable unit economics."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Defining AI Service Level Objectives (SLOs)"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Metric", "Target SLO", "Impact on User Experience", "Optimization Strategy"],
+        "rows": [
+          ["Time to First Token (TTFT)", "< 800 ms (P95)", "Perception of app responsiveness; immediate feedback", "Enable streaming (IAsyncEnumerable/SSE), prompt caching, region co-location"],
+          ["Tokens Per Second (TPS)", "> 35 tokens/sec", "Reading speed and smooth streaming rendering", "Use smaller high-speed models (e.g. GPT-4o-mini), PTU deployments"],
+          ["End-to-End Latency", "< 3.0 s (P95)", "Overall user wait time for completion", "Parallelize tool executions, prune conversational history, bounded retrieval"],
+          ["Cost Per Request Budget", "< $0.015 per query", "Application unit economics and profitability", "Prompt minimization, semantic caching, routing simple queries to lighter models"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Instrumenting Token Usage with OpenTelemetry in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "To monitor cost and latency across tenants, capture usage metrics using System.Diagnostics.Metrics conforming to the OpenTelemetry GenAI semantic conventions."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "FinOps Telemetry Middleware with OpenTelemetry in C#",
+        "content": "Capturing prompt tokens, completion tokens, and calculating estimated cost per tenant:",
+        "code": "using System.Diagnostics.Metrics;\nusing Microsoft.Extensions.AI;\n\npublic class CostMonitoringChatClient : DelegatingChatClient\n{\n    private static readonly Meter s_meter = new(\"LearnAI.GenAI.Observability\", \"1.0.0\");\n    private static readonly Counter<long> s_tokenCounter = s_meter.CreateCounter<long>(\n        \"gen_ai.client.token.usage\",\n        \"token\",\n        \"Number of tokens consumed across AI operations\");\n    private static readonly Histogram<double> s_latencyHistogram = s_meter.CreateHistogram<double>(\n        \"gen_ai.client.operation.duration\",\n        \"ms\",\n        \"Latency of LLM completion calls in milliseconds\");\n\n    public CostMonitoringChatClient(IChatClient inner) : base(inner) { }\n\n    public override async Task<ChatCompletion> CompleteAsync(\n        IList<ChatMessage> chatMessages,\n        ChatOptions? options = null,\n        CancellationToken cancellationToken = default)\n    {\n        var sw = Stopwatch.StartNew();\n        ChatCompletion response = await base.CompleteAsync(chatMessages, options, cancellationToken);\n        sw.Stop();\n\n        var modelName = options?.ModelId ?? \"default-model\";\n        var tenantId = options?.AdditionalProperties?.TryGetValue(\"TenantId\", out var t) == true ? t?.ToString() : \"unknown\";\n\n        if (response.Usage != null)\n        {\n            var inputTokens = response.Usage.InputTokenCount ?? 0;\n            var outputTokens = response.Usage.OutputTokenCount ?? 0;\n\n            // Record standard GenAI metric dimensions\n            s_tokenCounter.Add(inputTokens, \n                new KeyValuePair<string, object?>(\"token_type\", \"input\"),\n                new KeyValuePair<string, object?>(\"model\", modelName),\n                new KeyValuePair<string, object?>(\"tenant_id\", tenantId));\n\n            s_tokenCounter.Add(outputTokens,\n                new KeyValuePair<string, object?>(\"token_type\", \"output\"),\n                new KeyValuePair<string, object?>(\"model\", modelName),\n                new KeyValuePair<string, object?>(\"tenant_id\", tenantId));\n        }\n\n        s_latencyHistogram.Record(sw.Elapsed.TotalMilliseconds,\n            new KeyValuePair<string, object?>(\"model\", modelName),\n            new KeyValuePair<string, object?>(\"tenant_id\", tenantId));\n\n        return response;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "FinOps Best Practices for .NET AI Teams"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "AI Cost Control Checklist",
+        "items": [
+          {"text": "Semantic Caching", "hint": "Cache responses for identical or near-identical user queries using Redis or Azure Cosmos DB vector cache."},
+          {"text": "Prompt Caching Utilization", "hint": "Place static system instructions and system guidelines at the very beginning of the prompt to maximize OpenAI/Anthropic prompt cache hits (up to 50% discount)."},
+          {"text": "Hard & Soft Quotas", "hint": "Enforce maximum monthly token budgets per tenant; send alert emails at 80% and downgrade to lighter models at 100%."},
+          {"text": "Model Cascading / Tiered Routing", "hint": "Route simple queries (faq, greetings, intent detection) to lightweight models; invoke reasoning models only when complexity requires it."},
+          {"text": "Context Window Pruning", "hint": "Summarize or truncate historical messages older than 10 turns instead of submitting infinite conversation logs."}
+        ]
       }
     },
     {
@@ -27,16 +96,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "Track token usage per user/feature",
-          "Set cost budgets and alerts",
-          "Optimize with caching and model routing",
-          "Monitor latency budgets",
-          "Trace cost attribution across services"
+          "Generative AI operational cost scales by token consumption, demanding active FinOps governance",
+          "Establish measurable latency SLOs: Time to First Token (TTFT) and Tokens Per Second (TPS)",
+          "Instrument token usage and durations with OpenTelemetry metrics tagged by tenant and model",
+          "Leverage prompt caching and semantic caching to reduce redundant LLM invocations",
+          "Implement hard and soft budget caps to protect against runaway loops and billing surprises"
         ],
-        "takeaway": "AI costs can escalate quickly. Implement cost monitoring, budgets, and optimization strategies to control spend while maintaining quality."
+        "takeaway": "Sustainable AI engineering treats cost and latency as first-class architectural constraints. With OpenTelemetry token metrics and semantic caching, .NET teams maintain high performance at predictable costs."
       }
     }
   ],
-  "relatedLessons": ["dotnet-metrics-dashboards"],
-  "relatedGlossaryTerms": ["cost-monitoring", "token-budget", "latency-sla"]
+  "relatedLessons": ["dotnet-application-insights", "dotnet-metrics-dashboards", "dotnet-azure-ai-services", "dotnet-model-routing"],
+  "relatedGlossaryTerms": ["latency", "token", "model-routing"]
 }

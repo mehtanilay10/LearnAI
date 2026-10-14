@@ -1,1 +1,98 @@
-{"id":"dotnet-lesson-5-11","slug":"dotnet-metrics-dashboards","moduleSlug":"dotnet-monitoring-observability","title":"Metrics & Dashboards","description":"Collect metrics and build dashboards with Prometheus and Grafana.","order":3,"difficulty":"advanced","estimatedMinutes":45,"tags":["metrics","prometheus","grafana","dashboards"],"blocks":[{"type":"heading","data":{"level":2,"text":"Metrics"}},{"type":"paragraph","data":{"text":"Metrics track numerical data over time. Use Prometheus for collection and Grafana for visualization."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Metrics track numerical data","Prometheus collects metrics","Grafana visualizes data","Define SLOs and SLIs","Alert on metric thresholds"],"takeaway":"Metrics enable data-driven operations. Define clear SLOs and build dashboards for system health visibility."}}],"relatedLessons":["dotnet-application-insights"],"relatedGlossaryTerms":["metrics","prometheus","grafana","slo"]}
+{
+  "id": "dotnet-lesson-5-11",
+  "slug": "dotnet-metrics-dashboards",
+  "moduleSlug": "dotnet-monitoring-observability",
+  "title": "Real-Time AI Metrics & Executive Dashboards",
+  "description": "Instrument .NET AI applications with System.Diagnostics.Metrics, aggregate token usage and latency histograms, and build real-time Grafana and Azure Monitor dashboards.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["metrics", "system-diagnostics-metrics", "grafana", "azure-monitor", "dashboards", "telemetry"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Quantitative Telemetry with System.Diagnostics.Metrics"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "While logs provide rich individual event details, aggregate operational health is monitored via quantitative Metrics. Instead of parsing through gigabytes of text logs to compute average token spend or p95 response time, metrics record lightweight numeric time-series measurements directly in memory. In .NET, System.Diagnostics.Metrics provides the native runtime implementation for OpenTelemetry-compliant metrics."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Core AI Metric Instruments in .NET"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Metric Instrument", "Metric Name", "Unit", "Telemetry Role"],
+        "rows": [
+          ["Counter<long>", "ai.tokens.consumed", "tokens", "Monotonically increasing count of input, output, and cached tokens"],
+          ["Histogram<double>", "ai.request.duration", "ms", "Measures distribution and percentiles (P50, P90, P95, P99) of end-to-end completion latency"],
+          ["Histogram<double>", "ai.ttft.duration", "ms", "Measures Time to First Token across streaming client connections"],
+          ["UpDownCounter<int>", "ai.active.agent_sessions", "sessions", "Tracks concurrent active multi-turn agent loops currently running"],
+          ["Counter<long>", "ai.errors.count", "errors", "Counts exceptions categorized by type (RateLimit429, Timeout, ContentFilter)"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Instrumenting Custom AI Metrics in C#"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Defining and Recording Metric Instruments in C#",
+        "content": "Uses System.Diagnostics.Metrics to emit OpenTelemetry-compatible metrics:",
+        "code": "using System.Diagnostics.Metrics;\n\npublic class AiMetricsReporter\n{\n    private static readonly Meter s_meter = new(\"LearnAI.Platform.Metrics\", \"1.0.0\");\n\n    private static readonly Counter<long> s_tokenCounter = s_meter.CreateCounter<long>(\n        name: \"ai_tokens_consumed_total\",\n        unit: \"tokens\",\n        description: \"Total number of tokens consumed by model completions\");\n\n    private static readonly Histogram<double> s_ttftHistogram = s_meter.CreateHistogram<double>(\n        name: \"ai_time_to_first_token_ms\",\n        unit: \"ms\",\n        description: \"Latency until the first streaming token arrives\");\n\n    public void RecordCompletion(\n        string model,\n        string tenantId,\n        int promptTokens,\n        int completionTokens,\n        double ttftMs)\n    {\n        // Tag with dimensions for slice-and-dice in dashboards\n        var tags = new TagList\n        {\n            { \"model\", model },\n            { \"tenant_id\", tenantId }\n        };\n\n        s_tokenCounter.Add(promptTokens, new KeyValuePair<string, object?>(\"token_type\", \"prompt\"), tags[0], tags[1]);\n        s_tokenCounter.Add(completionTokens, new KeyValuePair<string, object?>(\"token_type\", \"completion\"), tags[0], tags[1]);\n        s_ttftHistogram.Record(ttftMs, tags);\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Essential Dashboard Visual Panels"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Executive AI Dashboard Grid",
+        "items": [
+          "Real-Time Token Burn Rate: Time-series graph showing tokens consumed per minute across all models.",
+          "Latency Percentiles (P50 / P95 / P99): Tracks degradation under peak load; highlights when TTFT exceeds the 800ms threshold.",
+          "Tenant Spend Breakdown: Donut chart displaying top 10 cost-consuming enterprise tenants.",
+          "Error Rate & Throttle Gauge: Real-time alarm showing 429 quota rejections and circuit breaker activations.",
+          "Cache Hit Efficiency: Measures prompt caching savings (percentage of prompt tokens served from cache at reduced cost)."
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Metrics provide lightweight, real-time numeric time-series for high-level monitoring",
+          "Use System.Diagnostics.Metrics in .NET to declare standard counters, histograms, and gauges",
+          "Record dimensional tags (model, tenant_id, token_type) to enable drill-downs in Grafana",
+          "Monitor Time to First Token (TTFT) and P95 latency continuously against user SLOs",
+          "Export metrics via OpenTelemetry Protocol (OTLP) to Azure Monitor or Prometheus"
+        ],
+        "takeaway": "Real-time metrics transform black-box AI models into transparent, measurable services. Building targeted Grafana dashboards ensures operations teams stay ahead of cost spikes and performance regressions."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-structured-logging", "dotnet-cost-monitoring", "dotnet-distributed-tracing"],
+  "relatedGlossaryTerms": ["latency", "token"]
+}

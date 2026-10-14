@@ -1,1 +1,84 @@
-{"id":"dotnet-lesson-5-7","slug":"dotnet-github-actions","moduleSlug":"dotnet-devops-cicd","title":"GitHub Actions CI/CD","description":"Build CI/CD pipelines with GitHub Actions.","order":3,"difficulty":"advanced","estimatedMinutes":45,"tags":["github-actions","cicd","pipelines"],"blocks":[{"type":"heading","data":{"level":2,"text":"GitHub Actions"}},{"type":"paragraph","data":{"text":"GitHub Actions provides CI/CD. Build, test, and deploy .NET applications with workflows for Azure and other platforms."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["GitHub Actions provides CI/CD","Build and test on push/PR","Deploy to Azure on merge","Use secrets for credentials","Matrix builds for multiple configurations"],"takeaway":"GitHub Actions simplifies CI/CD. Build workflows for test, build, and deploy with environment-specific configurations."}}],"relatedLessons":["dotnet-infrastructure-as-code"],"relatedGlossaryTerms":["github-actions","cicd","workflows"]}
+{
+  "id": "dotnet-lesson-5-7",
+  "slug": "dotnet-github-actions",
+  "moduleSlug": "dotnet-devops-cicd",
+  "title": "CI/CD Automation with GitHub Actions & Azure OIDC",
+  "description": "Architect enterprise continuous integration and continuous delivery pipelines using GitHub Actions, OIDC passwordless authentication, and automated quality gates.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["github-actions", "cicd", "oidc", "azure", "automation", "quality-gates"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Automated Delivery for Enterprise .NET & React AI"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In a fast-moving AI product team, delivering updates reliably requires a fully automated CI/CD pipeline. Every commit must be automatically compiled, tested with unit and prompt evaluation suites, scanned for container CVEs, and published to Azure without human intervention. Crucially, modern enterprise pipelines eliminate static service principal passwords by using OpenID Connect (OIDC) federated credentials."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Passwordless Azure Authentication with OpenID Connect (OIDC)"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Rather than storing long-lived Azure client secrets in GitHub repository secrets (which can leak or expire without warning), OIDC issues short-lived, cryptographically signed JWT tokens directly from GitHub to Azure Entra ID, verifying repository and branch identity on the fly."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Production GitHub Actions Pipeline with OIDC and Evaluation Gates",
+        "content": "A complete CI/CD workflow building .NET, running tests, and deploying to Azure:",
+        "code": "name: CI/CD Pipeline - .NET & React AI Platform\n\non:\n  push:\n    branches: [ main ]\n  pull_request:\n    branches: [ main ]\n\npermissions:\n  id-token: write # Required for requesting Azure OIDC JWT token\n  contents: read\n\njobs:\n  build-and-test:\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v4\n\n    - name: Setup .NET SDK\n      uses: actions/setup-dotnet@v4\n      with:\n        dotnet-version: '9.0.x'\n\n    - name: Restore dependencies\n      run: dotnet restore\n\n    - name: Build solution\n      run: dotnet build --no-restore -c Release\n\n    - name: Run Unit Tests & Quality Benchmarks\n      run: dotnet test --no-build -c Release --verbosity normal --collect:\"XPlat Code Coverage\"\n\n  deploy-staging:\n    needs: build-and-test\n    if: github.ref == 'refs/heads/main'\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v4\n\n    - name: Azure Login via OIDC\n      uses: azure/login@v2\n      with:\n        client-id: ${{ secrets.AZURE_CLIENT_ID }}\n        tenant-id: ${{ secrets.AZURE_TENANT_ID }}\n        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}\n\n    - name: Build & Push Container to ACR\n      run: |\n        az acr login --name acrlearnai\n        docker build -t acrlearnai.azurecr.io/learnai-api:${{ github.sha }} -f Dockerfile .\n        docker push acrlearnai.azurecr.io/learnai-api:${{ github.sha }}\n\n    - name: Deploy to Azure App Service Staging Slot\n      uses: azure/webapps-deploy@v3\n      with:\n        app-name: 'app-learnai-api'\n        slot-name: 'staging'\n        images: 'acrlearnai.azurecr.io/learnai-api:${{ github.sha }}'",
+        "language": "yaml"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Automated Quality Gates in CI/CD"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Gate Stage", "Execution Tool", "Condition to Pass", "Action on Regression"],
+        "rows": [
+          ["Compilation & Linter", "dotnet build & ESLint", "0 compiler errors, 0 lint warnings", "Halt build immediately"],
+          ["Deterministic Unit Tests", "xUnit & React Testing Library", "100% test pass rate", "Reject PR from merging"],
+          ["AI Evaluation Benchmark", "Microsoft.Extensions.AI.Evaluation", "Retrieval Recall@5 > 0.85, Groundedness > 4.5/5.0", "Block deployment; post diagnostic diff to PR"],
+          ["Container Vulnerability Scan", "Trivy / Microsoft Defender", "0 Critical or High CVEs in container base image", "Block image push to ACR"],
+          ["Smoke Test on Staging", "Playwright E2E suite", "Health check 200 OK and test chat stream succeeds", "Abort slot swap; rollback staging"]
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Automate the entire delivery lifecycle from commit to production with GitHub Actions",
+          "Use Azure OpenID Connect (OIDC) to eliminate stored passwords and static service principal secrets",
+          "Incorporate automated AI evaluation gates into CI to block prompt and model regressions",
+          "Deploy container images tagged with immutable Git commit SHAs for auditable provenance",
+          "Deploy to staging slots and run automated smoke tests before swapping to production"
+        ],
+        "takeaway": "Enterprise CI/CD brings software engineering discipline to AI. Combining OIDC security, container automation, and evaluation quality gates ensures reliable, fearless production releases."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-docker-containerization", "dotnet-kubernetes-aks", "dotnet-infrastructure-as-code"],
+  "relatedGlossaryTerms": ["deployment", "evaluation", "security"]
+}

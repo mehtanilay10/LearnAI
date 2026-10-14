@@ -1,1 +1,101 @@
-{"id":"dotnet-lesson-3-6","slug":"dotnet-few-shot-prompting","moduleSlug":"dotnet-prompt-engineering","title":"Few-Shot Prompting","description":"Master few-shot learning with examples to improve model accuracy and consistency.","order":2,"difficulty":"advanced","estimatedMinutes":45,"tags":["few-shot","examples","learning"],"blocks":[{"type":"heading","data":{"level":2,"text":"Few-Shot Learning"}},{"type":"paragraph","data":{"text":"Few-shot prompting provides examples in the prompt to teach the model the desired output format and behavior. This improves accuracy and consistency."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Few-shot provides examples for the model to learn from","Include diverse examples covering edge cases","Format examples consistently","Use delimiters to separate examples from input","Balance between few-shot and token cost"],"takeaway":"Few-shot prompting is one of the most effective techniques for improving LLM output. Provide clear, diverse examples to teach the model the desired behavior."}}],"relatedLessons":["dotnet-system-prompts"],"relatedGlossaryTerms":["few-shot-learning","in-context-learning"]}
+{
+  "id": "dotnet-lesson-3-6",
+  "slug": "dotnet-few-shot-prompting",
+  "moduleSlug": "dotnet-prompt-engineering",
+  "title": "Few-Shot Prompting & Dynamic In-Context Learning",
+  "description": "Master static and dynamic few-shot learning, exemplar selection, edge-case demonstrations, and vector-backed example retrieval in C#.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["few-shot", "in-context-learning", "prompt-engineering", "exemplars", "dynamic-few-shot"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Mechanics of In-Context Learning"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When foundational models are instructed in a zero-shot manner (simply describing what to do), they often misunderstand subtle nuances or format preferences. Few-shot prompting provides the model with concrete input-output demonstration pairs (exemplars) directly inside the prompt context. Through in-context learning, the transformer's attention heads calibrate to the demonstrated pattern without updating any neural weights."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Static vs Dynamic Few-Shot Prompting"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Approach", "How It Works", "Pros", "Cons", "Optimal Use Case"],
+        "rows": [
+          ["Zero-Shot", "Task description only with zero examples", "Minimal token overhead; fast", "Highest rate of formatting drift and edge-case errors", "Simple summaries and generic queries"],
+          ["Static Few-Shot", "Fixed set of 3-5 hand-crafted examples embedded in the prompt", "Consistent output formatting; anchors domain style", "Consumes fixed context tokens on every request regardless of query", "Classification with fixed category sets (e.g. sentiment, bug severity)"],
+          ["Dynamic Few-Shot (RAG)", "Embeds query, searches a database of 1,000 verified golden examples, and injects top-3 most relevant", "Maximum domain relevance for rare edge cases; scales indefinitely", "Requires an initial vector lookup before LLM completion", "Complex legal analysis, medical diagnosis, SQL query generation from natural language"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Implementing Dynamic Few-Shot Exemplar Retrieval in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In enterprise applications, maintaining a vector store of golden historical examples allows you to dynamically inject the most relevant demonstrations into the prompt."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Dynamic Few-Shot Prompt Builder in C#",
+        "content": "Retrieves the most semantically relevant examples from vector storage before submitting prompt:",
+        "code": "public record GoldenExemplar(string InputQuery, string VerifiedOutput);\n\npublic class DynamicFewShotService\n{\n    private readonly IChatClient _chatClient;\n    private readonly IExemplarVectorStore _vectorStore;\n\n    public DynamicFewShotService(IChatClient chatClient, IExemplarVectorStore vectorStore)\n    {\n        _chatClient = chatClient;\n        _vectorStore = vectorStore;\n    }\n\n    public async Task<string> GenerateSqlQueryAsync(string naturalLanguageQuestion, CancellationToken ct = default)\n    {\n        // 1. Retrieve 3 most similar past SQL generation examples\n        List<GoldenExemplar> similarExemplars = await _vectorStore.FindSimilarExemplarsAsync(\n            naturalLanguageQuestion,\n            topK: 3,\n            ct);\n\n        // 2. Assemble exemplars into structured demonstration block\n        var promptBuilder = new StringBuilder();\n        promptBuilder.AppendLine(\"Translate natural language questions into valid T-SQL for SQL Server 2022.\");\n        promptBuilder.AppendLine(\"Study the examples below:\");\n        promptBuilder.AppendLine();\n\n        foreach (var ex in similarExemplars)\n        {\n            promptBuilder.AppendLine($\"Question: {ex.InputQuery}\");\n            promptBuilder.AppendLine($\"SQL: {ex.VerifiedOutput}\");\n            promptBuilder.AppendLine(\"---\");\n        }\n\n        promptBuilder.AppendLine($\"Question: {naturalLanguageQuestion}\");\n        promptBuilder.AppendLine(\"SQL:\");\n\n        var response = await _chatClient.CompleteAsync(promptBuilder.ToString(), cancellationToken: ct);\n        return response.Message.Text?.Trim() ?? string.Empty;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Best Practices for Selecting Exemplars"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Exemplar Design Principles",
+        "items": [
+          "Demonstrate Boundary Cases: Include examples that demonstrate how the model should behave when an input is ambiguous, malformed, or missing required keys.",
+          "Keep Examples Diverse: Avoid redundant examples that demonstrate the exact same pattern; cover distinct variations in input phrasing and complexity.",
+          "Maintain Consistent Delimiters: Use uniform prefixes (Input: / Output:) across all demonstrations so the model recognizes where generation must begin.",
+          "Order Sensitivity: Place the most challenging or representative example last, as recent tokens in the context window exert strong attention bias."
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Few-shot prompting drastically reduces formatting failures and edge-case errors through in-context learning",
+          "Static few-shot embeds fixed examples; dynamic few-shot retrieves semantically relevant examples from a vector database",
+          "Always include boundary and negative examples showing how to respond to ambiguous or invalid inputs",
+          "Exemplar order matters: recent examples exert higher attention weight in the model's self-attention layers",
+          "Dynamic few-shot prompting is particularly effective for code, SQL, and complex domain-specific transformations"
+        ],
+        "takeaway": "Showing is superior to telling in prompt engineering. By supplying high-quality, targeted exemplars, .NET developers guide models toward consistent, enterprise-grade output accuracy."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-system-prompts", "dotnet-chain-of-thought", "dotnet-structured-output-prompts"],
+  "relatedGlossaryTerms": ["few-shot-prompting", "prompt-engineering", "inference"]
+}

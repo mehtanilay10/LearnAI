@@ -2,21 +2,114 @@
   "id": "dotnet-lesson-2-11",
   "slug": "dotnet-form-state-management",
   "moduleSlug": "dotnet-state-management",
-  "title": "Form State Management",
-  "description": "Master React Hook Form for performant form handling, validation, and integration with UI libraries.",
+  "title": "Form State Management: React Hook Form & Zod Schema Validation",
+  "description": "Master performant, type-safe form management with React Hook Form v7 and Zod: schema-driven validation, nested field arrays, controlled/uncontrolled hybrid integration, and server error mapping.",
   "order": 3,
   "difficulty": "advanced",
-  "estimatedMinutes": 40,
-  "tags": ["react", "forms", "react-hook-form", "validation"],
+  "estimatedMinutes": 45,
+  "tags": ["react-hook-form", "zod", "form-validation", "typescript", "schema-validation"],
   "blocks": [
     {
       "type": "heading",
-      "data": {"level": 2, "text": "React Hook Form"}
+      "data": {
+        "level": 2,
+        "text": "Performant Forms Without Re-Render Storms"
+      }
     },
     {
       "type": "paragraph",
-      "data": {"text": "React Hook Form provides performant form handling with minimal re-renders. It integrates with validation libraries and UI component libraries."}}
+      "data": {
+        "text": "Traditional controlled form inputs (using `useState` per field) trigger a re-render of the entire form on every keystroke—a noticeable issue in complex forms with 20+ fields, validation rules, and nested field arrays. React Hook Form leverages uncontrolled inputs with `ref`s by default, making form values available synchronously without triggering React's render cycle. Zod provides schema-based validation that automatically infers the exact TypeScript type of the form values."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "rhf-zod-flow",
+        "caption": "React Hook Form + Zod Integration: Validation & Submission Flow",
+        "code": "flowchart LR\n    A[User Input] -->|register()| B[RHF Uncontrolled Ref]\n    B -->|onSubmit| C[zodResolver validates with schema]\n    C -->|Invalid| D[Set field errors via formState.errors]\n    D --> E[Render error messages beside fields]\n    C -->|Valid| F[Handler receives fully typed validated data]\n    F --> G[TanStack Mutation / API call]\n    G -->|Server 422 errors| H[setError per field from server response]\n    H --> E"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Schema-Driven Form with Zod & zodResolver"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Defining the Zod schema first and inferring the form type eliminates type duplication and guarantees that validation rules and TypeScript types are always in sync."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Document Upload Form with Zod Schema",
+        "content": "A document upload form with file type validation, required title, and multi-select security groups.",
+        "language": "tsx",
+        "code": "import { useForm } from 'react-hook-form';\nimport { zodResolver } from '@hookform/resolvers/zod';\nimport { z } from 'zod';\n\n// Step 1: Define the Zod schema as the source of truth\nconst uploadDocumentSchema = z.object({\n  title: z.string().min(3, 'Title must be at least 3 characters').max(120),\n  description: z.string().optional(),\n  securityGroups: z.array(z.string()).min(1, 'Select at least one access group'),\n  file: z\n    .instanceof(FileList)\n    .refine((files) => files.length === 1, 'Please upload exactly one file')\n    .refine(\n      (files) => ['application/pdf', 'text/markdown'].includes(files[0].type),\n      'Only PDF and Markdown files are supported'\n    ),\n});\n\n// Step 2: Infer the form values type from the schema — zero duplication\ntype UploadDocumentValues = z.infer<typeof uploadDocumentSchema>;\n\nexport function DocumentUploadForm({ onSuccess }: { onSuccess: () => void }) {\n  const {\n    register,\n    handleSubmit,\n    setError,\n    formState: { errors, isSubmitting },\n  } = useForm<UploadDocumentValues>({\n    resolver: zodResolver(uploadDocumentSchema),\n    defaultValues: { securityGroups: [] },\n  });\n\n  const onSubmit = async (data: UploadDocumentValues) => {\n    const formData = new FormData();\n    formData.append('title', data.title);\n    formData.append('file', data.file[0]);\n    data.securityGroups.forEach((g) => formData.append('securityGroups', g));\n\n    const res = await fetch('/api/documents', { method: 'POST', body: formData });\n\n    if (res.status === 422) {\n      const serverErrors = await res.json();\n      // Map server validation errors back to individual fields\n      Object.entries(serverErrors.errors).forEach(([field, message]) =>\n        setError(field as keyof UploadDocumentValues, { message: message as string })\n      );\n      return;\n    }\n\n    if (res.ok) onSuccess();\n  };\n\n  return (\n    <form onSubmit={handleSubmit(onSubmit)} className=\"space-y-4\" noValidate>\n      <div>\n        <label htmlFor=\"title\" className=\"block text-sm font-medium text-fg-default\">Document Title</label>\n        <input\n          id=\"title\"\n          type=\"text\"\n          {...register('title')}\n          aria-describedby={errors.title ? 'title-error' : undefined}\n          aria-invalid={Boolean(errors.title)}\n          className=\"w-full mt-1 px-3 py-2 border border-border rounded bg-canvas-default\"\n        />\n        {errors.title && (\n          <p id=\"title-error\" role=\"alert\" className=\"text-xs text-danger-fg mt-1\">{errors.title.message}</p>\n        )}\n      </div>\n\n      <button\n        type=\"submit\"\n        disabled={isSubmitting}\n        className=\"w-full py-2 bg-accent text-white rounded hover:bg-accent-emphasis disabled:opacity-50\"\n      >\n        {isSubmitting ? 'Uploading...' : 'Upload Document'}\n      </button>\n    </form>\n  );\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Dynamic Field Arrays for Multi-Chunk Configuration"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "useFieldArray for Dynamic Chunking Rules",
+        "content": "Allowing users to add multiple metadata tags to a document with append/remove controls.",
+        "language": "tsx",
+        "code": "import { useForm, useFieldArray } from 'react-hook-form';\nimport { z } from 'zod';\nimport { zodResolver } from '@hookform/resolvers/zod';\n\nconst schema = z.object({\n  documentId: z.string(),\n  tags: z.array(z.object({ value: z.string().min(1) })).min(1, 'Add at least one tag'),\n});\ntype FormValues = z.infer<typeof schema>;\n\nfunction TagsEditor({ documentId }: { documentId: string }) {\n  const { control, register, formState: { errors } } = useForm<FormValues>({\n    resolver: zodResolver(schema),\n    defaultValues: { documentId, tags: [{ value: '' }] },\n  });\n\n  const { fields, append, remove } = useFieldArray({ control, name: 'tags' });\n\n  return (\n    <div className=\"space-y-2\">\n      {fields.map((field, index) => (\n        <div key={field.id} className=\"flex gap-2 items-center\">\n          <input\n            {...register(`tags.${index}.value`)}\n            className=\"flex-1 px-2 py-1 border border-border rounded\"\n            placeholder=\"Enter tag...\"\n          />\n          <button type=\"button\" onClick={() => remove(index)} className=\"text-danger-fg\">×</button>\n        </div>\n      ))}\n      <button type=\"button\" onClick={() => append({ value: '' })} className=\"text-accent-fg text-sm\">\n        + Add Tag\n      </button>\n      {errors.tags && <p className=\"text-xs text-danger-fg\">{errors.tags.message ?? errors.tags.root?.message}</p>}\n    </div>\n  );\n}"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "React Hook Form vs Controlled useState vs Formik",
+        "headers": ["Feature", "React Hook Form v7", "Controlled useState", "Formik"],
+        "rows": [
+          ["Re-renders per keystroke", "Zero (uncontrolled refs)", "One per field per keystroke", "One per field per keystroke"],
+          ["TypeScript inference", "Full via Zod/Yup schema", "Manual type annotations", "Partial via Yup"],
+          ["Field arrays", "Built-in useFieldArray", "Manual array state logic", "FieldArray component"],
+          ["Server error mapping", "setError() per field", "Manual useState tracking", "setFieldError()"],
+          ["Bundle size", "~10KB gzip", "Zero (native)", "~30KB gzip"]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Form State Management Checklist",
+        "items": [
+          "Zod schema defined before form component; form type derived with z.infer<typeof schema>",
+          "zodResolver wired as the resolver option in useForm for automatic schema validation",
+          "Server 422 errors mapped to individual fields with setError() for co-located field feedback",
+          "aria-invalid and aria-describedby attributes set on inputs for screen reader accessibility",
+          "isSubmitting state used to disable submit button and show loading feedback during network call",
+          "useFieldArray used for dynamic lists instead of manual array state management"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Summary & Next Steps",
+        "points": [
+          "React Hook Form uses uncontrolled refs for zero-re-render keystroke performance.",
+          "Zod schema inference eliminates type duplication between validation and TypeScript types.",
+          "setError enables server validation errors to appear beside the correct form fields.",
+          "Next, we close Phase 2 with State Architecture Patterns: when to combine all these tools."
+        ],
+        "takeaway": "Define your Zod schema first, infer the type, and let zodResolver bridge validation with the type system—making your forms fully type-safe from schema to submission."
+      }
+    }
   ],
-  "relatedLessons": ["dotnet-context-and-redux"],
-  "relatedGlossaryTerms": ["react-hook-form", "form-validation", "zod"]
+  "relatedLessons": ["dotnet-react-query-server-state", "dotnet-state-architecture-patterns", "dotnet-context-and-redux"],
+  "relatedGlossaryTerms": ["react-hook-form", "zod", "form-validation", "field-arrays"]
 }

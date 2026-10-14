@@ -2,24 +2,130 @@
   "id": "dotnet-lesson-4-13",
   "slug": "dotnet-advanced-retrieval",
   "moduleSlug": "dotnet-rag-fundamentals",
-  "title": "Advanced Retrieval Techniques",
-  "description": "Implement hybrid search, metadata filtering, reranking, and query rewriting for better RAG.",
+  "title": "Hybrid Search Done Right & Advanced Retrieval",
+  "description": "Fix RAG retrieval failures using BM25, HNSW, Reciprocal Rank Fusion (RRF), parent-child chunking, metadata filtering, and reranking in .NET.",
   "order": 5,
   "difficulty": "advanced",
-  "estimatedMinutes": 55,
-  "tags": ["hybrid-search", "reranking", "query-rewriting", "metadata-filtering"],
+  "estimatedMinutes": 65,
+  "tags": ["hybrid-search", "bm25", "hnsw", "rrf", "reranking", "parent-child-retrieval", "security-trimming"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Advanced Retrieval"
+        "text": "Why Enterprise RAG Fails with Naive Vector Search"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Implement hybrid search combining keyword and semantic search, metadata filtering for permissions, reranking for quality, and query rewriting for better retrieval."
+        "text": "Most enterprise RAG prototypes fail not because the LLM cannot reason, but because naive retrieval fails to find the right information. Pure dense vector search (such as embeddings over small text chunks) struggles with exact product codes, acronyms, customer names, financial SKUs, and specific query terms. At the same time, traditional keyword search (BM25) fails when users ask questions using different vocabulary than the indexed documentation."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "The Production Retrieval Golden Rule",
+        "text": "Production-grade RAG requires a multi-stage retrieval architecture: Hybrid Search (BM25 keyword search + HNSW dense vector search) combined using Reciprocal Rank Fusion (RRF), followed by Cross-Encoder Reranking and Security ACL Trimming."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The Multi-Stage Retrieval Pipeline"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "advanced-retrieval-pipeline",
+        "caption": "End-to-End Enterprise Retrieval Architecture with Hybrid Search, RRF, and Reranking",
+        "definition": "graph TD\n    UserQuery[\"User Query: 'How to configure PTU on Azure OpenAI?'\"] --> QueryRewriter[\"Query Expansion & HyDE Rewriter\"]\n    QueryRewriter --> VectorSearch[\"Dense Vector Search (HNSW - Top 50)\"]\n    QueryRewriter --> KeywordSearch[\"Sparse Keyword Search (BM25 - Top 50)\"]\n    VectorSearch --> RRF[\"Reciprocal Rank Fusion (RRF Merge)\"]\n    KeywordSearch --> RRF\n    RRF --> ACLFilter[\"Security ACL & Tenant Pre-Filtering\"]\n    ACLFilter --> Reranker[\"Cross-Encoder Reranker (Cohere / Azure Semantic)\"]\n    Reranker --> ParentChild[\"Parent-Child Context Expander\"]\n    ParentChild --> FinalContext[\"Top 5 Context Chunks with Document Citations\"]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "BM25 + HNSW + Reciprocal Rank Fusion (RRF)"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Reciprocal Rank Fusion (RRF) merges ranked lists from different search algorithms without requiring normalized scores. The RRF score for document d is calculated as the sum of reciprocals of its position across all rank lists: RRF_Score(d) = sum(1 / (k + rank_i(d))), where k is a smoothing constant (typically 60)."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Reciprocal Rank Fusion Algorithm Implementation in C#",
+        "content": "Merging BM25 sparse results and HNSW dense vector results using RRF in .NET:",
+        "code": "public class ScoredDocument\n{\n    public string Id { get; set; } = string.Empty;\n    public string Content { get; set; } = string.Empty;\n    public string ParentDocumentId { get; set; } = string.Empty;\n    public double FinalScore { get; set; }\n    public Dictionary<string, object> Metadata { get; set; } = new();\n}\n\npublic static class ReciprocalRankFusion\n{\n    public static List<ScoredDocument> Merge(\n        List<ScoredDocument> keywordResults,\n        List<ScoredDocument> vectorResults,\n        int kConstant = 60,\n        int topCount = 10)\n    {\n        var scores = new Dictionary<string, (ScoredDocument Doc, double Score)>();\n\n        // 1. Process BM25 Keyword Search rankings\n        for (int rank = 0; rank < keywordResults.Count; rank++)\n        {\n            var doc = keywordResults[rank];\n            double contribution = 1.0 / (kConstant + (rank + 1));\n            scores[doc.Id] = (doc, contribution);\n        }\n\n        // 2. Process HNSW Dense Vector rankings\n        for (int rank = 0; rank < vectorResults.Count; rank++)\n        {\n            var doc = vectorResults[rank];\n            double contribution = 1.0 / (kConstant + (rank + 1));\n            if (scores.TryGetValue(doc.Id, out var existing))\n            {\n                scores[doc.Id] = (existing.Doc, existing.Score + contribution);\n            }\n            else\n            {\n                scores[doc.Id] = (doc, contribution);\n            }\n        }\n\n        // 3. Return top results ordered by combined RRF score\n        return scores.Values\n            .OrderByDescending(x => x.Score)\n            .Take(topCount)\n            .Select(x => {\n                x.Doc.FinalScore = x.Score;\n                return x.Doc;\n            })\n            .ToList();\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Parent-Child Retrieval & Hierarchical Chunking"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A common dilemma in RAG is chunk size: small chunks (e.g., 128 tokens) yield accurate vector similarity because they avoid diluting the semantic signal, but lack surrounding context when fed to the LLM. Large chunks (e.g., 1000 tokens) provide context, but embeddings become vague and noisy."
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Parent-child retrieval solves this: index small child chunks (sentence or paragraph level) with vector embeddings, but link each child chunk back to its larger parent section (or document). During retrieval, you match on child chunks, but swap in the parent chunk to feed the LLM prompt."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Document Permissions & Security Trimming (ACL Filtering)"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In enterprise knowledge bases, users should only retrieve documents they have authorization to view. Security trimming must occur at retrieval time inside the vector query filter, not as an afterthought after LLM generation."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Retrieval-Time ACL Security Trimming in Azure AI Search / Vector Store",
+        "content": "Ensuring search queries enforce tenant isolation and caller security group memberships:",
+        "code": "public class SecureRetrievalService\n{\n    private readonly SearchClient _searchClient;\n\n    public async Task<List<SearchResultItem>> SearchAuthorizedAsync(\n        string queryText,\n        ReadOnlyMemory<float> queryVector,\n        string tenantId,\n        IEnumerable<string> userSecurityGroups,\n        CancellationToken ct = default)\n    {\n        // Construct security filter expression:\n        // TenantId eq 'tenant-123' and SecurityGroups/any(g: search.in(g, 'group-dev,group-sales'))\n        var groupList = string.Join(\",\", userSecurityGroups);\n        var filterExpression = $\"TenantId eq '{tenantId}' and SecurityGroups/any(g: search.in(g, '{groupList}'))\";\n\n        var searchOptions = new SearchOptions\n        {\n            Filter = filterExpression,\n            Size = 10,\n            QueryType = SearchQueryType.Semantic,\n            SemanticSearch = new SemanticSearchOptions\n            {\n                SemanticConfigurationName = \"enterprise-semantic-config\",\n                QueryCaption = new QueryCaption(QueryCaptionType.Extractive)\n            }\n        };\n\n        // Add vector query for hybrid execution\n        searchOptions.VectorSearch = new VectorSearchOptions();\n        searchOptions.VectorSearch.Queries.Add(new VectorizedQuery(queryVector)\n        {\n            KNearestNeighborsCount = 50,\n            Fields = { \"ContentVector\" }\n        });\n\n        SearchResults<SearchDocument> response = await _searchClient.SearchAsync<SearchDocument>(\n            queryText,\n            searchOptions,\n            ct);\n\n        var results = new List<SearchResultItem>();\n        await foreach (SearchResult<SearchDocument> doc in response.GetResultsAsync())\n        {\n            results.Add(new SearchResultItem\n            {\n                DocumentId = doc.Document[\"DocumentId\"].ToString()!,\n                Content = doc.Document[\"Content\"].ToString()!,\n                Score = doc.Score ?? 0.0,\n                RerankerScore = doc.SemanticSearch?.RerankerScore\n            });\n        }\n\n        return results;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Ingestion Pipelines and Incremental Indexing"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Key Ingestion Pipeline Principles",
+        "items": [
+          "Document Content Hashing: Compute SHA-256 hash of raw document bytes; skip ingestion if hash matches existing index entry.",
+          "Parent-Child Chunk Mapping: Split documents into parent sections (800-1200 tokens) and subdivide into child vector chunks (150-250 tokens) with cross-referencing IDs.",
+          "Idempotent Upserts: Always use unique, deterministic record keys (e.g., {DocId}_{ChunkIndex}) so failed ingestion jobs can be safely retried without duplicating vectors.",
+          "Tombstone Deletions: When a source document is updated or deleted, remove all previous child chunks using parent ID batch deletion.",
+          "Citations & Provenance: Store source document URI, page numbers, and author metadata on every chunk to generate verifiable citations in user answers."
+        ]
       }
     },
     {
@@ -27,16 +133,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "Hybrid search combines keyword and semantic",
-          "Metadata filtering for document permissions",
-          "Reranking improves result quality",
-          "Query rewriting for better retrieval",
-          "Parent-child retrieval for context"
+          "Naive dense vector search fails on precise terms, product codes, and domain acronyms",
+          "Hybrid search combines BM25 keyword matching and HNSW dense vector search using Reciprocal Rank Fusion",
+          "Parent-child retrieval decouples small-chunk vector matching from broad-chunk LLM comprehension context",
+          "Enforce security trimming directly in the retrieval query filter using user tenant and security group ACLs",
+          "Apply cross-encoder reranking to the top candidate pool to prioritize context relevance before sending to the LLM"
         ],
-        "takeaway": "Advanced retrieval techniques significantly improve RAG quality. Combine multiple strategies for best results."
+        "takeaway": "Enterprise RAG succeeds or fails at retrieval. Implementing hybrid search with RRF, parent-child expansion, and retrieval-time ACL trimming is the gold standard for accurate knowledge assistants."
       }
     }
   ],
-  "relatedLessons": ["dotnet-hybrid-search"],
-  "relatedGlossaryTerms": ["hybrid-search", "reranking", "query-rewriting"]
+  "relatedLessons": ["dotnet-vector-databases", "dotnet-hybrid-search", "dotnet-microsoft-extensions-vectordata"],
+  "relatedGlossaryTerms": ["rag", "semantic-search", "embedding", "vector-database"]
 }

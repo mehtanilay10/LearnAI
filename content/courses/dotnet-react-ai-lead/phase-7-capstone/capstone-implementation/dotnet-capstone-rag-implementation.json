@@ -1,1 +1,115 @@
-{"id":"dotnet-lesson-7-7","slug":"dotnet-capstone-rag-implementation","moduleSlug":"dotnet-capstone-implementation","title":"Capstone RAG Implementation","description":"Implement the RAG pipeline with vector database.","order":3,"difficulty":"advanced","estimatedMinutes":60,"tags":["rag","implementation","vector-database"],"blocks":[{"type":"heading","data":{"level":2,"text":"RAG Implementation"}},{"type":"paragraph","data":{"text":"Implement the RAG pipeline including document ingestion, embedding generation, vector search, and response generation."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Implement document ingestion pipeline","Generate embeddings with Azure OpenAI","Store in vector database","Implement semantic search","Generate responses with retrieved context"],"takeaway":"RAG implementation requires end-to-end pipeline design. Test each component and measure retrieval quality."}}],"relatedLessons":["dotnet-capstone-backend"],"relatedGlossaryTerms":["rag","embeddings","vector-search"]}
+{
+  "id": "dotnet-lesson-7-7",
+  "slug": "dotnet-capstone-rag-implementation",
+  "moduleSlug": "dotnet-capstone-implementation",
+  "title": "Enterprise RAG Implementation: Ingestion Worker, Pgvector & Hybrid Pipeline",
+  "description": "Implement the end-to-end RAG system in .NET 9: background document ingestion worker, token-aware chunking, batched vector embeddings with Microsoft.Extensions.AI, and hybrid BM25 + pgvector query execution.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["rag", "ingestion", "pgvector", "embeddings", "csharp-13", "background-worker"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Production Document Ingestion Architecture"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Document ingestion in the enterprise must never run synchronously within the HTTP request thread. Ingesting multi-megabyte PDFs, Word documents, or internal wiki dumps requires document parsing, recursive chunking, token counting, batched embedding generation, and database indexing. If handled synchronously, requests time out and resource spikes degrade the chat API. EnterpriseNexus implements an asynchronous ingestion pipeline using .NET 9 `BackgroundService` and bounded `System.Threading.Channels`."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "rag-ingestion-flow",
+        "caption": "Asynchronous Document Ingestion and Indexing Pipeline",
+        "code": "flowchart LR\n    A[Document Upload API] -->|Push Job| B[Bounded Channel Queue]\n    B -->|Pull Job| C[Ingestion Background Worker]\n    C --> D[Document Extraction: PDF / Markdown / Office]\n    D --> E[Recursive Chunking: 400 Tokens, 50 Overlap]\n    E --> F[Batched Embedding: Microsoft.Extensions.AI (Batch=16)]\n    F --> G[(PostgreSQL pgvector / HNSW + GIN Full-Text Index)]\n    G --> H[Update Document Status: Indexed & Searchable]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The Document Ingestion Background Worker"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "This worker processes documents asynchronously with concurrency control, backpressure handling, and graceful shutdown."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "DocumentIngestionWorker.cs in .NET 9",
+        "content": "Consuming from a bounded channel, generating embeddings with IEmbeddingGenerator, and persisting to pgvector.",
+        "language": "csharp",
+        "code": "namespace EnterpriseNexus.Infrastructure.Workers;\n\npublic sealed class DocumentIngestionWorker(\n    ChannelReader<DocumentIngestionJob> channelReader,\n    IServiceScopeFactory scopeFactory,\n    IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator,\n    ILogger<DocumentIngestionWorker> logger) : BackgroundService\n{\n    protected override async Task ExecuteAsync(CancellationToken stoppingToken)\n    {\n        logger.LogInformation(\"Document Ingestion Background Worker started.\");\n\n        await foreach (var job in channelReader.ReadAllAsync(stoppingToken))\n        {\n            try\n            {\n                using var scope = scopeFactory.CreateScope();\n                var db = scope.ServiceProvider.GetRequiredService<NexusDbContext>();\n\n                logger.LogInformation(\"Processing document {DocumentId} for tenant {TenantId}\", job.DocumentId, job.TenantId);\n\n                // 1. Recursive semantic chunking\n                var chunks = TextChunker.ChunkText(job.RawText, maxTokensPerChunk: 400, overlapTokens: 50);\n\n                // 2. Batch embedding generation (max 16 chunks per API batch)\n                var chunkTexts = chunks.Select(c => c.Content).ToList();\n                var embeddings = await embeddingGenerator.GenerateAsync(chunkTexts, cancellationToken: stoppingToken);\n\n                // 3. Persist chunks with pgvector embeddings\n                var entities = chunks.Select((chunk, index) => new DocumentChunk\n                {\n                    Id = Guid.NewGuid(),\n                    TenantId = job.TenantId,\n                    DocumentId = job.DocumentId,\n                    ChunkIndex = index,\n                    Content = chunk.Content,\n                    TokenCount = chunk.TokenCount,\n                    Embedding = new Pgvector.Vector(embeddings[index].Vector.ToArray()),\n                    SecurityGroups = job.SecurityGroups\n                }).ToList();\n\n                await db.DocumentChunks.AddRangeAsync(entities, stoppingToken);\n                await db.SaveChangesAsync(stoppingToken);\n\n                logger.LogInformation(\"Successfully indexed {Count} chunks for document {DocumentId}\", entities.Count, job.DocumentId);\n            }\n            catch (Exception ex) when (!stoppingToken.IsCancellationRequested)\n            {\n                logger.LogError(ex, \"Error indexing document {DocumentId}\", job.DocumentId);\n            }\n        }\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Hybrid Search Execution in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "At query time, the hybrid search service executes the vector similarity query and full-text keyword search in parallel, then fuses the results with Reciprocal Rank Fusion (RRF)."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "PostgresHybridSearchService.cs",
+        "content": "Executing concurrent vector and lexical queries against PostgreSQL with pgvector, followed by in-memory RRF fusion.",
+        "language": "csharp",
+        "code": "public sealed class PostgresHybridSearchService(\n    NexusDbContext db,\n    IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator) : IHybridSearchService\n{\n    public async Task<IReadOnlyList<FusedSearchResult>> RetrieveTopChunksAsync(\n        Guid tenantId,\n        string query,\n        int topK = 5,\n        CancellationToken ct = default)\n    {\n        // 1. Generate query embedding\n        var queryEmbedding = await embeddingGenerator.GenerateEmbeddingVectorAsync(query, cancellationToken: ct);\n        var pgVector = new Pgvector.Vector(queryEmbedding.ToArray());\n\n        // 2. Parallel Vector Search (HNSW Cosine Distance)\n        var vectorTask = db.DocumentChunks\n            .AsNoTracking()\n            .Where(c => c.TenantId == tenantId)\n            .OrderBy(c => c.Embedding.CosineDistance(pgVector))\n            .Take(25)\n            .Select(c => new SearchResultItem(c.Id, c.Document.Title, c.Content, (float)c.Embedding.CosineDistance(pgVector)))\n            .ToListAsync(ct);\n\n        // 3. Parallel Lexical Search (Postgres ts_rank BM25 equivalent)\n        var lexicalTask = db.DocumentChunks\n            .AsNoTracking()\n            .Where(c => c.TenantId == tenantId && EF.Functions.ToTsVector(\"english\", c.Content).Matches(EF.Functions.PlainToTsQuery(\"english\", query)))\n            .OrderByDescending(c => EF.Functions.ToTsVector(\"english\", c.Content).Rank(EF.Functions.PlainToTsQuery(\"english\", query)))\n            .Take(25)\n            .Select(c => new SearchResultItem(c.Id, c.Document.Title, c.Content, 1.0f))\n            .ToListAsync(ct);\n\n        await Task.WhenAll(vectorTask, lexicalTask);\n\n        // 4. Reciprocal Rank Fusion\n        return ReciprocalRankFusionEngine.Fuse(await vectorTask, await lexicalTask, topK);\n    }\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "type": "tip",
+        "title": "Batched Embedding Generation",
+        "content": "Never generate embeddings in a one-by-one loop (`foreach { await GenerateAsync() }`). OpenAI and Azure OpenAI endpoints incur significant HTTP overhead per call. Always batch chunks in arrays of 16 to 64 items to maximize throughput and minimize latency."
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "RAG Implementation Verification Checklist",
+        "items": [
+          "Ingestion offloaded to BackgroundService consuming from bounded System.Threading.Channels",
+          "Chunking algorithm preserves paragraph boundaries with 10% token overlap to prevent cutoffs",
+          "Embedding calls batched (16-32 chunks per request) with Polly retry policies for rate limits",
+          "PostgreSQL pgvector HNSW index configured with cosine distance operator (<=>)",
+          "Concurrent execution of vector and BM25 full-text queries via Task.WhenAll",
+          "Reciprocal Rank Fusion merges candidate lists deterministically without score distortion"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Summary & Next Steps",
+        "points": [
+          "Asynchronous ingestion workers decouple heavy document parsing from the user-facing web API.",
+          "Microsoft.Extensions.AI simplifies batched embedding generation with provider independence.",
+          "Hybrid search in PostgreSQL combines pgvector ANN search and full-text ts_rank.",
+          "Next, we prepare the infrastructure deployment using Bicep, Azure Container Apps, and GitHub Actions."
+        ],
+        "takeaway": "A production RAG implementation is an end-to-end data pipeline: robust ingestion, token-aware chunking, batched embeddings, and hybrid retrieval fusion."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-capstone-rag-design", "dotnet-capstone-backend", "dotnet-hybrid-search"],
+  "relatedGlossaryTerms": ["rag", "pgvector", "embeddings", "chunking", "background-worker"]
+}

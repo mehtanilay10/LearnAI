@@ -1,1 +1,86 @@
-{"id":"dotnet-lesson-6-3","slug":"dotnet-secure-coding","moduleSlug":"dotnet-security-fundamentals","title":"Secure Coding Practices","description":"Implement secure coding practices in .NET and React.","order":3,"difficulty":"advanced","estimatedMinutes":45,"tags":["secure-coding","best-practices","defense-in-depth"],"blocks":[{"type":"heading","data":{"level":2,"text":"Secure Coding"}},{"type":"paragraph","data":{"text":"Secure coding prevents vulnerabilities. Validate inputs, encode outputs, use parameterized queries, and implement defense in depth."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Validate all inputs","Encode all outputs","Use parameterized queries","Implement defense in depth","Keep dependencies updated"],"takeaway":"Secure coding is about mindset and habits. Validate inputs, encode outputs, and stay updated on vulnerabilities."}}],"relatedLessons":["dotnet-owasp-top-10"],"relatedGlossaryTerms":["secure-coding","defense-in-depth","input-validation"]}
+{
+  "id": "dotnet-lesson-6-3",
+  "slug": "dotnet-secure-coding",
+  "moduleSlug": "dotnet-security-fundamentals",
+  "title": "Secure Coding Practices for .NET & React AI Applications",
+  "description": "Defend against SQL injection, XSS in streaming markdown, SSRF in agent web tools, and secure deserialization in .NET.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["secure-coding", "xss", "ssrf", "sql-injection", "markdown-security", "csharp", "react"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Defensive Engineering in the Full-Stack AI Era"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Building AI applications with React and .NET creates unique full-stack security considerations. On the frontend, rendering dynamic streaming Markdown from an LLM can inadvertently introduce Cross-Site Scripting (XSS) if unverified HTML tags or script injection payloads are executed. On the backend, granting an agent the ability to fetch web URLs or query SQL databases can expose systems to Server-Side Request Forgery (SSRF) and SQL injection if parameters are not rigorously sanitized."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Preventing XSS in Streaming React Markdown"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When rendering AI streaming tokens in React using libraries like react-markdown, an attacker could inject malicious script tags or JavaScript URI links (e.g. [Click Here](javascript:stealTokens())). Always pair markdown renderers with DOMPurify or rehype-sanitize."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Hardened React Markdown Component with Sanitization",
+        "content": "Blocks arbitrary HTML injection, malicious iframe embeds, and javascript: links:",
+        "code": "import React from 'react';\nimport ReactMarkdown from 'react-markdown';\nimport rehypeSanitize, { defaultSchema } from 'rehype-sanitize';\nimport remarkGfm from 'remark-gfm';\n\n// Strict schema restricting protocol schemes to https\nconst secureSchema = {\n  ...defaultSchema,\n  protocols: {\n    ...defaultSchema.protocols,\n    href: ['https', 'http', 'mailto'],\n    src: ['https']\n  }\n};\n\nexport function SafeAiMarkdownViewer({ content }: { content: string }) {\n  return (\n    <div className=\"prose prose-invert max-w-none\">\n      <ReactMarkdown\n        remarkPlugins={[remarkGfm]}\n        rehypePlugins={[[rehypeSanitize, secureSchema]]}\n        components={{\n          // Enforce external link security attributes\n          a: ({ node, ...props }) => (\n            <a {...props} target=\"_blank\" rel=\"noopener noreferrer\" className=\"text-accent-fg underline\" />\n          )\n        }}\n      >\n        {content}\n      </ReactMarkdown>\n    </div>\n  );\n}",
+        "language": "typescript"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Preventing SSRF in Agent Web Fetch Tools in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When building an agent with a 'browse_url' or 'fetch_webpage' tool, an attacker might submit prompts asking the model to fetch http://169.254.169.254/metadata/identity/oauth2/token (the cloud instance metadata service) or internal localhost ports (http://localhost:5000/admin). Your .NET tool must validate that target IPs are not private or link-local addresses."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "SSRF-Safe HTTP Tool Client in C#",
+        "content": "Validates DNS resolution to ensure target endpoints are public internet addresses:",
+        "code": "using System.Net;\n\npublic class SsrfSafeHttpClient\n{\n    public static async Task<string> FetchPublicUrlAsync(string targetUrl, CancellationToken ct = default)\n    {\n        var uri = new Uri(targetUrl);\n        if (uri.Scheme != Uri.UriSchemeHttps)\n            throw new SecurityException(\"Only HTTPS URLs are permitted.\");\n\n        // Resolve IP addresses and block private/loopback ranges\n        var hostAddresses = await Dns.GetHostAddressesAsync(uri.DnsSafeHost, ct);\n        foreach (var ip in hostAddresses)\n        {\n            if (IPAddress.IsLoopback(ip) || IsPrivateSubnet(ip) || ip.ToString() == \"169.254.169.254\")\n            {\n                throw new SecurityException($\"Access to private or metadata network address '{ip}' is blocked.\");\n            }\n        }\n\n        using var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };\n        return await httpClient.GetStringAsync(uri, ct);\n    }\n\n    private static bool IsPrivateSubnet(IPAddress ip)\n    {\n        var bytes = ip.GetAddressBytes();\n        return (bytes[0] == 10) ||                               // 10.0.0.0/8\n               (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31) || // 172.16.0.0/12\n               (bytes[0] == 192 && bytes[1] == 168);             // 192.168.0.0/16\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Sanitize all rendered Markdown using rehype-sanitize and strict protocol whitelist rules",
+          "Prevent SSRF in agent browsing tools by validating DNS IPs against private subnets and metadata services",
+          "Always use parameterized queries (EF Core / Dapper parameters) when interacting with databases",
+          "Implement Content Security Policy (CSP) headers to restrict image and script origin sources",
+          "Treat LLM tool outputs and streaming tokens with the same zero-trust scrutiny as untrusted user inputs"
+        ],
+        "takeaway": "Secure coding is the bedrock of reliable AI applications. Hardening React markdown rendering against XSS and .NET agent tools against SSRF prevents attackers from turning AI capabilities against your infrastructure."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-owasp-top-10", "dotnet-ai-security-governance", "dotnet-secrets-management"],
+  "relatedGlossaryTerms": ["security", "guardrails", "api"]
+}

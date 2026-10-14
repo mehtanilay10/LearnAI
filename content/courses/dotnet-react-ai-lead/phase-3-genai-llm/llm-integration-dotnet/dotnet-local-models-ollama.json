@@ -1,1 +1,83 @@
-{"id":"dotnet-lesson-3-11","slug":"dotnet-local-models-ollama","moduleSlug":"dotnet-llm-integration","title":"Local Models with Ollama","description":"Run and integrate local LLMs with Ollama for privacy and cost efficiency.","order":3,"difficulty":"advanced","estimatedMinutes":45,"tags":["ollama","local-models","privacy","cost"],"blocks":[{"type":"heading","data":{"level":2,"text":"Local Models"}},{"type":"paragraph","data":{"text":"Ollama makes it easy to run local LLMs. Integrate with .NET via HTTP API for privacy and cost efficiency."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Ollama provides local model inference","Use HTTP API for integration","Trade model quality for privacy and cost","Consider hardware requirements","Use for sensitive data processing"],"takeaway":"Local models provide privacy and cost savings but trade off quality. Use Ollama for simple integration with local LLMs."}}],"relatedLessons":["dotnet-streaming-error-handling"],"relatedGlossaryTerms":["ollama","local-llm","privacy"]}
+{
+  "id": "dotnet-lesson-3-11",
+  "slug": "dotnet-local-models-ollama",
+  "moduleSlug": "dotnet-llm-integration",
+  "title": "Local Models & Ollama Integration in .NET",
+  "description": "Run open-weights models locally (Llama 3, Phi-3, Mistral) and connect .NET applications via Ollama and OpenAI-compatible endpoints.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["local-models", "ollama", "open-weights", "llama3", "phi-3", "offline-ai"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Rise of Local and Open-Weights Models"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "While cloud providers offer cutting-edge frontier reasoning models, local open-weights models (such as Meta Llama 3, Microsoft Phi-3.5, Mistral, and Qwen 2.5) have reached parity on many targeted tasks. Running models locally on developer workstations or on-premises GPU servers offers major architectural advantages: zero per-token cloud costs, offline development capability, predictable latency unaffected by cloud quotas, and the ability to process air-gapped, highly classified data that cannot leave company infrastructure."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Cloud API vs Local On-Premises LLMs"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Factor", "Cloud LLMs (Azure OpenAI)", "Local LLMs via Ollama", "Optimal Choice"],
+        "rows": [
+          ["Token Cost", "Per-token variable metered billing", "Free (utilizes local GPU/CPU compute)", "Local for dev/test loops and high-volume batch jobs"],
+          ["Reasoning Power", "Highest (frontier models like GPT-4o, o1, Claude 3.5)", "High for 8B-70B; limited on small 3B models", "Cloud for complex multi-step reasoning and coding"],
+          ["Data Privacy", "Enterprise cloud data processing agreements", "Data never leaves physical host machine", "Local for strict air-gapped environments and medical/defense data"],
+          ["Hardware Requirements", "Zero local hardware needed", "Requires modern GPU (NVIDIA RTX / Apple Silicon) or fast CPU + RAM", "Cloud if workstations lack dedicated VRAM"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Connecting .NET to Ollama via OpenAI Compatibility"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Ollama exposes an OpenAI-compatible API endpoint at http://localhost:11434/v1. This means you can use the standard OpenAI .NET SDK or Microsoft.Extensions.AI to query local models without changing any code except the endpoint URI."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Connecting to Local Ollama Model in C#",
+        "content": "Uses OpenAIClient pointing to Ollama's local endpoint to run completions on Llama 3.2:",
+        "code": "using OpenAI;\nusing OpenAI.Chat;\nusing System.ClientModel;\n\npublic class LocalOllamaService\n{\n    private readonly ChatClient _chatClient;\n\n    public LocalOllamaService()\n    {\n        // Point to Ollama's local OpenAI-compatible endpoint\n        var clientOptions = new OpenAIClientOptions\n        {\n            Endpoint = new Uri(\"http://localhost:11434/v1\")\n        };\n\n        // Dummy API key is accepted by local Ollama server\n        var openAiClient = new OpenAIClient(new ApiKeyCredential(\"ollama\"), clientOptions);\n        _chatClient = openAiClient.GetChatClient(\"llama3.2\");\n    }\n\n    public async Task<string> AskLocalModelAsync(string prompt, CancellationToken ct = default)\n    {\n        var messages = new List<ChatMessage>\n        {\n            new SystemChatMessage(\"You are a local developer assistant running completely on-premises.\"),\n            new UserChatMessage(prompt)\n        };\n\n        var result = await _chatClient.CompleteChatAsync(messages, cancellationToken: ct);\n        return result.Value.Content[0].Text;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Local models provide zero token cost, complete data privacy, and offline developer productivity",
+          "Ollama makes downloading and serving open-weights models (Llama 3, Phi-3, Mistral) effortless",
+          "Ollama's /v1 endpoint is wire-compatible with the standard OpenAI API specification",
+          "Seamlessly switch between local Ollama during development and Azure OpenAI in staging/production",
+          "Select model parameter size (3B, 8B, 14B) based on available host GPU VRAM"
+        ],
+        "takeaway": "Local AI models empower .NET developers to build, test, and iterate on AI features without burning cloud tokens, while preserving complete data confidentiality."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-openai-sdk-basics", "dotnet-azure-openai-integration", "dotnet-direct-apis-vs-abstractions"],
+  "relatedGlossaryTerms": ["open-weights", "local-model", "inference"]
+}

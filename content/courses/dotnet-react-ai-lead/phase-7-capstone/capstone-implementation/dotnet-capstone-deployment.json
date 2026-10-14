@@ -1,1 +1,130 @@
-{"id":"dotnet-lesson-7-8","slug":"dotnet-capstone-deployment","moduleSlug":"dotnet-capstone-implementation","title":"Capstone Deployment","description":"Deploy to Azure with CI/CD, monitoring, and production hardening.","order":4,"difficulty":"advanced","estimatedMinutes":60,"tags":["deployment","azure","cicd","monitoring"],"blocks":[{"type":"heading","data":{"level":2,"text":"Deployment"}},{"type":"paragraph","data":{"text":"Deploy the application to Azure with CI/CD pipeline, monitoring, and production hardening."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Deploy to Azure App Service or AKS","Implement CI/CD with GitHub Actions","Configure monitoring and alerting","Implement security hardening","Plan disaster recovery"],"takeaway":"Production deployment requires automation and monitoring. Implement CI/CD, comprehensive monitoring, and security hardening."}}],"relatedLessons":["dotnet-capstone-rag-implementation"],"relatedGlossaryTerms":["deployment","azure","cicd","monitoring"]}
+{
+  "id": "dotnet-lesson-7-8",
+  "slug": "dotnet-capstone-deployment",
+  "moduleSlug": "dotnet-capstone-implementation",
+  "title": "Enterprise Deployment: Azure Container Apps, Bicep IaC & GitHub Actions CI/CD",
+  "description": "Deploy EnterpriseNexus to production Azure: Infrastructure as Code (Bicep), Azure Container Apps with KEDA autoscaling, Managed Identity zero-secret authentication, GitHub Actions OIDC pipelines, and Application Insights observability.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["deployment", "azure-container-apps", "bicep", "github-actions", "keda", "managed-identity"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Production Cloud Architecture for Enterprise AI"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Deploying an enterprise AI assistant requires modern cloud infrastructure tailored for bursty AI workloads. Azure Container Apps (ACA) provides serverless microcontainer hosting built on Kubernetes (AKS) and KEDA, offering built-in HTTPS ingress, automatic TLS, and dynamic scale-to-zero capabilities. Crucially, production security demands a zero-secret architecture where connection strings and API keys are completely eradicated in favor of Microsoft Entra Managed Identities and Azure RBAC."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "production-deployment-topology",
+        "caption": "Azure Container Apps Zero-Trust Production Topology",
+        "code": "flowchart TD\n    Internet[Internet / Corporate Users] --> FrontDoor[Azure Front Door + WAF]\n    FrontDoor --> PrivateIngress[Internal Ingress / VNet]\n    \n    subgraph ACAEnv[\"Azure Container Apps Environment (Private VNet)\"]\n        WebApiContainer[\"EnterpriseNexus.WebApi (Replicas: 2-20)\\nAutoscaling on HTTP Request Rate\"]\n        IngestionWorkerContainer[\"EnterpriseNexus.IngestionWorker (Replicas: 0-10)\\nKEDA Autoscaling on Queue Depth\"]\n    end\n    \n    PrivateIngress --> WebApiContainer\n    \n    subgraph PaaS[\"Managed PaaS Services (Private Endpoints)\"]\n        AzureOpenAI[\"Azure OpenAI (gpt-4o, text-embedding-3-small)\\nRole: Cognitive Services OpenAI User\"]\n        PostgresDB[\"Azure Database for PostgreSQL Flexible Server\\n(pgvector enabled, Entra ID Auth)\"]\n        BlobStorage[\"Azure Blob Storage (Uploaded Source Documents)\\nRole: Storage Blob Data Contributor\"]\n        AppInsights[\"Application Insights & Log Analytics\"]\n    end\n    \n    WebApiContainer -.->|Managed Identity| AzureOpenAI\n    WebApiContainer -.->|Managed Identity| PostgresDB\n    WebApiContainer -.->|Telemetry| AppInsights\n    IngestionWorkerContainer -.->|Managed Identity| BlobStorage\n    IngestionWorkerContainer -.->|Managed Identity| PostgresDB\n    IngestionWorkerContainer -.->|Managed Identity| AzureOpenAI"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Bicep Infrastructure as Code (Zero-Secret Deployment)"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "We define the entire infrastructure declaratively using Azure Bicep. Notice how the container app is assigned a User-Assigned Managed Identity, and RBAC role assignments grant direct access to Azure OpenAI without storing an API key anywhere in configuration."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "main.bicep (Container App & RBAC Definition)",
+        "content": "Deploying the .NET 9 API container with Managed Identity and Cognitive Services OpenAI User role assignment.",
+        "language": "bicep",
+        "code": "param location string = resourceGroup().location\nparam environmentName string = 'nexus-prod-env'\nparam apiImageName string\n\n// 1. Managed Identity\nresource nexusIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {\n  name: 'id-nexus-backend'\n  location: location\n}\n\n// 2. Azure OpenAI Cognitive Services Account\nresource openAiAccount 'Microsoft.CognitiveServices/accounts@2023-05-01' existing = {\n  name: 'cog-nexus-prod'\n}\n\n// 3. Grant Managed Identity Cognitive Services OpenAI User Role\n// Role ID: 5e0dc2a4-4d15-46f3-a1c2-ef477502c46f\nresource openAiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {\n  name: guid(openAiAccount.id, nexusIdentity.id, 'CognitiveServicesOpenAIUser')\n  scope: openAiAccount\n  properties: {\n    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '5e0dc2a4-4d15-46f3-a1c2-ef477502c46f')\n    principalId: nexusIdentity.properties.principalId\n    principalType: 'ServicePrincipal'\n  }\n}\n\n// 4. Azure Container App for WebApi\nresource containerApp 'Microsoft.App/containerApps@2023-05-01' = {\n  name: 'app-nexus-api'\n  location: location\n  identity: {\n    type: 'UserAssigned'\n    userAssignedIdentities: {\n      '${nexusIdentity.id}': {}\n    }\n  }\n  properties: {\n    managedEnvironmentId: resourceId('Microsoft.App/managedEnvironments', environmentName)\n    configuration: {\n      ingress: {\n        external: true\n        targetPort: 8080\n        transport: 'auto'\n      }\n    }\n    template: {\n      containers: [\n        {\n          name: 'nexus-api'\n          image: apiImageName\n          env: [\n            { name: 'AZURE_CLIENT_ID', value: nexusIdentity.properties.clientId }\n            { name: 'AzureOpenAI__Endpoint', value: openAiAccount.properties.endpoint }\n            { name: 'ASPNETCORE_ENVIRONMENT', value: 'Production' }\n          ]\n          resources: {\n            cpu: json('1.0')\n            memory: '2.0Gi'\n          }\n        }\n      ]\n      scale: {\n        minReplicas: 2\n        maxReplicas: 10\n        rules: [\n          {\n            name: 'http-rule'\n            http: {\n              metadata: {\n                concurrentRequests: '50'\n              }\n            }\n          }\n        ]\n      }\n    }\n  }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Multi-Stage Chiseled Ubuntu Dockerfile"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Enterprise container images must be minimal, contain zero shell utilities (like bash or curl), and run under an unprivileged non-root user. Microsoft's 'chiseled' Ubuntu images reduce attack surfaces and vulnerability scanning alerts to zero."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Dockerfile for EnterpriseNexus.WebApi",
+        "content": "Production multi-stage build targeting .NET 9 with chiseled non-root base.",
+        "language": "dockerfile",
+        "code": "# 1. Build Stage\nFROM mcr.microsoft.com/dotnet/sdk:9.0 AS build\nWORKDIR /src\n\n# Copy csproj and restore layers\nCOPY [\"EnterpriseNexus.WebApi/EnterpriseNexus.WebApi.csproj\", \"EnterpriseNexus.WebApi/\"]\nCOPY [\"EnterpriseNexus.Application/EnterpriseNexus.Application.csproj\", \"EnterpriseNexus.Application/\"]\nCOPY [\"EnterpriseNexus.Domain/EnterpriseNexus.Domain.csproj\", \"EnterpriseNexus.Domain/\"]\nCOPY [\"EnterpriseNexus.Infrastructure/EnterpriseNexus.Infrastructure.csproj\", \"EnterpriseNexus.Infrastructure/\"]\nRUN dotnet restore \"EnterpriseNexus.WebApi/EnterpriseNexus.WebApi.csproj\"\n\n# Copy source and publish\nCOPY . .\nWORKDIR \"/src/EnterpriseNexus.WebApi\"\nRUN dotnet publish \"EnterpriseNexus.WebApi.csproj\" -c Release -o /app/publish /p:UseAppHost=false\n\n# 2. Runtime Stage (Chiseled, non-root, ultra-secure)\nFROM mcr.microsoft.com/dotnet/aspnet:9.0-noble-chiseled AS final\nWORKDIR /app\nCOPY --from=build /app/publish .\nUSER $APP_UID\nEXPOSE 8080\nENV ASPNETCORE_HTTP_PORTS=8080\nENTRYPOINT [\"dotnet\", \"EnterpriseNexus.WebApi.dll\"]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "GitHub Actions OIDC Workflow"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The CI/CD pipeline deploys to Azure without storing static subscription secrets or passwords in GitHub, using OpenID Connect (OIDC) federated credentials."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": ".github/workflows/deploy.yml",
+        "content": "Automated build, test, container push, and Bicep deployment via GitHub Actions OIDC.",
+        "language": "yaml",
+        "code": "name: EnterpriseNexus Production Deployment\n\non:\n  push:\n    branches: [main]\n\npermissions:\n  id-token: write # Required for Azure OIDC\n  contents: read\n\njobs:\n  test-and-deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n\n      - name: Setup .NET 9\n        uses: actions/setup-dotnet@v4\n        with:\n          dotnet-version: '9.0.x'\n\n      - name: Run Test Suite & AI Evaluations\n        run: |\n          dotnet test --configuration Release --logger \"trx;LogFileName=test_results.trx\"\n\n      - name: Azure Login via OIDC\n        uses: azure/login@v2\n        with:\n          client-id: ${{ secrets.AZURE_CLIENT_ID }}\n          tenant-id: ${{ secrets.AZURE_TENANT_ID }}\n          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}\n\n      - name: Build & Push Container to Azure Container Registry\n        run: |\n          az acr build --registry acrnexusprod --image nexus-api:${{ github.sha }} -f EnterpriseNexus.WebApi/Dockerfile .\n\n      - name: Deploy Bicep Infrastructure & Container App\n        uses: azure/arm-deploy@v2\n        with:\n          scope: resourcegroup\n          resourceGroupName: rg-enterprise-nexus-prod\n          template: ./infra/main.bicep\n          parameters: >\n            apiImageName=acrnexusprod.azurecr.io/nexus-api:${{ github.sha }}"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Production Deployment Go-Live Checklist",
+        "items": [
+          "Zero hardcoded connection strings or API keys; Entra ID Managed Identity used exclusively",
+          "Container images built on chiseled distroless bases running as non-root user ($APP_UID)",
+          "GitHub Actions authenticates via OIDC federated credentials, eliminating long-lived secrets",
+          "Azure Container Apps scaling rules configured: HTTP concurrency for WebApi, queue depth for Ingestion",
+          "Private endpoints and VNet integration configured for PostgreSQL, Azure OpenAI, and Blob Storage",
+          "Health probes (/healthz/live, /healthz/ready) active and reporting to ACA orchestrator",
+          "Application Insights distributed tracing active with custom metrics for AI latency and token cost"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Summary & Capstone Conclusion",
+        "points": [
+          "Azure Container Apps provides the optimal serverless hosting environment for enterprise AI microservices.",
+          "Bicep IaC with Managed Identity establishes a zero-secret security baseline across all Azure resources.",
+          "Chiseled Ubuntu containers eliminate common CVE vulnerabilities and attack surfaces.",
+          "With Phase 7 complete, you have designed, built, and deployed an enterprise-grade AI Knowledge Assistant."
+        ],
+        "takeaway": "Enterprise AI readiness is defined by cloud maturity: declarative infrastructure, secretless authentication, automated CI/CD, and elastic autoscaling."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-capstone-backend", "dotnet-capstone-rag-implementation", "dotnet-evaluation-production", "dotnet-azure-ai-services"],
+  "relatedGlossaryTerms": ["azure-container-apps", "bicep", "github-actions", "keda", "managed-identity"]
+}

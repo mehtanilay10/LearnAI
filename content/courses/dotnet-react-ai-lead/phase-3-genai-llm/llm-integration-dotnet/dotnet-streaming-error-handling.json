@@ -1,1 +1,83 @@
-{"id":"dotnet-lesson-3-12","slug":"dotnet-streaming-error-handling","moduleSlug":"dotnet-llm-integration","title":"Streaming & Error Handling","description":"Implement streaming responses and robust error handling for production LLM integrations.","order":4,"difficulty":"advanced","estimatedMinutes":50,"tags":["streaming","error-handling","retry","production"],"blocks":[{"type":"heading","data":{"level":2,"text":"Streaming and Error Handling"}},{"type":"paragraph","data":{"text":"Streaming provides real-time response generation. Implement retries, rate limiting, and error handling for production reliability."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Stream responses for better UX","Implement exponential backoff for retries","Handle rate limits with delay","Log errors for debugging","Monitor success rates and latency"],"takeaway":"Streaming improves UX, and robust error handling ensures production reliability. Implement retries with exponential backoff and monitor for issues."}}],"relatedLessons":["dotnet-openai-sdk-basics"],"relatedGlossaryTerms":["streaming","retry-pattern","exponential-backoff"]}
+{
+  "id": "dotnet-lesson-3-12",
+  "slug": "dotnet-streaming-error-handling",
+  "moduleSlug": "dotnet-llm-integration",
+  "title": "Streaming Tokens & Robust Error Handling in .NET",
+  "description": "Stream tokens in real-time using IAsyncEnumerable, handle mid-stream disconnections, manage CancellationToken propagation, and recover from 429 rate limits.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["streaming", "async-enumerable", "error-handling", "cancellation-token", "sse", "aspnetcore"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Engineering Reality of Token Streaming"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Generating long LLM responses can take anywhere from 3 to 30 seconds. If an application waits for the entire completion to finish before returning any data, users perceive the system as frozen or unresponsive. Streaming tokens as they are emitted solves perceived latency (reducing Time To First Token to under 500ms). However, streaming introduces distributed systems complexity: client disconnects mid-stream, network drops, token rate-limit spikes halfway through a response, and partial completion states."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Streaming with IAsyncEnumerable and CancellationToken"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In .NET, streaming LLM completions utilize IAsyncEnumerable<StreamingChatCompletionUpdate>. You must always pass the HttpContext.RequestAborted CancellationToken so that if the user closes their browser or cancels the request, downstream inference is immediately aborted, preventing wasted cloud tokens."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Production ASP.NET Core Streaming Minimal API in C#",
+        "content": "Streams Server-Sent Events with CancellationToken propagation and exception guards:",
+        "code": "using OpenAI.Chat;\nusing System.Runtime.CompilerServices;\n\npublic static class StreamingChatEndpoints\n{\n    public static void MapAiStreamingEndpoints(this IEndpointRouteBuilder app)\n    {\n        app.MapPost(\"/api/ai/stream\", async (\n            ChatRequest request,\n            ChatClient chatClient,\n            HttpContext httpContext,\n            CancellationToken ct) =>\n        {\n            httpContext.Response.ContentType = \"text/event-stream\";\n            httpContext.Response.Headers.Append(\"Cache-Control\", \"no-cache\");\n            httpContext.Response.Headers.Append(\"Connection\", \"keep-alive\");\n\n            var messages = new ChatMessage[]\n            {\n                new SystemChatMessage(\"You are a helpful assistant.\"),\n                new UserChatMessage(request.Prompt)\n            };\n\n            try\n            {\n                AsyncCollectionResult<StreamingChatCompletionUpdate> stream =\n                    chatClient.CompleteChatStreamingAsync(messages, cancellationToken: ct);\n\n                await foreach (StreamingChatCompletionUpdate update in stream)\n                {\n                    ct.ThrowIfCancellationRequested();\n\n                    foreach (ChatMessageContentPart part in update.ContentUpdate)\n                    {\n                        if (!string.IsNullOrEmpty(part.Text))\n                        {\n                            // Write SSE format: 'data: {text}\\n\\n'\n                            await httpContext.Response.WriteAsync($\"data: {part.Text}\\n\\n\", ct);\n                            await httpContext.Response.Body.FlushAsync(ct);\n                        }\n                    }\n                }\n\n                await httpContext.Response.WriteAsync(\"data: [DONE]\\n\\n\", ct);\n            }\n            catch (OperationCanceledException)\n            {\n                // Client cancelled or closed tab - exit cleanly\n            }\n            catch (Exception ex)\n            {\n                // Mid-stream error event notification\n                await httpContext.Response.WriteAsync($\"event: error\\ndata: {ex.Message}\\n\\n\", CancellationToken.None);\n            }\n        });\n    }\n}\n\npublic record ChatRequest(string Prompt);",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Common Streaming Failure Modes and Mitigations"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Failure Scenario", "Root Cause", "Engineering Mitigation"],
+        "rows": [
+          ["Mid-stream Network Disconnect", "Client network dropped during generation", "Detect RequestAborted token cancellation; break loop immediately to conserve tokens"],
+          ["429 Rate Limit Mid-Stream", "Token per minute (TPM) quota exhausted during a long output", "Emit an SSE error event: 'event: error' informing React UI to present a retry button"],
+          ["Content Filter Triggered Mid-Stream", "LLM started generating text that violated content safety thresholds", "Catch System.ClientModel.ClientResultException; emit a safety violation notice to the frontend"],
+          ["Buffer Accumulation", "ASP.NET Core or reverse proxy (Nginx) buffering HTTP output", "Set Response.Headers['X-Accel-Buffering'] = 'no' and call Response.Body.FlushAsync() after every token batch"]
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Streaming reduces Time to First Token (TTFT) from seconds to milliseconds, drastically improving UX",
+          "Use IAsyncEnumerable and CompleteChatStreamingAsync for zero-allocation streaming in C#",
+          "Always propagate HttpContext.RequestAborted to cancel cloud model inference when users disconnect",
+          "Flush the response body (FlushAsync) after emitting tokens to prevent proxy buffering stalls",
+          "Emit formal Server-Sent Events (SSE) events to signal completion ([DONE]) or mid-stream errors"
+        ],
+        "takeaway": "Reliable streaming requires proactive error handling and cancellation awareness. Linking CancellationToken from client to model ensures responsive UX without runaway compute costs."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-openai-sdk-basics", "dotnet-streaming-ai-ux", "dotnet-resilient-ai-clients"],
+  "relatedGlossaryTerms": ["streaming", "latency", "inference"]
+}

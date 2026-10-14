@@ -2,21 +2,142 @@
   "id": "dotnet-lesson-2-3",
   "slug": "dotnet-react-performance-optimization",
   "moduleSlug": "dotnet-advanced-react",
-  "title": "React Performance Optimization",
-  "description": "Optimize React renders with memo, useMemo, useCallback, code splitting, and virtualization for large lists.",
+  "title": "React Performance Optimization: Memoization, Virtualization & Code Splitting",
+  "description": "Eliminate unnecessary React re-renders with React.memo, useMemo, useCallback; virtualize large lists with TanStack Virtual; and reduce initial bundle size with Suspense-powered code splitting.",
   "order": 3,
   "difficulty": "advanced",
   "estimatedMinutes": 50,
-  "tags": ["react", "performance", "optimization", "memoization"],
+  "tags": ["react", "performance", "optimization", "memoization", "virtualization", "code-splitting"],
   "blocks": [
     {
       "type": "heading",
-      "data": {"level": 2, "text": "Render Optimization"}
+      "data": {
+        "level": 2,
+        "text": "Diagnosing Unnecessary Re-renders Before Optimizing"
+      }
     },
     {
       "type": "paragraph",
-      "data": {"text": "React re-renders components when state or props change. Use memoization techniques to prevent unnecessary renders and improve performance."}}
+      "data": {
+        "text": "The cardinal rule of React performance engineering mirrors the .NET profiling rule: measure before you optimize. React DevTools Profiler records every render in your component tree, capturing render duration, component name, and the specific state or prop that triggered it. Adding React.memo, useMemo, and useCallback to components that are fast and rarely render actually adds overhead. Target components that re-render frequently with expensive computation or that render large datasets."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "render-optimization-decision",
+        "caption": "Performance Optimization Decision Tree for React Components",
+        "code": "flowchart TD\n    A[Component re-renders] --> B{Does DevTools Profiler show > 16ms render?}\n    B -->|No| C[Leave as-is. Optimization is premature.]\n    B -->|Yes| D{What is expensive?}\n    D -->|Heavy computation from props| E[Wrap with React.memo + useMemo calculation]\n    D -->|Callback refs causing child re-renders| F[Wrap callback with useCallback]\n    D -->|Rendering thousands of list items| G[Implement List Virtualization with TanStack Virtual]\n    D -->|Large component import on first load| H[Lazy load with React.lazy + Suspense]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "React.memo and Referential Equality Pitfalls"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "`React.memo` performs a shallow equality check on props. When parent components pass object or array literals as props (e.g., `style={{ color: 'red' }}`), a new reference is created every render, defeating memo entirely. Always stabilize object references with `useMemo` and callback references with `useCallback`."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Correct Usage of React.memo with useMemo & useCallback",
+        "content": "The CitationList component should only re-render when the actual citation data changes, not when the parent AI chat component streams a new token.",
+        "language": "tsx",
+        "code": "import React, { useMemo, useCallback, memo } from 'react';\n\ninterface Citation {\n  id: string;\n  documentTitle: string;\n  excerpt: string;\n}\n\ninterface CitationListProps {\n  citations: Citation[];\n  onCitationClick: (id: string) => void;\n}\n\n// memo: Only re-renders when citations array reference or onCitationClick reference changes\nconst CitationList = memo(function CitationList({ citations, onCitationClick }: CitationListProps) {\n  console.log('CitationList rendered');\n  return (\n    <ul role=\"list\" className=\"space-y-2\">\n      {citations.map((citation) => (\n        <li key={citation.id} className=\"p-2 border border-border rounded\">\n          <button\n            type=\"button\"\n            onClick={() => onCitationClick(citation.id)}\n            className=\"text-left text-accent-fg hover:underline\"\n          >\n            {citation.documentTitle}\n          </button>\n          <p className=\"text-xs text-fg-muted mt-1 italic\">\"{citation.excerpt}\"</p>\n        </li>\n      ))}\n    </ul>\n  );\n});\n\n// Parent component: stabilize references so CitationList never re-renders during token streaming\nfunction ChatResponseView({ streamingContent, rawCitations }: { streamingContent: string; rawCitations: Citation[] }) {\n  // Stable: only recomputes when rawCitations array changes\n  const sortedCitations = useMemo(\n    () => [...rawCitations].sort((a, b) => a.documentTitle.localeCompare(b.documentTitle)),\n    [rawCitations]\n  );\n\n  // Stable: only changes when the outer handler dependency changes\n  const handleCitationClick = useCallback((id: string) => {\n    console.log('Citation selected:', id);\n  }, []); // No deps = stable for the entire session\n\n  return (\n    <div>\n      <p className=\"text-fg-default\">{streamingContent}</p>\n      <CitationList citations={sortedCitations} onCitationClick={handleCitationClick} />\n    </div>\n  );\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "List Virtualization for AI Conversation History"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Enterprise AI assistants accumulate hundreds of messages per conversation. Rendering 500 DOM nodes simultaneously causes layout thrash and scrolling stutters. List virtualization renders only the visible window (e.g., 10–15 items) while simulating the full scrollable height."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Virtualizing Chat History with TanStack Virtual",
+        "content": "TanStack Virtual dynamically computes row heights to handle messages with variable content lengths including code blocks and markdown.",
+        "language": "tsx",
+        "code": "import { useRef } from 'react';\nimport { useVirtualizer } from '@tanstack/react-virtual';\n\ninterface Message {\n  id: string;\n  role: 'user' | 'assistant';\n  content: string;\n}\n\nexport function VirtualizedMessageList({ messages }: { messages: Message[] }) {\n  const parentRef = useRef<HTMLDivElement>(null);\n\n  const virtualizer = useVirtualizer({\n    count: messages.length,\n    getScrollElement: () => parentRef.current,\n    estimateSize: () => 120, // Estimated average row height in px\n    overscan: 5, // Render 5 extra items above/below viewport for smooth scrolling\n  });\n\n  return (\n    <div ref={parentRef} className=\"h-full overflow-y-auto\">\n      {/* Full virtual height container - prevents scroll position jumps */}\n      <div style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}>\n        {virtualizer.getVirtualItems().map((virtualItem) => {\n          const message = messages[virtualItem.index];\n          return (\n            <div\n              key={virtualItem.key}\n              data-index={virtualItem.index}\n              ref={virtualizer.measureElement} // Dynamic height measurement\n              style={{ position: 'absolute', top: `${virtualItem.start}px`, left: 0, right: 0 }}\n              className={`p-4 ${message.role === 'user' ? 'bg-canvas-subtle' : 'bg-canvas-default'}`}\n            >\n              <MessageBubble message={message} />\n            </div>\n          );\n        })}\n      </div>\n    </div>\n  );\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Code Splitting with React.lazy & Suspense"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Heavy AI features like Markdown renderers, Mermaid diagram visualizers, or vector search result maps can easily add 200–500KB to the initial bundle. Loading them lazily on demand keeps the critical path bundle under 100KB."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Lazy Loading the Mermaid Diagram Renderer",
+        "content": "Mermaid weighs ~180KB gzipped. Only load it when a diagram block is first encountered in the AI response stream.",
+        "language": "tsx",
+        "code": "import { lazy, Suspense } from 'react';\n\n// Lazy loaded: imported chunk only downloaded when first rendered\nconst MermaidRenderer = lazy(() => import('./MermaidRenderer'));\n\nfunction DiagramBlock({ code }: { code: string }) {\n  return (\n    <Suspense\n      fallback={\n        <div className=\"h-40 bg-canvas-subtle animate-pulse rounded flex items-center justify-center\">\n          <span className=\"text-fg-muted text-sm\">Loading diagram...</span>\n        </div>\n      }\n    >\n      <MermaidRenderer code={code} />\n    </Suspense>\n  );\n}"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "React Performance Optimization Techniques: When to Apply Each",
+        "headers": ["Technique", "Solves Which Problem", "Overhead Cost", "Measure First?"],
+        "rows": [
+          ["React.memo", "Child re-renders despite unchanged props", "Shallow prop comparison per render", "Yes – profile first"],
+          ["useMemo", "Expensive derived calculation run every render", "Dependency array comparison", "Yes – check DevTools"],
+          ["useCallback", "Callback reference change defeats child memo", "Closure allocation + dep check", "Yes – verify child uses memo"],
+          ["TanStack Virtual", "Rendering 100+ DOM nodes simultaneously", "Viewport scroll tracking", "Yes – check DOM node count"],
+          ["React.lazy + Suspense", "Large initial JS bundle on first page load", "Dynamic import overhead once", "Yes – check bundle size"]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "React Performance Optimization Audit",
+        "items": [
+          "Profile component tree with React DevTools Profiler before adding any memoization",
+          "Stabilize object and array props with useMemo so React.memo's shallow equality check is effective",
+          "Stabilize callback props with useCallback only when the receiving child is wrapped with React.memo",
+          "Virtualize lists exceeding 50 dynamic-height items using TanStack Virtual",
+          "Split heavy editor, diagram, or analytics imports with React.lazy and Suspense fallbacks",
+          "Verify bundle composition with Vite visualizer or webpack-bundle-analyzer"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Summary & Next Steps",
+        "points": [
+          "Profile with React DevTools Profiler before applying any memoization.",
+          "React.memo requires stable prop references (useMemo/useCallback) to be effective.",
+          "TanStack Virtual eliminates DOM bloat from large message histories or search result lists.",
+          "Code splitting with React.lazy + Suspense keeps initial JS bundles lean and first-load fast."
+        ],
+        "takeaway": "Performance optimization in React is empirical: measure with DevTools, identify the real hot path, and apply the minimal technique that resolves the specific bottleneck."
+      }
+    }
   ],
-  "relatedLessons": ["dotnet-react-internals"],
-  "relatedGlossaryTerms": ["react-memo", "usememo", "usecallback"]
+  "relatedLessons": ["dotnet-react-internals", "dotnet-advanced-component-patterns", "dotnet-custom-hooks-patterns"],
+  "relatedGlossaryTerms": ["react-memo", "usememo", "usecallback", "virtualization", "code-splitting"]
 }

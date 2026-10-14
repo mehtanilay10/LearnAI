@@ -2,24 +2,65 @@
   "id": "dotnet-lesson-6-9",
   "slug": "dotnet-github-copilot",
   "moduleSlug": "dotnet-ai-assisted-dev",
-  "title": "GitHub Copilot",
-  "description": "Master GitHub Copilot for AI-assisted coding.",
+  "title": "GitHub Copilot for Enterprise C# & .NET Development",
+  "description": "Maximize developer productivity in Visual Studio and VS Code with GitHub Copilot Chat, multi-file edits, and custom repository instructions.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 40,
-  "tags": ["github-copilot", "ai-assisted", "coding"],
+  "estimatedMinutes": 55,
+  "tags": ["github-copilot", "copilot-chat", "developer-productivity", "visual-studio", "csharp", "ai-coding"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "GitHub Copilot"
+        "text": "The Modern AI-Assisted Developer Workflow"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "GitHub Copilot provides AI-powered code suggestions. Use it for boilerplate, patterns, and exploration."
+        "text": "GitHub Copilot has transformed modern software engineering from typing every line of boilerplate code by hand to pair programming with an intelligent context-aware assistant. For .NET developers working in Visual Studio and Visual Studio Code, Copilot offers three distinct interaction modes: inline code completions, interactive Copilot Chat, and multi-file Copilot Edits. Using Copilot effectively requires mastering contextual prompts, steering the model with domain conventions, and reviewing generated code critically."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Custom Repository Instructions via .github/copilot-instructions.md"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "To prevent Copilot from generating outdated C# patterns or proposing deprecated libraries, create a .github/copilot-instructions.md file at the root of your repository. Copilot automatically loads these instructions into its system prompt context for every developer on your team."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Production .github/copilot-instructions.md for .NET 9 Teams",
+        "content": "Specifies C# 13 and .NET 9 coding standards for GitHub Copilot:",
+        "code": "# Enterprise .NET 9 & C# 13 Team Standards for GitHub Copilot\n\n## Language & Framework Guidelines\n- Always target .NET 9 and C# 13 features.\n- Prefer primary constructors for dependency injection in classes.\n- Use strongly-typed records for DTOs and value objects.\n- Avoid legacy patterns: never suggest `ArrayList`, `Hashtable`, or blocking `.Result` / `.Wait()`.\n\n## Architecture & Resiliency\n- Always accept `CancellationToken` in asynchronous methods.\n- When building HTTP clients, use `IHttpClientFactory` and Polly v8 resilience pipelines.\n- Use `Microsoft.Extensions.AI` interfaces (`IChatClient`, `IEmbeddingGenerator`) instead of raw SDK types.\n- For structured logging, use compile-time `[LoggerMessage]` source generators.\n\n## Testing Guidelines\n- Write unit tests using xUnit, FluentAssertions, and Moq.\n- Name test methods using the pattern: `MethodName_StateUnderTest_ExpectedBehavior`.",
+        "language": "markdown"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Visual Studio Chat Context Variables"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Context Command", "Scope Provided to Model", "Ideal Prompt Example"],
+        "rows": [
+          ["@workspace", "Indexes the entire solution AST, symbols, and project references", "@workspace Where is the authentication middleware registered?"],
+          ["#file", "Pins specific source code file into chat context", "Refactor the caching logic in #file:CachedCatalogService.cs using Redis"],
+          ["#changes", "Inspects current uncommitted git diff in the workspace", "#changes Write a conventional commit message for these modifications"],
+          ["@terminal", "Passes console build errors or test failure logs", "@terminal Explain this build error and propose a C# fix"]
+        ]
       }
     },
     {
@@ -27,16 +68,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "Copilot provides code suggestions",
-          "Use for boilerplate and patterns",
-          "Review suggestions before accepting",
-          "Use comments to guide Copilot",
-          "Combine with pair programming"
+          "GitHub Copilot boosts .NET developer velocity across completions, chat, and multi-file edits",
+          "Codify team coding standards in .github/copilot-instructions.md to ensure modern C# 13 patterns",
+          "Use chat participants (@workspace, #file, @terminal) to provide precise local context",
+          "Leverage Copilot to accelerate unit test authoring, LINQ queries, and regex generation",
+          "Never commit AI-generated code without peer code review, unit tests, and security scrutiny"
         ],
-        "takeaway": "GitHub Copilot accelerates development. Use it for boilerplate and patterns, but always review suggestions for correctness and security."
+        "takeaway": "GitHub Copilot is a powerful co-pilot, but the human engineer remains the pilot in command. Guiding Copilot with repository instructions and contextual tags yields high-quality, idiomatic .NET code."
       }
     }
   ],
-  "relatedLessons": ["dotnet-ai-code-review"],
-  "relatedGlossaryTerms": ["github-copilot", "ai-coding"]
+  "relatedLessons": ["dotnet-ai-code-review", "dotnet-ai-refactoring", "dotnet-ai-debugging"],
+  "relatedGlossaryTerms": ["copilot", "tools-and-apis"]
 }

@@ -1,1 +1,86 @@
-{"id":"dotnet-lesson-3-16","slug":"dotnet-sk-memory-embeddings","moduleSlug":"dotnet-ai-sdk-semantickernel","title":"Memory & Embeddings","description":"Integrate vector memory and embeddings with Semantic Kernel for RAG applications.","order":4,"difficulty":"advanced","estimatedMinutes":50,"tags":["memory","embeddings","vector-search","rag"],"blocks":[{"type":"heading","data":{"level":2,"text":"Memory and Embeddings"}},{"type":"paragraph","data":{"text":"Semantic Kernel memory stores embeddings for semantic search. Integrate with vector databases for RAG applications."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Memory stores embeddings for semantic search","Integrate with vector databases","Use for RAG and knowledge retrieval","Configure embedding models","Tune similarity thresholds"],"takeaway":"Memory enables semantic search with embeddings. Integrate with vector databases for RAG applications that retrieve relevant context."}}],"relatedLessons":["dotnet-planners-connectors"],"relatedGlossaryTerms":["memory","embeddings","vector-search","rag"]}
+{
+  "id": "dotnet-lesson-3-16",
+  "slug": "dotnet-sk-memory-embeddings",
+  "moduleSlug": "dotnet-ai-sdk-semantickernel",
+  "title": "Semantic Kernel Memory, Vector Stores & Embeddings",
+  "description": "Implement short-term working memory, persistent vector search, and embedding generation using Semantic Kernel in .NET.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["semantic-kernel", "memory", "embeddings", "vector-stores", "semantic-search"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Memory Models in Semantic Kernel"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Enterprise AI applications need memory to maintain context. Semantic Kernel distinguishes between two complementary memory layers: Working Memory (short-term conversational state preserved inside ChatHistory across consecutive user turns) and Semantic Memory (long-term factual knowledge indexed into vector databases and recalled via high-dimensional embedding similarity)."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Generating Dense Embeddings with ITextEmbeddingGenerationService"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In Semantic Kernel, text is translated into vector spaces using the ITextEmbeddingGenerationService. You can batch-generate embeddings for thousands of text passages efficiently."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Batch Embedding Generation in C#",
+        "content": "Using Semantic Kernel to generate dense float embeddings:",
+        "code": "using Microsoft.SemanticKernel;\nusing Microsoft.SemanticKernel.Embeddings;\n\n// 1. Register embedding service in Kernel builder\nvar kernel = Kernel.CreateBuilder()\n    .AddAzureOpenAITextEmbeddingGeneration(\"text-embedding-3-small\", endpoint, credential)\n    .Build();\n\nvar embeddingService = kernel.GetRequiredService<ITextEmbeddingGenerationService>();\n\n// 2. Generate embeddings for a collection of document chunks\nvar documents = new List<string>\n{\n    \"Azure Kubernetes Service supports automated cluster node scaling.\",\n    \"Cosmos DB multi-region replication ensures low latency worldwide.\",\n    \"Azure API Management acts as a reverse proxy and AI gateway.\"\n};\n\nIList<ReadOnlyMemory<float>> embeddings = await embeddingService.GenerateEmbeddingsAsync(documents);\n\nConsole.WriteLine($\"Generated {embeddings.Count} embeddings. Dimension: {embeddings[0].Length}\");",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Integrating Persistent Vector Stores with Semantic Kernel"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Semantic Kernel aligns directly with Microsoft.Extensions.VectorData, allowing you to register vector connectors like Qdrant, Azure AI Search, or Redis, and expose semantic search directly as a plugin function to the kernel."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Exposing Vector Search as a Semantic Kernel Plugin in C#",
+        "content": "Integrates vector retrieval into the kernel so agents can query the knowledge store autonomously:",
+        "code": "public class KnowledgeBasePlugin\n{\n    private readonly IVectorStoreRecordCollection<string, KnowledgeChunkRecord> _collection;\n    private readonly ITextEmbeddingGenerationService _embeddingService;\n\n    public KnowledgeBasePlugin(\n        IVectorStore vectorStore,\n        ITextEmbeddingGenerationService embeddingService)\n    {\n        _collection = vectorStore.GetCollection<string, KnowledgeChunkRecord>(\"enterprise_kb\");\n        _embeddingService = embeddingService;\n    }\n\n    [KernelFunction(\"search_knowledge_base\")]\n    [Description(\"Searches corporate architecture documentation and guidelines for answers to technical questions.\")]\n    public async Task<List<string>> SearchAsync(\n        [Description(\"The search query or concept\")] string query,\n        CancellationToken ct = default)\n    {\n        var embedding = await _embeddingService.GenerateEmbeddingAsync(query, cancellationToken: ct);\n        var results = new List<string>();\n\n        await foreach (var record in _collection.VectorizedSearchAsync(embedding, new VectorSearchOptions<KnowledgeChunkRecord> { Top = 3 }, ct))\n        {\n            results.Add(record.Record.Content);\n        }\n\n        return results;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Semantic Kernel separates working conversational memory (ChatHistory) from long-term semantic memory (vector stores)",
+          "Use ITextEmbeddingGenerationService for fast, batch-oriented vector generation",
+          "Semantic Kernel v1.x integrates seamlessly with Microsoft.Extensions.VectorData connectors",
+          "Package vector retrieval into a [KernelFunction] plugin so agents can pull relevant context on demand",
+          "Always specify embedding dimensions and distance metrics matching the selected embedding model"
+        ],
+        "takeaway": "Memory gives AI workflows longevity. Combining ChatHistory for immediate conversation context with vector-backed semantic plugins enables agents to recall enterprise facts reliably."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-semantic-kernel-basics", "dotnet-skills-plugins", "dotnet-microsoft-extensions-vectordata"],
+  "relatedGlossaryTerms": ["memory", "semantic-kernel", "vector-database", "embedding"]
+}

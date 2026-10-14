@@ -1,1 +1,137 @@
-{"id":"dotnet-lesson-7-2","slug":"dotnet-capstone-data-model","moduleSlug":"dotnet-capstone-design","title":"Capstone Data Model","description":"Design the data model for the AI knowledge assistant.","order":2,"difficulty":"advanced","estimatedMinutes":45,"tags":["data-model","database","design"],"blocks":[{"type":"heading","data":{"level":2,"text":"Data Model"}},{"type":"paragraph","data":{"text":"Design the data model including documents, users, embeddings, and conversation history."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Model documents for RAG indexing","Design user and permission models","Plan conversation history storage","Design for query performance","Consider data retention policies"],"takeaway":"A good data model supports both application features and AI requirements. Design for query performance and data lifecycle."}}],"relatedLessons":["dotnet-capstone-architecture"],"relatedGlossaryTerms":["data-model","database-design","rag-indexing"]}
+{
+  "id": "dotnet-lesson-7-2",
+  "slug": "dotnet-capstone-data-model",
+  "moduleSlug": "dotnet-capstone-design",
+  "title": "Enterprise Data Modeling: Relational, Vector, & Conversation State",
+  "description": "Design high-performance, multi-tenant data structures for enterprise AI: EF Core entity modeling, vector embedding representations, conversation sessions, citations, document chunks, and audit logs.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["data-model", "database", "ef-core", "vector-database", "pgvector", "csharp-13"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Multi-Modal Enterprise Data Architecture"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Enterprise AI platforms require three distinct data storage paradigms: (1) Relational/Transactional storage for user accounts, tenancy boundaries, document metadata, and compliance audit logs; (2) Vector storage optimized for high-dimensional approximate nearest neighbor (ANN) similarity search; and (3) Semi-structured document storage for conversation state, tool execution traces, and grounded citations."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "capstone-erd",
+        "caption": "EnterpriseNexus Relational and Vector Entity Relationship Model",
+        "code": "erDiagram\n    TENANT ||--o{ USER_ACCOUNT : contains\n    TENANT ||--o{ DOCUMENT_CORPUS : owns\n    TENANT ||--o{ CONVERSATION_SESSION : owns\n\n    DOCUMENT_CORPUS ||--o{ DOCUMENT : contains\n    DOCUMENT ||--o{ DOCUMENT_CHUNK : splits_into\n    DOCUMENT_CHUNK ||--o{ CITATION : referenced_by\n\n    CONVERSATION_SESSION ||--o{ MESSAGE : contains\n    MESSAGE ||--o{ CITATION : cites\n    MESSAGE ||--o{ TOOL_EXECUTION : executes\n    CONVERSATION_SESSION ||--o{ AUDIT_LOG : generates\n\n    DOCUMENT_CHUNK {\n        uuid id PK\n        uuid document_id FK\n        int chunk_index\n        text content\n        vector embedding\n        jsonb metadata\n        text[] acl_security_groups\n    }\n\n    MESSAGE {\n        uuid id PK\n        uuid session_id FK\n        string role\n        text content\n        int prompt_tokens\n        int completion_tokens\n        timestamp created_at\n    }"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "EF Core 9 Entity Definitions with pgvector"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In .NET 9 with PostgreSQL and `Pgvector.EntityFrameworkCore`, high-dimensional vectors (e.g. 1536-dimensional OpenAI `text-embedding-3-small` or 3072-dimensional `text-embedding-3-large`) are mapped directly to strong C# types using `Pgvector.Vector`. Here is the core domain model."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "DocumentChunk and Conversation Entities in C# 13",
+        "content": "These domain entities enforce multi-tenant isolation, immutable chunk identifiers, and vector indexing configurations.",
+        "language": "csharp",
+        "code": "using System.ComponentModel.DataAnnotations;\nusing System.ComponentModel.DataAnnotations.Schema;\nusing Pgvector;\n\nnamespace EnterpriseNexus.Domain.Entities;\n\npublic sealed class DocumentChunk\n{\n    public Guid Id { get; init; } = Guid.NewGuid();\n    public Guid TenantId { get; init; }\n    public Guid DocumentId { get; init; }\n    \n    public int ChunkIndex { get; init; }\n    \n    [Required]\n    public string Content { get; set; } = string.Empty;\n    \n    public int TokenCount { get; init; }\n    \n    // 1536-dimension vector for OpenAI text-embedding-3-small\n    [Column(TypeName = \"vector(1536)\")]\n    public Vector Embedding { get; set; } = null!;\n    \n    // Access Control List (e.g., [\"Finance-Admins\", \"Executive-Staff\"])\n    public string[] SecurityGroups { get; set; } = [];\n    \n    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;\n    \n    // Navigation property\n    public Document Document { get; set; } = null!;\n}\n\npublic sealed class ConversationSession\n{\n    public Guid Id { get; init; } = Guid.NewGuid();\n    public Guid TenantId { get; init; }\n    public Guid UserId { get; init; }\n    public string Title { get; set; } = \"New Conversation\";\n    \n    public List<Message> Messages { get; set; } = [];\n    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;\n    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;\n}\n\npublic sealed class Message\n{\n    public Guid Id { get; init; } = Guid.NewGuid();\n    public Guid SessionId { get; init; }\n    public string Role { get; init; } = \"user\"; // user | assistant | system | tool\n    public string Content { get; set; } = string.Empty;\n    \n    public int PromptTokens { get; init; }\n    public int CompletionTokens { get; init; }\n    public long LatencyMs { get; init; }\n    \n    public List<Citation> Citations { get; set; } = [];\n    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Database Indexing & Query Acceleration Strategy"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Vector searches must be filtered by tenant and security boundaries *before* or *during* nearest neighbor traversal. Combining HNSW (Hierarchical Navigable Small World) vector indexing with B-tree relational indexes on `TenantId` ensures sub-50ms search latency across millions of chunks."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "Database Index Configurations and Query Profiles",
+        "headers": ["Entity & Field", "Index Type", "Configuration", "Purpose"],
+        "rows": [
+          [
+            "DocumentChunk.Embedding",
+            "HNSW Index",
+            "m = 16, ef_construction = 64, distance = cosine",
+            "Sub-50ms approximate nearest neighbor (ANN) vector similarity search"
+          ],
+          [
+            "DocumentChunk.TenantId + SecurityGroups",
+            "GIN / Composite B-Tree",
+            "CREATE INDEX ix_chunks_tenant_acl ON DocumentChunk(TenantId, SecurityGroups)",
+            "Pre-filtering chunks so users never retrieve documents outside their authorization boundary"
+          ],
+          [
+            "DocumentChunk.Content",
+            "Full-Text GIN Index",
+            "to_tsvector('english', Content)",
+            "BM25 keyword search component for hybrid retrieval"
+          ],
+          [
+            "ConversationSession.UserId + UpdatedAt",
+            "Composite B-Tree",
+            "Index(UserId, UpdatedAt DESC)",
+            "Instant retrieval of user chat history in frontend sidebar"
+          ],
+          [
+            "AuditLog.TenantId + Timestamp",
+            "Timescale / Partitioned B-Tree",
+            "Range partitioned by month",
+            "High-throughput write path for compliance and AI prompt/completion monitoring"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Data Modeling Verification Checklist",
+        "items": [
+          "TenantId foreign key enforced on all primary entities for mandatory tenant partitioning",
+          "Embedding dimensions explicitly pinned (1536 for small, 3072 for large) to prevent vector truncation",
+          "Security group ACLs stored as searchable arrays directly on chunk rows for single-pass filtered search",
+          "Cascade delete configured so deleting a parent document purges all child chunks and embeddings",
+          "Token counts and latency recorded on every message for accurate per-tenant cost accounting",
+          "Audit logs designed as append-only immutable records to comply with SOC2 / HIPAA standards"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Summary & Next Steps",
+        "points": [
+          "EnterpriseNexus models relational, vector, and semi-structured conversation state in harmony.",
+          "EF Core 9 with pgvector provides first-class LINQ support for vector cosine similarity queries.",
+          "HNSW indexing combined with tenant ACL pre-filtering ensures high-speed, secure retrieval.",
+          "Next, we design the hybrid retrieval pipeline (BM25 + HNSW + Reciprocal Rank Fusion)."
+        ],
+        "takeaway": "A robust data model is the bedrock of enterprise AI: tenant-level isolation, security ACLs, and vector indexing must be baked into the entity schema from day one."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-capstone-architecture", "dotnet-capstone-rag-design", "dotnet-microsoft-extensions-vectordata"],
+  "relatedGlossaryTerms": ["data-model", "pgvector", "hnsw-index", "entity-framework-core"]
+}

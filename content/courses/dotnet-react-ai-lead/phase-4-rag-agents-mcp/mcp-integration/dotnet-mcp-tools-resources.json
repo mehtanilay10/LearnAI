@@ -1,1 +1,96 @@
-{"id":"dotnet-lesson-4-12","slug":"dotnet-mcp-tools-resources","moduleSlug":"dotnet-mcp-integration","title":"MCP Tools & Resources","description":"Define and implement tools and resources in MCP.","order":4,"difficulty":"advanced","estimatedMinutes":45,"tags":["tools","resources","mcp","definitions"],"blocks":[{"type":"heading","data":{"level":2,"text":"Tools and Resources"}},{"type":"paragraph","data":{"text":"Tools perform actions, resources provide data. Define schemas, implement handlers, and document capabilities."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Tools perform actions with parameters","Resources provide data access","Define clear schemas and types","Implement robust handlers","Document capabilities and usage"],"takeaway":"Tools and resources are the core of MCP. Define clear schemas and implement robust handlers for reliable AI tool use."}}],"relatedLessons":["dotnet-building-mcp-servers"],"relatedGlossaryTerms":["tools","resources","schemas"]}
+{
+  "id": "dotnet-lesson-4-12",
+  "slug": "dotnet-mcp-tools-resources",
+  "moduleSlug": "dotnet-mcp-integration",
+  "title": "MCP Tools, Resources & Prompt Templates",
+  "description": "Expose read-only resources, URI schemes, dynamic subscriptions, and parameterized prompt templates via MCP in .NET.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["mcp", "resources", "prompts", "uri-schemes", "subscriptions", "dotnet"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Resources and Prompts: Beyond Just Tool Calling"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "While Tools in MCP are active functions that perform computations or mutations, Resources and Prompts provide passive context and structured guidance. Resources expose data—such as live database tables, log files, configuration documents, and memory stores—using standard URI patterns. Prompts expose pre-engineered, tested prompt templates that client applications and human operators can invoke with arguments."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "MCP Resource URI Design"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["URI Scheme", "MIME Type", "Description", "Example Use Case"],
+        "rows": [
+          ["config://{service}/appsettings", "application/json", "Live application settings and feature flags", "Inspecting production environment toggles"],
+          ["db://{database}/{table}/schema", "application/sql", "Table schema, column types, and foreign key relationships", "Giving agent accurate schema context before SQL generation"],
+          ["logs://{service}/{traceId}", "text/plain", "Correlated log streams for a specific error", "Diagnosing production application exceptions"],
+          ["docs://runbooks/{incidentType}", "text/markdown", "Operational runbook documentation", "Guiding automated remediation procedures"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Exposing Resources in a .NET MCP Server"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The C# example below illustrates handling resources/list and resources/read to expose real-time database schemas and application logs to connected AI clients."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Exposing Enterprise Resources over MCP in C#",
+        "content": "Handles resources/list and resources/read with MIME type annotations:",
+        "code": "using System.Text.Json.Nodes;\n\npublic class EnterpriseResourceProvider\n{\n    public JsonObject ListResources(long? id)\n    {\n        return new JsonObject\n        {\n            [\"jsonrpc\"] = \"2.0\",\n            [\"id\"] = id,\n            [\"result\"] = new JsonObject\n            {\n                [\"resources\"] = new JsonArray\n                {\n                    new JsonObject\n                    {\n                        [\"uri\"] = \"db://production/customers/schema\",\n                        [\"name\"] = \"Customer Table Schema\",\n                        [\"description\"] = \"DDL schema and relationships for the customers table\",\n                        [\"mimeType\"] = \"application/sql\"\n                    },\n                    new JsonObject\n                    {\n                        [\"uri\"] = \"policy://security/pii-guidelines\",\n                        [\"name\"] = \"PII Redaction Guidelines\",\n                        [\"description\"] = \"Corporate data handling and redaction rules\",\n                        [\"mimeType\"] = \"text/markdown\"\n                    }\n                }\n            }\n        };\n    }\n\n    public async Task<JsonObject> ReadResourceAsync(string uri, long? id, CancellationToken ct = default)\n    {\n        string contentText = uri switch\n        {\n            \"db://production/customers/schema\" => \n                \"CREATE TABLE Customers (Id UUID PRIMARY KEY, Name VARCHAR(100), Tier VARCHAR(20), Balance DECIMAL(18,2));\",\n            \"policy://security/pii-guidelines\" =>\n                \"# Corporate Security Policy\\nNever disclose SSN, credit cards, or internal IP addresses.\",\n            _ => throw new KeyNotFoundException($\"Resource '{uri}' not found.\")\n        };\n\n        return new JsonObject\n        {\n            [\"jsonrpc\"] = \"2.0\",\n            [\"id\"] = id,\n            [\"result\"] = new JsonObject\n            {\n                [\"contents\"] = new JsonArray\n                {\n                    new JsonObject\n                    {\n                        [\"uri\"] = uri,\n                        [\"mimeType\"] = uri.EndsWith(\"schema\") ? \"application/sql\" : \"text/markdown\",\n                        [\"text\"] = contentText\n                    }\n                }\n            }\n        };\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Publishing Parameterized MCP Prompts"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "MCP Prompts allow servers to expose standard operational workflows as templates. A client requests prompts/list to see available templates, and prompts/get with arguments to receive the filled prompt messages ready for LLM consumption."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Resources provide read-only context attachments via standardized URI schemes",
+          "Prompts expose reusable, parameterized enterprise prompt templates",
+          "Use MIME types (application/json, text/markdown, application/sql) to inform clients of content format",
+          "Clients can subscribe to resource URIs to receive real-time notifications when files or databases update",
+          "Combining Tools, Resources, and Prompts creates a comprehensive, self-documenting AI integration boundary"
+        ],
+        "takeaway": "MCP is more than tool calling. Exposing enterprise schemas and documents as Resources and operational playbooks as Prompts provides AI agents with instant, structured context."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-mcp-fundamentals", "dotnet-building-mcp-servers", "dotnet-mcp-client-integration", "dotnet-mcp-authorization-security"],
+  "relatedGlossaryTerms": ["mcp", "prompting", "api"]
+}

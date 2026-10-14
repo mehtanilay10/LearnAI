@@ -15,7 +15,8 @@
     "dotnet-vector-databases",
     "dotnet-chunking-strategies",
     "dotnet-hybrid-search",
-    "dotnet-advanced-retrieval"
+    "dotnet-advanced-retrieval",
+    "dotnet-microsoft-extensions-vectordata"
   ],
   "whatYouLearn": [
     "RAG architecture and workflow",

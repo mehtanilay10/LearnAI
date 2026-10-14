@@ -2,24 +2,66 @@
   "id": "dotnet-lesson-5-5",
   "slug": "dotnet-docker-containerization",
   "moduleSlug": "dotnet-devops-cicd",
-  "title": "Docker Containerization",
-  "description": "Containerize .NET applications with Docker.",
+  "title": "Production Containerization with Docker & .NET",
+  "description": "Build hardened, lightweight, multi-stage Docker images for ASP.NET Core and React applications using chiseled and non-root containers.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["docker", "containers", "dotnet"],
+  "estimatedMinutes": 55,
+  "tags": ["docker", "containers", "multi-stage-build", "chiseled-images", "security", "aspnetcore"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Docker"
+        "text": "Containerizing Enterprise .NET AI Applications"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Docker packages applications with dependencies. Create Dockerfiles for .NET, optimize image size, and use multi-stage builds."
+        "text": "Containers ensure reproducibility across development, staging, and production environments. However, creating naive Dockerfiles that compile code as root or package entire .NET SDKs into production images introduces severe CVE security vulnerabilities and inflates image sizes to over 1GB. Modern container engineering leverages multi-stage builds, layer caching, non-root user execution, and ultra-minimal chiseled images."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Production Multi-Stage Dockerfile for ASP.NET Core"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The Dockerfile below utilizes Microsoft's official .NET chiseled runtime image (Ubuntu Chiseled)—which contains zero package managers, no shell (/bin/sh), and runs as an unprivileged non-root user, shrinking image size to under 110MB."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Hardened Multi-Stage Dockerfile for .NET Web API",
+        "content": "Leverages separate build, publish, and chiseled runtime stages for maximum security:",
+        "code": "# Stage 1: Build & Restore with layer caching\nFROM mcr.microsoft.com/dotnet/sdk:9.0 AS build\nWORKDIR /src\n\n# Copy csproj files first to maximize Docker layer cache hits\nCOPY [\"src/LearnAI.Api/LearnAI.Api.csproj\", \"src/LearnAI.Api/\"]\nCOPY [\"src/LearnAI.Core/LearnAI.Core.csproj\", \"src/LearnAI.Core/\"]\nRUN dotnet restore \"src/LearnAI.Api/LearnAI.Api.csproj\"\n\n# Copy remainder of source code and build\nCOPY . .\nWORKDIR \"/src/src/LearnAI.Api\"\nRUN dotnet build \"LearnAI.Api.csproj\" -c Release -o /app/build\n\n# Stage 2: Publish optimized binaries\nFROM build AS publish\nRUN dotnet publish \"LearnAI.Api.csproj\" -c Release -o /app/publish \\\n    --no-restore \\\n    /p:UseAppHost=false\n\n# Stage 3: Minimal Chiseled Runtime (No shell, non-root app user)\nFROM mcr.microsoft.com/dotnet/aspnet:9.0-noble-chiseled AS final\nWORKDIR /app\nEXPOSE 8080\nENV ASPNETCORE_HTTP_PORTS=8080\nENV DOTNET_EnableDiagnostics=0\n\n# Copy published binaries\nCOPY --from=publish /app/publish .\n\n# Container runs as unprivileged 'app' user automatically\nUSER app\nENTRYPOINT [\"dotnet\", \"LearnAI.Api.dll\"]",
+        "language": "dockerfile"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Container Best Practices for AI Microservices"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Container Security & Optimization Checklist",
+        "items": [
+          {"text": "Separate Restore from Build", "hint": "Copy only .csproj files before running dotnet restore so dependencies are cached between code edits."},
+          {"text": "Run as Non-Root User", "hint": "Never run container workloads as root; use USER app to prevent privilege escalation attacks."},
+          {"text": "Chiseled / Distroless Base", "hint": "Remove bash, curl, and package managers from runtime images to eliminate attack tools."},
+          {"text": "Health Check Probes", "hint": "Implement /healthz liveness and readiness endpoints in ASP.NET Core for orchestrator probing."},
+          {"text": "Config via Environment Variables", "hint": "Inject AI service endpoints and secrets dynamically at container launch; never bake keys into image layers."}
+        ]
       }
     },
     {
@@ -27,16 +69,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "Docker packages apps with dependencies",
-          "Use multi-stage builds for smaller images",
-          "Optimize layer caching",
-          "Docker Compose for local development",
-          "Use .NET SDK image for build, runtime for run"
+          "Multi-stage Docker builds separate heavy SDK build tools from lean runtime images",
+          "Chiseled Ubuntu images eliminate shells and package managers, slashing attack surface and image size",
+          "Always run containers as unprivileged users (USER app) for zero-trust security",
+          "Structure Docker commands to maximize layer caching on dependency restoration",
+          "Pass secrets and configurations via environment variables or Kubernetes secrets, never baked in"
         ],
-        "takeaway": "Docker provides consistent environments. Use multi-stage builds to minimize image size and layer caching to speed up builds."
+        "takeaway": "Hardened containerization provides a secure, minimal, and predictable foundation for deploying .NET AI services across Kubernetes, App Service, and Container Apps."
       }
     }
   ],
-  "relatedLessons": ["dotnet-kubernetes-aks"],
-  "relatedGlossaryTerms": ["docker", "containers", "multi-stage-builds"]
+  "relatedLessons": ["dotnet-kubernetes-aks", "dotnet-infrastructure-as-code", "dotnet-azure-app-service"],
+  "relatedGlossaryTerms": ["deployment", "security"]
 }

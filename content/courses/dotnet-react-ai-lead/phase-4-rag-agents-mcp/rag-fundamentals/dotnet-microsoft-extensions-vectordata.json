@@ -1,0 +1,113 @@
+{
+  "id": "dotnet-lesson-4-15",
+  "slug": "dotnet-microsoft-extensions-vectordata",
+  "moduleSlug": "dotnet-rag-fundamentals",
+  "title": "Microsoft.Extensions.VectorData & Vector Stores",
+  "description": "Master the unified Microsoft.Extensions.VectorData abstractions for vector databases in .NET.",
+  "order": 6,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["vectordata", "vector-stores", "microsoft-extensions", "qdrant", "azure-search"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Microsoft.Extensions.VectorData Abstraction"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Just as Microsoft.Extensions.AI provides unified abstractions for chat and embedding models, Microsoft.Extensions.VectorData provides a standardized, provider-agnostic abstraction layer for vector databases in .NET. Instead of binding your data access layer directly to Qdrant, Azure AI Search, Milvus, Redis, or PostgreSQL pgvector SDKs, you code against IVectorStore and IVectorStoreRecordCollection<TKey, TRecord>."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "title": "Why Unified Abstractions Matter",
+        "text": "In enterprise applications, vector store requirements often evolve. A team might start prototyping with an in-memory or embedded vector store, deploy to Qdrant or Azure AI Search in staging, and leverage pgvector in production. Microsoft.Extensions.VectorData decouples domain models and ingestion logic from the underlying storage engine."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Modeling Vector Records with Attributes"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Records in Microsoft.Extensions.VectorData use declarative attributes to define the primary key, metadata payload fields, and dense vector embeddings with dimensions and distance metrics."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Vector Record Definition in C#",
+        "content": "Define a strongly-typed record decorated with VectorStoreRecord attributes:",
+        "code": "using Microsoft.Extensions.VectorData;\n\npublic class KnowledgeChunkRecord\n{\n    [VectorStoreRecordKey]\n    public string Id { get; set; } = Guid.NewGuid().ToString();\n\n    [VectorStoreRecordData(IsFilterable = true)]\n    public string DocumentId { get; set; } = string.Empty;\n\n    [VectorStoreRecordData(IsFilterable = true)]\n    public string TenantId { get; set; } = string.Empty;\n\n    [VectorStoreRecordData(IsFullTextSearchable = true)]\n    public string Content { get; set; } = string.Empty;\n\n    [VectorStoreRecordData(IsFilterable = true)]\n    public string[] SecurityGroups { get; set; } = [];\n\n    [VectorStoreRecordVector(1536, DistanceFunction.CosineSimilarity)]\n    public ReadOnlyMemory<float> Embedding { get; set; }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Vector Store Ingestion and Querying"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "With IVectorStore, you obtain a collection reference, ensure the collection exists, upsert records with embeddings, and execute similarity searches with metadata filtering."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Ingesting and Searching with IVectorStoreRecordCollection",
+        "content": "Demonstrates upserting chunks and querying with cosine similarity filtering:",
+        "code": "using Microsoft.Extensions.VectorData;\nusing Microsoft.Extensions.AI;\n\npublic class VectorKnowledgeService\n{\n    private readonly IVectorStoreRecordCollection<string, KnowledgeChunkRecord> _collection;\n    private readonly IEmbeddingGenerator<string, Embedding<float>> _embeddingGenerator;\n\n    public VectorKnowledgeService(\n        IVectorStore vectorStore,\n        IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator)\n    {\n        _collection = vectorStore.GetCollection<string, KnowledgeChunkRecord>(\"enterprise_knowledge\");\n        _embeddingGenerator = embeddingGenerator;\n    }\n\n    public async Task InitializeCollectionAsync(CancellationToken ct = default)\n    {\n        // Ensure the vector index and schema are created in the underlying database\n        await _collection.CreateCollectionIfNotExistsAsync(ct);\n    }\n\n    public async Task IngestChunkAsync(string docId, string tenantId, string content, string[] roles, CancellationToken ct = default)\n    {\n        var embeddingResult = await _embeddingGenerator.GenerateEmbeddingAsync(content, cancellationToken: ct);\n\n        var record = new KnowledgeChunkRecord\n        {\n            Id = $\"{docId}_{Guid.NewGuid():N}\",\n            DocumentId = docId,\n            TenantId = tenantId,\n            Content = content,\n            SecurityGroups = roles,\n            Embedding = embeddingResult.Vector\n        };\n\n        await _collection.UpsertAsync(record, cancellationToken: ct);\n    }\n\n    public async Task<List<KnowledgeChunkRecord>> SearchAsync(\n        string query,\n        string tenantId,\n        int topK = 5,\n        CancellationToken ct = default)\n    {\n        var queryEmbedding = await _embeddingGenerator.GenerateEmbeddingAsync(query, cancellationToken: ct);\n\n        var searchOptions = new VectorSearchOptions<KnowledgeChunkRecord>\n        {\n            VectorPropertyName = nameof(KnowledgeChunkRecord.Embedding),\n            Top = topK,\n            Filter = new VectorSearchFilter()\n                .EqualTo(nameof(KnowledgeChunkRecord.TenantId), tenantId)\n        };\n\n        var results = new List<KnowledgeChunkRecord>();\n        await foreach (var result in _collection.VectorizedSearchAsync(queryEmbedding.Vector, searchOptions, ct))\n        {\n            results.Add(result.Record);\n        }\n\n        return results;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Supported Connectors in .NET Ecosystem"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Connector Package", "Target Store", "Capabilities", "Best Fit"],
+        "rows": [
+          ["Microsoft.SemanticKernel.Connectors.Qdrant", "Qdrant", "HNSW, Payload filtering, Fast dense vector indexing", "High-performance standalone vector store"],
+          ["Microsoft.SemanticKernel.Connectors.AzureAISearch", "Azure AI Search", "HNSW, BM25, Semantic Ranker, Integrated chunking", "Azure enterprise cloud with hybrid search"],
+          ["Microsoft.SemanticKernel.Connectors.Redis", "Redis Enterprise", "In-memory HNSW / FLAT indexing, Low latency", "High-throughput caching & conversational memory"],
+          ["Microsoft.SemanticKernel.Connectors.Postgres", "PostgreSQL (pgvector)", "IVFFlat & HNSW, Relational join queries, ACID", "Existing PostgreSQL databases & single-database stacks"]
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Microsoft.Extensions.VectorData standardizes vector database interactions in .NET",
+          "Use IVectorStore and IVectorStoreRecordCollection<TKey, TRecord> for provider portability",
+          "Decorate POCO/records with [VectorStoreRecordKey], [VectorStoreRecordData], and [VectorStoreRecordVector]",
+          "VectorSearchFilter provides strongly-typed metadata filtering for tenant isolation and security ACLs",
+          "Switch between Azure AI Search, Qdrant, Redis, or pgvector by swapping DI registration without changing application code"
+        ],
+        "takeaway": "Microsoft.Extensions.VectorData eliminates vendor lock-in for vector databases, allowing .NET teams to write portable, testable RAG ingestion and retrieval layers."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-vector-databases", "dotnet-hybrid-search", "dotnet-advanced-retrieval"],
+  "relatedGlossaryTerms": ["vector-database", "embedding", "semantic-search"]
+}

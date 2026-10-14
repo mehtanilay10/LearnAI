@@ -1,1 +1,91 @@
-{"id":"dotnet-lesson-4-3","slug":"dotnet-chunking-strategies","moduleSlug":"dotnet-rag-fundamentals","title":"Chunking Strategies","description":"Master document chunking strategies for effective retrieval.","order":3,"difficulty":"advanced","estimatedMinutes":40,"tags":["chunking","document-processing","splitting"],"blocks":[{"type":"heading","data":{"level":2,"text":"Chunking Strategies"}},{"type":"paragraph","data":{"text":"Chunking affects retrieval quality. Use fixed-size, semantic, or recursive chunking based on document type and use case."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Chunk size affects retrieval quality","Fixed-size chunking is simple","Semantic chunking preserves meaning","Recursive chunking handles hierarchy","Overlap chunks preserve context"],"takeaway":"Chunking is critical for RAG quality. Choose strategy based on document type: semantic for narratives, fixed-size for reference docs."}}],"relatedLessons":["dotnet-rag-architecture"],"relatedGlossaryTerms":["chunking","semantic-chunking","recursive-chunking"]}
+{
+  "id": "dotnet-lesson-4-3",
+  "slug": "dotnet-chunking-strategies",
+  "moduleSlug": "dotnet-rag-fundamentals",
+  "title": "Document Chunking Strategies & Boundary Optimization",
+  "description": "Master fixed-size, recursive character, semantic, and syntax-aware chunking strategies with token overlap in .NET.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["chunking", "token-splitting", "semantic-chunking", "rag", "overlap", "csharp"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Critical Role of Chunking in RAG"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Chunking is the process of breaking a continuous document into discrete passages before embedding generation and indexing. It is often the single most impactful lever on RAG retrieval accuracy. If chunks are too small (e.g. 50 tokens), they lose surrounding context and generate ambiguous embeddings. If chunks are too large (e.g. 1500 tokens), they bundle multiple distinct topics together, diluting the embedding's semantic specificity and causing vector search to miss specific details."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "The Chunk Overlap Rule",
+        "text": "Always apply a 10% to 20% sliding window overlap between consecutive chunks. If a key sentence or relationship spans the boundary between Chunk A and Chunk B, the overlap ensures the semantic meaning is preserved in at least one of the vector representations."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Comparison of Chunking Strategies"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Strategy", "Splitting Logic", "Pros", "Cons", "Optimal Use Case"],
+        "rows": [
+          ["Fixed-Character / Token", "Slice every N characters or tokens rigidly", "Fast, predictable chunk sizes", "Splits words, sentences, and paragraphs in half", "Uniform unstructured logs or plain text streams"],
+          ["Recursive Character Splitting", "Tries splitting by \\n\\n, then \\n, then spaces", "Preserves paragraph and sentence integrity", "Varying chunk sizes", "General enterprise documentation, articles, reports"],
+          ["Markdown / Structure-Aware", "Splits at heading boundaries (#, ##, ###) while prepending hierarchy metadata", "Preserves structural context; retains code blocks and tables intact", "Requires structured source documents", "Technical wikis, API documentation, developer guides"],
+          ["Semantic Chunking", "Computes embedding distance between consecutive sentences; splits when cosine distance spikes", "Extracts pure thematic thoughts; zero topical drift", "Computationally expensive (requires multiple embedding calls per document)", "Complex analytical whitepapers, legal contracts, regulatory filings"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Implementing Recursive Chunking with Overlap in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The following C# implementation demonstrates a production-grade recursive chunker that respects paragraph boundaries, measures token counts, and applies sliding window overlap."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Recursive Token Chunker in C#",
+        "content": "Splits text recursively by paragraphs and sentences while maintaining sliding window overlap:",
+        "code": "public class DocumentChunk\n{\n    public int Index { get; set; }\n    public string Text { get; set; } = string.Empty;\n    public int EstimatedTokens { get; set; }\n    public string? HeaderBreadcrumb { get; set; }\n}\n\npublic class RecursiveTokenChunker\n{\n    private readonly int _maxTokens;\n    private readonly int _overlapTokens;\n    private static readonly string[] Separators = [\"\\n\\n\", \"\\n\", \". \", \", \", \" \"];\n\n    public RecursiveTokenChunker(int maxTokens = 500, int overlapTokens = 75)\n    {\n        _maxTokens = maxTokens;\n        _overlapTokens = overlapTokens;\n    }\n\n    public List<DocumentChunk> ChunkDocument(string text, string? breadcrumb = null)\n    {\n        var chunks = new List<DocumentChunk>();\n        var paragraphs = text.Split(new[] { \"\\n\\n\" }, StringSplitOptions.RemoveEmptyEntries);\n        var currentChunkBuilder = new StringBuilder();\n        int chunkIndex = 0;\n\n        foreach (var paragraph in paragraphs)\n        {\n            var paragraphTokens = EstimateTokenCount(paragraph);\n\n            // If paragraph fits in current chunk, append it\n            if (EstimateTokenCount(currentChunkBuilder.ToString()) + paragraphTokens <= _maxTokens)\n            {\n                currentChunkBuilder.AppendLine(paragraph);\n            }\n            else\n            {\n                // Flush previous chunk if not empty\n                if (currentChunkBuilder.Length > 0)\n                {\n                    chunks.Add(CreateChunk(chunkIndex++, currentChunkBuilder.ToString(), breadcrumb));\n                    \n                    // Capture trailing overlap text\n                    var overlapText = ExtractOverlap(currentChunkBuilder.ToString(), _overlapTokens);\n                    currentChunkBuilder.Clear();\n                    currentChunkBuilder.AppendLine(overlapText);\n                }\n\n                currentChunkBuilder.AppendLine(paragraph);\n            }\n        }\n\n        if (currentChunkBuilder.Length > 0)\n        {\n            chunks.Add(CreateChunk(chunkIndex, currentChunkBuilder.ToString(), breadcrumb));\n        }\n\n        return chunks;\n    }\n\n    private static DocumentChunk CreateChunk(int index, string content, string? breadcrumb)\n    {\n        return new DocumentChunk\n        {\n            Index = index,\n            Text = content.Trim(),\n            EstimatedTokens = EstimateTokenCount(content),\n            HeaderBreadcrumb = breadcrumb\n        };\n    }\n\n    private static int EstimateTokenCount(string s) => (int)Math.Ceiling(s.Length / 4.0);\n\n    private static string ExtractOverlap(string text, int overlapTokens)\n    {\n        var words = text.Split(' ');\n        int targetWords = (int)(overlapTokens * 0.75);\n        if (words.Length <= targetWords) return text;\n        return string.Join(\" \", words.TakeLast(targetWords));\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Chunking directly dictates the precision and recall of your vector search layer",
+          "Aim for 300 to 500 tokens per chunk for dense semantic retrieval in enterprise systems",
+          "Always apply 10% to 20% sliding window overlap to prevent context shearing across boundaries",
+          "Use recursive character splitting to respect natural semantic boundaries (paragraphs, sentences)",
+          "Prepend parent section headers (breadcrumbs) to chunks so individual fragments retain their structural context"
+        ],
+        "takeaway": "Optimal chunking balances granularity against comprehension. By leveraging recursive boundary detection and sliding window overlap, .NET ingestion pipelines preserve semantic coherence."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-rag-architecture", "dotnet-vector-databases", "dotnet-advanced-retrieval"],
+  "relatedGlossaryTerms": ["chunking", "rag", "embedding"]
+}

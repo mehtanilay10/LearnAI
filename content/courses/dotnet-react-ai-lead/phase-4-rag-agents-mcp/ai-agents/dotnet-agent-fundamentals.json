@@ -2,24 +2,73 @@
   "id": "dotnet-lesson-4-5",
   "slug": "dotnet-agent-fundamentals",
   "moduleSlug": "dotnet-ai-agents",
-  "title": "Agent Fundamentals",
-  "description": "Understand AI agent architecture and design patterns.",
+  "title": "Agent Architectures & Cognitive ReAct Loops",
+  "description": "Understand AI agent cognitive architecture, the ReAct reasoning-action pattern, working memory, and tool integration in .NET.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["agents", "architecture", "design-patterns"],
+  "estimatedMinutes": 55,
+  "tags": ["agents", "react-pattern", "cognitive-architecture", "reasoning", "tools", "csharp"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Agent Architecture"
+        "text": "From Stateless Prompts to Autonomous Agents"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "AI agents use LLMs to reason and act. Understand agent loops, memory, perception, and action patterns."
+        "text": "A standard LLM completion is purely reactive: you submit an input, the model generates an output, and execution stops. An AI Agent, by contrast, possesses agency: it is endowed with goals, short-term memory, an action space (tools), and an autonomous decision loop. The agent evaluates the current environment, reasons about what steps are necessary to reach its objective, executes external tools, observes the results, and iterates until the goal is satisfied."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "agent-cognitive-loop",
+        "caption": "The ReAct (Reason + Act + Observe) Agent Cognitive Architecture",
+        "definition": "graph TD\n    Goal[\"User Objective: 'Audit customer account #892 and refund overcharges'\"] --> Brain[\"Agent Brain (LLM Reasoning State)\"]\n    Brain --> Thought[\"1. Thought: 'I need to fetch recent transactions first.'\"]\n    Thought --> Action[\"2. Action: CallTool('GetTransactions', { customerId: 892 })\"]\n    Action --> Environment[\"External World: CRM / Database / Stripe\"]\n    Environment --> Observation[\"3. Observation: 'Found 2 duplicate charges of $49.00'\"]\n    Observation --> Brain\n    Brain --> NextThought[\"4. Next Thought: 'Overcharges confirmed. I will issue a refund.'\"]\n    NextThought --> NextAction[\"5. Action: CallTool('IssueRefund', { amount: 98.00 })\"]\n    NextAction --> FinalResult[\"6. Completed Goal Response to User\"]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The Four Pillars of Agent Architecture"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Pillar", "Function", "Implementation in .NET", "Engineering Constraint"],
+        "rows": [
+          ["Perception & Input", "Ingests user prompts, file attachments, and environmental webhooks", "ASP.NET Core Minimal APIs, SSE, Channels", "Must sanitize user inputs to prevent prompt injection"],
+          ["Brain / Reasoner", "Deconstructs complex goals, decides tool selection and parameters", "Microsoft.Extensions.AI IChatClient", "Must enforce bounded loop limits (e.g. max 10 steps)"],
+          ["Memory & State", "Maintains conversational history (short-term) and recalled facts (long-term)", "In-memory List<ChatMessage>, Redis, Vector Database", "Must prune context window to prevent token exhaustion"],
+          ["Action / Toolset", "Interacts with external databases, APIs, code interpreters, and file systems", "AIFunction / FunctionCalling tools in C#", "Must enforce granular permissions and authorization checks"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Building a Minimal ReAct Agent in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Using Microsoft.Extensions.AI, you can wire an agent that iterates over thoughts, executes strongly-typed tools, and returns observations back into its context."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Minimal ReAct Agent Loop in C#",
+        "content": "A basic agent execution loop demonstrating reasoning, tool calling, and observation assimilation:",
+        "code": "using Microsoft.Extensions.AI;\n\npublic class MinimalReActAgent\n{\n    private readonly IChatClient _client;\n    private readonly List<AIFunction> _tools;\n    private const int MaxIterations = 5;\n\n    public MinimalReActAgent(IChatClient client, List<AIFunction> tools)\n    {\n        _client = client;\n        _tools = tools;\n    }\n\n    public async Task<string> RunAsync(string userGoal, CancellationToken ct = default)\n    {\n        var conversation = new List<ChatMessage>\n        {\n            new(ChatRole.System, \n                \"You are an autonomous problem-solving agent. When solving a problem, use the provided tools. \" +\n                \"Always reflect on tool observations before deciding the next step.\"),\n            new(ChatRole.User, userGoal)\n        };\n\n        var options = new ChatOptions { Tools = _tools, Temperature = 0.1f };\n\n        for (int i = 0; i < MaxIterations; i++)\n        {\n            ChatCompletion completion = await _client.CompleteAsync(conversation, options, ct);\n            conversation.Add(completion.Message);\n\n            var functionCalls = completion.Message.Contents.OfType<FunctionCallContent>().ToList();\n            \n            // If model made no tool calls, it has reached its final answer\n            if (functionCalls.Count == 0)\n            {\n                return completion.Message.Text ?? \"Goal accomplished.\";\n            }\n\n            // Execute all requested tool calls and feed observations back\n            foreach (var call in functionCalls)\n            {\n                var tool = _tools.FirstOrDefault(t => t.Metadata.Name == call.Name)\n                    ?? throw new InvalidOperationException($\"Tool {call.Name} not found.\");\n\n                var toolResult = await tool.InvokeAsync(call.Arguments, ct);\n                \n                conversation.Add(new ChatMessage(ChatRole.Tool, toolResult?.ToString() ?? \"null\")\n                {\n                    Contents = { new FunctionResultContent(call.CallId, toolResult) }\n                });\n            }\n        }\n\n        return \"Task paused: Reached maximum allowed reasoning iterations.\";\n    }\n}",
+        "language": "csharp"
       }
     },
     {
@@ -27,16 +76,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "Agents reason and act autonomously",
-          "Agent loops: perceive, reason, act",
-          "Memory maintains context",
-          "Tools enable external actions",
-          "Plan before acting for complex tasks"
+          "Agents move beyond stateless prompts to autonomous loops: Reason -> Act -> Observe",
+          "The ReAct pattern grounds reasoning in verifiable observations returned by tools",
+          "Agent systems require four core pillars: Perception, Brain, Memory, and Action space",
+          "Always guard autonomous loops with iteration limits (MaxIterations) to prevent infinite loops",
+          "Enterprise agents must maintain an auditable transcript of internal thoughts and tool calls"
         ],
-        "takeaway": "Agents extend LLMs with reasoning and action capabilities. Design clear loops, memory, and tool integrations for reliable agents."
+        "takeaway": "Agent fundamentals center on controlled iterative execution. Equipping an LLM with structured tools and a bounded ReAct loop empowers it to perform complex multi-step enterprise workflows."
       }
     }
   ],
-  "relatedLessons": ["dotnet-tool-calling"],
-  "relatedGlossaryTerms": ["ai-agents", "agent-loop", "memory"]
+  "relatedLessons": ["dotnet-tool-calling", "dotnet-agent-planning", "dotnet-agent-orchestration", "dotnet-multi-agent-systems"],
+  "relatedGlossaryTerms": ["agent", "tool-calling", "orchestration", "workflow"]
 }

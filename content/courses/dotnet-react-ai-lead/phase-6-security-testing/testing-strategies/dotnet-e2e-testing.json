@@ -1,1 +1,77 @@
-{"id":"dotnet-lesson-6-7","slug":"dotnet-e2e-testing","moduleSlug":"dotnet-testing-strategies","title":"E2E Testing","description":"Implement end-to-end testing with Playwright.","order":3,"difficulty":"advanced","estimatedMinutes":50,"tags":["e2e-testing","playwright","testing"],"blocks":[{"type":"heading","data":{"level":2,"text":"E2E Testing"}},{"type":"paragraph","data":{"text":"E2E tests verify user workflows. Use Playwright for browser automation and test critical paths."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["E2E tests verify user workflows","Playwright for browser automation","Test critical user paths","Run in CI/CD pipelines","Balance test coverage and speed"],"takeaway":"E2E tests catch integration issues. Focus on critical user paths and balance coverage with execution time."}}],"relatedLessons":["dotnet-integration-testing"],"relatedGlossaryTerms":["e2e-testing","playwright"]}
+{
+  "id": "dotnet-lesson-6-7",
+  "slug": "dotnet-e2e-testing",
+  "moduleSlug": "dotnet-testing-strategies",
+  "title": "End-to-End Testing AI UX with Microsoft Playwright",
+  "description": "Test React streaming chat interfaces, token rendering, cancellation controls, and tool approval modals with Playwright.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["e2e-testing", "playwright", "react", "streaming-ui", "tool-approval", "automation"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "E2E Testing Challenges in AI User Experiences"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Testing AI web interfaces end-to-end introduces unique challenges compared to standard CRUD apps. Streaming responses emit incremental chunks over Server-Sent Events, auto-scrolling dynamically adjusts the viewport, tool execution badges change state from 'pending' to 'approved' to 'completed', and the model's text can vary between runs. Microsoft Playwright provides the automation engine to test these dynamic asynchronous UI flows reliably."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Testing Streaming Chat & Abort Controls with Playwright"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The Playwright test below navigates to the chat interface, enters a prompt, asserts that tokens stream into view, and verifies that clicking the 'Stop Generating' button aborts the stream and re-enables input."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Playwright E2E Test for AI Streaming Chat in TypeScript",
+        "content": "Verifies token streaming, auto-scroll, and stop generation button mechanics:",
+        "code": "import { test, expect } from '@playwright/test';\n\ntest.describe('AI Chat Assistant E2E', () => {\n  test('User can submit message, receive streaming response, and stop generation', async ({ page }) => {\n    await page.goto('/chat');\n\n    const promptInput = page.getByPlaceholder(/ask a question/i);\n    const submitButton = page.getByRole('button', { name: /send/i });\n\n    // 1. Submit prompt\n    await promptInput.fill('Summarize the quarterly cloud architecture report');\n    await submitButton.click();\n\n    // 2. Assert stop button appears during active streaming\n    const stopButton = page.getByRole('button', { name: /stop/i });\n    await expect(stopButton).toBeVisible();\n\n    // 3. Assert streaming content container begins populating\n    const assistantMessage = page.locator('.assistant-message').last();\n    await expect(assistantMessage).toContainText(/quarterly/i, { timeout: 5000 });\n\n    // 4. Click stop to abort generation\n    await stopButton.click();\n    await expect(stopButton).toBeHidden();\n    await expect(promptInput).toBeEnabled();\n  });\n\n  test('Interactive tool approval modal requires user confirmation', async ({ page }) => {\n    await page.goto('/chat');\n    await page.getByPlaceholder(/ask a question/i).fill('Delete obsolete test database cluster');\n    await page.getByRole('button', { name: /send/i }).click();\n\n    // Verify human approval modal pops up\n    const approvalModal = page.locator('.approval-modal');\n    await expect(approvalModal).toBeVisible();\n    await expect(approvalModal).toContainText('requires approval');\n\n    // Approve action\n    await page.getByRole('button', { name: /approve/i }).click();\n    await expect(approvalModal).toBeHidden();\n    await expect(page.locator('.tool-status-completed')).toBeVisible();\n  });\n});",
+        "language": "typescript"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Mocking Network SSE Streams in Playwright"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "To keep CI pipelines fast and prevent burning cloud tokens on every pull request, intercept the /api/chat endpoint using page.route() in Playwright to stream predetermined mock token chunks with precise timing delays."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Playwright automates end-to-end user journeys across modern React streaming AI interfaces",
+          "Test streaming edge cases: aborting mid-stream with Stop buttons, connection errors, and auto-scroll",
+          "Verify that Human-in-the-Loop tool approval modals correctly pause and resume workflows",
+          "Intercept and mock SSE /api/chat network routes for fast, deterministic, cost-free CI testing",
+          "Assert on semantic elements (e.g. data-testid or role attributes) rather than brittle CSS selectors"
+        ],
+        "takeaway": "E2E testing with Playwright verifies the complete human experience of your AI application, ensuring streaming controls, citations, and approval flows perform flawlessly in production."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-streaming-ai-ux", "dotnet-tool-call-status", "dotnet-integration-testing"],
+  "relatedGlossaryTerms": ["evaluation", "human-in-the-loop", "streaming"]
+}

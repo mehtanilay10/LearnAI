@@ -2,24 +2,111 @@
   "id": "dotnet-lesson-7-9",
   "slug": "dotnet-evaluation-production",
   "moduleSlug": "dotnet-capstone-implementation",
-  "title": "Evaluation & Production Readiness",
-  "description": "Implement measurable evaluation, audit logs, failure recovery, and production documentation.",
+  "title": "Production AI Readiness, Evaluation & Governance",
+  "description": "Establish automated quality gates, failure recovery, audit logging, latency/cost budgets, and production readiness documentation.",
   "order": 5,
   "difficulty": "advanced",
   "estimatedMinutes": 60,
-  "tags": ["evaluation", "audit-logs", "production-readiness", "documentation"],
+  "tags": ["capstone", "production-readiness", "evaluation-gates", "audit-logs", "governance", "failure-recovery"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Evaluation & Production Readiness"
+        "text": "The Production Readiness Gate for Enterprise AI"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Implement measurable evaluation with golden datasets, audit logs for compliance, failure recovery strategies, and production readiness documentation."
+        "text": "Taking an AI-powered system from prototype to mission-critical production is the culmination of the .NET + React AI Lead journey. An enterprise AI solution cannot go live based merely on a subjective demo. It requires automated quality gates in CI/CD, resilient circuit-breaking fallback strategies, comprehensive audit logs for compliance, strict latency/cost budgets, and documented operational runbooks."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Production Quality Gates in CI/CD"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Before any pull request is merged to main or deployed to staging, an automated GitHub Actions workflow executes the evaluation suite against the golden benchmark dataset. The build fails if quality or safety regressions occur."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Quality Gate", "Measurement Tool", "Passing Threshold", "Action on Failure"],
+        "rows": [
+          ["Retrieval Recall@5", "Evaluation benchmark against 200 golden queries", ">= 0.88", "Block deployment; investigate chunking or indexing regressions"],
+          ["Groundedness Score", "Microsoft.Extensions.AI.Evaluation judge model", ">= 4.5 / 5.0 (0 hallucinated claims)", "Block deployment; refine system prompt grounding constraints"],
+          ["Adversarial Prompt Shield", "Automated red-teaming injection suite", "100% blocked injection attempts", "Critical security failure; reject build"],
+          ["P95 Latency Budget", "Synthetic load test (50 concurrent users)", "<= 2.8 seconds", "Block deployment; check vector index optimization & model PTU limits"],
+          ["JSON Schema Conformance", "Strict schema validator on 500 test generations", "100% valid schema parses", "Block deployment; re-enable strict JSON mode"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Failure Recovery & Graceful Degradation in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When downstream AI providers experience 5xx outages, high latency spikes, or 429 quota exhaustion, production systems must degrade gracefully rather than presenting raw stack traces to end users."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Cascading Fallback and Degradation Pipeline in C#",
+        "content": "Implementing fallback models and graceful degradation when primary AI endpoints fail:",
+        "code": "public class ResilientProductionAiService\n{\n    private readonly IChatClient _primaryClient;   // Azure OpenAI GPT-4o (PTU)\n    private readonly IChatClient _secondaryClient; // Azure OpenAI Secondary Region (Pay-Go)\n    private readonly IChatClient _localFallback;   // Local Small Model / Canned Rule Engine\n    private readonly ILogger<ResilientProductionAiService> _logger;\n\n    public async Task<AiExecutionResult> ExecuteWithFallbackAsync(\n        IList<ChatMessage> messages,\n        ChatOptions options,\n        CancellationToken ct = default)\n    {\n        try\n        {\n            // Attempt 1: Primary production model\n            var response = await _primaryClient.CompleteAsync(messages, options, ct);\n            return new AiExecutionResult(response.Message.Text!, QualityTier.PrimaryHighFidelity);\n        }\n        catch (Exception ex) when (ex is HttpRequestException or TimeoutException)\n        {\n            _logger.LogWarning(ex, \"Primary AI model endpoint failed. Failing over to secondary region.\");\n            \n            try\n            {\n                // Attempt 2: Secondary region failover\n                var secondaryResponse = await _secondaryClient.CompleteAsync(messages, options, ct);\n                return new AiExecutionResult(secondaryResponse.Message.Text!, QualityTier.SecondaryFailover);\n            }\n            catch (Exception secEx)\n            {\n                _logger.LogError(secEx, \"Secondary AI region also unreachable. Degrading to deterministic fallback.\");\n                \n                // Attempt 3: Graceful degradation (safe static answer / offline intent resolution)\n                return new AiExecutionResult(\n                    \"Our intelligent assistant is currently experiencing elevated latency. \" +\n                    \"Your request has been queued for human specialist review.\",\n                    QualityTier.DegradedOfflineNotice);\n            }\n        }\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Immutable Compliance & Audit Logging"
+      }
+    },
+    {
+      "type": "bullet-list",
+      "data": {
+        "title": "Essential Audit Trail Requirements",
+        "items": [
+          "Correlation & Trace IDs: Every user message, retrieved chunk ID, tool execution, and model completion shares a single W3C TraceContext traceparent header.",
+          "Redacted Prompt Storage: Store full interaction prompts in Azure Cosmos DB or Azure Blob Storage with automatic PII masking applied.",
+          "Tool Execution Receipts: Record exact tool names, JSON input arguments, caller principal identity, and human approval signatures.",
+          "Token & Cost Ledger: Persist prompt, completion, and cached token counts alongside calculated cost per transaction for accurate financial auditing."
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Production Readiness Documentation Checklist"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Go-Live Architecture Checklist",
+        "items": [
+          {"text": "Architecture Decision Records (ADRs)", "hint": "Document why specific models, vector stores, and orchestration patterns were chosen."},
+          {"text": "Threat Model & Data Privacy Review", "hint": "Complete STRIDE and OWASP Top 10 for LLMs security assessment with legal/security teams."},
+          {"text": "Incident Response Runbook", "hint": "Define step-by-step procedures for handling hallucinations, model outages, and quota exhaustion."},
+          {"text": "Monitoring & Alerting Dashboards", "hint": "Set up Grafana / Azure Monitor alerts for 429 spike rates, latency degradation, and token burn rate anomalies."},
+          {"text": "Human-in-the-Loop Escalation SLA", "hint": "Establish response time SLAs for human operators reviewing paused agent tool executions."}
+        ]
       }
     },
     {
@@ -27,16 +114,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "Golden dataset for evaluation",
-          "Audit logs for compliance and debugging",
-          "Failure recovery with checkpoints",
-          "Cost and latency budgets",
-          "Production readiness checklist"
+          "Production deployment requires objective evaluation quality gates in CI/CD, not subjective demos",
+          "Build resilient multi-tier fallback pipelines to handle cloud provider outages gracefully",
+          "Maintain immutable audit logs linking correlation IDs, retrieved documents, and tool executions",
+          "Track latency and cost budgets continuously against production SLOs",
+          "Complete comprehensive production readiness reviews covering threat modeling, ADRs, and operational runbooks"
         ],
-        "takeaway": "Production AI requires systematic evaluation and observability. Implement audit logs, failure recovery, and clear documentation for production readiness."
+        "takeaway": "Achieving production readiness transforms an experimental AI concept into an enterprise-grade platform that is auditable, safe, performant, and resilient under failure."
       }
     }
   ],
-  "relatedLessons": ["dotnet-capstone-deployment"],
-  "relatedGlossaryTerms": ["evaluation", "audit-logs", "sla"]
+  "relatedLessons": ["dotnet-capstone-architecture", "dotnet-capstone-deployment", "dotnet-ai-evaluation", "dotnet-cost-monitoring"],
+  "relatedGlossaryTerms": ["evaluation", "guardrails", "human-in-the-loop", "latency"]
 }

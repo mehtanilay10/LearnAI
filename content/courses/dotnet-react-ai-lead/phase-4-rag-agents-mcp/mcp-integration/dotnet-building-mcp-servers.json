@@ -1,1 +1,84 @@
-{"id":"dotnet-lesson-4-10","slug":"dotnet-building-mcp-servers","moduleSlug":"dotnet-mcp-integration","title":"Building MCP Servers","description":"Build MCP servers in .NET to expose tools and resources.","order":2,"difficulty":"advanced","estimatedMinutes":50,"tags":["mcp-server","dotnet","tools","resources"],"blocks":[{"type":"heading","data":{"level":2,"text":"MCP Servers"}},{"type":"paragraph","data":{"text":"MCP servers expose tools and resources to AI clients. Implement the protocol, handle requests, and provide tool definitions."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["MCP servers expose tools and resources","Implement protocol handlers","Define tool schemas and descriptions","Handle resource reads and writes","Validate and sanitize inputs"],"takeaway":"MCP servers enable extensible AI integrations. Implement the protocol carefully and provide clear tool definitions for reliable use."}}],"relatedLessons":["dotnet-mcp-fundamentals"],"relatedGlossaryTerms":["mcp-server","tool-definition","resource"]}
+{
+  "id": "dotnet-lesson-4-10",
+  "slug": "dotnet-building-mcp-servers",
+  "moduleSlug": "dotnet-mcp-integration",
+  "title": "Building MCP Servers in .NET",
+  "description": "Develop high-performance Model Context Protocol servers in C# using stdio and ASP.NET Core SSE transports.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["mcp-server", "dotnet", "stdio", "sse", "json-rpc", "aspnetcore"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Architecting an MCP Server in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "An MCP server is an executable application that responds to standardized JSON-RPC 2.0 requests from MCP clients (such as Claude Desktop, Cursor, or your custom ASP.NET Core web apps). In .NET, an MCP server can be hosted as a lightweight console application communicating over standard input/output (stdio), or as an ASP.NET Core Minimal API service exposing Server-Sent Events (SSE) for remote consumption."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Handling JSON-RPC Protocol Methods"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Method", "Direction", "Payload Responsibility", "Server Action in C#"],
+        "rows": [
+          ["initialize", "Client -> Server", "Negotiates protocol version and capabilities", "Returns server name, version, and capability flags"],
+          ["tools/list", "Client -> Server", "Requests catalog of executable tools", "Returns array of tools with names, descriptions, and JSON Schemas"],
+          ["tools/call", "Client -> Server", "Requests execution of a specific tool with arguments", "Executes C# method, catches exceptions, and returns tool text/binary content"],
+          ["resources/list", "Client -> Server", "Requests catalog of readable resources", "Returns array of resource URIs, MIME types, and descriptions"],
+          ["resources/read", "Client -> Server", "Requests content of a specific resource URI", "Fetches file or database record and returns text or base64 blob"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Building a High-Performance Stdio MCP Server in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The implementation below illustrates a complete stdio-based MCP server in C# that reads incoming JSON-RPC lines from Console.OpenStandardInput, dispatches tools, and writes JSON responses to Console.OpenStandardOutput."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Complete C# Stdio MCP Server Implementation",
+        "content": "A lightweight, production-ready stdio server dispatching database health tools:",
+        "code": "using System.Text.Json;\nusing System.Text.Json.Nodes;\n\npublic class DotNetMcpServer\n{\n    private readonly Stream _input;\n    private readonly StreamWriter _output;\n\n    public DotNetMcpServer(Stream input, Stream output)\n    {\n        _input = input;\n        _output = new StreamWriter(output) { AutoFlush = true };\n    }\n\n    public async Task RunAsync(CancellationToken ct = default)\n    {\n        using var reader = new StreamReader(_input);\n        while (!ct.IsCancellationRequested)\n        {\n            var line = await reader.ReadLineAsync(ct);\n            if (string.IsNullOrWhiteSpace(line)) continue;\n\n            var requestNode = JsonNode.Parse(line);\n            var id = requestNode?[\"id\"]?.GetValue<long>();\n            var method = requestNode?[\"method\"]?.GetValue<string>();\n\n            var response = HandleRequest(method, requestNode?[\"params\"], id);\n            if (response != null)\n            {\n                await _output.WriteLineAsync(response.ToJsonString());\n            }\n        }\n    }\n\n    private JsonObject? HandleRequest(string? method, JsonNode? parameters, long? id)\n    {\n        return method switch\n        {\n            \"initialize\" => new JsonObject\n            {\n                [\"jsonrpc\"] = \"2.0\",\n                [\"id\"] = id,\n                [\"result\"] = new JsonObject\n                {\n                    [\"protocolVersion\"] = \"2024-11-05\",\n                    [\"capabilities\"] = new JsonObject { [\"tools\"] = new JsonObject() },\n                    [\"serverInfo\"] = new JsonObject { [\"name\"] = \"DotNetDiagnosticsServer\", [\"version\"] = \"1.0.0\" }\n                }\n            },\n            \"tools/list\" => new JsonObject\n            {\n                [\"jsonrpc\"] = \"2.0\",\n                [\"id\"] = id,\n                [\"result\"] = new JsonObject\n                {\n                    [\"tools\"] = new JsonArray\n                    {\n                        new JsonObject\n                        {\n                            [\"name\"] = \"check_database_latency\",\n                            [\"description\"] = \"Pings the specified database cluster and returns latency in milliseconds.\",\n                            [\"inputSchema\"] = new JsonObject\n                            {\n                                [\"type\"] = \"object\",\n                                [\"properties\"] = new JsonObject\n                                {\n                                    [\"cluster\"] = new JsonObject { [\"type\"] = \"string\", [\"description\"] = \"Target DB cluster: primary or read_replica\" }\n                                },\n                                [\"required\"] = new JsonArray { \"cluster\" }\n                            }\n                        }\n                    }\n                }\n            },\n            \"tools/call\" => ExecuteToolCall(parameters, id),\n            _ => null\n        };\n    }\n\n    private JsonObject ExecuteToolCall(JsonNode? parameters, long? id)\n    {\n        var toolName = parameters?[\"name\"]?.GetValue<string>();\n        var cluster = parameters?[\"arguments\"]?[\"cluster\"]?.GetValue<string>() ?? \"primary\";\n\n        var resultText = toolName switch\n        {\n            \"check_database_latency\" => $\"Cluster '{cluster}' latency is 4.2ms (healthy).\",\n            _ => $\"Unknown tool '{toolName}'\"\n        };\n\n        return new JsonObject\n        {\n            [\"jsonrpc\"] = \"2.0\",\n            [\"id\"] = id,\n            [\"result\"] = new JsonObject\n            {\n                [\"content\"] = new JsonArray\n                {\n                    new JsonObject { [\"type\"] = \"text\", [\"text\"] = resultText }\n                },\n                [\"isError\"] = false\n            }\n        };\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "MCP servers respond to JSON-RPC 2.0 protocol methods: initialize, tools/list, and tools/call",
+          "Stdio transport uses Console standard input and output streams for zero-latency local tool calling",
+          "Always provide explicit JSON Schemas for tool inputs including required fields and property types",
+          "Return structured tool execution results using the standard content array envelope",
+          "Host in ASP.NET Core with SSE when building remote multi-tenant enterprise MCP microservices"
+        ],
+        "takeaway": "Building MCP servers in .NET allows enterprise teams to expose mission-critical databases, telemetry, and business systems to any AI client safely and efficiently."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-mcp-fundamentals", "dotnet-mcp-client-integration", "dotnet-mcp-tools-resources", "dotnet-mcp-authorization-security"],
+  "relatedGlossaryTerms": ["mcp", "tool-calling", "api"]
+}

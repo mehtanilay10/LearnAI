@@ -2,24 +2,103 @@
   "id": "dotnet-lesson-4-9",
   "slug": "dotnet-mcp-fundamentals",
   "moduleSlug": "dotnet-mcp-integration",
-  "title": "MCP Fundamentals",
-  "description": "Understand Model Context Protocol architecture and use cases.",
+  "title": "Model Context Protocol (MCP) Architecture",
+  "description": "Understand the open Model Context Protocol specification, JSON-RPC 2.0 transport mechanisms, tools, resources, and prompt templates.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["mcp", "model-context-protocol", "architecture"],
+  "estimatedMinutes": 55,
+  "tags": ["mcp", "model-context-protocol", "json-rpc", "tools", "resources", "transports"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "MCP Protocol"
+        "text": "The Need for a Universal Integration Standard"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "MCP enables extensible AI tool integrations. Understand the protocol, servers, clients, and resource model."
+        "text": "Before the Model Context Protocol (MCP), every AI ecosystem—OpenAI, Semantic Kernel, LangChain, Claude, Custom enterprise apps—required proprietary connector code to integrate external tools, databases, and APIs. If a company wrote an internal tool for querying sales metrics in PostgreSQL, they had to reimplement it for every individual AI assistant framework. MCP solves this by acting as the 'USB-C for AI applications': an open, vendor-neutral specification allowing any AI client to discover and consume tools and resources from any MCP server."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "mcp-architecture-diagram",
+        "caption": "The MCP Architecture: Clients Connect to Diverse MCP Servers via Standardized Transports",
+        "definition": "graph LR\n    subgraph HostClients [\"MCP Hosts & Clients\"]\n        Claude[\"Claude Desktop\"]\n        DotNetApp[\"ASP.NET Core App (Semantic Kernel)\"]\n        IDE[\"Cursor / VS Code\"]\n    end\n    \n    subgraph Transports [\"Standardized Transports\"]\n        Stdio[\"stdio (Local Process Pipe)\"]\n        SSE[\"HTTP + SSE (Remote Enterprise Microservice)\"]\n    end\n    \n    subgraph MCPServers [\"MCP Servers\"]\n        ServerSQL[\"Postgres / SQL Server MCP\"]\n        ServerGit[\"GitHub / DevOps MCP\"]\n        ServerCRM[\"Salesforce / Dynamics 365 MCP\"]\n    end\n    \n    HostClients --> Transports\n    Transports --> MCPServers"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The Three Core MCP Primitives"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Primitive", "Role", "Invocation Model", "Enterprise Example"],
+        "rows": [
+          ["Tools", "Executable functions that take JSON arguments and perform computations or side-effects", "Invoked autonomously by the LLM (model decides arguments and when to call)", "execute_sql_query, issue_refund, create_jira_issue"],
+          ["Resources", "Read-only file-like context attachments provided to the model", "Read by the client application (or requested by URI scheme) to provide context", "postgres://schema/orders, file:///var/logs/app.log, doc://knowledge/security-policy"],
+          ["Prompts", "Pre-packaged reusable prompt templates with argument slots", "Selected explicitly by users or UI workflows to guide model interaction", "analyze-incident-report, review-csharp-code, generate-pr-summary"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "MCP Transports: Stdio vs Server-Sent Events (SSE)"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "MCP specifies two official wire transports powered by JSON-RPC 2.0:"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Choosing Between Stdio and SSE",
+        "cards": [
+          {
+            "title": "stdio (Standard Input/Output)",
+            "description": "The client launches the MCP server binary as a local child process and exchanges newline-delimited JSON-RPC messages over stdin and stdout. Zero networking overhead, no firewall issues, secure local sandboxing.",
+            "tags": ["Desktop apps", "CLI tools", "Zero latency"]
+          },
+          {
+            "title": "HTTP with SSE (Server-Sent Events)",
+            "description": "The client communicates with a remote MCP server over HTTP. The client posts commands to an HTTP endpoint while the server streams asynchronous responses and notifications back via an SSE stream.",
+            "tags": ["Microservices", "Cloud deployments", "Distributed teams"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Protocol Handshake Envelope"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Every MCP session begins with an initialize handshake negotiating capabilities, protocol versions, and client identity."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "JSON-RPC 2.0 Initialization Request & Response",
+        "content": "The client sends initialize and the server returns its supported tool/resource capabilities:",
+        "code": "// Client -> Server (Request)\n{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"initialize\",\n  \"params\": {\n    \"protocolVersion\": \"2024-11-05\",\n    \"capabilities\": { \"roots\": { \"listChanged\": true } },\n    \"clientInfo\": { \"name\": \"LearnAI.Host\", \"version\": \"1.0.0\" }\n  }\n}\n\n// Server -> Client (Response)\n{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"result\": {\n    \"protocolVersion\": \"2024-11-05\",\n    \"capabilities\": {\n      \"tools\": { \"listChanged\": false },\n      \"resources\": { \"subscribe\": true }\n    },\n    \"serverInfo\": { \"name\": \"EnterpriseDataServer\", \"version\": \"2.1.0\" }\n  }\n}",
+        "language": "json"
       }
     },
     {
@@ -27,16 +106,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "MCP standardizes AI tool integrations",
-          "Servers expose tools and resources",
-          "Clients consume MCP services",
-          "Resources provide data access",
-          "Transport layer for communication"
+          "MCP eliminates vendor lock-in by standardizing client-server tool and resource discovery",
+          "MCP centers on three primitives: Tools (actions), Resources (context), and Prompts (templates)",
+          "Supported transports are stdio (fast local child process) and SSE (remote enterprise HTTP)",
+          "All communication is governed by structured JSON-RPC 2.0 message contracts",
+          "Adopting MCP enables .NET applications to expose existing enterprise services to any modern AI assistant"
         ],
-        "takeaway": "MCP provides a standard for AI tool integrations. Build servers to expose tools and clients to consume them for extensible AI applications."
+        "takeaway": "The Model Context Protocol is revolutionizing AI integration. Standardizing on MCP allows .NET developers to build tools and data sources once and use them across any AI tool, assistant, or framework."
       }
     }
   ],
-  "relatedLessons": ["dotnet-building-mcp-servers"],
-  "relatedGlossaryTerms": ["mcp", "model-context-protocol", "mcp-server"]
+  "relatedLessons": ["dotnet-building-mcp-servers", "dotnet-mcp-client-integration", "dotnet-mcp-tools-resources", "dotnet-mcp-authorization-security"],
+  "relatedGlossaryTerms": ["mcp", "tool-calling", "api"]
 }

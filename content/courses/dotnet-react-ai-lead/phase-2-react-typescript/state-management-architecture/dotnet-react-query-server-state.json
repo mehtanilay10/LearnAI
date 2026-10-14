@@ -2,21 +2,130 @@
   "id": "dotnet-lesson-2-10",
   "slug": "dotnet-react-query-server-state",
   "moduleSlug": "dotnet-state-management",
-  "title": "React Query for Server State",
-  "description": "Master React Query (TanStack Query) for server state caching, synchronization, and automatic refetching.",
+  "title": "TanStack Query: Server State Caching, Mutations & AI Streaming",
+  "description": "Master TanStack Query v5 for enterprise server state: stale-while-revalidate caching, optimistic mutations for conversation management, infinite scroll for history, and integrating the streaming chat hook with query invalidation.",
   "order": 2,
   "difficulty": "advanced",
-  "estimatedMinutes": 50,
-  "tags": ["react", "react-query", "server-state", "caching"],
+  "estimatedMinutes": 55,
+  "tags": ["tanstack-query", "react-query", "server-state", "caching", "mutations", "infinite-scroll"],
   "blocks": [
     {
       "type": "heading",
-      "data": {"level": 2, "text": "Server State with React Query"}
+      "data": {
+        "level": 2,
+        "text": "Server State: The Category That RTK and Context Cannot Handle"
+      }
     },
     {
       "type": "paragraph",
-      "data": {"text": "React Query manages server state with caching, automatic refetching, and optimistic updates. It separates server state from client state, simplifying your application."}}
+      "data": {
+        "text": "Server state is fundamentally different from client state: it is remote, asynchronously fetched, potentially stale, and shared with multiple users who may mutate it concurrently. Managing server state in Redux requires manual request tracking, caching logic, invalidation, and background refetch strategies—thousands of lines of boilerplate. TanStack Query v5 treats server state as a reactive cache: fetch once, serve instantly from cache, refresh in background, and invalidate automatically on mutations."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "tanstack-query-lifecycle",
+        "caption": "TanStack Query Stale-While-Revalidate Caching Lifecycle",
+        "code": "stateDiagram-v2\n    [*] --> Loading : First useQuery call / Cache empty\n    Loading --> Fresh : Successful fetch (staleTime not elapsed)\n    Fresh --> Stale : staleTime window expires\n    Stale --> Fetching : Component mounts / Window refocuses / Manual invalidate\n    Fetching --> Fresh : Successful background refetch\n    Fetching --> Error : Network failure\n    Error --> Fetching : Retry (3 attempts with exponential back-off)\n    Fresh --> Offline : Network disconnect\n    Offline --> Fetching : Network reconnects"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Fetching Conversation List with useQuery"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "TanStack Query v5 uses object-based query options with `queryKey` for cache partitioning and automatic refetch triggering."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "useQuery for Authenticated Conversation List",
+        "content": "Fetching conversations with automatic stale detection, auth token injection, and error type safety.",
+        "language": "typescript",
+        "code": "import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';\n\ninterface ConversationSummary {\n  id: string;\n  title: string;\n  updatedAt: string;\n  messageCount: number;\n}\n\nasync function fetchConversations(tenantId: string, token: string): Promise<ConversationSummary[]> {\n  const res = await fetch(`/api/conversations?tenantId=${tenantId}`, {\n    headers: { Authorization: `Bearer ${token}` },\n  });\n  if (!res.ok) throw new Error(`Failed to fetch conversations: ${res.status}`);\n  return res.json();\n}\n\nexport function useConversations(tenantId: string, token: string) {\n  return useQuery({\n    // Scoped cache key: changes to tenantId invalidate this query independently\n    queryKey: ['conversations', tenantId],\n    queryFn: () => fetchConversations(tenantId, token),\n    staleTime: 1000 * 60 * 2, // Data considered fresh for 2 minutes\n    refetchOnWindowFocus: true, // Refresh when user returns to tab\n    enabled: Boolean(tenantId && token), // Only fetch when auth is ready\n  });\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Optimistic Mutations for Instant UI Updates"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When a user renames a conversation, waiting 500ms for the server round-trip before updating the sidebar feels sluggish. Optimistic mutations update the UI cache immediately, then roll back if the server rejects the change."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Optimistic Rename Conversation Mutation",
+        "content": "Updating the conversation list cache immediately while the PATCH request is in flight.",
+        "language": "typescript",
+        "code": "export function useRenameConversation(tenantId: string) {\n  const queryClient = useQueryClient();\n\n  return useMutation({\n    mutationFn: ({ id, title }: { id: string; title: string }) =>\n      fetch(`/api/conversations/${id}`, {\n        method: 'PATCH',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ title }),\n      }).then((r) => { if (!r.ok) throw new Error(r.statusText); }),\n\n    onMutate: async ({ id, title }) => {\n      // Cancel in-flight refetches to prevent overwriting the optimistic update\n      await queryClient.cancelQueries({ queryKey: ['conversations', tenantId] });\n\n      // Snapshot current state for rollback\n      const previous = queryClient.getQueryData<ConversationSummary[]>(['conversations', tenantId]);\n\n      // Optimistic update: immediately shows new title in sidebar\n      queryClient.setQueryData<ConversationSummary[]>(['conversations', tenantId], (old) =>\n        old?.map((c) => (c.id === id ? { ...c, title } : c)) ?? []\n      );\n\n      return { previous }; // Returned as context for rollback\n    },\n\n    onError: (err, _variables, context) => {\n      // Roll back to snapshot on failure\n      if (context?.previous) {\n        queryClient.setQueryData(['conversations', tenantId], context.previous);\n      }\n    },\n\n    onSettled: () => {\n      // Always re-sync from server after mutation completes or errors\n      queryClient.invalidateQueries({ queryKey: ['conversations', tenantId] });\n    },\n  });\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Infinite Scroll for Conversation History"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "useInfiniteQuery for Paginated Message History",
+        "content": "Loading older messages in a conversation as the user scrolls to the top of the chat window.",
+        "language": "typescript",
+        "code": "import { useInfiniteQuery } from '@tanstack/react-query';\n\nexport function useMessageHistory(conversationId: string) {\n  return useInfiniteQuery({\n    queryKey: ['messages', conversationId],\n    queryFn: ({ pageParam = null }) =>\n      fetch(`/api/conversations/${conversationId}/messages?cursor=${pageParam ?? ''}`)\n        .then((r) => r.json() as Promise<{ items: Message[]; nextCursor: string | null }>),\n    initialPageParam: null as string | null,\n    getNextPageParam: (lastPage) => lastPage.nextCursor,\n    // Pages are stored as array of pages; flatten in component\n  });\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "type": "tip",
+        "title": "Invalidate After Streaming Completes",
+        "content": "After an AI streaming response finishes, call `queryClient.invalidateQueries({ queryKey: ['conversations', tenantId] })` to refresh the conversation list sidebar. This ensures the conversation's `updatedAt` timestamp and `messageCount` reflect the new message without a manual page refresh."
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "TanStack Query Implementation Checklist",
+        "items": [
+          "QueryKey arrays always include all variables the queryFn depends on (tenantId, userId)",
+          "staleTime configured appropriately: 0 for real-time data, 2-5 minutes for relatively static lists",
+          "Mutations use onMutate for optimistic updates with rollback via onError context snapshots",
+          "onSettled always calls invalidateQueries to sync from server after any mutation",
+          "useInfiniteQuery used for paginated lists; getNextPageParam extracts cursor from response",
+          "enabled flag prevents queries from firing before auth token or required IDs are available"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Summary & Next Steps",
+        "points": [
+          "TanStack Query eliminates server state management boilerplate with stale-while-revalidate caching.",
+          "Optimistic mutations deliver instant UI feedback with automatic rollback on failures.",
+          "useInfiniteQuery handles paginated data with cursor-based pagination out of the box.",
+          "Next, we learn React Hook Form with Zod schema validation for type-safe form state management."
+        ],
+        "takeaway": "Treat server state as a reactive cache, not as data to be stored in Redux: TanStack Query handles freshness, retries, background sync, and optimistic updates automatically."
+      }
+    }
   ],
-  "relatedLessons": ["dotnet-context-and-redux"],
-  "relatedGlossaryTerms": ["react-query", "server-state", "tanstack-query"]
+  "relatedLessons": ["dotnet-context-and-redux", "dotnet-form-state-management", "dotnet-state-architecture-patterns"],
+  "relatedGlossaryTerms": ["tanstack-query", "server-state", "optimistic-updates", "stale-while-revalidate"]
 }

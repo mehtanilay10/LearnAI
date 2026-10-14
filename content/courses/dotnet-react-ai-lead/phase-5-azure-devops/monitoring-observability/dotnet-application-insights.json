@@ -2,24 +2,68 @@
   "id": "dotnet-lesson-5-9",
   "slug": "dotnet-application-insights",
   "moduleSlug": "dotnet-monitoring-observability",
-  "title": "Application Insights",
-  "description": "Integrate Application Insights for application monitoring.",
+  "title": "Application Insights & KQL for AI Telemetry",
+  "description": "Instrument .NET AI applications with Azure Application Insights, telemetry initializers, and write advanced Kusto (KQL) queries for anomaly detection.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["application-insights", "monitoring", "azure"],
+  "estimatedMinutes": 55,
+  "tags": ["application-insights", "kql", "telemetry", "observability", "azure-monitor"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Application Insights"
+        "text": "Deep Observability with Azure Application Insights"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Application Insights provides APM for Azure. Monitor performance, dependencies, exceptions, and user behavior."
+        "text": "Application Insights is Azure's application performance monitoring (APM) platform. In generative AI applications, traditional HTTP request monitoring alone is insufficient. You need to capture dependency durations for external model calls, correlate database retrieval steps, record prompt token consumption, and query aggregated telemetry using Kusto Query Language (KQL) to triage production anomalies."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Enriching Telemetry with ITelemetryInitializer in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Telemetry initializers run on every captured trace, dependency, and request, allowing you to automatically stamp AI-specific metadata (TenantId, ModelDeployment, Environment) across all telemetry items without modifying individual controller methods."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Custom AI Telemetry Initializer in C#",
+        "content": "Stamps model version, deployment region, and tenant correlation onto all outgoing telemetry:",
+        "code": "using Microsoft.ApplicationInsights.Channel;\nusing Microsoft.ApplicationInsights.DataContracts;\nusing Microsoft.ApplicationInsights.Extensibility;\n\npublic class AiTelemetryInitializer : ITelemetryInitializer\n{\n    private readonly IHttpContextAccessor _httpContextAccessor;\n\n    public AiTelemetryInitializer(IHttpContextAccessor httpContextAccessor)\n    {\n        _httpContextAccessor = httpContextAccessor;\n    }\n\n    public void Initialize(ITelemetry telemetry)\n    {\n        var httpContext = _httpContextAccessor.HttpContext;\n        if (httpContext != null)\n        {\n            var tenantId = httpContext.User.FindFirst(\"tenant_id\")?.Value ?? \"anonymous\";\n            telemetry.Context.GlobalProperties[\"TenantId\"] = tenantId;\n        }\n\n        // Tag with active model deployment details\n        telemetry.Context.GlobalProperties[\"AiDeploymentRegion\"] = \"eastus\";\n        telemetry.Context.GlobalProperties[\"PrimaryModel\"] = \"gpt-4o\";\n    }\n}\n\n// In Program.cs: Register in DI\nbuilder.Services.AddSingleton<ITelemetryInitializer, AiTelemetryInitializer>();",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Investigating AI Performance with KQL"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Kusto Query Language (KQL) powers Azure Monitor logs. Use KQL to detect latency bottlenecks, track token consumption spikes, and isolate failed LLM dependency calls."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "KQL Query: Analyzing Slow AI Completions and 429 Errors",
+        "content": "Calculates P95 latency and token consumption grouped by tenant over the last 24 hours:",
+        "code": "dependencies\n| where target has \"openai.azure.com\"\n| where timestamp > ago(24h)\n| extend TenantId = tostring(customDimensions.TenantId),\n         TokensUsed = toint(customDimensions.TotalTokens)\n| summarize \n    TotalCalls = count(),\n    FailedCalls = countif(success == false),\n    RateLimit429s = countif(resultCode == \"429\"),\n    P50_Duration_ms = percentile(duration, 50),\n    P95_Duration_ms = percentile(duration, 95),\n    TotalTokens = sum(TokensUsed)\n    by TenantId\n| order by TotalTokens desc",
+        "language": "sql"
       }
     },
     {
@@ -27,16 +71,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "Application Insights provides APM",
-          "Monitor performance and dependencies",
-          "Track exceptions and errors",
-          "User behavior analytics",
-          "Alert on metrics"
+          "Application Insights provides end-to-end APM telemetry for .NET AI applications",
+          "Use ITelemetryInitializer to inject TenantId and AI metadata across all logs and dependencies",
+          "Track Azure OpenAI HTTP dependencies to measure remote inference latency and 429 throttle spikes",
+          "Write KQL queries in Azure Log Analytics to visualize token consumption trends by business unit",
+          "Set automated Azure Monitor alerts on P95 latency regressions and elevated failure rates"
         ],
-        "takeaway": "Application Insights provides comprehensive monitoring. Set up alerts and dashboards for proactive issue detection."
+        "takeaway": "Application Insights and KQL provide the observability lens for production AI, enabling .NET teams to diagnose latency bottlenecks and monitor token economics in real time."
       }
     }
   ],
-  "relatedLessons": ["dotnet-structured-logging"],
-  "relatedGlossaryTerms": ["application-insights", "apm", "monitoring"]
+  "relatedLessons": ["dotnet-structured-logging", "dotnet-metrics-dashboards", "dotnet-cost-monitoring"],
+  "relatedGlossaryTerms": ["latency", "api"]
 }

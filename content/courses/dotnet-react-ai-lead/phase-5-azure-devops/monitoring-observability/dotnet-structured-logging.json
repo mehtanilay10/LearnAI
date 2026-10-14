@@ -1,1 +1,86 @@
-{"id":"dotnet-lesson-5-10","slug":"dotnet-structured-logging","moduleSlug":"dotnet-monitoring-observability","title":"Structured Logging","description":"Implement structured logging with Serilog and best practices.","order":2,"difficulty":"advanced","estimatedMinutes":40,"tags":["logging","serilog","structured-logs"],"blocks":[{"type":"heading","data":{"level":2,"text":"Structured Logging"}},{"type":"paragraph","data":{"text":"Structured logging enables queryable logs. Use Serilog with sinks for console, file, and Application Insights."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Structured logs are queryable","Serilog provides flexible logging","Configure multiple sinks","Log context and correlation","Use log levels appropriately"],"takeaway":"Structured logging enables powerful log analysis. Use Serilog with appropriate sinks and log levels for effective debugging."}}],"relatedLessons":["dotnet-application-insights"],"relatedGlossaryTerms":["structured-logging","serilog","log-levels"]}
+{
+  "id": "dotnet-lesson-5-10",
+  "slug": "dotnet-structured-logging",
+  "moduleSlug": "dotnet-monitoring-observability",
+  "title": "High-Performance Structured Logging for AI",
+  "description": "Implement zero-allocation structured logging with LoggerMessage source generators, session correlation scopes, and PII masking in C#.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["structured-logging", "loggermessage", "source-generators", "scopes", "pii-masking", "performance"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Need for Structured Logging in AI Systems"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Logging raw string messages (e.g. _logger.LogInformation($\"User {userId} asked: {prompt}\")) is an anti-pattern. String interpolation causes unnecessary heap allocations, slows down throughput, and generates unstructured text that search engines cannot query or index efficiently. In production AI systems, structured logging captures properties as discrete key-value pairs (TenantId, ModelId, PromptTokens, LatencyMs), enabling fast filtering and aggregations across millions of log entries."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Zero-Allocation Logging with [LoggerMessage] Source Generators"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "C# compile-time source generators ([LoggerMessage]) eliminate boxing, string formatting, and parsing overhead, yielding the fastest possible logging implementation in .NET."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "High-Performance AI Logger Generator in C#",
+        "content": "Defines compile-time generated logging methods for AI operations:",
+        "code": "using Microsoft.Extensions.Logging;\n\npublic static partial class AiLogEvents\n{\n    [LoggerMessage(\n        EventId = 2001,\n        Level = LogLevel.Information,\n        Message = \"Completed AI completion for model {Model} in {ElapsedMs}ms. Tokens: {PromptTokens} prompt, {CompletionTokens} completion.\")]\n    public static partial void LogAiCompletionSuccess(\n        this ILogger logger,\n        string model,\n        long elapsedMs,\n        int promptTokens,\n        int completionTokens);\n\n    [LoggerMessage(\n        EventId = 2002,\n        Level = LogLevel.Warning,\n        Message = \"Rate limit 429 throttled for model {Model}. Retry attempt {RetryAttempt} after {RetryDelaySeconds}s.\")]\n    public static partial void LogAiRateLimitThrottled(\n        this ILogger logger,\n        string model,\n        int retryAttempt,\n        double retryDelaySeconds);\n\n    [LoggerMessage(\n        EventId = 2003,\n        Level = LogLevel.Error,\n        Message = \"Tool execution '{ToolName}' threw exception on tenant {TenantId}.\")]\n    public static partial void LogToolExecutionFailure(\n        this ILogger logger,\n        string toolName,\n        string tenantId,\n        Exception ex);\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Correlating Multi-Turn Conversations with Logging Scopes"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In complex agentic or conversational systems, an individual user request might trigger retrieval, five tool invocations, and two LLM calls. Using _logger.BeginScope() attaches correlation properties (SessionId, TurnId, TenantId) to every log statement executed within that async execution context."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Correlating AI Execution with ILogger.BeginScope",
+        "content": "Binds SessionId and TenantId across all downstream component logs:",
+        "code": "public async Task<string> ProcessUserTurnAsync(\n    string sessionId,\n    string tenantId,\n    string userMessage,\n    CancellationToken ct)\n{\n    using (_logger.BeginScope(new Dictionary<string, object>\n    {\n        [\"SessionId\"] = sessionId,\n        [\"TenantId\"] = tenantId,\n        [\"ConversationTimestamp\"] = DateTimeOffset.UtcNow\n    }))\n    {\n        _logger.LogInformation(\"Beginning user conversation turn.\");\n\n        // All logs emitted inside retrieval, tools, and model calls automatically inherit SessionId & TenantId\n        var context = await _retriever.RetrieveAsync(userMessage, ct);\n        var answer = await _agent.ExecuteStepAsync(userMessage, context, ct);\n\n        _logger.LogInformation(\"Successfully finished conversation turn.\");\n        return answer;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Never use string interpolation in logging: use structured key-value property templates",
+          "Use [LoggerMessage] compile-time source generators for zero-allocation performance",
+          "Capture essential AI metrics: ModelId, PromptTokens, CompletionTokens, LatencyMs",
+          "Wrap multi-turn sessions in ILogger.BeginScope() to correlate logs across tools and LLM calls",
+          "Sanitize logs to prevent customer PII or raw API keys from entering log analytics sinks"
+        ],
+        "takeaway": "Structured logging turns noisy text files into queryable telemetry databases. Leveraging source generators and logging scopes provides high-throughput, correlated diagnostics across your AI stack."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-application-insights", "dotnet-metrics-dashboards", "dotnet-distributed-tracing"],
+  "relatedGlossaryTerms": ["latency", "token", "logging"]
+}

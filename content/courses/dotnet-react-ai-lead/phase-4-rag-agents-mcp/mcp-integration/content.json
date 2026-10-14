@@ -14,7 +14,8 @@
     "dotnet-mcp-fundamentals",
     "dotnet-building-mcp-servers",
     "dotnet-mcp-client-integration",
-    "dotnet-mcp-tools-resources"
+    "dotnet-mcp-tools-resources",
+    "dotnet-mcp-authorization-security"
   ],
   "whatYouLearn": [
     "MCP protocol and architecture",

@@ -1,1 +1,97 @@
-{"id":"dotnet-lesson-3-3","slug":"dotnet-context-window-parameters","moduleSlug":"dotnet-llm-fundamentals","title":"Context Window & Parameters","description":"Master context windows, temperature, top-p sampling, and generation parameters for controlling LLM output.","order":3,"difficulty":"advanced","estimatedMinutes":40,"tags":["context-window","temperature","top-p","parameters"],"blocks":[{"type":"heading","data":{"level":2,"text":"Generation Parameters"}},{"type":"paragraph","data":{"text":"Temperature controls randomness, top-p controls nucleus sampling, and context window limits input length. Understanding these parameters is essential for controlling output quality and consistency."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Context window limits total input + output tokens","Temperature 0 = deterministic, higher = more creative","Top-p sampling filters low-probability tokens","Balance between creativity and consistency","Max tokens controls output length"],"takeaway":"Generation parameters give you fine-grained control over LLM output. Tune temperature and top-p based on your use case: low for factual tasks, higher for creative tasks."}}],"relatedLessons":["dotnet-prompt-engineering"],"relatedGlossaryTerms":["context-window","temperature","top-p","nucleus-sampling"]}
+{
+  "id": "dotnet-lesson-3-3",
+  "slug": "dotnet-context-window-parameters",
+  "moduleSlug": "dotnet-llm-fundamentals",
+  "title": "Context Windows, Attention Attenuation & Sampling Parameters",
+  "description": "Understand context window limits, the 'Lost in the Middle' retrieval degradation, and tune inference hyperparameters in .NET.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["context-window", "lost-in-the-middle", "temperature", "sampling-parameters", "hyperparameters"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Realities of Large Context Windows"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "While frontier models now boast massive context windows (128,000 tokens for GPT-4o, 2,000,000 tokens for Gemini 1.5 Pro), treating context as an infinite dumping ground is a dangerous anti-pattern. Beyond financial costs ($1.00+ per query when passing 200k tokens), LLMs suffer from severe attention degradation when processing voluminous contexts."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The 'Lost in the Middle' Phenomenon"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Extensive empirical research demonstrates a U-shaped accuracy curve: models exhibit high recall when relevant facts are placed at the very beginning (Primacy bias) or the very end (Recency bias) of the prompt, but accuracy degrades significantly when critical facts are buried in the middle 60% of a massive context window. This makes precise RAG retrieval and reranking essential, even when a model's context window could technically accommodate the entire document repository."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Inference Hyperparameter Tuning Guide"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Parameter", "Range", "Default", "Recommended Setting for Enterprise .NET Tasks"],
+        "rows": [
+          ["Temperature", "0.0 - 2.0", "1.0", "0.0 - 0.2 for SQL, code, JSON extraction, and RAG grounding; 0.7 for creative copy"],
+          ["Top-P (Nucleus)", "0.0 - 1.0", "1.0", "Set to 1.0 when tuning Temperature; alternatively set to 0.1 for strict top probability mass"],
+          ["Frequency Penalty", "-2.0 - 2.0", "0.0", "0.2 - 0.5 to discourage repetitive token loops in long-form generation"],
+          ["Presence Penalty", "-2.0 - 2.0", "0.0", "0.1 - 0.3 to encourage introducing new vocabulary topics"],
+          ["Seed", "Integer", "null", "Set a fixed integer (e.g. 42) for deterministic regression testing and reproducible evaluations"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Context Window Management Strategy in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "To keep multi-turn conversations within budget without hitting token limit errors, implement a sliding-window context pruner that retains system instructions while trimming the oldest non-essential conversational exchanges."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Sliding Window Context Pruner in C#",
+        "content": "Ensures conversation history never exceeds token capacity while protecting system instructions:",
+        "code": "using Microsoft.Extensions.AI;\n\npublic class SlidingContextManager\n{\n    private readonly int _maxAllowedTokens;\n\n    public SlidingContextManager(int maxAllowedTokens = 4000)\n    {\n        _maxAllowedTokens = maxAllowedTokens;\n    }\n\n    public List<ChatMessage> PruneHistory(List<ChatMessage> fullHistory)\n    {\n        var systemMsg = fullHistory.FirstOrDefault(m => m.Role == ChatRole.System);\n        var conversation = fullHistory.Where(m => m.Role != ChatRole.System).ToList();\n\n        var pruned = new List<ChatMessage>();\n        int currentTokens = systemMsg != null ? EstimateTokens(systemMsg.Text ?? \"\") : 0;\n\n        // Walk backwards from newest message to oldest\n        for (int i = conversation.Count - 1; i >= 0; i--)\n        {\n            var msgTokens = EstimateTokens(conversation[i].Text ?? \"\");\n            if (currentTokens + msgTokens > _maxAllowedTokens)\n            {\n                break; // Stop taking older messages\n            }\n\n            pruned.Insert(0, conversation[i]);\n            currentTokens += msgTokens;\n        }\n\n        if (systemMsg != null)\n        {\n            pruned.Insert(0, systemMsg);\n        }\n\n        return pruned;\n    }\n\n    private static int EstimateTokens(string text) => (int)Math.Ceiling(text.Length / 4.0);\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Large context windows do not eliminate the need for RAG: models suffer from 'Lost in the Middle' attenuation",
+          "Place high-priority instructions at the very beginning and critical facts at the end of the context window",
+          "Set Temperature to 0.0 - 0.2 for deterministic enterprise classification, extraction, and code tasks",
+          "Use a fixed Seed during automated integration tests to ensure reproducible generations",
+          "Implement active context window pruning in C# to manage costs and prevent token exhaustion in long conversations"
+        ],
+        "takeaway": "Prudent context management and precise parameter tuning transform probabilistic models into reliable, cost-effective enterprise components."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-transformer-architecture", "dotnet-tokenization-embeddings", "dotnet-conversation-state"],
+  "relatedGlossaryTerms": ["context-window", "temperature", "inference"]
+}

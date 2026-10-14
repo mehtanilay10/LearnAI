@@ -2,41 +2,136 @@
   "id": "dotnet-lesson-7-5",
   "slug": "dotnet-capstone-backend",
   "moduleSlug": "dotnet-capstone-implementation",
-  "title": "Capstone Backend",
-  "description": "Implement the .NET backend with AI integration.",
+  "title": "Enterprise Backend: Minimal APIs, Microsoft.Extensions.AI & SSE Streaming",
+  "description": "Build the production .NET 9 backend: asynchronous Minimal APIs, Microsoft.Extensions.AI pipeline middleware, Server-Sent Events (SSE) token streaming, resilient fallback routing, and MCP server endpoints.",
   "order": 1,
   "difficulty": "advanced",
   "estimatedMinutes": 60,
-  "tags": ["backend", "dotnet", "ai-integration"],
+  "tags": ["backend", "dotnet-9", "minimal-apis", "microsoft-extensions-ai", "sse-streaming", "resilience"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Backend Implementation"
+        "text": "Production Minimal APIs for Streaming AI"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Implement the .NET backend with API endpoints, AI integration, data access, and business logic."
+        "text": "The backend of EnterpriseNexus is powered by .NET 9 Minimal APIs. In AI applications, user perceived performance hinges on Time to First Token (TTFT). Buffering an entire 800-word response produces 4–8 seconds of blank screen, whereas streaming tokens via Server-Sent Events (SSE) delivers the first word in under 350 milliseconds. We implement a non-buffering HTTP/2 SSE streaming endpoint powered by Microsoft.Extensions.AI and C# 13 asynchronous streams."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "backend-request-lifecycle",
+        "caption": "Backend Streaming Pipeline with Middleware and Multi-Model Fallback",
+        "code": "sequenceDiagram\n    autonumber\n    actor Client as React 19 Frontend\n    participant API as Minimal API Endpoint\n    participant MW as Microsoft.Extensions.AI Pipeline\n    participant Cache as Redis Semantic Cache\n    participant LLM1 as Primary (Azure OpenAI)\n    participant LLM2 as Resilient Fallback (Ollama / Local)\n\n    Client->>API: POST /api/chat/stream (SSE)\n    API->>MW: CompleteStreamingAsync(messages)\n    MW->>Cache: Check Semantic Similarity (>0.96)\n    alt Cache Hit\n        Cache-->>MW: Return Cached Stream\n        MW-->>API: Yield Cached Tokens\n        API-->>Client: Stream SSE Events\n    else Cache Miss\n        MW->>LLM1: Stream Tokens (gpt-4o)\n        alt Rate Limit (429) or Service Outage (503)\n            LLM1-->>MW: Polly Circuit Breaker Trips\n            MW->>LLM2: Fallback Stream (Llama 3.3)\n            LLM2-->>MW: Token Stream\n        else Normal Operation\n            LLM1-->>MW: Token Stream\n        end\n        MW-->>API: IAsyncEnumerable<ChatResponseUpdate>\n        API-->>Client: data: {\"token\":\"...\",\"citations\":[...]}\\n\\n\n    end"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Configuring the Microsoft.Extensions.AI Pipeline"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Using `Microsoft.Extensions.AI`, we compose the chat client as a modular middleware chain. Telemetry, caching, resilience, and function invocation wrap the underlying provider cleanly."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Program.cs Chat Client Composition",
+        "content": "This pipeline configures Azure OpenAI with semantic caching, OpenTelemetry tracing, and circuit-breaker resilience.",
+        "language": "csharp",
+        "code": "var builder = WebApplication.CreateBuilder(args);\n\n// 1. Register Underlying Model Provider\nIChatClient innerClient = new AzureOpenAIClient(\n        new Uri(builder.Configuration[\"AzureOpenAI:Endpoint\"]!),\n        new DefaultAzureCredential())\n    .AsChatClient(builder.Configuration[\"AzureOpenAI:DeploymentName\"] ?? \"gpt-4o\");\n\n// 2. Compose Microsoft.Extensions.AI Middleware Chain\nbuilder.Services.AddChatClient(chatBuilder => chatBuilder\n    .UseLogging() // Logs prompt/completion tokens\n    .UseOpenTelemetry() // W3C distributed trace spans\n    .UseDistributedCache() // Caches deterministic completions\n    .UseFunctionInvocation() // Auto-invokes registered agent tools\n    .Use(innerClient));\n\n// 3. Register Hybrid Search & Ingestion Services\nbuilder.Services.AddScoped<IHybridSearchService, PostgresHybridSearchService>();\nbuilder.Services.AddScoped<IConversationRepository, ConversationRepository>();\n\nvar app = builder.Build();"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Server-Sent Events (SSE) Streaming Endpoint"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The Minimal API endpoint streams JSON event payloads line-by-line using `Response.BodyWriter` with zero intermediate allocation."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "SSE Streaming Minimal API Endpoint",
+        "content": "Flushing tokens immediately with CancellationToken support to cancel upstream LLM requests when the user closes their browser.",
+        "language": "csharp",
+        "code": "app.MapPost(\"/api/chat/stream\", async (\n    [FromBody] ChatStreamRequest request,\n    IChatClient chatClient,\n    IHybridSearchService searchService,\n    HttpContext context,\n    CancellationToken cancellationToken) =>\n{\n    context.Response.Headers.ContentType = \"text/event-stream\";\n    context.Response.Headers.CacheControl = \"no-cache\";\n    context.Response.Headers.Connection = \"keep-alive\";\n\n    // 1. Retrieve authorized hybrid chunks\n    var chunks = await searchService.RetrieveTopChunksAsync(\n        request.TenantId, \n        request.Query, \n        topK: 5, \n        cancellationToken);\n\n    // 2. Assemble system prompt with citations\n    var messages = PromptBuilder.BuildGroundedPrompt(request.History, request.Query, chunks);\n\n    // 3. Stream completions via SSE\n    await foreach (var update in chatClient.CompleteStreamingAsync(messages, cancellationToken: cancellationToken))\n    {\n        var ssePayload = JsonSerializer.Serialize(new\n        {\n            token = update.Text,\n            finishReason = update.FinishReason?.ToString()\n        });\n\n        await context.Response.WriteAsync($\"data: {ssePayload}\\n\\n\", cancellationToken);\n        await context.Response.Body.FlushAsync(cancellationToken);\n    }\n\n    // Signal completion\n    await context.Response.WriteAsync(\"data: [DONE]\\n\\n\", cancellationToken);\n})\n.RequireAuthorization()\n.RequireRateLimiting(\"AiChatRateLimit\");"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "type": "tip",
+        "title": "CancellationToken Propagation Saves Cost",
+        "content": "Always pass the `HttpContext.RequestAborted` CancellationToken to `CompleteStreamingAsync`. When users navigate away or hit 'Stop Generating', propagating the token immediately terminates the Azure OpenAI billable generation."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "MCP Server Tool Endpoint Integration"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "EnterpriseNexus exposes its internal services as a Model Context Protocol (MCP) server, allowing external AI agents (like Claude Desktop or IDE assistants) to query its corporate knowledge base securely."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "MCP Tool Registration in ASP.NET Core",
+        "content": "Exposing the hybrid search engine as a standardized JSON-RPC MCP tool.",
+        "language": "csharp",
+        "code": "app.MapPost(\"/mcp/tools/search-knowledge\", async (\n    [FromBody] McpToolRequest request,\n    IHybridSearchService searchService,\n    ClaimsPrincipal user,\n    CancellationToken ct) =>\n{\n    var tenantId = user.GetTenantId();\n    var results = await searchService.RetrieveTopChunksAsync(tenantId, request.Arguments[\"query\"].GetString()!, 5, ct);\n\n    return Results.Ok(new McpToolResponse\n    {\n        Content = [\n            new { type = \"text\", text = JsonSerializer.Serialize(results) }\n        ]\n    });\n})\n.RequireAuthorization(\"McpClientPolicy\");"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Backend Implementation Quality Checklist",
+        "items": [
+          "Endpoint uses HTTP/2 SSE with text/event-stream content type and disabled response buffering",
+          "CancellationToken from HttpContext wired through to IChatClient to eliminate phantom compute bills",
+          "Microsoft.Extensions.AI middleware pipeline includes Logging, OpenTelemetry, and Caching",
+          "Resilience pipeline configured with Polly for 429 RateLimit and 503 ServiceUnavailable fallbacks",
+          "Rate limiting policy enforced per tenant/user using Redis sliding-window counter",
+          "MCP endpoints adhere to the official Model Context Protocol JSON-RPC specification"
+        ]
       }
     },
     {
       "type": "summary-box",
       "data": {
-        "title": "Key Takeaways",
+        "title": "Summary & Next Steps",
         "points": [
-          "Implement RESTful API endpoints",
-          "Integrate Azure OpenAI or OpenAI",
-          "Implement data access layer",
-          "Add business logic and validation",
-          "Implement error handling"
+          "Minimal APIs deliver high-throughput, low-allocation streaming for enterprise AI.",
+          "Microsoft.Extensions.AI provides a standard pipeline pattern for observability, caching, and tools.",
+          "Propagating cancellation tokens prevents wasteful token generation upon user disconnection.",
+          "Next, we build the React 19 streaming frontend with citations and tool approval flows."
         ],
-        "takeaway": "The backend is the foundation of the application. Implement clean architecture, proper error handling, and secure AI integration."
+        "takeaway": "In generative AI systems, streaming is an engineering requirement, not a cosmetic feature: design for sub-second TTFT and immediate upstream cancellation."
       }
     }
   ],
-  "relatedLessons": ["dotnet-capstone-frontend"],
-  "relatedGlossaryTerms": ["backend", "api", "ai-integration"]
+  "relatedLessons": ["dotnet-capstone-frontend", "dotnet-capstone-rag-implementation", "dotnet-microsoft-extensions-ai"],
+  "relatedGlossaryTerms": ["minimal-apis", "sse-streaming", "microsoft-extensions-ai", "polly-resilience"]
 }

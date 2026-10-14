@@ -2,41 +2,121 @@
   "id": "dotnet-lesson-2-8",
   "slug": "dotnet-typescript-type-safety-patterns",
   "moduleSlug": "dotnet-typescript-advanced",
-  "title": "Type Safety Patterns",
-  "description": "Build type-safe APIs, use discriminated unions, type guards, and brand types for enhanced type safety.",
+  "title": "Type Safety Patterns: Branded Types, Discriminated Unions & Exhaustiveness",
+  "description": "Master enterprise TypeScript safety patterns: opaque branded types to prevent primitive confusion, discriminated union state machines, type guard functions, and exhaustive switch checking with the never type.",
   "order": 4,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["typescript", "type-safety", "discriminated-unions", "type-guards"],
+  "estimatedMinutes": 50,
+  "tags": ["typescript", "branded-types", "discriminated-unions", "type-guards", "exhaustiveness"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Type Safety Patterns"
+        "text": "Eliminating Primitive Obsession with Branded Types"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "Discriminated unions use a common property to distinguish between types. Type guards narrow types at runtime. Brand types prevent accidental type coercion."
+        "text": "Enterprise code frequently passes raw strings representing domain concepts: user IDs, tenant IDs, document IDs, embedding vectors, and API keys. The type system sees them all as `string`, allowing catastrophic mixups like passing a `userId` where a `tenantId` is required. Branded (opaque) types enforce domain semantics at the type level without any runtime overhead."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Branded Nominal Types for Domain Identifiers",
+        "content": "Using intersection with a unique brand symbol to create structurally distinct types from the same primitive.",
+        "language": "typescript",
+        "code": "// Brand factory: creates a nominal type distinct from its primitive\ndeclare const Brand: unique symbol;\ntype Branded<T, TBrand> = T & { readonly [Brand]: TBrand };\n\n// Specific branded types for each domain concept\ntype UserId = Branded<string, 'UserId'>;\ntype TenantId = Branded<string, 'TenantId'>;\ntype DocumentId = Branded<string, 'DocumentId'>;\ntype SessionId = Branded<string, 'SessionId'>;\n\n// Constructor functions that apply the brand (runtime: just a string)\nconst UserId = (raw: string): UserId => raw as UserId;\nconst TenantId = (raw: string): TenantId => raw as TenantId;\n\n// Function requiring specific branded types\nfunction getDocumentsForTenant(tenantId: TenantId, userId: UserId) {\n  return fetch(`/api/tenants/${tenantId}/documents?userId=${userId}`);\n}\n\n// Usage: TypeScript enforces correct argument order\nconst tenant = TenantId('t-corp-001');\nconst user = UserId('u-alice-999');\n\ngetDocumentsForTenant(tenant, user); // ✅ Correct\n// getDocumentsForTenant(user, tenant); // ❌ Compile error: UserId not assignable to TenantId"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Discriminated Union State Machines"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "React components managing multi-step workflows—like AI agent execution with human approval gates—often use 4–6 boolean flags that can combine into impossible states (e.g., `isLoading=false` while `isPendingApproval=true`). Discriminated unions eliminate invalid state combinations entirely."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Discriminated Union for Streaming Chat State",
+        "content": "A union type that makes it impossible to be in contradictory states simultaneously.",
+        "language": "typescript",
+        "code": "// Each state has exactly the data it needs—no extra null fields\ntype ChatState =\n  | { status: 'idle' }\n  | { status: 'submitting'; prompt: string }\n  | { status: 'streaming'; prompt: string; accumulatedContent: string; controller: AbortController }\n  | { status: 'awaiting_approval'; prompt: string; action: PendingAction; actionId: string }\n  | { status: 'completed'; prompt: string; finalContent: string; citations: Citation[] }\n  | { status: 'error'; prompt: string; error: Error };\n\ninterface PendingAction { toolName: string; description: string; parameters: Record<string, unknown>; }\ninterface Citation { chunkId: string; documentTitle: string; }\n\n// TypeScript narrows the type inside each branch\nfunction renderChatState(state: ChatState): JSX.Element {\n  switch (state.status) {\n    case 'idle':\n      return <PromptInput />;  // only idle data available\n    case 'streaming':\n      return <StreamingView content={state.accumulatedContent} />;  // accumulatedContent guaranteed\n    case 'awaiting_approval':\n      return <ApprovalModal action={state.action} actionId={state.actionId} />;\n    case 'completed':\n      return <CompletedMessage content={state.finalContent} citations={state.citations} />;\n    case 'error':\n      return <ErrorDisplay error={state.error} />;\n    case 'submitting':\n      return <LoadingSpinner />;  \n    default:\n      return exhaustiveCheck(state); // TypeScript verifies all cases are handled\n  }\n}\n\n// Exhaustiveness sentinel: if this runs, the switch is incomplete\ndeclare function exhaustiveCheck(state: never): never;"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Type Guard Functions for Runtime Validation"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When receiving untyped JSON from SSE streams or external APIs, user-defined type guards validate the shape at runtime while narrowing the TypeScript type in subsequent code blocks."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Type Guard for SSE Event Parsing",
+        "content": "Safely narrowing raw parsed JSON to specific SSE event types using is predicates.",
+        "language": "typescript",
+        "code": "type TokenEvent = { type: 'token'; content: string };\ntype DoneEvent = { type: 'done' };\ntype ErrorEvent = { type: 'error'; code: string; message: string };\ntype SseEvent = TokenEvent | DoneEvent | ErrorEvent;\n\n// Type guard: returns `value is TokenEvent`, not just `boolean`\nfunction isTokenEvent(value: unknown): value is TokenEvent {\n  return (\n    typeof value === 'object' &&\n    value !== null &&\n    'type' in value &&\n    (value as any).type === 'token' &&\n    typeof (value as any).content === 'string'\n  );\n}\n\nfunction isErrorEvent(value: unknown): value is ErrorEvent {\n  return (\n    typeof value === 'object' &&\n    value !== null &&\n    (value as any).type === 'error' &&\n    typeof (value as any).message === 'string'\n  );\n}\n\n// Safe parsing of raw SSE data\nfunction parseSsePayload(rawData: string): SseEvent | null {\n  try {\n    const parsed: unknown = JSON.parse(rawData);\n    if (isTokenEvent(parsed)) return parsed;   // type narrowed to TokenEvent\n    if (isErrorEvent(parsed)) return parsed;   // type narrowed to ErrorEvent\n    if (typeof parsed === 'object' && parsed !== null && (parsed as any).type === 'done') {\n      return { type: 'done' };\n    }\n    return null;\n  } catch {\n    return null;\n  }\n}"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "TypeScript Type Safety Patterns: Problems Solved",
+        "headers": ["Pattern", "Problem Solved", "Runtime Cost", "Compile-Time Benefit"],
+        "rows": [
+          ["Branded Types", "Primitive confusion (passing userId where tenantId needed)", "Zero (cast is no-op)", "Argument order errors caught at compile time"],
+          ["Discriminated Unions", "Impossible component states (isLoading && isError)", "None", "TypeScript narrows type in each branch"],
+          ["Type Guards (is predicate)", "Typing raw JSON from SSE/API without validation", "Runtime shape check", "Post-guard code receives narrowed type"],
+          ["Exhaustive never checks", "Missing cases in switch statements as type grows", "Zero", "Compile error if new union member not handled"],
+          ["const enum / as const", "Magic number/string values scattered in code", "Inline literal values", "Literal types instead of broad string/number"]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Type Safety Implementation Checklist",
+        "items": [
+          "Replace raw string/number domain identifiers with Branded<T, Brand> types",
+          "Model multi-step async workflows as discriminated unions, not boolean flag combinations",
+          "Use the never exhaustiveness pattern in switch statements to catch missing union cases",
+          "Write user-defined type guard functions (is predicates) for all SSE and API JSON parsing",
+          "Enable TypeScript strict mode (strict: true) to activate all strictness checks",
+          "Use Zod or Valibot for runtime schema validation that automatically infers TypeScript types"
+        ]
       }
     },
     {
       "type": "summary-box",
       "data": {
-        "title": "Key Takeaways",
+        "title": "Summary & Next Steps",
         "points": [
-          "Discriminated unions distinguish types with a common property",
-          "Type guards narrow types with runtime checks",
-          "Brand types prevent accidental type coercion",
-          "Exhaustive checking ensures all cases are handled",
-          "Strict mode catches more errors at compile time"
+          "Branded types prevent domain primitive mixups with zero runtime cost.",
+          "Discriminated unions eliminate impossible component states by design.",
+          "Type guard functions bridge the gap between dynamic runtime values and compile-time types.",
+          "Next, we move to state management architecture: when to use Context, Zustand, or Redux Toolkit."
         ],
-        "takeaway": "Type safety patterns prevent entire classes of bugs. Use discriminated unions for state machines, type guards for runtime validation, and brand types for opaque types."
+        "takeaway": "The best bug is the one that never reaches production: TypeScript's advanced safety patterns transform class-of-bug eliminations into compile-time guarantees."
       }
     }
   ],
-  "relatedLessons": ["dotnet-typescript-conditional-types"],
-  "relatedGlossaryTerms": ["discriminated-unions", "type-guards", "brand-types"]
+  "relatedLessons": ["dotnet-typescript-conditional-types", "dotnet-typescript-generics", "dotnet-state-architecture-patterns"],
+  "relatedGlossaryTerms": ["branded-types", "discriminated-unions", "type-guards", "exhaustiveness"]
 }

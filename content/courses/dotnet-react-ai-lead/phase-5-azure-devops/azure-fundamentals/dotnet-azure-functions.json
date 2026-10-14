@@ -1,1 +1,96 @@
-{"id":"dotnet-lesson-5-2","slug":"dotnet-azure-functions","moduleSlug":"dotnet-azure-fundamentals","title":"Azure Functions","description":"Build serverless functions with Azure Functions.","order":2,"difficulty":"advanced","estimatedMinutes":45,"tags":["azure-functions","serverless","event-driven"],"blocks":[{"type":"heading","data":{"level":2,"text":"Azure Functions"}},{"type":"paragraph","data":{"text":"Azure Functions provides serverless compute. Trigger on HTTP, timers, queues, and other Azure services. Pay only for execution time."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Functions provide serverless compute","Multiple trigger types available","Durable Functions for workflows","Pay-per-use pricing model","Integrate with other Azure services"],"takeaway":"Azure Functions enables event-driven serverless architectures. Use Durable Functions for complex workflows and pay only for what you use."}}],"relatedLessons":["dotnet-azure-app-service"],"relatedGlossaryTerms":["azure-functions","serverless","durable-functions"]}
+{
+  "id": "dotnet-lesson-5-2",
+  "slug": "dotnet-azure-functions",
+  "moduleSlug": "dotnet-azure-fundamentals",
+  "title": "Serverless Event Processing with Azure Functions",
+  "description": "Build asynchronous, event-driven background AI pipelines using Azure Functions isolated worker model in .NET.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["azure-functions", "serverless", "isolated-worker", "event-driven", "blobs", "servicebus"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Serverless Event Processing with .NET Isolated Worker"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In modern AI systems, long-running ingestion, embedding calculation, and batch evaluation tasks should never run synchronously on the user-facing web server. Azure Functions provides serverless, event-driven compute that scales automatically from zero to thousands of instances based on event volume. In modern .NET (.NET 8/9), Azure Functions runs on the Isolated Worker Model, giving developers full control over the application startup, middleware pipeline, and dependency injection."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Core Azure Functions Triggers for AI Pipelines"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Trigger Type", "Event Source", "Execution Model", "AI Ingestion Role"],
+        "rows": [
+          ["Blob Trigger / Event Grid", "Azure Blob Storage upload", "Fires immediately when a new PDF or Word doc is stored", "Triggers document parsing and OCR extraction"],
+          ["Service Bus Queue Trigger", "Azure Service Bus message", "Pulls message with guaranteed at-least-once delivery", "Processes asynchronous embedding jobs with dead-letter retries"],
+          ["Cosmos DB Change Feed", "Azure Cosmos DB record update", "Streams document modifications in real-time", "Maintains incremental vector index synchronization"],
+          ["Timer Trigger (Cron)", "Azure scheduled clock", "Fires on predictable cron schedules (e.g. daily at 2am)", "Executes automated LLM evaluation suites and index garbage collection"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Building a Blob-Triggered Ingestion Function in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The isolated worker function below activates whenever an enterprise document is uploaded to Blob Storage, extracts chunks, and enqueues embedding tasks to Service Bus."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Isolated Worker Azure Function in C#",
+        "content": "Reacts to Blob uploads and triggers downstream vectorization:",
+        "code": "using Microsoft.Azure.Functions.Worker;\nusing Microsoft.Extensions.Logging;\n\npublic class DocumentIngestionFunctions\n{\n    private readonly IDocumentParsingService _parser;\n    private readonly ILogger<DocumentIngestionFunctions> _logger;\n\n    public DocumentIngestionFunctions(IDocumentParsingService parser, ILogger<DocumentIngestionFunctions> logger)\n    {\n        _parser = parser;\n        _logger = logger;\n    }\n\n    [Function(\"OnDocumentUploaded\")]\n    [ServiceBusOutput(\"pending-embeddings-queue\", Connection = \"ServiceBusConnection\")]\n    public async Task<string> Run(\n        [BlobTrigger(\"incoming-documents/{name}\", Connection = \"StorageConnection\")] Stream documentStream,\n        string name,\n        FunctionContext context)\n    {\n        _logger.LogInformation(\"Processing uploaded document: {FileName}\", name);\n\n        // Parse document stream into structured text\n        var parsedText = await _parser.ExtractTextAsync(documentStream);\n        _logger.LogInformation(\"Extracted {Length} chars from {FileName}\", parsedText.Length, name);\n\n        // Output payload is automatically serialized and dispatched to Service Bus queue\n        return JsonSerializer.Serialize(new IngestionJobMessage(name, parsedText));\n    }\n}\n\npublic record IngestionJobMessage(string DocumentName, string Content);",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Mitigating Cold Starts"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "On standard Consumption plans, serverless instances scale to zero when idle, incurring cold starts (1-3 seconds) on initial invocation. For latency-sensitive HTTP AI endpoints, deploy to the Azure Functions Flex Consumption or Premium Plan, which maintains pre-warmed instances and provides virtual network integration."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Azure Functions offloads heavy AI ingestion and batch jobs from main web servers",
+          "Use the .NET Isolated Worker Model for full control over dependency injection and middleware",
+          "Combine Blob Storage triggers and Service Bus queues for resilient, decoupled pipelines",
+          "Cosmos DB Change Feed enables real-time vector index synchronization",
+          "Choose Flex Consumption or Premium plans for pre-warmed instances and VNet integration"
+        ],
+        "takeaway": "Azure Functions is the engine of asynchronous AI data pipelines in .NET. Event-driven triggers and automatic scaling ensure background processing remains fast, decoupled, and cost-efficient."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-azure-app-service", "dotnet-streaming-apis-background", "dotnet-durable-workflows"],
+  "relatedGlossaryTerms": ["azure-functions", "api", "background-service"]
+}

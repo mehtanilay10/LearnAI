@@ -1,0 +1,114 @@
+{
+  "id": "dotnet-lesson-3-20",
+  "slug": "dotnet-direct-apis-vs-abstractions",
+  "moduleSlug": "dotnet-ai-sdk-semantickernel",
+  "title": "Direct Model APIs vs High-Level Abstractions",
+  "description": "Compare direct provider SDKs with Microsoft.Extensions.AI and Semantic Kernel through a hands-on architectural exercise.",
+  "order": 6,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["abstractions", "openai-sdk", "semantic-kernel", "microsoft-extensions-ai", "architecture"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Spectrum of AI Integration in .NET"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When building AI-powered systems in .NET, architects face a foundational design choice: should you call provider-native client libraries directly (such as OpenAI .NET SDK or Azure.AI.OpenAI), program against lightweight abstractions (Microsoft.Extensions.AI), or adopt an orchestrator framework (Semantic Kernel)? Understanding the trade-offs allows you to select the right tool rather than blindly adopting a framework."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Dimension", "Direct Model API (OpenAI/Azure SDK)", "Microsoft.Extensions.AI", "Semantic Kernel"],
+        "rows": [
+          ["Primary Purpose", "Full access to provider features & raw wire protocol", "Clean, lightweight standard abstractions for DI & middleware", "Enterprise agentic orchestration, plugins, and memory"],
+          ["Vendor Lock-in", "High (tied to specific model provider)", "Zero (swap implementations via DI)", "Low to Medium (abstraction layer with plugin conventions)"],
+          ["Bleeding-Edge Features", "Immediate (same-day support for new parameters/models)", "Fast (generic parameter bags support extensions)", "Moderate (depends on SK connector updates)"],
+          ["Testability & Mocking", "Difficult (requires mocking vendor SDK types)", "Effortless (mock IChatClient or IEmbeddingGenerator)", "Good (kernel services can be registered with mocks)"],
+          ["Middleware Support", "Manual HTTP client message handlers", "Built-in DelegatingChatClient pipeline", "Kernel filters & plugin invocation hooks"],
+          ["Mental Model Overhead", "Low (just REST client with typed DTOs)", "Low (familiar ASP.NET Core ILogger-style patterns)", "Medium to High (agents, planners, plugins, memory)"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Implementation 1: Direct Provider API (Azure.AI.OpenAI)"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Using the provider's direct SDK gives you direct visibility into exact wire payloads, raw HTTP status codes, and provider-specific error headers (such as quota resets and token rates). This is invaluable when diagnosing low-level communication issues."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Direct Azure OpenAI Client Implementation",
+        "content": "A support ticket sentiment analyzer built with direct Azure.AI.OpenAI SDK:",
+        "code": "using Azure.AI.OpenAI;\nusing OpenAI.Chat;\nusing System.ClientModel;\n\npublic class DirectOpenAiTicketClassifier\n{\n    private readonly ChatClient _chatClient;\n\n    public DirectOpenAiTicketClassifier(string endpoint, string apiKey, string deploymentName)\n    {\n        var azureClient = new AzureOpenAIClient(\n            new Uri(endpoint),\n            new ApiKeyCredential(apiKey));\n        \n        _chatClient = azureClient.GetChatClient(deploymentName);\n    }\n\n    public async Task<(string Category, int Urgency)> ClassifyTicketAsync(string ticketText, CancellationToken ct = default)\n    {\n        var messages = new ChatMessage[]\n        {\n            new SystemChatMessage(\"You are a ticket triage classifier. Return only 'Category|Urgency' where Urgency is 1-5.\"),\n            new UserChatMessage($\"Ticket: {ticketText}\")\n        };\n\n        var options = new ChatCompletionOptions\n        {\n            Temperature = 0.1f,\n            MaxOutputTokenCount = 50\n        };\n\n        ClientResult<ChatCompletion> result = await _chatClient.CompleteChatAsync(messages, options, ct);\n        var text = result.Value.Content[0].Text.Trim();\n        \n        var parts = text.Split('|');\n        return (parts[0].Trim(), int.Parse(parts[1].Trim()));\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Implementation 2: Higher-Level Abstraction (Microsoft.Extensions.AI)"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Now observe the same feature implemented with Microsoft.Extensions.AI IChatClient. Notice how logging, caching, and resiliency can be injected transparently via standard middleware without altering the classification logic."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Abstractions-First IChatClient Implementation with Middleware",
+        "content": "The exact same triage feature using Microsoft.Extensions.AI and composable middleware:",
+        "code": "using Microsoft.Extensions.AI;\n\npublic class AbstractedTicketClassifier\n{\n    private readonly IChatClient _chatClient;\n\n    public AbstractedTicketClassifier(IChatClient chatClient)\n    {\n        _chatClient = chatClient;\n    }\n\n    public async Task<(string Category, int Urgency)> ClassifyTicketAsync(string ticketText, CancellationToken ct = default)\n    {\n        var messages = new List<ChatMessage>\n        {\n            new(ChatRole.System, \"You are a ticket triage classifier. Return only 'Category|Urgency' where Urgency is 1-5.\"),\n            new(ChatRole.User, $\"Ticket: {ticketText}\")\n        };\n\n        var options = new ChatOptions\n        {\n            Temperature = 0.1f,\n            MaxOutputTokens = 50\n        };\n\n        ChatCompletion response = await _chatClient.CompleteAsync(messages, options, ct);\n        var text = response.Message.Text?.Trim() ?? string.Empty;\n        \n        var parts = text.Split('|');\n        return (parts[0].Trim(), int.Parse(parts[1].Trim()));\n    }\n}\n\n// In Program.cs: Compose with resilient middleware in DI\nbuilder.Services.AddChatClient(sp =>\n{\n    IChatClient inner = new OpenAIClient(apiKey).AsChatClient(\"gpt-4o-mini\");\n    \n    return new ChatClientBuilder(inner)\n        .UseLogging(sp.GetRequiredService<ILoggerFactory>())\n        .UseDistributedCache(sp.GetRequiredService<IDistributedCache>())\n        .Build();\n});",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "title": "Practical Architecture Comparison Exercise",
+        "description": "Evaluate maintainability, unit testing, and vendor independence across both implementations.",
+        "steps": [
+          "1. Write an xUnit unit test for AbstractedTicketClassifier by creating a Mock<IChatClient> returning a canned response. Notice zero network calls or credentials needed.",
+          "2. Try writing a unit test for DirectOpenAiTicketClassifier. Notice how complex it is to mock ClientResult<ChatCompletion> or AzureOpenAIClient.",
+          "3. Switch the underlying model provider in AbstractedTicketClassifier from Azure OpenAI to Ollama (local model) with a one-line change in Program.cs.",
+          "4. Add a telemetry logging wrapper to measure execution latency across all prompts without changing the classifier class."
+        ],
+        "expectedOutcome": "You will recognize that direct provider SDKs are best kept behind an abstraction boundary, using Microsoft.Extensions.AI as the enterprise standard in .NET."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Direct provider SDKs expose raw capabilities and are essential for debugging wire protocols",
+          "Microsoft.Extensions.AI provides lightweight, testable abstractions that integrate with standard .NET dependency injection",
+          "Semantic Kernel builds atop these abstractions to provide higher-level multi-agent orchestration and plugin mechanisms",
+          "Decoupling business logic from vendor SDKs through IChatClient drastically improves unit testability and shields against API deprecations",
+          "Use direct SDKs only when investigating provider-specific issues or consuming preview features not yet supported by standard abstractions"
+        ],
+        "takeaway": "Embrace abstractions like Microsoft.Extensions.AI for enterprise maintainability and testability, while retaining the knowledge of underlying provider APIs to diagnose edge cases."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-microsoft-extensions-ai", "dotnet-semantic-kernel-basics", "dotnet-openai-sdk-basics"],
+  "relatedGlossaryTerms": ["api", "microsoft-extensions-ai", "plugin"]
+}

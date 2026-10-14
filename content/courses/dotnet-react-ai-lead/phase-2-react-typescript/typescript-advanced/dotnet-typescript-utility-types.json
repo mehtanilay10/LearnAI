@@ -2,41 +2,120 @@
   "id": "dotnet-lesson-2-6",
   "slug": "dotnet-typescript-utility-types",
   "moduleSlug": "dotnet-typescript-advanced",
-  "title": "TypeScript Utility Types",
-  "description": "Master Partial, Pick, Omit, Record, and other utility types for type transformations.",
+  "title": "TypeScript Utility Types: Transforming Types Declaratively",
+  "description": "Master TypeScript's built-in utility types: Partial, Required, Readonly, Pick, Omit, Record, Extract, Exclude, ReturnType, Parameters, and Awaited—with practical enterprise AI application examples.",
   "order": 2,
   "difficulty": "advanced",
-  "estimatedMinutes": 40,
-  "tags": ["typescript", "utility-types", "type-transformations"],
+  "estimatedMinutes": 45,
+  "tags": ["typescript", "utility-types", "type-transformations", "partial", "omit", "record"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Built-in Utility Types"
+        "text": "Utility Types: Type Algebra Without Manual Repetition"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "TypeScript provides utility types for common type transformations: Partial makes all properties optional, Pick selects properties, Omit removes properties, and more."
+        "text": "TypeScript's built-in utility types are parameterized generic transformations that derive new types from existing ones. In enterprise AI applications, they eliminate repetitive type definitions: for example, deriving a 'create DTO' from a full entity, an 'update DTO' with only nullable fields, or a 'public summary' from a full internal model—all at the type level, with zero runtime cost."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Utility Type Derivation for AI Knowledge Document",
+        "content": "Deriving Create, Update, and Summary DTOs from a single source-of-truth Document interface.",
+        "language": "typescript",
+        "code": "// Full internal document entity\ninterface Document {\n  id: string;\n  tenantId: string;\n  title: string;\n  content: string;\n  filePath: string;\n  mimeType: string;\n  securityGroups: string[];\n  embeddingModel: string;\n  createdAt: Date;\n  updatedAt: Date;\n  isIndexed: boolean;\n}\n\n// Omit<T, K>: Remove server-generated fields to create the upload DTO\ntype CreateDocumentDto = Omit<Document, 'id' | 'createdAt' | 'updatedAt' | 'isIndexed' | 'embeddingModel'>;\n\n// Partial<Pick<T, K>>: Only the fields allowed for patch updates\ntype UpdateDocumentDto = Partial<Pick<Document, 'title' | 'securityGroups'>>;\n\n// Pick<T, K>: Public summary for sidebar display (no content or paths)\ntype DocumentSummary = Pick<Document, 'id' | 'title' | 'mimeType' | 'isIndexed' | 'createdAt'>;\n\n// Readonly<T>: Freeze the response after fetching to prevent accidental mutation\ntype ImmutableDocument = Readonly<Document>;\n\n// Record<K, V>: Index documents by their string ID\ntype DocumentIndex = Record<string, DocumentSummary>;"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Function Introspection Utilities"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "`ReturnType<T>`, `Parameters<T>`, and `Awaited<T>` allow extracting type information from existing functions—critical when consuming third-party SDKs where interfaces are not directly exported."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Extracting Types from AI SDK Functions",
+        "content": "Using ReturnType, Parameters, and Awaited to derive types from the AI client library without importing its internals.",
+        "language": "typescript",
+        "code": "import type { fetchChatCompletion, searchDocuments } from './aiClient';\n\n// ReturnType<T>: Unwrap what the function returns\ntype RawSearchResult = Awaited<ReturnType<typeof searchDocuments>>;\n// If searchDocuments returns Promise<{ chunks: Chunk[]; totalCount: number }>\n// RawSearchResult = { chunks: Chunk[]; totalCount: number }\n\n// Parameters<T>[N]: Extract the Nth argument type\ntype SearchOptions = Parameters<typeof searchDocuments>[1];\n// If signature is searchDocuments(query: string, options: SearchOptions)\n// We get the SearchOptions type without manually defining it\n\n// Real usage: extending third-party types safely\ninterface ExtendedSearchOptions extends SearchOptions {\n  includeSecurityGroups?: string[];\n  minRRFScore?: number;\n}\n\n// Awaited<T>: Unwrap Promise types for synchronous contexts\ntype CompletionResponse = Awaited<ReturnType<typeof fetchChatCompletion>>;\n// Works even with chained Promises: Awaited<Promise<Promise<T>>> = T"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Extract and Exclude for Union Manipulation"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Filtering Event Union Types with Extract and Exclude",
+        "content": "Splitting a mixed SSE event union into specific sub-unions for type-safe handler routing.",
+        "language": "typescript",
+        "code": "type SseEvent =\n  | { type: 'token'; content: string }\n  | { type: 'citation'; chunkId: string; documentTitle: string }\n  | { type: 'tool_start'; toolName: string }\n  | { type: 'tool_result'; toolName: string; result: unknown }\n  | { type: 'error'; code: string; message: string }\n  | { type: 'done' };\n\n// Extract<T, U>: Keep only members of T assignable to U\ntype StreamingEvents = Extract<SseEvent, { type: 'token' | 'citation' }>;\n// = { type: 'token'; content: string } | { type: 'citation'; chunkId: string; documentTitle: string }\n\n// Exclude<T, U>: Remove members of T assignable to U\ntype TerminalEvents = Exclude<SseEvent, { type: 'token' | 'citation' | 'tool_start' | 'tool_result' }>;\n// = { type: 'error'; code: string; message: string } | { type: 'done' }\n\n// Type-safe dispatcher using extracted union\nfunction handleStreamEvent(event: SseEvent) {\n  switch (event.type) {\n    case 'token': appendToken(event.content); break;\n    case 'citation': addCitation(event.chunkId, event.documentTitle); break;\n    case 'error': showError(event.message); break;\n    case 'done': finalizeStream(); break;\n    case 'tool_start': showToolSpinner(event.toolName); break;\n    case 'tool_result': dismissToolSpinner(event.toolName); break;\n    // TypeScript exhaustiveness: no default needed since all cases covered\n  }\n}\n\ndeclare function appendToken(c: string): void;\ndeclare function addCitation(id: string, title: string): void;\ndeclare function showError(msg: string): void;\ndeclare function finalizeStream(): void;\ndeclare function showToolSpinner(name: string): void;\ndeclare function dismissToolSpinner(name: string): void;"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "TypeScript Built-in Utility Types Reference",
+        "headers": ["Utility Type", "Syntax", "Effect", "Common Use Case"],
+        "rows": [
+          ["Partial", "Partial<T>", "All properties become optional", "Update/patch DTOs from full entity types"],
+          ["Required", "Required<T>", "All optional properties become required", "Validated form submission types"],
+          ["Readonly", "Readonly<T>", "All properties become readonly", "Immutable API response models"],
+          ["Pick", "Pick<T, 'a' | 'b'>", "Keep only specified properties", "Public summary views from internal entities"],
+          ["Omit", "Omit<T, 'id' | 'createdAt'>", "Remove specified properties", "Create DTOs without server-generated fields"],
+          ["Record", "Record<K, V>", "Object type with keys K and values V", "Lookup maps, indexes, and key-value stores"],
+          ["Extract", "Extract<T, U>", "Keep union members assignable to U", "Filtering event union to specific subtypes"],
+          ["Exclude", "Exclude<T, U>", "Remove union members assignable to U", "Removing terminal events from streaming unions"],
+          ["ReturnType", "ReturnType<F>", "Extract return type of function F", "Deriving types from third-party SDK functions"],
+          ["Awaited", "Awaited<T>", "Unwrap Promise<T> to T (recursively)", "Getting resolved types from async functions"]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Utility Types Best Practices",
+        "items": [
+          "Use Omit<Entity, 'id' | 'createdAt'> for Create DTOs instead of re-declaring properties manually",
+          "Prefer Partial<Pick<Entity, keys>> over broad Partial<Entity> for safe partial update shapes",
+          "Use Awaited<ReturnType<typeof fn>> to extract types from third-party async functions",
+          "Use Record<string, T> for lookup maps to get compile-time key-value type enforcement",
+          "Combine Extract and Exclude to split large union types into focused, purpose-specific subtypes",
+          "Apply Readonly<T> on API responses to prevent accidental mutation after fetching"
+        ]
       }
     },
     {
       "type": "summary-box",
       "data": {
-        "title": "Key Takeaways",
+        "title": "Summary & Next Steps",
         "points": [
-          "Partial<T> makes all properties optional",
-          "Pick<T, K> selects specific properties",
-          "Omit<T, K> removes specific properties",
-          "Record<K, T> creates object type from keys",
-          "Readonly<T> makes all properties readonly"
+          "Utility types derive new types from existing ones, eliminating repetitive type declarations.",
+          "Omit, Pick, and Partial power clean DTO hierarchies from single source-of-truth entity types.",
+          "ReturnType and Awaited enable type extraction from third-party libraries without importing internals.",
+          "Next, we explore conditional types and the infer keyword for type-level logic and pattern matching."
         ],
-        "takeaway": "Utility types provide powerful type transformations without manual definition. Use them to derive types from existing types declaratively."
+        "takeaway": "Utility types are TypeScript's type algebra: use them to derive, reshape, and narrow types declaratively rather than duplicating definitions across your codebase."
       }
     }
   ],
-  "relatedLessons": ["dotnet-typescript-generics"],
-  "relatedGlossaryTerms": ["utility-types", "partial", "pick", "omit"]
+  "relatedLessons": ["dotnet-typescript-generics", "dotnet-typescript-conditional-types", "dotnet-typescript-type-safety-patterns"],
+  "relatedGlossaryTerms": ["utility-types", "partial", "pick", "omit", "record", "returntype"]
 }

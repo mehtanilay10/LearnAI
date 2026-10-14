@@ -1,1 +1,86 @@
-{"id":"dotnet-lesson-3-14","slug":"dotnet-skills-plugins","moduleSlug":"dotnet-ai-sdk-semantickernel","title":"Skills & Plugins","description":"Build reusable skills and plugins with Semantic Kernel for AI-native applications.","order":2,"difficulty":"advanced","estimatedMinutes":50,"tags":["skills","plugins","semantic-kernel","reusability"],"blocks":[{"type":"heading","data":{"level":2,"text":"Skills and Plugins"}},{"type":"paragraph","data":{"text":"Skills contain semantic functions that the LLM can call. Plugins provide native code integration for external actions."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Skills contain semantic functions","Plugins integrate native code","Use plugins for external APIs","Compose skills for complex tasks","Parameterize skills for flexibility"],"takeaway":"Skills and plugins enable reusable AI components. Build semantic functions for LLM tasks and plugins for external integrations."}}],"relatedLessons":["dotnet-semantic-kernel-basics"],"relatedGlossaryTerms":["skills","plugins","semantic-functions"]}
+{
+  "id": "dotnet-lesson-3-14",
+  "slug": "dotnet-skills-plugins",
+  "moduleSlug": "dotnet-ai-sdk-semantickernel",
+  "title": "Semantic Kernel Plugins & Native Functions",
+  "description": "Build reusable native C# plugins, prompt functions, and configure automatic function calling in Semantic Kernel.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["semantic-kernel", "plugins", "native-functions", "kernelfunction", "auto-invoke"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Semantic Kernel Plugin Model"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In Semantic Kernel, capabilities are organized into Plugins. A plugin is a cohesive collection of functions exposed to the AI model. Functions come in two flavors: Native Functions (ordinary C# methods marked with [KernelFunction] that execute backend code, query databases, or call REST APIs) and Semantic Functions (parameterized prompt templates that call other LLMs). By bundling related functions together, you create clean architectural boundaries."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Creating Native C# Plugins with [KernelFunction]"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Any C# class can become a Semantic Kernel plugin by decorating methods with [KernelFunction] and descriptive [Description] attributes. These descriptions are automatically serialized into the OpenAI/Azure function calling schema."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Creating an Order Management Plugin in C#",
+        "content": "A native C# plugin providing order tracking and cancellation capabilities:",
+        "code": "using System.ComponentModel;\nusing Microsoft.SemanticKernel;\n\npublic class OrderManagementPlugin\n{\n    private readonly IOrderRepository _repository;\n\n    public OrderManagementPlugin(IOrderRepository repository)\n    {\n        _repository = repository;\n    }\n\n    [KernelFunction(\"get_order_status\")]\n    [Description(\"Retrieves the current fulfillment and delivery status for a given customer order ID.\")]\n    public async Task<OrderStatusDto> GetOrderStatusAsync(\n        [Description(\"The unique order number (e.g. ORD-9821)\")] string orderId,\n        CancellationToken ct = default)\n    {\n        var order = await _repository.FindByIdAsync(orderId, ct);\n        if (order == null)\n            throw new KeyNotFoundException($\"Order {orderId} not found.\");\n\n        return new OrderStatusDto(order.Id, order.Status, order.EstimatedDeliveryDate);\n    }\n\n    [KernelFunction(\"cancel_order\")]\n    [Description(\"Cancels an active order if it has not yet entered shipping status.\")]\n    public async Task<string> CancelOrderAsync(\n        [Description(\"The order number to cancel\")] string orderId,\n        [Description(\"Reason provided by the customer for cancellation\")] string reason,\n        CancellationToken ct = default)\n    {\n        var success = await _repository.TryCancelAsync(orderId, reason, ct);\n        return success ? $\"Order {orderId} was successfully cancelled.\" : $\"Order {orderId} cannot be cancelled as it is already in transit.\";\n    }\n}\n\npublic record OrderStatusDto(string OrderId, string Status, DateTime? DeliveryDate);",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Automatic Function Calling with ToolCallBehavior"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "One of Semantic Kernel's most powerful features is ToolCallBehavior.AutoInvokeKernelFunctions. When enabled in PromptExecutionSettings, the kernel automatically detects when the LLM wants to call a plugin, executes the C# method, feeds the observation back to the model, and continues the conversation without manual roundtrip plumbing."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Enabling Auto-Invoke Kernel Functions in C#",
+        "content": "Imports the plugin into the kernel and configures automated function execution:",
+        "code": "using Microsoft.SemanticKernel;\nusing Microsoft.SemanticKernel.ChatCompletion;\nusing Microsoft.SemanticKernel.Connectors.OpenAI;\n\n// 1. Build kernel and import plugin\nvar kernel = builder.Build();\nkernel.Plugins.AddFromType<OrderManagementPlugin>(\"OrderManagement\");\n\nvar chatService = kernel.GetRequiredService<IChatCompletionService>();\nvar history = new ChatHistory();\nhistory.AddUserMessage(\"Where is my order ORD-9821, and can I cancel it if it hasn't shipped?\");\n\n// 2. Enable automatic function calling loop\nvar executionSettings = new OpenAIPromptExecutionSettings\n{\n    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,\n    Temperature = 0.2\n};\n\n// 3. The kernel automatically calls GetOrderStatusAsync and synthesizes the grounded answer\nvar response = await chatService.GetChatMessageContentAsync(\n    history,\n    executionSettings,\n    kernel);\n\nConsole.WriteLine(response.Content);",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Semantic Kernel Plugins group native C# methods and prompt templates into discoverable modules",
+          "Mark methods with [KernelFunction] and describe parameters with [Description] for accurate LLM schemas",
+          "Enable ToolCallBehavior.AutoInvokeKernelFunctions to automate the complete tool invocation roundtrip",
+          "Inject services into plugin constructors via dependency injection for clean data access",
+          "Handle exceptions inside plugins gracefully to provide semantic feedback back to the reasoning model"
+        ],
+        "takeaway": "Plugins bridge domain logic and AI reasoning in Semantic Kernel. With [KernelFunction] and AutoInvokeKernelFunctions, .NET applications equip LLMs with secure, autonomous tool execution."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-semantic-kernel-basics", "dotnet-planners-connectors", "dotnet-tool-calling"],
+  "relatedGlossaryTerms": ["plugin", "semantic-kernel", "tool-calling"]
+}

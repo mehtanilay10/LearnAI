@@ -2,36 +2,128 @@
   "id": "dotnet-lesson-2-9",
   "slug": "dotnet-context-and-redux",
   "moduleSlug": "dotnet-state-management",
-  "title": "Context API & Redux Toolkit",
-  "description": "Master React Context for global state and Redux Toolkit for complex state management with TypeScript.",
+  "title": "Context API & Redux Toolkit: Global State Architecture in TypeScript",
+  "description": "Master React Context for scoped global state and Redux Toolkit (RTK) for complex predictable state with TypeScript: createSlice, createAsyncThunk, RTK Query, and performance optimization with selector memoization.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["react", "context", "redux", "redux-toolkit"],
+  "estimatedMinutes": 50,
+  "tags": ["react", "context", "redux-toolkit", "typescript", "rtk-query", "selector-memoization"],
   "blocks": [
     {
       "type": "heading",
-      "data": {"level": 2, "text": "Context API"}
+      "data": {
+        "level": 2,
+        "text": "Choosing Between Context and Redux Toolkit"
+      }
     },
     {
       "type": "paragraph",
-      "data": {"text": "React Context provides a way to pass data through the component tree without prop drilling. Use it for global theme, user, or app-wide state."}
+      "data": {
+        "text": "React Context and Redux Toolkit (RTK) are not competitors—they serve different purposes. Context is appropriate for slowly-changing global state consumed by many components: authentication, theme, locale, and feature flags. RTK is appropriate for high-frequency state changes, complex async workflows, cross-slice derived state, and scenarios requiring DevTools time-travel debugging. In an enterprise AI assistant, the user's auth state and theme live in Context; the conversation list, streaming state machine, and agent tool results live in RTK."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "state-ownership-chart",
+        "caption": "State Ownership Decision: Context vs Redux vs TanStack Query",
+        "code": "flowchart TD\n    Q1{Is this server data fetched from an API?}\n    Q1 -->|Yes| TanStack[TanStack Query\\n- Conversations list\\n- Document index\\n- Search results]\n    Q1 -->|No| Q2{Does it change frequently or need middleware?}\n    Q2 -->|Yes| RTK[Redux Toolkit\\n- Streaming state machine\\n- Tool execution states\\n- Optimistic UI updates]\n    Q2 -->|No| Q3{Is it needed by many components globally?}\n    Q3 -->|Yes| Context[React Context\\n- Auth / User identity\\n- Theme / locale\\n- Feature flags]\n    Q3 -->|No| Local[Local useState / useReducer\\n- Form input\\n- Modal open/close\\n- Accordion expand]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Type-Safe React Context Pattern"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A well-typed Context provider encapsulates its own reducer, derived state computation, and protected access hook."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Type-Safe AuthContext with useReducer",
+        "content": "A production authentication context with Entra ID user claims and automatic token refresh.",
+        "language": "tsx",
+        "code": "import { createContext, useContext, useReducer, type ReactNode } from 'react';\n\ninterface AuthUser {\n  userId: string;\n  tenantId: string;\n  displayName: string;\n  securityGroups: string[];\n}\n\ntype AuthState =\n  | { status: 'loading' }\n  | { status: 'authenticated'; user: AuthUser; token: string }\n  | { status: 'unauthenticated' };\n\ntype AuthAction =\n  | { type: 'LOGIN_SUCCESS'; user: AuthUser; token: string }\n  | { type: 'LOGOUT' }\n  | { type: 'TOKEN_REFRESH'; token: string };\n\nfunction authReducer(state: AuthState, action: AuthAction): AuthState {\n  switch (action.type) {\n    case 'LOGIN_SUCCESS': return { status: 'authenticated', user: action.user, token: action.token };\n    case 'LOGOUT': return { status: 'unauthenticated' };\n    case 'TOKEN_REFRESH':\n      return state.status === 'authenticated' ? { ...state, token: action.token } : state;\n    default: return state;\n  }\n}\n\nconst AuthContext = createContext<{ state: AuthState; dispatch: React.Dispatch<AuthAction> } | null>(null);\n\nexport function AuthProvider({ children }: { children: ReactNode }) {\n  const [state, dispatch] = useReducer(authReducer, { status: 'loading' });\n  return <AuthContext.Provider value={{ state, dispatch }}>{children}</AuthContext.Provider>;\n}\n\nexport function useAuth() {\n  const ctx = useContext(AuthContext);\n  if (!ctx) throw new Error('useAuth must be used within AuthProvider');\n  return ctx;\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Redux Toolkit: createSlice & createAsyncThunk"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "RTK's `createSlice` generates action creators and reducers from a single declaration, eliminating the boilerplate of classic Redux. `createAsyncThunk` manages the `pending/fulfilled/rejected` lifecycle of async operations automatically."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Conversation Slice with TypeScript",
+        "content": "A fully typed RTK slice managing conversation loading state, active session, and optimistic message appending.",
+        "language": "typescript",
+        "code": "import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';\n\ninterface Message { id: string; role: string; content: string; createdAt: string; }\ninterface Conversation { id: string; title: string; messages: Message[]; }\n\ninterface ConversationsState {\n  conversations: Conversation[];\n  activeId: string | null;\n  status: 'idle' | 'loading' | 'error';\n  error: string | null;\n}\n\nexport const fetchConversations = createAsyncThunk(\n  'conversations/fetchAll',\n  async (tenantId: string, { rejectWithValue }) => {\n    const res = await fetch(`/api/conversations?tenantId=${tenantId}`);\n    if (!res.ok) return rejectWithValue(await res.text());\n    return (await res.json()) as Conversation[];\n  }\n);\n\nconst conversationsSlice = createSlice({\n  name: 'conversations',\n  initialState: { conversations: [], activeId: null, status: 'idle', error: null } as ConversationsState,\n  reducers: {\n    setActive: (state, action: PayloadAction<string>) => {\n      state.activeId = action.payload;\n    },\n    appendMessage: (state, action: PayloadAction<{ conversationId: string; message: Message }>) => {\n      const conv = state.conversations.find((c) => c.id === action.payload.conversationId);\n      conv?.messages.push(action.payload.message);\n    },\n  },\n  extraReducers: (builder) => {\n    builder\n      .addCase(fetchConversations.pending, (state) => { state.status = 'loading'; state.error = null; })\n      .addCase(fetchConversations.fulfilled, (state, action) => {\n        state.status = 'idle';\n        state.conversations = action.payload;\n      })\n      .addCase(fetchConversations.rejected, (state, action) => {\n        state.status = 'error';\n        state.error = action.payload as string;\n      });\n  },\n});\n\nexport const { setActive, appendMessage } = conversationsSlice.actions;\nexport default conversationsSlice.reducer;"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Selector Memoization with createSelector"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "RTK re-exports `createSelector` from Reselect. Memoized selectors prevent expensive derivations (like filtering 500 messages) from running on every Redux state change."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Memoized Selector for Active Conversation Messages",
+        "content": "The filtered messages list only recomputes when conversations or activeId actually change.",
+        "language": "typescript",
+        "code": "import { createSelector } from '@reduxjs/toolkit';\nimport type { RootState } from '../store';\n\nconst selectConversations = (state: RootState) => state.conversations.conversations;\nconst selectActiveId = (state: RootState) => state.conversations.activeId;\n\n// Memoized: only recomputes when input selectors produce new references\nexport const selectActiveMessages = createSelector(\n  [selectConversations, selectActiveId],\n  (conversations, activeId) =>\n    conversations.find((c) => c.id === activeId)?.messages ?? []\n);"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Context & Redux Toolkit Architecture Checklist",
+        "items": [
+          "Context used only for slowly-changing global state (auth, theme, locale, feature flags)",
+          "RTK slices own domain state with typed actions, reducers, and async thunks",
+          "createSelector used for all derived state to prevent expensive redundant recalculations",
+          "RTK Query considered for server state instead of createAsyncThunk to avoid manual caching",
+          "Context providers do not contain heavy computation that re-renders all consumers on every state change",
+          "Redux DevTools extension enabled in development for time-travel debugging"
+        ]
+      }
     },
     {
       "type": "summary-box",
       "data": {
-        "title": "Key Takeaways",
+        "title": "Summary & Next Steps",
         "points": [
-          "Context avoids prop drilling for global state",
-          "Create context with createContext, provide with Provider",
-          "Consume with useContext hook",
-          "Split contexts by domain to avoid unnecessary re-renders",
-          "Redux Toolkit simplifies Redux with createSlice and configureStore"
+          "Context is ideal for slowly-changing cross-cutting concerns; RTK for complex domain state.",
+          "createSlice dramatically reduces Redux boilerplate with full TypeScript inference.",
+          "Memoized selectors with createSelector prevent expensive derivations on every state update.",
+          "Next, we master TanStack Query for treating server-fetched data as a first-class reactive cache."
         ],
-        "takeaway": "Use Context for simple global state and Redux Toolkit for complex state with actions, reducers, and middleware. Both work well with TypeScript."
+        "takeaway": "Use the right tool for the state category: Context for auth/theme, RTK for complex domain state machines, and TanStack Query for server state."
       }
     }
   ],
-  "relatedLessons": ["dotnet-state-architecture-patterns"],
-  "relatedGlossaryTerms": ["react-context", "redux", "redux-toolkit"]
+  "relatedLessons": ["dotnet-react-query-server-state", "dotnet-state-architecture-patterns", "dotnet-typescript-type-safety-patterns"],
+  "relatedGlossaryTerms": ["react-context", "redux-toolkit", "selector-memoization", "createslice"]
 }

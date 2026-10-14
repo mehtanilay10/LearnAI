@@ -1,1 +1,159 @@
-{"id":"dotnet-lesson-7-6","slug":"dotnet-capstone-frontend","moduleSlug":"dotnet-capstone-implementation","title":"Capstone Frontend","description":"Implement the React frontend with TypeScript.","order":2,"difficulty":"advanced","estimatedMinutes":60,"tags":["frontend","react","typescript"],"blocks":[{"type":"heading","data":{"level":2,"text":"Frontend Implementation"}},{"type":"paragraph","data":{"text":"Implement the React frontend with TypeScript, state management, and API integration."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Build React components with TypeScript","Implement state management","Integrate with backend API","Add loading and error states","Implement responsive design"],"takeaway":"The frontend provides the user interface. Build clean, type-safe components with proper state management and error handling."}}],"relatedLessons":["dotnet-capstone-backend"],"relatedGlossaryTerms":["frontend","react","typescript"]}
+{
+  "id": "dotnet-lesson-7-6",
+  "slug": "dotnet-capstone-frontend",
+  "moduleSlug": "dotnet-capstone-implementation",
+  "title": "Enterprise Frontend: React 19, SSE Streaming Hook & Interactive Citations",
+  "description": "Build the enterprise React 19 + TypeScript frontend: custom SSE streaming hook with AbortController cancellation, interactive citation popovers, tool execution status badges, and human-in-the-loop action approval modals.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["frontend", "react-19", "typescript", "sse-streaming", "citations", "human-in-the-loop"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Modern Streaming AI User Interface"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Building a production user interface for an enterprise AI assistant presents challenges absent in standard CRUD applications. The frontend must parse fragmented Server-Sent Events (SSE) chunks on the fly, render streaming Markdown without layout thrashing, dynamically transform raw `[cite:UUID]` tags into interactive citation cards with document previews, show live tool-execution spinners, and intercept high-impact agent actions with modal approval dialogs."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "streaming-ui-state-machine",
+        "caption": "React 19 Streaming State Transitions with Tool Approval Intercept",
+        "code": "stateDiagram-v2\n    [*] --> Idle\n    Idle --> Submitting : User submits prompt\n    Submitting --> StreamingTokens : SSE stream opens\n    StreamingTokens --> StreamingTokens : Append delta tokens\n    StreamingTokens --> AwaitingApproval : Backend emits ActionApprovalRequired event\n    AwaitingApproval --> ActionApproved : User clicks 'Confirm & Execute'\n    AwaitingApproval --> ActionRejected : User clicks 'Reject'\n    ActionApproved --> StreamingTokens : Agent resumes tool execution\n    ActionRejected --> StreamingTokens : Agent handles cancellation\n    StreamingTokens --> Completed : Received [DONE] event\n    StreamingTokens --> Aborted : User clicks 'Stop Generating'\n    Completed --> Idle\n    Aborted --> Idle"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Production SSE Streaming Hook with AbortController"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The custom `useStreamingChat` hook consumes the SSE endpoint using `fetch` with `ReadableStreamDefaultReader`. It manages token accumulation, error recovery, and immediate HTTP abort capability."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "useStreamingChat Hook in TypeScript",
+        "content": "This production hook manages streaming state, token accumulation, and instant cancellation using AbortController.",
+        "language": "typescript",
+        "code": "import { useState, useRef, useCallback } from 'react';\n\ninterface Message {\n  id: string;\n  role: 'user' | 'assistant';\n  content: string;\n  isStreaming?: boolean;\n}\n\nexport function useStreamingChat(apiUrl: string) {\n  const [messages, setMessages] = useState<Message[]>([]);\n  const [isGenerating, setIsGenerating] = useState(false);\n  const abortControllerRef = useRef<AbortController | null>(null);\n\n  const sendMessage = useCallback(async (prompt: string, tenantId: string) => {\n    const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: prompt };\n    const assistantId = crypto.randomUUID();\n    const initialAssistantMsg: Message = { id: assistantId, role: 'assistant', content: '', isStreaming: true };\n\n    setMessages((prev) => [...prev, userMsg, initialAssistantMsg]);\n    setIsGenerating(true);\n\n    const controller = new AbortController();\n    abortControllerRef.current = controller;\n\n    try {\n      const response = await fetch(`${apiUrl}/api/chat/stream`, {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ tenantId, query: prompt }),\n        signal: controller.signal,\n      });\n\n      if (!response.ok || !response.body) {\n        throw new Error(`HTTP error ${response.status}`);\n      }\n\n      const reader = response.body.getReader();\n      const decoder = new TextDecoder();\n      let accumulatedContent = '';\n\n      while (true) {\n        const { done, value } = await reader.read();\n        if (done) break;\n\n        const chunk = decoder.decode(value, { stream: true });\n        const lines = chunk.split('\\n');\n\n        for (const line of lines) {\n          if (line.startsWith('data: ')) {\n            const data = line.slice(6).trim();\n            if (data === '[DONE]') continue;\n\n            try {\n              const parsed = JSON.parse(data);\n              if (parsed.token) {\n                accumulatedContent += parsed.token;\n                setMessages((prev) =>\n                  prev.map((msg) =>\n                    msg.id === assistantId\n                      ? { ...msg, content: accumulatedContent }\n                      : msg\n                  )\n                );\n              }\n            } catch {\n              // Handle fragmented JSON chunks gracefully\n            }\n          }\n        }\n      }\n    } catch (err: any) {\n      if (err.name !== 'AbortError') {\n        console.error('Streaming error:', err);\n      }\n    } finally {\n      setIsGenerating(false);\n      setMessages((prev) =>\n        prev.map((msg) => (msg.id === assistantId ? { ...msg, isStreaming: false } : msg))\n      );\n      abortControllerRef.current = null;\n    }\n  }, [apiUrl]);\n\n  const stopGeneration = useCallback(() => {\n    if (abortControllerRef.current) {\n      abortControllerRef.current.abort();\n      abortControllerRef.current = null;\n      setIsGenerating(false);\n    }\n  }, []);\n\n  return { messages, isGenerating, sendMessage, stopGeneration };\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Interactive Citation Parsing & Popovers"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "As the assistant streams text, inline markers like `[cite:3e8f4c21]` must not render as ugly plain text. A Markdown renderer regex plugin replaces citation tokens with clickable pills that open a flyout preview of the source passage."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Citation Badge and Drawer Component",
+        "content": "Renders citation badges that open the source excerpt drawer with high contrast and accessibility compliance.",
+        "language": "tsx",
+        "code": "import React, { useState } from 'react';\n\ninterface CitationBadgeProps {\n  chunkId: string;\n  documentTitle: string;\n  excerpt: string;\n  pageNumber?: number;\n}\n\nexport const CitationBadge: React.FC<CitationBadgeProps> = ({\n  chunkId,\n  documentTitle,\n  excerpt,\n  pageNumber,\n}) => {\n  const [isOpen, setIsOpen] = useState(false);\n\n  return (\n    <span className=\"relative inline-block mx-1\">\n      <button\n        type=\"button\"\n        onClick={() => setIsOpen(!isOpen)}\n        className=\"inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded bg-accent-subtle text-accent-fg border border-accent hover:bg-accent hover:text-white transition-colors\"\n        aria-label={`Source citation: ${documentTitle}`}\n        aria-expanded={isOpen}\n      >\n        📄 {documentTitle.slice(0, 16)}...\n      </button>\n\n      {isOpen && (\n        <div className=\"absolute z-50 bottom-full mb-2 left-0 w-80 p-3 bg-canvas-overlay border border-border rounded-lg shadow-xl text-xs text-fg-default animate-fade-in\">\n          <div className=\"flex justify-between items-center mb-1 font-semibold text-accent-fg\">\n            <span>{documentTitle}</span>\n            {pageNumber && <span className=\"text-fg-muted\">p. {pageNumber}</span>}\n          </div>\n          <p className=\"italic text-fg-muted line-clamp-4 font-mono bg-canvas-subtle p-2 rounded\">\n            \"{excerpt}\"\n          </p>\n          <div className=\"mt-2 flex justify-end\">\n            <button\n              type=\"button\"\n              onClick={() => setIsOpen(false)}\n              className=\"text-xs text-fg-muted hover:text-fg-default underline\"\n            >\n              Dismiss\n            </button>\n          </div>\n        </div>\n      )}\n    </span>\n  );\n};"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Human-in-the-Loop Action Approval Modal"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When an agent invokes a destructive tool (e.g. creating a purchase order, deleting a record), the backend emits an `ActionApprovalRequired` SSE event. The UI captures this event, suspends UI input, and renders an approval confirmation modal with diff visualization."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "Frontend AI State Indicators and User Controls",
+        "headers": ["Application State", "Visual Feedback", "Active Controls", "Network Activity"],
+        "rows": [
+          [
+            "Submitting",
+            "Pulsing shimmer loader on input field",
+            "Input disabled, Submit button changes to loading spinner",
+            "POST /api/chat/stream initiated"
+          ],
+          [
+            "Streaming Tokens",
+            "Blinking cursor at end of assistant message text",
+            "'Stop Generating' red button visible and active",
+            "HTTP/2 stream receiving chunk deltas"
+          ],
+          [
+            "Tool Calling",
+            "Pill badge: 'Searching Corporate Wiki...' with spinner",
+            "User can abort the tool call early",
+            "Agent executing background retrieval"
+          ],
+          [
+            "Human Approval Gate",
+            "Modal overlay with action description & parameter diff",
+            "'Approve & Proceed' (green) or 'Reject Action' (red)",
+            "Stream paused awaiting POST /api/agent/approve"
+          ],
+          [
+            "Complete",
+            "Citation badges rendered, Copy & Feedback icons active",
+            "Input re-enabled, Follow-up suggestion pills displayed",
+            "Stream closed, metrics logged"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "React 19 AI Frontend Quality Checklist",
+        "items": [
+          "AbortController actively tied to 'Stop Generating' button to cancel network stream immediately",
+          "SSE stream reader handles line breaks and JSON token fragmentation without crashing",
+          "Citations rendered as interactive components with keyboard accessibility (tabbing and Enter keys)",
+          "Auto-scroll to bottom behavior respects user scroll-up (does not snap violently while user reads history)",
+          "Tool execution spinners provide clear feedback on what the agent is currently doing",
+          "Human-in-the-loop approval dialog clearly highlights consequences and parameters before executing"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Summary & Next Steps",
+        "points": [
+          "React 19 streaming UI delivers immediate visual feedback via custom SSE hooks.",
+          "AbortController guarantees control over runaway or unwanted token generation.",
+          "Interactive citation badges anchor LLM statements in verified source documents.",
+          "Next, we implement the end-to-end RAG ingestion worker and hybrid vector search."
+        ],
+        "takeaway": "An enterprise AI frontend is more than a chat box: it is a mission control panel providing transparency, citation verification, and human oversight over autonomous agent tools."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-capstone-backend", "dotnet-capstone-rag-implementation", "dotnet-streaming-ai-ux"],
+  "relatedGlossaryTerms": ["react-19", "sse-streaming", "abort-controller", "citations", "human-in-the-loop"]
+}

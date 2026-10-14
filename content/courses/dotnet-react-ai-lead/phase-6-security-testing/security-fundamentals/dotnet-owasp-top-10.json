@@ -1,1 +1,87 @@
-{"id":"dotnet-lesson-6-2","slug":"dotnet-owasp-top-10","moduleSlug":"dotnet-security-fundamentals","title":"OWASP Top 10","description":"Understand and mitigate OWASP Top 10 vulnerabilities.","order":2,"difficulty":"advanced","estimatedMinutes":50,"tags":["owasp","security","vulnerabilities"],"blocks":[{"type":"heading","data":{"level":2,"text":"OWASP Top 10"}},{"type":"paragraph","data":{"text":"OWASP Top 10 lists critical security risks. Understand injection, broken authentication, XSS, and other vulnerabilities."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["OWASP Top 10 lists critical risks","Injection: validate all inputs","Broken auth: secure session management","XSS: encode all outputs","CSRF: use anti-forgery tokens"],"takeaway":"OWASP Top 10 provides a security baseline. Understand each vulnerability and implement mitigations in your applications."}}],"relatedLessons":["dotnet-secure-coding"],"relatedGlossaryTerms":["owasp","injection","xss","csrf"]}
+{
+  "id": "dotnet-lesson-6-2",
+  "slug": "dotnet-owasp-top-10",
+  "moduleSlug": "dotnet-security-fundamentals",
+  "title": "OWASP Top 10 for Web & LLM Applications",
+  "description": "Analyze the OWASP Top 10 for web applications alongside the OWASP Top 10 for LLMs, with defensive engineering controls in C#.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["owasp", "owasp-llm-top-10", "security", "vulnerabilities", "prompt-injection", "excessive-agency"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Convergence of Web and AI Security"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "While traditional web security defends against SQL injection, Cross-Site Scripting (XSS), and Broken Access Control (OWASP Top 10 Web), generative AI introduces an entirely separate risk profile. The OWASP Top 10 for Large Language Model Applications codifies the critical vulnerabilities that arise when natural language models interact with software systems, data stores, and external APIs."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The OWASP Top 10 for LLMs Explained"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Vulnerability", "Threat Vector", "Impact", "Defensive Control in .NET"],
+        "rows": [
+          ["LLM01: Prompt Injection", "Manipulating prompts via direct user input or indirect retrieved documents", "Hijacks model instructions, bypasses safety guardrails", "Strict XML context boundaries, Azure Content Safety Prompt Shields"],
+          ["LLM02: Sensitive Information Disclosure", "Model reveals PII, API credentials, or proprietary source data in completions", "Data privacy violations, regulatory fines (GDPR/HIPAA)", "PII masking middleware (Presidio), outbound DLP screening"],
+          ["LLM03: Supply Chain Vulnerabilities", "Compromised third-party models, poisoned plugins, or vulnerable packages", "Backdoored model weights, malware execution", "Scan NuGet packages with dotnet list package --vulnerable; verify model signatures"],
+          ["LLM04: Data and Model Poisoning", "Tampering with training data or RAG knowledge bases", "Corrupts model decision-making or creates deliberate backdoor triggers", "Cryptographic document hashing, verified source ingestion pipelines"],
+          ["LLM05: Improper Output Handling", "Passing raw LLM outputs to downstream interpreters (eval(), bash, SQL, innerHTML)", "Remote Code Execution (RCE), Cross-Site Scripting (XSS)", "Strict JSON schema validation; HTML entity encoding; parameterized SQL"],
+          ["LLM06: Excessive Agency", "Granting autonomous agents unrestricted access to high-privilege tools", "Accidental mass deletion, unintended financial transactions", "Least privilege tool roles, rate limits, Human-in-the-Loop confirmation tokens"],
+          ["LLM07: System Prompt Leakage", "Tricking the model into disclosing proprietary internal instructions", "Intellectual property theft, reveals internal API structures", "Negative system prompt constraints, anti-leakage filters"],
+          ["LLM08: Vector & Embedding Weaknesses", "Injecting poisoned vectors into shared stores to manipulate RAG retrieval", "Skewed search results, retrieval of malicious external text", "Strict tenant partitioning, sanitize embeddings before storage"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Mitigating Improper Output Handling in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Never pass raw model outputs directly into database queries, command-line processes, or React innerHTML. Always treat model output as untrusted user input."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Validating and Sanitizing AI Output in C#",
+        "content": "Validates model output against strict bounds before triggering downstream actions:",
+        "code": "public class SafeActionDispatcher\n{\n    public async Task ExecuteOrderActionAsync(string rawModelOutput, CancellationToken ct)\n    {\n        // 1. Never execute raw scripts - deserialize into strict record schema\n        OrderActionCommand? command;\n        try\n        {\n            command = JsonSerializer.Deserialize<OrderActionCommand>(rawModelOutput);\n        }\n        catch (JsonException ex)\n        {\n            throw new SecurityException(\"Malformed AI output rejected: invalid JSON schema.\", ex);\n        }\n\n        // 2. Enforce strict parameter range validation\n        if (command == null || command.Quantity <= 0 || command.Quantity > 100)\n        {\n            throw new ArgumentOutOfRangeException(nameof(command.Quantity), \"Quantity exceeds safety bounds (1-100).\");\n        }\n\n        // 3. Execute parameterized database transaction with least privilege\n        await _orderService.UpdateQuantityAsync(command.OrderId, command.Quantity, ct);\n    }\n}\n\npublic record OrderActionCommand(string OrderId, int Quantity);",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Enterprise security requires mastering both the OWASP Web Top 10 and the OWASP LLM Top 10",
+          "LLM01 (Prompt Injection) and LLM06 (Excessive Agency) represent the highest operational risks to agents",
+          "Never treat LLM output as trusted: validate against schemas before database or API execution",
+          "Implement Human-in-the-Loop verification tokens to counter Excessive Agency on mutating actions",
+          "Audit NuGet dependencies and container images for supply chain vulnerabilities"
+        ],
+        "takeaway": "The OWASP LLM Top 10 provides the architectural blueprint for hardening generative AI applications. Applying defense-in-depth across prompts, models, and tools prevents catastrophic security failures."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-authentication-authorization", "dotnet-secure-coding", "dotnet-ai-security-governance"],
+  "relatedGlossaryTerms": ["security", "prompt-injection", "guardrails"]
+}

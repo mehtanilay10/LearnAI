@@ -1,1 +1,162 @@
-{"id":"dotnet-lesson-6-12","slug":"dotnet-ai-debugging","moduleSlug":"dotnet-ai-assisted-dev","title":"AI Debugging","description":"Use AI for debugging and error analysis.","order":4,"difficulty":"advanced","estimatedMinutes":45,"tags":["debugging","ai-assisted","error-analysis"],"blocks":[{"type":"heading","data":{"level":2,"text":"AI Debugging"}},{"type":"paragraph","data":{"text":"AI can help analyze errors and suggest fixes. Use it for understanding stack traces and reproducing issues."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["AI analyzes stack traces","Suggests potential fixes","Helps reproduce issues","Explain error messages","Use as a guide, verify solutions"],"takeaway":"AI debugging accelerates troubleshooting. Use it to understand errors and get suggestions, but verify solutions independently."}}],"relatedLessons":["dotnet-ai-refactoring"],"relatedGlossaryTerms":["debugging","ai-assisted"]}
+{
+  "id": "dotnet-lesson-6-12",
+  "slug": "dotnet-ai-debugging",
+  "moduleSlug": "dotnet-ai-assisted-dev",
+  "title": "AI-Assisted Debugging & Diagnostics",
+  "description": "Master AI-augmented troubleshooting in .NET: diagnosing memory leaks, threadpool starvation, EF Core N+1 queries, unhandled async exceptions, and integrating LLMs with dotnet-dump, dotnet-trace, and OpenTelemetry.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["debugging", "ai-assisted", "diagnostics", "dotnet-dump", "opentelemetry", "performance"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Modern AI Diagnostics Paradigm in .NET"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Production debugging in enterprise .NET applications rarely fails due to a lack of data; it fails due to an overwhelming volume of disconnected telemetry. A production crash might generate gigabytes of memory dumps, millions of OpenTelemetry span logs, and deep nested stack traces. Using AI for debugging is not about pasting a raw error message into a chatbot and praying for a fix; it is a disciplined methodology for extracting diagnostic artifacts, feeding structured evidence to the LLM, generating verifiable hypotheses, and creating automated reproduction tests."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "ai-debugging-pipeline",
+        "caption": "Enterprise AI-Assisted Diagnostics & Resolution Pipeline",
+        "code": "flowchart TD\n    A[Production Incident / Crash] --> B[Collect Artifacts: dotnet-dump, OTel Traces, Exception Logs]\n    B --> C[Diagnostic Context Reduction: Extract Call Tree & Top 5 Stacks]\n    C --> D[Feed Context to AI with Runtime Environment Constraints]\n    D --> E[LLM Diagnostic Hypotheses & Ranked Culprits]\n    E --> F[Generate Isolated Failing Unit / Integration Test]\n    F -->|Test Fails to Reproduce| G[Refine Telemetry Context & Heap Root Analysis]\n    G --> D\n    F -->|Test Confirms Bug| H[Implement Targeted Hotfix]\n    H --> I[Verify Fix Against Reproduction Suite & Deploy]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Diagnosing ThreadPool Starvation & Async Deadlocks"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "ThreadPool starvation is one of the most insidious bugs in .NET microservices. It typically occurs when asynchronous code is synchronously blocked using `.Result` or `.Wait()`, depleting worker threads during sudden traffic spikes. When diagnosing this, feeding raw thread dumps to an LLM without filtering can confuse the model. You must extract and format the active stack frames."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "ThreadPool Starvation Call Stack Diagnosis",
+        "content": "Here is a filtered stack trace from `dotnet-dump analyze` using the SOS command `~*e !clrstack`. We provide this to the AI alongside the offending method signature.",
+        "language": "csharp",
+        "code": "/*\nCrash Artifact Extracted via SOS:\nThread 42:\n  System.Threading.ManualResetEventSlim.Wait(Int32, CancellationToken)\n  System.Threading.Tasks.Task.Wait(Int32, CancellationToken)\n  Enterprise.Orders.Services.OrderFulfillmentService.GetInventory(Guid productId) in /src/Services/OrderFulfillmentService.cs:line 84\n  Enterprise.Orders.Controllers.CheckoutController.ProcessOrder(OrderRequest request) in /src/Controllers/CheckoutController.cs:line 32\n\nDiagnostic AI Prompt:\nAnalyze the attached SOS thread dump and code snippet. \n1. Identify why thread starvation occurred under high concurrency.\n2. Explain the interaction between the SynchronizationContext/TaskScheduler and .Result / .Wait().\n3. Provide the non-blocking .NET 9 refactor propagating CancellationToken.\n*/\n\n// Anti-pattern in Legacy OrderFulfillmentService.cs\npublic InventoryStatus GetInventory(Guid productId)\n{\n    // Sync-over-async bug causing ThreadPool depletion\n    var result = _inventoryClient.GetStockAsync(productId).Result; \n    return result;\n}\n\n// AI-Refactored Production Solution (.NET 9 / C# 13)\npublic async Task<InventoryStatus> GetInventoryAsync(\n    Guid productId, \n    CancellationToken cancellationToken = default)\n{\n    // Non-blocking async awaiting with cancellation propagation and ConfigureAwait(false)\n    return await _inventoryClient\n        .GetStockAsync(productId, cancellationToken)\n        .ConfigureAwait(false);\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "type": "warning",
+        "title": "Why Sync-Over-Async Kills Production Systems",
+        "content": "When a worker thread blocks on `.Result`, it remains idle while waiting for the completion thread. When hundreds of concurrent requests arrive, all ThreadPool threads become blocked. The runtime can only inject 1–2 new threads every 500ms, causing response latency to spike from 10ms to tens of seconds before catastrophic timeout cascades."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Memory Leak Diagnostics with dotnet-dump & SOS"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Unmanaged event subscriptions and static cache roots are the top sources of managed memory leaks in long-running .NET processes. When memory climbs steadily in production, capture a process dump with `dotnet-dump collect -p <PID>` and analyze object counts."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "Diagnostic Tools, SOS Commands, and AI Prompt Strategy",
+        "headers": ["Problem Type", "Collection Tool & Command", "Extracted Artifact", "AI Prompt Focus"],
+        "rows": [
+          [
+            "Managed Memory Leak",
+            "dotnet-dump analyze -> !dumpheap -stat",
+            "Top 5 classes with highest total byte size and instance counts",
+            "Prompt AI to examine root references (!gcroot) and identify event subscription leaks"
+          ],
+          [
+            "High CPU / Spinlock",
+            "dotnet-trace collect --providers Microsoft-DotNETCore-SampleProfiler",
+            "Flame graph hot paths and top CPU-consuming methods",
+            "Prompt AI for algorithmic complexity (O(N^2) loops) and lock contention"
+          ],
+          [
+            "Unhandled Async Exception",
+            "OpenTelemetry Exception Telemetry / ILogger Structured Logs",
+            "Full exception tree including InnerException and AggregateException",
+            "Prompt AI to uncover async void boundary violations or unobserved Task exceptions"
+          ],
+          [
+            "EF Core N+1 Query",
+            "dotnet-trace or SQL Profiler / EF Core DebugView",
+            "Generated SQL logs with repetitive query patterns inside loop",
+            "Prompt AI to rewrite query using projection (.Select) or eager loading (.Include)"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Reproducing the Bug with Automated Tests"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The hallmark of an expert engineer using AI is not simply accepting the LLM's suggested fix; it is requiring the AI to write a reproduction unit test that fails before the fix is applied and passes after."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "AI-Generated Memory Leak Reproduction Test",
+        "content": "This test demonstrates using WeakReference to prove that an event handler was holding onto the subscriber, preventing Garbage Collection.",
+        "language": "csharp",
+        "code": "using System;\nusing Xunit;\n\npublic class MemoryLeakReproductionTests\n{\n    [Fact]\n    public void EventPublisher_ShouldNotKeepSubscriberAlive_AfterUnsubscribe()\n    {\n        var publisher = new TelemetryPublisher();\n        WeakReference weakSubscriberRef = CreateAndSubscribe(publisher);\n\n        // Force full GC collection\n        GC.Collect();\n        GC.WaitForPendingFinalizers();\n        GC.Collect();\n\n        // Assert: Before the bug fix, weakSubscriberRef.IsAlive was true (leak).\n        // With proper IDisposable cleanup, IsAlive is false.\n        Assert.False(weakSubscriberRef.IsAlive, \"Memory leak detected: Subscriber was kept alive by publisher event!\");\n    }\n\n    private static WeakReference CreateAndSubscribe(TelemetryPublisher publisher)\n    {\n        var subscriber = new HeavySubscriber();\n        subscriber.Register(publisher);\n        var weakRef = new WeakReference(subscriber);\n        \n        // Explicit disposal removes the delegate handler\n        subscriber.Dispose();\n        return weakRef;\n    }\n}"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "AI Debugging Production Protocol",
+        "items": [
+          "Sanitize all PII, API tokens, and connection strings from stack traces and logs before prompting",
+          "Include exact .NET runtime version, OS architecture, and GC mode (Server vs Workstation)",
+          "Never paste raw multi-megabyte logs; extract the relevant 10-30 lines of call stack and error context",
+          "Ask AI for top 3 ranked hypotheses with specific falsification criteria for each",
+          "Require the LLM to write a failing xUnit/NUnit test that reproduces the bug before accepting any fix",
+          "Verify that the fix does not introduce regression in concurrency, latency, or memory consumption",
+          "Document the root cause and add defensive static analysis rules or lint checks to CI"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Summary & Next Steps",
+        "points": [
+          "AI debugging accelerates root-cause analysis when fed structured diagnostic evidence.",
+          "dotnet-dump and OpenTelemetry traces provide the necessary empirical ground truth.",
+          "Always pair AI diagnosis with reproduction testing (e.g., GC memory checks, async starvation mocks).",
+          "Modernize error handling to prevent sync-over-async and unobserved task exceptions."
+        ],
+        "takeaway": "Empirical evidence is king in production diagnostics: use dotnet diagnostic tools to gather the truth, AI to brainstorm the hypotheses, and automated tests to verify the fix."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-ai-refactoring", "dotnet-structured-logging", "dotnet-async-deep-dive"],
+  "relatedGlossaryTerms": ["debugging", "diagnostics", "threadpool-starvation"]
+}

@@ -55,6 +55,7 @@ import dotnetSkMemoryEmbeddings from '../courses/dotnet-react-ai-lead/phase-3-ge
 import dotnetModelRouting from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/llm-integration-dotnet/dotnet-model-routing.json';
 import dotnetMultimodalAi from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/llm-integration-dotnet/dotnet-multimodal-ai.json';
 import dotnetMicrosoftExtensionsAi from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/ai-sdk-semantic-kernel/dotnet-microsoft-extensions-ai.json';
+import dotnetDirectApisVsAbstractions from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/ai-sdk-semantic-kernel/dotnet-direct-apis-vs-abstractions.json';
 
 // Phase 4: RAG, Agents & MCP
 import dotnetRagArchitecture from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/dotnet-rag-architecture.json';
@@ -62,6 +63,7 @@ import dotnetVectorDatabases from '../courses/dotnet-react-ai-lead/phase-4-rag-a
 import dotnetChunkingStrategies from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/dotnet-chunking-strategies.json';
 import dotnetHybridSearch from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/dotnet-hybrid-search.json';
 import dotnetAdvancedRetrieval from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/dotnet-advanced-retrieval.json';
+import dotnetMicrosoftExtensionsVectordata from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/dotnet-microsoft-extensions-vectordata.json';
 import dotnetAgentFundamentals from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/ai-agents/dotnet-agent-fundamentals.json';
 import dotnetToolCalling from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/ai-agents/dotnet-tool-calling.json';
 import dotnetAgentPlanning from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/ai-agents/dotnet-agent-planning.json';
@@ -71,6 +73,7 @@ import dotnetMcpFundamentals from '../courses/dotnet-react-ai-lead/phase-4-rag-a
 import dotnetBuildingMcpServers from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/mcp-integration/dotnet-building-mcp-servers.json';
 import dotnetMcpClientIntegration from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/mcp-integration/dotnet-mcp-client-integration.json';
 import dotnetMcpToolsResources from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/mcp-integration/dotnet-mcp-tools-resources.json';
+import dotnetMcpAuthorizationSecurity from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/mcp-integration/dotnet-mcp-authorization-security.json';
 
 // Phase 5: Azure Cloud & DevOps
 import dotnetAzureAppService from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/azure-fundamentals/dotnet-azure-app-service.json';
@@ -350,12 +353,14 @@ const rawLessons = [
   dotnetModelRouting,
   dotnetMultimodalAi,
   dotnetMicrosoftExtensionsAi,
+  dotnetDirectApisVsAbstractions,
   // Phase 4: RAG, Agents & MCP
   dotnetRagArchitecture,
   dotnetVectorDatabases,
   dotnetChunkingStrategies,
   dotnetHybridSearch,
   dotnetAdvancedRetrieval,
+  dotnetMicrosoftExtensionsVectordata,
   dotnetAgentFundamentals,
   dotnetToolCalling,
   dotnetAgentPlanning,
@@ -365,6 +370,7 @@ const rawLessons = [
   dotnetBuildingMcpServers,
   dotnetMcpClientIntegration,
   dotnetMcpToolsResources,
+  dotnetMcpAuthorizationSecurity,
   // Phase 5: Azure Cloud & DevOps
   dotnetAzureAppService,
   dotnetAzureFunctions,

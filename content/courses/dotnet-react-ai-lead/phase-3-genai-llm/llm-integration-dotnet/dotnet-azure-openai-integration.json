@@ -1,1 +1,84 @@
-{"id":"dotnet-lesson-3-10","slug":"dotnet-azure-openai-integration","moduleSlug":"dotnet-llm-integration","title":"Azure OpenAI Integration","description":"Deploy and integrate Azure OpenAI Service for enterprise-grade AI with security and compliance.","order":2,"difficulty":"advanced","estimatedMinutes":50,"tags":["azure-openai","azure","enterprise","security"],"blocks":[{"type":"heading","data":{"level":2,"text":"Azure OpenAI Service"}},{"type":"paragraph","data":{"text":"Azure OpenAI provides enterprise-grade AI with security, compliance, and managed deployments. Integrate with Azure AD for authentication."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Deploy models in Azure OpenAI","Use Azure AD for authentication","Configure managed identities","Implement RBAC for access control","Monitor with Azure metrics"],"takeaway":"Azure OpenAI provides enterprise features like security, compliance, and managed deployments. Use Azure AD for authentication and RBAC for access control."}}],"relatedLessons":["dotnet-openai-sdk-basics"],"relatedGlossaryTerms":["azure-openai","azure-ad","rbac"]}
+{
+  "id": "dotnet-lesson-3-10",
+  "slug": "dotnet-azure-openai-integration",
+  "moduleSlug": "dotnet-llm-integration",
+  "title": "Azure OpenAI Service Integration in .NET",
+  "description": "Deploy and integrate enterprise Azure OpenAI models in C# using Azure.AI.OpenAI, deployment topologies, and Managed Identity.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["azure-openai", "dotnet", "managed-identity", "deployments", "security", "enterprise"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Why Enterprises Choose Azure OpenAI"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "While OpenAI's public API provides access to the same foundational weights, enterprise organizations require corporate governance, data sovereignty, regulatory compliance (HIPAA, SOC 2, ISO 27001), and integration with existing cloud identity boundaries. Azure OpenAI guarantees that customer prompts and completions are never used to train or improve any OpenAI model, processes data within designated geographic regions, and integrates with Azure Active Directory (Entra ID) and private virtual networks."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "OpenAI Public API vs Azure OpenAI Service"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Feature", "OpenAI Direct API", "Azure OpenAI Service"],
+        "rows": [
+          ["Targeting Model", "Model Identifier (e.g. gpt-4o)", "Deployment Name (e.g. prod-gpt4o-eastus) mapping to an underlying model version"],
+          ["Authentication", "API Key (bearer token in header)", "Azure Entra ID Managed Identity (TokenCredential) or API Key"],
+          ["Networking", "Public HTTPS endpoint over public internet", "Private Endpoints (VNet) with disabled public access"],
+          ["Content Filtering", "Standard moderation endpoint", "Built-in customizable Azure AI Content Safety with severity thresholds"],
+          ["Throughput Allocation", "Tier-based token rate limits (TPM / RPM)", "Standard (Pay-Go) or dedicated Provisioned Throughput Units (PTU)"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Connecting via Azure.AI.OpenAI and Managed Identity"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The Azure OpenAI client library is built directly atop the official OpenAI .NET client, exposing AzureOpenAIClient which accepts an Azure endpoint URI and a TokenCredential from Azure.Identity."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Enterprise Azure OpenAI Client with Managed Identity in C#",
+        "content": "Authenticates without static keys and retrieves a typed ChatClient:",
+        "code": "using Azure.Identity;\nusing Azure.AI.OpenAI;\nusing OpenAI.Chat;\n\npublic class EnterpriseAzureOpenAiService\n{\n    private readonly ChatClient _chatClient;\n\n    public EnterpriseAzureOpenAiService(IConfiguration configuration)\n    {\n        var endpoint = configuration[\"AzureOpenAI:Endpoint\"]; // https://corp-ai-prod.openai.azure.com/\n        var deploymentName = configuration[\"AzureOpenAI:DeploymentName\"] ?? \"gpt-4o\";\n\n        // Authenticate using DefaultAzureCredential (Managed Identity in Azure, Azure CLI locally)\n        var azureClient = new AzureOpenAIClient(\n            new Uri(endpoint!),\n            new DefaultAzureCredential());\n\n        // Get standard ChatClient scoped to the deployment\n        _chatClient = azureClient.GetChatClient(deploymentName);\n    }\n\n    public async Task<string> AskQuestionAsync(string prompt, CancellationToken ct = default)\n    {\n        var messages = new ChatMessage[]\n        {\n            new SystemChatMessage(\"You are a corporate enterprise assistant.\"),\n            new UserChatMessage(prompt)\n        };\n\n        var response = await _chatClient.CompleteChatAsync(messages, cancellationToken: ct);\n        return response.Value.Content[0].Text;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Azure OpenAI provides identical GPT intelligence backed by Microsoft's enterprise SLA and compliance guarantees",
+          "Prompts and completions in Azure OpenAI are never retained for model retraining",
+          "Reference deployments by deployment name rather than raw model IDs",
+          "Use DefaultAzureCredential for passwordless, zero-secret authentication in production",
+          "The Azure.AI.OpenAI SDK inherits all ChatClient capabilities from the official OpenAI .NET library"
+        ],
+        "takeaway": "Azure OpenAI delivers enterprise-grade LLM capabilities to .NET applications, blending OpenAI models with Azure security, private networking, and managed identity."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-openai-sdk-basics", "dotnet-azure-ai-services", "dotnet-direct-apis-vs-abstractions"],
+  "relatedGlossaryTerms": ["azure-openai", "openai-sdk", "api"]
+}

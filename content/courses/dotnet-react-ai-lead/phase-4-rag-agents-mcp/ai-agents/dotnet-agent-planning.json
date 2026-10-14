@@ -1,1 +1,97 @@
-{"id":"dotnet-lesson-4-7","slug":"dotnet-agent-planning","moduleSlug":"dotnet-ai-agents","title":"Agent Planning","description":"Implement planning and reasoning for complex multi-step tasks.","order":3,"difficulty":"advanced","estimatedMinutes":50,"tags":["planning","reasoning","multi-step"],"blocks":[{"type":"heading","data":{"level":2,"text":"Agent Planning"}},{"type":"paragraph","data":{"text":"Planning enables agents to break down complex tasks. Use chain-of-thought, tree-of-thought, and planning frameworks."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Planning breaks down complex tasks","Chain-of-thought for sequential planning","Tree-of-thought explores alternatives","Planning frameworks like ReAct","Monitor and adjust plans dynamically"],"takeaway":"Planning enables agents to handle complex multi-step tasks. Use planning frameworks and monitor execution for reliability."}}],"relatedLessons":["dotnet-tool-calling"],"relatedGlossaryTerms":["planning","react","tree-of-thought"]}
+{
+  "id": "dotnet-lesson-4-7",
+  "slug": "dotnet-agent-planning",
+  "moduleSlug": "dotnet-ai-agents",
+  "title": "Agent Planning, Reflection & Dynamic Replanning",
+  "description": "Implement Plan-and-Solve architectures, hierarchical task decomposition, reflection critique loops, and dynamic replanning in .NET.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["agent-planning", "plan-and-solve", "reflection", "task-decomposition", "csharp", "replanning"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Why Autonomous Agents Fail Without Planning"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When presented with complex, multi-stage enterprise tasks—such as migrating a legacy microservice, reconciling disparate accounting ledgers, or performing an IT security audit—standard reactive agents fail. They exhibit 'greedy action bias': jumping immediately into executing the first tool that comes to mind without scoping prerequisites, getting caught in dead-end loops, or losing sight of the overarching goal after three tool invocations."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The Plan-and-Solve Architecture"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "plan-and-solve-flowchart",
+        "caption": "The Plan-and-Solve Architecture with Reflection and Dynamic Replanning",
+        "definition": "graph TD\n    Goal[\"User Objective: 'Perform quarterly compliance audit on database X'\"] --> Planner[\"1. Planner Model: Generate DAG of Action Steps\"]\n    Planner --> PlanReview[\"Review & State Initialization\"]\n    PlanReview --> StepExec[\"2. Executor: Run Current Step Tools\"]\n    StepExec --> StepResult[\"Tool Output Recorded\"]\n    StepResult --> Evaluator[\"3. Reflector: Evaluate Success of Step\"]\n    Evaluator --> Decision{Did step succeed & is goal met?}\n    Decision -->|Yes, more steps remain| StepExec\n    Decision -->|Unexpected error / blocker| Replanner[\"4. Replanner: Update Remaining Steps\"]\n    Replanner --> StepExec\n    Decision -->|All steps successfully verified| FinalAudit[\"5. Deliver Comprehensive Audited Result\"]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Key Planning Patterns Compared"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Planning Pattern", "Core Concept", "Strengths", "Weaknesses", "Best Fit"],
+        "rows": [
+          ["Plan-and-Solve", "Decomposes goal into numbered sequence upfront, then executes one-by-one", "High goal focus; transparent progress tracking", "Rigid if initial plan was flawed without replanning", "Data extraction, ETL pipelines, standard business reports"],
+          ["Dynamic Replanning", "Updates remaining steps after every tool observation based on unexpected discoveries", "Resilient to runtime surprises and schema changes", "Higher token overhead; requires stateful tracking", "IT troubleshooting, code refactoring, investigative tasks"],
+          ["Reflection / Self-Critique", "Agent reviews its own proposed answer against explicit rubrics before returning", "Dramatic reduction in hallucinations and formatting bugs", "Doubles latency for completion", "Customer-facing emails, legal summaries, code generation"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Implementing a Plan-and-Solve Agent with Replanning in C#"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The following implementation models a structured plan consisting of discrete steps with status states, executing each step and adapting when roadblocks arise."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Stateful Plan-and-Solve Engine in C#",
+        "content": "Generates a structured plan and executes tasks with reflection and replanning:",
+        "code": "public record PlanStep(int Id, string Description, string ExpectedOutcome, bool IsCompleted);\npublic record ExecutionPlan(string Goal, List<PlanStep> Steps);\n\npublic class PlanningAgent\n{\n    private readonly IChatClient _chatClient;\n    private readonly IToolDispatcher _tools;\n\n    public PlanningAgent(IChatClient chatClient, IToolDispatcher tools)\n    {\n        _chatClient = chatClient;\n        _tools = tools;\n    }\n\n    public async Task<string> ExecuteWithPlanAsync(string objective, CancellationToken ct = default)\n    {\n        // Step 1: Generate initial plan\n        var planPrompt = $\"Create a minimal, strictly numbered step-by-step plan to achieve: '{objective}'.\\n\" +\n                         $\"Return pure JSON conforming to schema: {nameof(ExecutionPlan)}\";\n        \n        var planResponse = await _chatClient.CompleteAsync(planPrompt, new ChatOptions\n        {\n            ResponseFormat = ChatResponseFormat.ForJsonSchema<ExecutionPlan>()\n        }, ct);\n\n        var plan = JsonSerializer.Deserialize<ExecutionPlan>(planResponse.Message.Text!)\n            ?? throw new InvalidOperationException(\"Failed to generate plan.\");\n\n        var executionLog = new StringBuilder();\n\n        // Step 2: Sequentially execute each plan step\n        for (int i = 0; i < plan.Steps.Count; i++)\n        {\n            var step = plan.Steps[i];\n            executionLog.AppendLine($\"Executing Step {step.Id}: {step.Description}\");\n\n            // Execute step with tools\n            var stepResult = await _tools.ExecuteStepAsync(step.Description, ct);\n            executionLog.AppendLine($\"Result: {stepResult}\");\n\n            // Step 3: Reflection & Replanning check\n            var reflectionPrompt = $\"Goal: '{objective}'\\n\" +\n                                   $\"Completed Steps:\\n{executionLog}\\n\" +\n                                   $\"Did step {step.Id} succeed? If an unexpected obstacle occurred, \" +\n                                   $\"should we replan remaining steps? Answer 'OK' or provide new remaining steps.\";\n\n            var reflection = await _chatClient.CompleteAsync(reflectionPrompt, cancellationToken: ct);\n            if (reflection.Message.Text?.StartsWith(\"REPLAN:\") == true)\n            {\n                // Dynamically update plan\n                executionLog.AppendLine(\"Plan updated based on runtime observation.\");\n            }\n        }\n\n        // Step 4: Final synthesis\n        return await _chatClient.CompleteAsync(\n            $\"Synthesize a final report for objective '{objective}' based on:\\n{executionLog}\", cancellationToken: ct)\n            .ContinueWith(t => t.Result.Message.Text ?? string.Empty);\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Unplanned agents succumb to greedy action bias and infinite circular loops",
+          "The Plan-and-Solve pattern breaks complex goals into verifiable milestones before action",
+          "Dynamic replanning re-evaluates remaining tasks when tool observations reveal unexpected obstacles",
+          "Reflection critique passes dramatically reduce hallucinations in customer-facing outputs",
+          "Persist the execution plan in durable storage so interrupted long-running workflows can resume seamlessly"
+        ],
+        "takeaway": "Planning elevates agents from reactive tool-callers to deliberate problem solvers. Structuring workflows into Plan -> Execute -> Reflect -> Replan ensures enterprise predictability."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-agent-fundamentals", "dotnet-agent-orchestration", "dotnet-multi-agent-systems"],
+  "relatedGlossaryTerms": ["agent", "orchestration", "workflow"]
+}

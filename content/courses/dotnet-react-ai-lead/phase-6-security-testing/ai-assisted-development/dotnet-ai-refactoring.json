@@ -1,1 +1,201 @@
-{"id":"dotnet-lesson-6-11","slug":"dotnet-ai-refactoring","moduleSlug":"dotnet-ai-assisted-dev","title":"AI Refactoring","description":"Use AI for automated refactoring and code modernization.","order":3,"difficulty":"advanced","estimatedMinutes":40,"tags":["refactoring","ai-assisted","modernization"],"blocks":[{"type":"heading","data":{"level":2,"text":"AI Refactoring"}},{"type":"paragraph","data":{"text":"AI can suggest refactoring opportunities. Use it for modernizing legacy code and improving maintainability."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["AI suggests refactoring opportunities","Modernize legacy code patterns","Improve maintainability","Apply design patterns","Test refactored code thoroughly"],"takeaway":"AI refactoring helps modernize code. Use it to identify improvement opportunities, but verify changes with tests."}}],"relatedLessons":["dotnet-ai-code-review"],"relatedGlossaryTerms":["refactoring","modernization"]}
+{
+  "id": "dotnet-lesson-6-11",
+  "slug": "dotnet-ai-refactoring",
+  "moduleSlug": "dotnet-ai-assisted-dev",
+  "title": "AI-Assisted Refactoring & Code Modernization",
+  "description": "Master AI-driven code refactoring in .NET 9 and C# 13: migrating legacy synchronous patterns to async/await, adopting modern language features, eliminating anti-patterns, and validating equivalence with characterization testing.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["refactoring", "ai-assisted", "csharp-13", "dotnet-9", "modernization", "testing"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Engineering Discipline of AI-Driven Refactoring"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Refactoring enterprise .NET codebases using Large Language Models is fundamentally different from greenfield generation. When modernizing legacy C# code (e.g., migrating .NET Framework 4.8 monoliths to .NET 9, converting synchronous blocking calls to non-blocking async/await, or replacing complex class hierarchies with records and pattern matching), the primary risk is silent semantic drift: subtle behavioral alterations, broken exception contracts, or altered synchronization contexts that pass compilation but fail in production under concurrent load."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "ai-refactoring-loop",
+        "caption": "The Five-Stage AI Refactoring Verification Loop",
+        "code": "graph TD\n    A[Legacy .NET Code] --> B[Generate Characterization / Approval Tests]\n    B --> C[Run Baseline Suite: Green 100%]\n    C --> D[Targeted Prompting with Architectural Guardrails]\n    D --> E[LLM Refactoring: Modern C# 13 / .NET 9]\n    E --> F[Automated Static Analysis & Roslyn Analyzers]\n    F -->|Diagnostics Fail| D\n    F -->|Diagnostics Clean| G[Run Characterization Suite]\n    G -->|Regression Detected| D\n    G -->|All Green| H[BenchmarkDotNet Memory / Latency Check]\n    H --> I[PR with Automated Diff Review]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Pre-Refactoring: Writing Characterization Tests"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Before asking Copilot or an LLM to refactor a single line of business logic, you must capture the existing code's actual runtime behavior—including edge cases and quirky error handling. Michael Feathers defined characterization tests as tests that capture the current behavior of the system, whether intended or not. In modern .NET, snapshot testing libraries such as Verify.Xunit or Snapper provide ideal mechanisms to lock in outputs before modernization."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Legacy C# Service to Modernize",
+        "content": "Consider this legacy financial calculation service written in C# 7 / .NET Framework style with synchronous blocking, mutable state, and archaic serialization.",
+        "language": "csharp",
+        "code": "// Legacy FinancialReportService.cs (.NET Framework style)\npublic class FinancialReportService\n{\n    private readonly string _connectionString;\n\n    public FinancialReportService(string connectionString)\n    {\n        _connectionString = connectionString;\n    }\n\n    public ReportResult ProcessTransactions(List<TransactionDto> transactions, DateTime cutoff)\n    {\n        var result = new ReportResult();\n        decimal runningTotal = 0;\n\n        foreach (var tx in transactions)\n        {\n            if (tx.Date < cutoff)\n            {\n                if (tx.Type == 1) // Credit\n                {\n                    runningTotal += tx.Amount;\n                }\n                else if (tx.Type == 2) // Debit\n                {\n                    runningTotal -= tx.Amount;\n                }\n                else if (tx.Type == 3) // Transfer\n                {\n                    runningTotal -= (tx.Amount + tx.Fee);\n                }\n            }\n        }\n\n        result.FinalBalance = runningTotal;\n        result.ProcessedOn = DateTime.UtcNow;\n        return result;\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Structured Prompting for Modernization"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When prompting AI for refactoring, vague prompts like 'make this modern C#' result in unpredictable mutations. Production refactoring requires explicit prompt constraints enforcing targeted language constructs (e.g., C# 13 collection expressions, pattern matching with switch expressions, immutable records, primary constructors, and zero-allocation span operations)."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Refactoring Prompt Template & .NET 9 Result",
+        "content": "The system prompt must enforce semantic equivalence, pure functional refactoring, and Roslyn safety analyzers.",
+        "language": "csharp",
+        "code": "/* \nAI Prompt:\nRefactor FinancialReportService to modern C# 13 / .NET 9 following these strict rules:\n1. Use a primary constructor with nullable reference types enabled.\n2. Replace iterative foreach / if-else branches with LINQ / pattern-matching switch expressions.\n3. Make transaction models immutable records with strongly-typed enums instead of magic ints.\n4. Ensure zero semantic alterations to balance calculations.\n5. Guarantee deterministic calculation without side effects.\n*/\n\n// Modernized .NET 9 Implementation\nnamespace Enterprise.Finance.Reporting;\n\npublic enum TransactionType : byte\n{\n    Credit = 1,\n    Debit = 2,\n    Transfer = 3\n}\n\npublic readonly record struct TransactionDto(\n    Guid Id,\n    DateTime Date,\n    TransactionType Type,\n    decimal Amount,\n    decimal Fee = 0m);\n\npublic readonly record struct ReportResult(\n    decimal FinalBalance,\n    DateTime ProcessedOn);\n\npublic sealed class FinancialReportService(TimeProvider timeProvider)\n{\n    public ReportResult ProcessTransactions(ReadOnlySpan<TransactionDto> transactions, DateTime cutoff)\n    {\n        decimal runningTotal = 0m;\n\n        foreach (ref readonly var tx in transactions)\n        {\n            if (tx.Date >= cutoff) continue;\n\n            runningTotal += tx.Type switch\n            {\n                TransactionType.Credit => tx.Amount,\n                TransactionType.Debit => -tx.Amount,\n                TransactionType.Transfer => -(tx.Amount + tx.Fee),\n                _ => throw new InvalidOperationException($\"Unsupported transaction type: {tx.Type}\")\n            };\n        }\n\n        return new ReportResult(runningTotal, timeProvider.GetUtcNow().UtcDateTime);\n    }\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "type": "tip",
+        "title": "Injecting TimeProvider for Testability",
+        "content": "Notice how the AI modernized the static `DateTime.UtcNow` into .NET 8/9's `TimeProvider`. This eliminates non-deterministic tests and enables precise unit test mocking without brittle third-party wrapper shims."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Characterization Testing with Verify.Xunit"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "To guarantee that the refactored code produces identical outputs across all possible transaction permutations, use snapshot testing before and after refactoring."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Equivalence Snapshot Test in xUnit",
+        "content": "Snapshot tests serialize the output to disk and diff it on every test execution. If the AI introduced even a microsecond or fractional penny change, the test fails instantly.",
+        "language": "csharp",
+        "code": "using Microsoft.Extensions.Time.Testing;\nusing VerifyXunit;\nusing Xunit;\n\npublic class FinancialReportServiceTests\n{\n    [Fact]\n    public async Task ProcessTransactions_MatchesBaselineSnapshot()\n    {\n        // Arrange\n        var fakeTime = new FakeTimeProvider(new DateTimeOffset(2026, 3, 1, 12, 0, 0, TimeSpan.Zero));\n        var sut = new FinancialReportService(fakeTime);\n\n        TransactionDto[] transactions = [\n            new(Guid.Parse(\"a1b2c3d4-0001-0000-0000-000000000001\"), new DateTime(2026, 2, 1), TransactionType.Credit, 1500.50m),\n            new(Guid.Parse(\"a1b2c3d4-0001-0000-0000-000000000002\"), new DateTime(2026, 2, 15), TransactionType.Debit, 320.00m),\n            new(Guid.Parse(\"a1b2c3d4-0001-0000-0000-000000000003\"), new DateTime(2026, 2, 20), TransactionType.Transfer, 100.00m, Fee: 4.50m),\n            new(Guid.Parse(\"a1b2c3d4-0001-0000-0000-000000000004\"), new DateTime(2026, 3, 5), TransactionType.Credit, 900.00m) // Excluded by cutoff\n        ];\n\n        // Act\n        var result = sut.ProcessTransactions(transactions, new DateTime(2026, 3, 1));\n\n        // Assert: Verified against verified gold master snapshot file on disk\n        await Verifier.Verify(result);\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Refactoring Anti-Patterns vs Best Practices"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "AI Refactoring Traps and Engineering Countermeasures",
+        "headers": ["Common AI Mistake", "Failure Mode in Production", "Prompt Rule / Countermeasure"],
+        "rows": [
+          [
+            "Silent Async Void Conversion",
+            "Unobserved task exceptions crash the IIS/K8s host process",
+            "Explicit rule: 'Never introduce async void; return Task or ValueTask exclusively.'"
+          ],
+          [
+            "Unintended Multiple Enumeration",
+            "LINQ deferred execution causes repeated database queries or mutated state",
+            "Rule: 'Use ReadOnlySpan<T>, IReadOnlyList<T>, or materialise with .ToList() before iteration.'"
+          ],
+          [
+            "Swallowing Custom Exceptions",
+            "AI replaces domain-specific exceptions with generic InvalidOperationException",
+            "Rule: 'Preserve exact custom exception hierarchies and inner exception chaining.'"
+          ],
+          [
+            "Breaking Reflection / Serialization Contracts",
+            "Changing property names, casing, or visibility breaks external API JSON contracts",
+            "Rule: 'Maintain JSON serialization attributes (JsonPropertyName) and field casing.'"
+          ],
+          [
+            "Removing Null Checks Without Nullable Context",
+            "Removing guards causes NullReferenceException when NRT is disabled upstream",
+            "Rule: 'Verify nullable annotations match csproj <Nullable>enable</Nullable> settings.'"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Automated Benchmark Verification"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Refactoring should improve maintainability without compromising throughput or memory allocation. Use BenchmarkDotNet to measure the before-and-after performance of AI-refactored methods."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "BenchmarkDotNet Verification Harness",
+        "content": "Verify that moving to `ReadOnlySpan<T>` and ref readonly struct eliminated GC heap allocations on the critical processing path.",
+        "language": "csharp",
+        "code": "[MemoryDiagnoser]\npublic class RefactoringBenchmark\n{\n    private List<TransactionDto> _legacyList = null!;\n    private TransactionDto[] _modernArray = null!;\n    private readonly FinancialReportService _modernService = new(TimeProvider.System);\n    private readonly DateTime _cutoff = new(2026, 3, 1);\n\n    [GlobalSetup]\n    public void Setup()\n    {\n        var sample = Enumerable.Range(0, 10_000)\n            .Select(i => new TransactionDto(\n                Guid.NewGuid(), \n                DateTime.UtcNow.AddDays(-i % 30), \n                (TransactionType)(i % 3 + 1), \n                100m + i, \n                2m))\n            .ToArray();\n\n        _legacyList = [.. sample];\n        _modernArray = sample;\n    }\n\n    [Benchmark]\n    public ReportResult ModernSpanCalculation()\n    {\n        return _modernService.ProcessTransactions(_modernArray.AsSpan(), _cutoff);\n    }\n}"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "Production AI Refactoring Checklist",
+        "items": [
+          "Capture characterization tests (approval snapshots) before prompting any changes",
+          "Specify target language version (C# 13 / .NET 9) and framework conventions in prompt",
+          "Enforce zero changes to public API signatures and JSON serialization contracts",
+          "Ensure Roslyn analyzers (CA rules, stylecop, nullable warnings) run clean with zero warnings",
+          "Validate async/await transformations: no async void, proper CancellationToken propagation",
+          "Run BenchmarkDotNet to ensure memory allocations did not regress",
+          "Review git diff line-by-line; do not accept wholesale rewritten files without scrutiny"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Summary & Next Steps",
+        "points": [
+          "AI refactoring is most powerful when guided by strict architectural and syntactic boundaries.",
+          "Characterization tests (Verify.Xunit) eliminate the risk of silent behavioral regressions.",
+          "Modernizing legacy code to C# 13 with primary constructors, pattern matching, and spans reduces heap churn.",
+          "Always benchmark critical paths to guarantee performance improvements alongside clean code."
+        ],
+        "takeaway": "Treat AI as an accelerator for syntax modernization, but rely on characterization tests and Roslyn analyzers as the immutable guardians of semantic correctness."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-ai-code-review", "dotnet-ai-debugging", "dotnet-modern-csharp-features"],
+  "relatedGlossaryTerms": ["refactoring", "modernization", "characterization-testing"]
+}

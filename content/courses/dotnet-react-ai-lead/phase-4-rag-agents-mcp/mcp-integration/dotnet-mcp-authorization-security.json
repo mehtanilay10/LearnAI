@@ -1,0 +1,107 @@
+{
+  "id": "dotnet-lesson-4-16",
+  "slug": "dotnet-mcp-authorization-security",
+  "moduleSlug": "dotnet-mcp-integration",
+  "title": "MCP Authorization, Tool Permissions & Security",
+  "description": "Secure Model Context Protocol servers and client tool calls with token authorization, permission scopes, and execution guardrails.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["mcp", "security", "authorization", "tool-permissions", "human-in-the-loop"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Security Challenge of Model Context Protocol"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The Model Context Protocol (MCP) standardizes how AI models discover and invoke external tools and fetch contextual resources. However, exposing tools such as SQL execution, email sending, cloud provisioning, or internal API calls to an LLM introduces severe attack vectors. If an untrusted agent or prompt injection hijacks an MCP client, it could execute destructive commands with the tool server's credentials."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Tools Are High-Privilege Execution Boundaries",
+        "text": "Never assume that because an LLM chose to invoke a tool, the invocation is safe. MCP tool execution must implement defense-in-depth: transport authentication (mTLS / Bearer token), caller identity verification, granular permission scopes (e.g., read-only vs write), parameter validation, and human-in-the-loop approval tokens for destructive operations."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "MCP Server Authorization Architecture"
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "mcp-auth-architecture",
+        "caption": "Secure MCP Tool Invocation Pipeline with Dual-Authorization and Human Approval",
+        "definition": "sequenceDiagram\n    participant Agent as AI Agent (MCP Client)\n    participant Middleware as MCP Security Middleware\n    participant Policy as Permission & ACL Engine\n    participant Human as Human Operator (UI)\n    participant Tool as MCP Tool Execution Handler\n\n    Agent->>Middleware: InvokeTool(name: 'delete_customer_record', params)\n    Middleware->>Policy: ValidateCallerScope(clientToken, toolScope)\n    alt Insufficient Scope\n        Policy-->>Agent: 403 Forbidden (Tool not allowed)\n    else Scope Permitted & Sensitive Action\n        Policy->>Human: Request Approval (Ticket #402: Delete Customer?)\n        Human-->>Policy: Approved (ApprovalToken: 'xyz-987')\n        Policy->>Tool: ExecuteWithSanitizedParams(params, ApprovalToken)\n        Tool-->>Middleware: ExecutionResult(success: true)\n        Middleware-->>Agent: ToolCallResult\n    end"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Implementing Granular Tool Permissions in ASP.NET Core"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In .NET MCP servers, decorate tools with permission attributes and enforce policies before tool execution. Ensure mutating or sensitive tools require elevated claims and human confirmation tokens."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Tool Permission Validation & Approval Token Filter in C#",
+        "content": "Demonstrates an authorization filter intercepting MCP tool invocations:",
+        "code": "using System.Security.Claims;\n\n[AttributeUsage(AttributeTargets.Method)]\npublic class McpToolAuthorizeAttribute : Attribute\n{\n    public string RequiredScope { get; }\n    public bool RequiresHumanApproval { get; }\n\n    public McpToolAuthorizeAttribute(string requiredScope, bool requiresHumanApproval = false)\n    {\n        RequiredScope = requiredScope;\n        RequiresHumanApproval = requiresHumanApproval;\n    }\n}\n\npublic class McpToolExecutionDispatcher\n{\n    private readonly IApprovalTokenValidator _approvalValidator;\n    private readonly ILogger<McpToolExecutionDispatcher> _logger;\n\n    public McpToolExecutionDispatcher(\n        IApprovalTokenValidator approvalValidator,\n        ILogger<McpToolExecutionDispatcher> logger)\n    {\n        _approvalValidator = approvalValidator;\n        _logger = logger;\n    }\n\n    public async Task<McpToolResult> ExecuteToolAsync(\n        string toolName,\n        Dictionary<string, object> parameters,\n        ClaimsPrincipal caller,\n        string? approvalToken,\n        CancellationToken ct = default)\n    {\n        // 1. Resolve tool metadata and security attribute\n        var toolMethod = ResolveToolMethod(toolName);\n        var authAttr = toolMethod.GetCustomAttribute<McpToolAuthorizeAttribute>();\n\n        if (authAttr != null)\n        {\n            // 2. Validate caller has required permission scope\n            if (!caller.HasClaim(\"scope\", authAttr.RequiredScope))\n            {\n                _logger.LogWarning(\"Access denied for user {User} on tool {Tool}\", caller.Identity?.Name, toolName);\n                return McpToolResult.Fail(\"Unauthorized: Insufficient tool permission scope.\");\n            }\n\n            // 3. Enforce Human-in-the-Loop token for dangerous tools\n            if (authAttr.RequiresHumanApproval)\n            {\n                var isValidApproval = await _approvalValidator.ValidateAsync(approvalToken, toolName, parameters, ct);\n                if (!isValidApproval)\n                {\n                    return McpToolResult.RequireHumanApproval(\n                        $\"Action '{toolName}' requires verified human approval before execution.\");\n                }\n            }\n        }\n\n        // 4. Execute validated tool inside sandbox\n        return await InvokeUnderIsolationAsync(toolMethod, parameters, ct);\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Defense Strategies for MCP Tools"
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "MCP Tool Security Checklist",
+        "items": [
+          {"text": "Strict Schema Validation", "hint": "Validate all arguments against JSON Schema with strict property types, regex constraints, and length limits."},
+          {"text": "Least Privilege Execution Identity", "hint": "MCP tool runners should connect with dedicated service accounts limited only to the necessary tables or APIs."},
+          {"text": "Human-in-the-Loop Confirmation", "hint": "Mutating actions (write, delete, financial transfers, external emails) must require signed operator tokens."},
+          {"text": "Rate Limiting & Loop Breakers", "hint": "Cap maximum tool calls per session (e.g., max 15 tool calls per user turn) to prevent runaway execution or denial-of-wallet."},
+          {"text": "Auditable Execution Logs", "hint": "Log caller ID, IP, tool name, input arguments, approval token, and execution duration to a tamper-proof log."}
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "MCP tools are executable code endpoints and require the same rigor as public enterprise APIs",
+          "Never rely on LLM discretion: implement declarative permission scopes on all MCP tools",
+          "Mutating or sensitive tools must enforce human approval tokens",
+          "Validate all parameters against strict schema boundaries before execution",
+          "Implement bounded tool-call counters to prevent infinite loops and denial-of-service"
+        ],
+        "takeaway": "Securing MCP requires end-to-end authorization: authenticated callers, scoped tool permissions, schema sanitization, and human approval for high-consequence operations."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-building-mcp-servers", "dotnet-mcp-client-integration", "dotnet-tool-calling"],
+  "relatedGlossaryTerms": ["mcp", "tool-calling", "human-in-the-loop", "guardrails"]
+}

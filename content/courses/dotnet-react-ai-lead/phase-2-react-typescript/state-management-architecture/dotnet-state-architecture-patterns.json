@@ -2,17 +2,138 @@
   "id": "dotnet-lesson-2-12",
   "slug": "dotnet-state-architecture-patterns",
   "moduleSlug": "dotnet-state-management",
-  "title": "State Architecture Patterns",
-  "description": "Design scalable state architecture separating client state, server state, and form state with clear boundaries.",
+  "title": "State Architecture Patterns: Designing a Scalable React State Strategy",
+  "description": "Design a comprehensive state architecture for enterprise React applications: separating UI state, client domain state, server state, and form state with clear boundaries, colocation principles, and the Zustand pattern for mid-complexity applications.",
   "order": 4,
   "difficulty": "advanced",
-  "estimatedMinutes": 45,
-  "tags": ["react", "architecture", "state-management", "patterns"],
+  "estimatedMinutes": 50,
+  "tags": ["react", "state-architecture", "zustand", "state-colocation", "client-state", "server-state"],
   "blocks": [
     {
       "type": "heading",
-      "data": {"level": 2, "text": "State Architecture"}}
+      "data": {
+        "level": 2,
+        "text": "The State Taxonomy: Four Categories with Clear Boundaries"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The most common React architecture mistake is using a single, undifferentiated global store for all state categories. This creates coupling that slows every developer who touches the application: UI state (dropdown open/closed) shares the same update cycle as server state (conversation list freshness), which couples to form state (active search query). A mature state architecture defines four distinct categories, each with its own dedicated management tool, ownership boundary, and invalidation strategy."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "state-taxonomy",
+        "caption": "Enterprise React State Taxonomy: Four Categories and Owners",
+        "code": "flowchart TD\n    subgraph UIState[\"1. UI / Ephemeral State\"]\n        US1[Dropdown open/closed]\n        US2[Modal visibility]\n        US3[Active tab]\n        US4[Tooltip hover]\n    end\n    subgraph DomainState[\"2. Client Domain State\"]\n        DS1[Streaming chat state machine]\n        DS2[Selected tool execution]\n        DS3[Feature flags]\n    end\n    subgraph ServerState[\"3. Server / Remote State\"]\n        SS1[Conversations list]\n        SS2[Document index]\n        SS3[Search results]\n    end\n    subgraph FormState[\"4. Form / Input State\"]\n        FS1[Upload form values]\n        FS2[Search query input]\n        FS3[Validation errors]\n    end\n\n    UIState -.->|useState / useReducer| Tool1[Local Component]\n    DomainState -.->|Zustand / Redux Toolkit| Tool2[Global Store]\n    ServerState -.->|TanStack Query| Tool3[Query Cache]\n    FormState -.->|React Hook Form| Tool4[Form Context]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The Colocation Principle"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "State should live as close to where it is used as possible. This prevents unnecessary global state pollution. If only one component needs a piece of state, it should own it locally. If two sibling components share state, lift it to their closest common ancestor. If state is needed across many distant components, then and only then, move it to a global store."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Zustand Store for Mid-Complexity Client Domain State",
+        "content": "Zustand provides a lightweight alternative to Redux Toolkit for client domain state that doesn't need action creators, reducers, or DevTools time-travel—just simple, typed reactive state.",
+        "language": "typescript",
+        "code": "import { create } from 'zustand';\nimport { devtools } from 'zustand/middleware';\n\ntype ToolExecutionStatus = 'idle' | 'running' | 'success' | 'error';\n\ninterface UIStore {\n  // Agent tool panel state\n  activePanel: 'chat' | 'citations' | 'tools' | 'settings';\n  setActivePanel: (panel: UIStore['activePanel']) => void;\n\n  // Tool execution tracking\n  toolExecutions: Record<string, { toolName: string; status: ToolExecutionStatus; startedAt: number }>;\n  startToolExecution: (executionId: string, toolName: string) => void;\n  completeToolExecution: (executionId: string) => void;\n  failToolExecution: (executionId: string) => void;\n\n  // Sidebar state\n  isSidebarCollapsed: boolean;\n  toggleSidebar: () => void;\n}\n\nexport const useUIStore = create<UIStore>()(\n  devtools(\n    (set) => ({\n      activePanel: 'chat',\n      setActivePanel: (panel) => set({ activePanel: panel }),\n\n      toolExecutions: {},\n      startToolExecution: (executionId, toolName) =>\n        set((state) => ({\n          toolExecutions: {\n            ...state.toolExecutions,\n            [executionId]: { toolName, status: 'running', startedAt: Date.now() },\n          },\n        })),\n      completeToolExecution: (executionId) =>\n        set((state) => ({\n          toolExecutions: {\n            ...state.toolExecutions,\n            [executionId]: { ...state.toolExecutions[executionId], status: 'success' },\n          },\n        })),\n      failToolExecution: (executionId) =>\n        set((state) => ({\n          toolExecutions: {\n            ...state.toolExecutions,\n            [executionId]: { ...state.toolExecutions[executionId], status: 'error' },\n          },\n        })),\n\n      isSidebarCollapsed: false,\n      toggleSidebar: () => set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),\n    }),\n    { name: 'UIStore' } // DevTools identifier\n  )\n);"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The Complete State Architecture Decision Matrix"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "caption": "State Category Decision Matrix for Enterprise AI Applications",
+        "headers": ["State Category", "Examples", "Recommended Tool", "Invalidation Strategy"],
+        "rows": [
+          [
+            "UI / Ephemeral",
+            "Dropdown open, modal visible, hover tooltip, tab index",
+            "useState / useReducer (local)",
+            "Self-contained; destroyed when component unmounts"
+          ],
+          [
+            "Client Domain",
+            "Streaming state machine, active tool executions, sidebar collapsed",
+            "Zustand (lightweight) or Redux Toolkit (complex flows)",
+            "Manually via store actions; DevTools inspectable"
+          ],
+          [
+            "Server / Remote",
+            "Conversation list, document index, search results, user profile",
+            "TanStack Query",
+            "staleTime expiry, window refocus, mutation onSettled invalidation"
+          ],
+          [
+            "Form / Input",
+            "Upload form fields, search text, validation error messages",
+            "React Hook Form + Zod",
+            "Reset on submission; field errors cleared on revalidation"
+          ],
+          [
+            "URL / Navigation",
+            "Active conversation ID, page, filter parameters",
+            "React Router search params / Next.js router",
+            "Driven by URL; shareable and browser-back-compatible"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "type": "note",
+        "title": "The Redux vs Zustand Decision",
+        "content": "Use Redux Toolkit when you need: (1) time-travel debugging with DevTools, (2) complex cross-slice derived state, (3) middleware (RTK Query, logging), or (4) a large team that benefits from strict action-based constraints. Use Zustand when you need lightweight reactive client state without boilerplate—typically for UI state that needs to be accessed by many unrelated components."
+      }
+    },
+    {
+      "type": "checklist",
+      "data": {
+        "title": "State Architecture Review Checklist",
+        "items": [
+          "Every piece of state is categorized into one of the four buckets before choosing a tool",
+          "No server-fetched data is stored in Zustand or Redux—TanStack Query owns all remote state",
+          "UI ephemeral state (dropdowns, modals, hover) stays local to the component that owns it",
+          "Conversation and document IDs passed via URL params so pages are shareable and browser-back-compatible",
+          "Zustand selectors use shallow equality comparison to prevent unnecessary consumer re-renders",
+          "State architecture documented as an ADR (Architecture Decision Record) for the team"
+        ]
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Summary & Phase 2 Conclusion",
+        "points": [
+          "The four state categories (UI, Client Domain, Server, Form) each deserve their own tool and boundary.",
+          "Colocation keeps state as local as possible, only globalizing when genuinely needed.",
+          "Zustand provides a lightweight, boilerplate-free alternative to RTK for client domain state.",
+          "Phase 2 is complete: you have mastered advanced React patterns, TypeScript, and state architecture."
+        ],
+        "takeaway": "A great state architecture is invisible to users and obvious to developers: every state category lives in the right tool with clear ownership, preventing both over-engineering and tangled coupling."
+      }
+    }
   ],
-  "relatedLessons": ["dotnet-context-and-redux", "dotnet-react-query-server-state"],
-  "relatedGlossaryTerms": ["state-architecture", "client-state", "server-state"]
+  "relatedLessons": ["dotnet-context-and-redux", "dotnet-react-query-server-state", "dotnet-form-state-management"],
+  "relatedGlossaryTerms": ["state-architecture", "zustand", "colocation", "state-categories"]
 }

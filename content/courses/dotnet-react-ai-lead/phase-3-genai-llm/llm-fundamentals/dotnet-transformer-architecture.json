@@ -2,24 +2,81 @@
   "id": "dotnet-lesson-3-1",
   "slug": "dotnet-transformer-architecture",
   "moduleSlug": "dotnet-llm-fundamentals",
-  "title": "Transformer Architecture",
-  "description": "Understand the transformer architecture, self-attention, and how modern LLMs process and generate text.",
+  "title": "Transformer Architecture & Self-Attention Internals",
+  "description": "Understand the neural mechanics of transformers, self-attention equations, decoder-only architectures, and KV caching for software engineers.",
   "order": 1,
   "difficulty": "advanced",
-  "estimatedMinutes": 50,
-  "tags": ["transformer", "attention", "architecture", "llm"],
+  "estimatedMinutes": 60,
+  "tags": ["transformer", "self-attention", "kv-cache", "decoder-only", "llm-internals"],
   "blocks": [
     {
       "type": "heading",
       "data": {
         "level": 2,
-        "text": "Transformer Architecture"
+        "text": "The Architecture Powering Modern AI"
       }
     },
     {
       "type": "paragraph",
       "data": {
-        "text": "The transformer architecture revolutionized NLP with self-attention mechanisms. Understanding attention, multi-head attention, and the encoder-decoder structure is essential for effective LLM usage."
+        "text": "Introduced in the seminal 2017 paper 'Attention Is All You Need', the Transformer replaced recurrence (RNNs/LSTMs) and convolutions with self-attention mechanisms. While RNNs processed tokens sequentially from left to right—creating a computational bottleneck that prevented parallel training—transformers process all tokens in a sequence concurrently, enabling training across thousands of GPUs on trillions of tokens."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The Scaled Dot-Product Self-Attention Formula"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "At the heart of every transformer block is the Scaled Dot-Product Attention mechanism. Every input token is projected into three distinct vector representations: Query (Q: what am I looking for?), Key (K: what do I contain?), and Value (V: what information do I pass along?):"
+      }
+    },
+    {
+      "type": "quote",
+      "data": {
+        "text": "Attention(Q, K, V) = softmax( (Q * K^T) / sqrt(d_k) ) * V",
+        "attribution": "Vaswani et al., 2017"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "1. Dot product (Q * K^T) computes the raw similarity score between every pair of tokens in the sequence. 2. Scaling by sqrt(d_k) stabilizes gradients against vanishing/exploding values. 3. Softmax normalizes scores into probability distributions summing to 1.0. 4. Multiplying by V computes a weighted sum of values, blending context from all related tokens."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Transformer Topologies: Encoder vs Decoder"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Architecture", "Masking Mechanism", "Key Properties", "Representative Models", "Primary Use Case"],
+        "rows": [
+          ["Encoder-Only", "Bidirectional (sees all tokens in parallel)", "Encodes deep bidirectional sentence meaning", "BERT, RoBERTa, ModernBERT", "Embedding generation, semantic classification, token tagging"],
+          ["Decoder-Only", "Causal / Autoregressive (masks future tokens)", "Generates text one token at a time; highly scalable", "GPT-4o, Llama 3, Claude 3.5, Mistral", "Generative AI, conversational chat, reasoning, code synthesis"],
+          ["Encoder-Decoder", "Bidirectional encoder + causal decoder", "Translates source sequence into target sequence", "T5, BART, Whisper", "Machine translation, audio-to-text transcription, summarization"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "The Engineering Reality of KV Caching"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In decoder-only autoregressive generation, generating Token N requires attention across Tokens 0 through N-1. If the model had to recompute Query, Key, and Value vectors for all preceding tokens on every step, generation time would grow quadratically O(N^2). Modern inference engines (vLLM, Azure OpenAI, TensorRT-LLM) implement Key-Value (KV) Caching: previous K and V matrices are stored in GPU high-bandwidth memory (HBM). This makes subsequent token generation O(1) in compute, but turns GPU VRAM into the primary memory bottleneck."
       }
     },
     {
@@ -27,16 +84,16 @@
       "data": {
         "title": "Key Takeaways",
         "points": [
-          "Self-attention allows the model to weigh importance of input tokens",
-          "Multi-head attention captures different relationships",
-          "Positional encoding provides sequence information",
-          "Encoder-decoder vs decoder-only architectures",
-          "Understanding internals helps with prompting and debugging"
+          "Transformers replace sequential recurrence with parallelizable self-attention",
+          "Scaled dot-product attention calculates dynamic semantic relationships: Q, K, and V",
+          "Modern generative LLMs (GPT, Llama) are predominantly Causal Decoder-Only architectures",
+          "Encoder-only models (like BERT) remain the gold standard for dense embedding generation",
+          "The KV Cache optimizes generation compute to O(1) per token but consumes significant GPU VRAM"
         ],
-        "takeaway": "Transformer architecture is the foundation of modern LLMs. Understanding self-attention and the overall architecture helps you write better prompts and debug model behavior."
+        "takeaway": "Understanding the transformer's inner mechanics—from self-attention matrices to KV caching—enables .NET engineers to optimize latency budgets, comprehend prompt pricing, and build resilient AI systems."
       }
     }
   ],
-  "relatedLessons": ["dotnet-tokenization-embeddings"],
-  "relatedGlossaryTerms": ["transformer", "self-attention", "encoder-decoder"]
+  "relatedLessons": ["dotnet-tokenization-embeddings", "dotnet-context-window-parameters", "dotnet-model-selection-evaluation"],
+  "relatedGlossaryTerms": ["transformer", "token", "inference"]
 }

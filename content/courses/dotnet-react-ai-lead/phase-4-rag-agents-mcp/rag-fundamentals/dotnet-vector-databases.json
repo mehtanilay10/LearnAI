@@ -1,1 +1,113 @@
-{"id":"dotnet-lesson-4-2","slug":"dotnet-vector-databases","moduleSlug":"dotnet-rag-fundamentals","title":"Vector Databases","description":"Integrate vector databases for semantic search and retrieval.","order":2,"difficulty":"advanced","estimatedMinutes":50,"tags":["vector-database","azure-ai-search","pinecone","qdrant"],"blocks":[{"type":"heading","data":{"level":2,"text":"Vector Databases"}},{"type":"paragraph","data":{"text":"Vector databases store and search embeddings. Choose between Azure AI Search, Pinecone, Qdrant, or others based on requirements."}},{"type":"summary-box","data":{"title":"Key Takeaways","points":["Vector databases store embeddings for semantic search","Azure AI Search for Azure integration","Pinecone for managed service","Qdrant for open-source self-hosted","Consider scale, latency, and cost"],"takeaway":"Vector databases enable semantic search. Choose based on your requirements: Azure AI Search for Azure, Pinecone for managed, Qdrant for self-hosted."}}],"relatedLessons":["dotnet-rag-architecture"],"relatedGlossaryTerms":["vector-database","semantic-search","azure-ai-search"]}
+{
+  "id": "dotnet-lesson-4-2",
+  "slug": "dotnet-vector-databases",
+  "moduleSlug": "dotnet-rag-fundamentals",
+  "title": "Vector Databases & High-Dimensional Indexing",
+  "description": "Master vector database architectures, HNSW vs IVFFlat indexing, distance metrics, and integration with Azure AI Search and Qdrant in .NET.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["vector-database", "hnsw", "cosine-similarity", "qdrant", "azure-ai-search", "embeddings"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "How Vector Databases Work Under the Hood"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Relational databases index scalar values (numbers, strings) using B-Trees to provide O(log N) lookups for equality and ranges. However, embeddings are dense vectors residing in high-dimensional vector spaces (such as 1536 dimensions for text-embedding-3-small). Performing brute-force cosine distance calculations against 10 million vectors requires scanning every vector (O(N) complexity), resulting in unacceptable latency."
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Vector databases solve this using Approximate Nearest Neighbor (ANN) search algorithms. Rather than guaranteeing the absolute closest point, ANN algorithms navigate graph or cluster indexes to return points with 95%+ recall in single-digit milliseconds."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "ANN Indexing Algorithms Compared"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Index Type", "Internal Mechanism", "Query Speed", "Memory Footprint", "Best Fit"],
+        "rows": [
+          ["Flat (Exact Search)", "Exhaustive brute-force distance to every vector", "Slow (seconds at scale)", "Minimal (vectors only)", "Small collections (< 50,000 vectors) or perfect precision benchmarks"],
+          ["HNSW (Hierarchical Navigable Small World)", "Multi-layer graph traversal with skip-list architecture", "Ultra-fast (< 5ms)", "High (~1.5x - 2x vector size)", "Production enterprise default for sub-second low-latency search"],
+          ["IVFFlat (Inverted File)", "K-means clustering dividing space into Voronoi cells", "Fast", "Moderate", "Large-scale vector collections where RAM budget is constrained"],
+          ["PQ / SQ (Product / Scalar Quantization)", "Lossy compression of float32 vectors to int8 or codebooks", "Very fast", "Extremely Low (up to 75% RAM reduction)", "Massive datasets (100M+ vectors) trading slight accuracy for RAM savings"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Distance Metrics in Vector Spaces"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Choosing the Correct Distance Metric",
+        "cards": [
+          {
+            "title": "Cosine Similarity",
+            "description": "Measures the cosine of the angle between two vectors, ignoring magnitude. Ideal for text embeddings where document length variations should not skew semantic similarity.",
+            "tags": ["Range: -1.0 to +1.0", "Default for OpenAI / HuggingFace"]
+          },
+          {
+            "title": "Dot Product (Inner Product)",
+            "description": "Calculates the sum of products of corresponding vector components. When vectors are pre-normalized to unit length (L2 norm = 1.0), Dot Product is mathematically identical to Cosine Similarity but computes 3x faster.",
+            "tags": ["Maximum Speed", "Requires Unit Normalization"]
+          },
+          {
+            "title": "Euclidean Distance (L2)",
+            "description": "Calculates the straight-line geometric distance between two points in space. Highly sensitive to vector magnitude.",
+            "tags": ["Range: 0 to Infinity", "Vision & Clustering Tasks"]
+          }
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Connecting to Qdrant Vector Store in .NET"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Configuring Qdrant with HNSW Indexing in C#",
+        "content": "Demonstrates initializing a collection with HNSW parameters and querying with payload filters:",
+        "code": "using Qdrant.Client;\nusing Qdrant.Client.Grpc;\n\npublic class QdrantVectorService\n{\n    private readonly QdrantClient _client;\n    private const string CollectionName = \"tech_knowledge_base\";\n\n    public QdrantVectorService(string endpoint, string? apiKey = null)\n    {\n        _client = new QdrantClient(new Uri(endpoint), apiKey: apiKey);\n    }\n\n    public async Task EnsureCollectionExistsAsync(CancellationToken ct = default)\n    {\n        var collections = await _client.ListCollectionsAsync(ct);\n        if (!collections.Contains(CollectionName))\n        {\n            await _client.CreateCollectionAsync(\n                CollectionName,\n                new VectorParams\n                {\n                    Size = 1536,\n                    Distance = Distance.Cosine\n                },\n                hnswConfig: new HnswConfigDiff\n                {\n                    M = 16,               // Number of bi-directional links per node\n                    EfConstruct = 100,    // Construction search depth\n                    FullScanThreshold = 10000\n                },\n                cancellationToken: ct);\n        }\n    }\n\n    public async Task<List<ScoredPoint>> QuerySimilarAsync(\n        float[] queryVector,\n        string departmentFilter,\n        ulong limit = 5,\n        CancellationToken ct = default)\n    {\n        // Filter matching department payload\n        var filter = new Filter();\n        filter.Must.Add(new Condition\n        {\n            Field = new FieldCondition\n            {\n                Key = \"department\",\n                Match = new Match { Keyword = departmentFilter }\n            }\n        });\n\n        IReadOnlyList<ScoredPoint> results = await _client.SearchAsync(\n            CollectionName,\n            queryVector,\n            filter: filter,\n            limit: limit,\n            cancellationToken: ct);\n\n        return results.ToList();\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Vector databases use ANN algorithms (like HNSW) to search millions of vectors in sub-5ms latency",
+          "HNSW offers the best query speed and recall balance at the cost of higher memory consumption",
+          "Use Cosine Similarity or normalized Dot Product for text embeddings",
+          "Combine payload metadata filtering with vector similarity to partition enterprise data by tenant or department",
+          "Apply scalar quantization (SQ) when scaling beyond tens of millions of vectors to cut RAM costs in half"
+        ],
+        "takeaway": "Understanding vector indexing and distance metrics is vital for sizing, scaling, and maintaining high-throughput semantic search backends in .NET enterprise architectures."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-rag-architecture", "dotnet-chunking-strategies", "dotnet-microsoft-extensions-vectordata"],
+  "relatedGlossaryTerms": ["vector-database", "embedding", "semantic-search"]
+}
