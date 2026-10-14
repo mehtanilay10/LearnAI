@@ -14,7 +14,9 @@
     "dotnet-openai-sdk-basics",
     "dotnet-azure-openai-integration",
     "dotnet-local-models-ollama",
-    "dotnet-streaming-error-handling"
+    "dotnet-streaming-error-handling",
+    "dotnet-model-routing",
+    "dotnet-multimodal-ai"
   ],
   "whatYouLearn": [
     "OpenAI .NET SDK usage",

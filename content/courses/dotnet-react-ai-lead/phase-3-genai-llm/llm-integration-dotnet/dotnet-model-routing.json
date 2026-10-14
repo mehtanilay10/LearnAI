@@ -1,0 +1,50 @@
+{
+  "id": "dotnet-lesson-3-17",
+  "slug": "dotnet-model-routing",
+  "moduleSlug": "dotnet-llm-integration",
+  "title": "Model Routing & Selection",
+  "description": "Implement intelligent model routing based on task complexity, cost, and latency requirements.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["model-routing", "cost-optimization", "routing-strategies"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Model Routing Strategies"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Route requests to different models based on task complexity, cost, and latency. Use smaller models for simple tasks and larger models for complex reasoning."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Model Router Implementation",
+        "code": "public interface IModelRouter\n{\n    Task<string> RouteAsync(ModelRoutingContext context);\n}\n\npublic record ModelRoutingContext(\n    string Task,\n    int EstimatedTokenCount,\n    bool RequiresReasoning,\n    bool RequiresMultimodal,\n    Dictionary<string, object> Metadata\n);\n\npublic class ModelRouter : IModelRouter\n{\n    private readonly IModelProvider _fastModel;  // GPT-3.5-turbo\n    private readonly IModelProvider _reasoningModel;  // GPT-4\n    private readonly IModelProvider _multimodalModel;  // GPT-4-Vision\n    \n    public async Task<string> RouteAsync(ModelRoutingContext context)\n    {\n        // Route based on requirements\n        if (context.RequiresMultimodal)\n        {\n            return _multimodalModel.ModelId;\n        }\n        \n        if (context.RequiresReasoning || context.EstimatedTokenCount > 2000)\n        {\n            return _reasoningModel.ModelId;\n        }\n        \n        // Cost-based routing for simple tasks\n        if (context.EstimatedTokenCount < 500 && !context.RequiresReasoning)\n        {\n            return _fastModel.ModelId;\n        }\n        \n        // Default to reasoning model for balance\n        return _reasoningModel.ModelId;\n    }\n}\n\n// Usage\npublic class AIClient\n{\n    private readonly IModelRouter _router;\n    private readonly Dictionary<string, IModelProvider> _providers;\n    \n    public async Task<string> CompleteAsync(string prompt, bool requiresReasoning = false)\n    {\n        var tokenCount = EstimateTokens(prompt);\n        var context = new ModelRoutingContext(\n            Task: \"completion\",\n            EstimatedTokenCount: tokenCount,\n            RequiresReasoning: requiresReasoning,\n            RequiresMultimodal: false,\n            Metadata: new()\n        );\n        \n        var modelId = await _router.RouteAsync(context);\n        var provider = _providers[modelId];\n        \n        return await provider.CompleteAsync(prompt);\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Route based on task complexity and requirements",
+          "Use fast models for simple tasks to reduce cost",
+          "Use reasoning models for complex tasks",
+          "Consider multimodal requirements",
+          "Monitor routing decisions and performance"
+        ],
+        "takeaway": "Model routing optimizes cost and performance. Route requests to the most appropriate model based on task requirements."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-model-selection-evaluation"],
+  "relatedGlossaryTerms": ["model-routing", "cost-optimization"]
+}

@@ -1,0 +1,50 @@
+{
+  "id": "dotnet-lesson-2-15",
+  "slug": "dotnet-conversation-state",
+  "moduleSlug": "dotnet-state-management",
+  "title": "Conversation State Management",
+  "description": "Manage conversation history, context, and citations in AI applications.",
+  "order": 7,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["conversation", "state", "context", "citations"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Conversation State"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Manage conversation history, context windows, and citations. Implement efficient state management for long conversations with context limits."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Conversation State Management",
+        "code": "interface Message {\n  id: string;\n  role: 'user' | 'assistant' | 'system';\n  content: string;\n  timestamp: number;\n  citations?: Citation[];\n  toolCalls?: ToolCall[];\n}\n\ninterface Citation {\n  documentId: string;\n  chunkId: string;\n  text: string;\n  score: number;\n}\n\ninterface ConversationState {\n  messages: Message[];\n  contextWindow: number;\n  maxTokens: number;\n}\n\nclass ConversationManager {\n  private state: ConversationState;\n  \n  constructor(maxTokens: number = 4000) {\n    this.state = {\n      messages: [],\n      contextWindow: 0,\n      maxTokens,\n    };\n  }\n  \n  addMessage(message: Omit<Message, 'id' | 'timestamp'>): string {\n    const id = crypto.randomUUID();\n    const newMessage: Message = {\n      ...message,\n      id,\n      timestamp: Date.now(),\n    };\n    \n    this.state.messages.push(newMessage);\n    this.updateContextWindow();\n    \n    // Prune if over limit\n    this.pruneToContextLimit();\n    \n    return id;\n  }\n  \n  private updateContextWindow() {\n    // Estimate tokens (rough approximation: 4 chars per token)\n    this.state.contextWindow = this.state.messages.reduce(\n      (total, msg) => total + Math.ceil(msg.content.length / 4),\n      0\n    );\n  }\n  \n  private pruneToContextLimit() {\n    while (this.state.contextWindow > this.state.maxTokens && this.state.messages.length > 1) {\n      // Keep system message, remove oldest user/assistant pair\n      const firstUserIndex = this.state.messages.findIndex(m => m.role === 'user');\n      if (firstUserIndex > 0) {\n        this.state.messages.splice(firstUserIndex, 2); // Remove user + assistant\n        this.updateContextWindow();\n      } else {\n        break;\n      }\n    }\n  }\n  \n  getMessagesForAPI(): Message[] {\n    return this.state.messages;\n  }\n  \n  getCitations(): Citation[] {\n    return this.state.messages\n      .flatMap(m => m.citations || []);\n  }\n}",
+        "language": "typescript"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Track message history with timestamps",
+          "Estimate token usage for context management",
+          "Prune old messages to stay within limits",
+          "Extract and display citations from responses",
+          "Persist conversation state for continuity"
+        ],
+        "takeaway": "Conversation state management is critical for coherent AI interactions. Implement context pruning and citation tracking for production apps."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-tool-call-status"],
+  "relatedGlossaryTerms": ["conversation-state", "context-window", "citations"]
+}

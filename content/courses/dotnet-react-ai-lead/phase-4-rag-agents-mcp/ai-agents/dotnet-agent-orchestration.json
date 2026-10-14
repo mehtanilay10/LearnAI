@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-4-14",
+  "slug": "dotnet-agent-orchestration",
+  "moduleSlug": "dotnet-ai-agents",
+  "title": "Agent Orchestration & Human-in-the-Loop",
+  "description": "Implement stateful agent workflows, checkpoints, approval flows, and bounded execution.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["orchestration", "human-in-the-loop", "checkpoints", "approval"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Agent Orchestration"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Implement stateful agent workflows with checkpoints for recovery, human approval for consequential actions, bounded retries and timeouts for safety."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Stateful workflows with checkpoints",
+          "Human approval for sensitive operations",
+          "Bounded retries and timeouts",
+          "Maximum tool-call counts for safety",
+          "Durable background work for long tasks"
+        ],
+        "takeaway": "Agent orchestration requires guardrails. Implement checkpoints, approvals, and bounds for safe autonomous execution."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-multi-agent-systems"],
+  "relatedGlossaryTerms": ["orchestration", "human-in-the-loop", "checkpoints"]
+}

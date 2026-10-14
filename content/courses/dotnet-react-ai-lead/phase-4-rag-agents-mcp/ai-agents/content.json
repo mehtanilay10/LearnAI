@@ -14,7 +14,8 @@
     "dotnet-agent-fundamentals",
     "dotnet-tool-calling",
     "dotnet-agent-planning",
-    "dotnet-multi-agent-systems"
+    "dotnet-multi-agent-systems",
+    "dotnet-agent-orchestration"
   ],
   "whatYouLearn": [
     "Agent architecture and design",

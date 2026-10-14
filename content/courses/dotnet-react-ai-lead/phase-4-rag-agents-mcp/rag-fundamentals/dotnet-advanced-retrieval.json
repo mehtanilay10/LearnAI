@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-4-13",
+  "slug": "dotnet-advanced-retrieval",
+  "moduleSlug": "dotnet-rag-fundamentals",
+  "title": "Advanced Retrieval Techniques",
+  "description": "Implement hybrid search, metadata filtering, reranking, and query rewriting for better RAG.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["hybrid-search", "reranking", "query-rewriting", "metadata-filtering"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Advanced Retrieval"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Implement hybrid search combining keyword and semantic search, metadata filtering for permissions, reranking for quality, and query rewriting for better retrieval."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Hybrid search combines keyword and semantic",
+          "Metadata filtering for document permissions",
+          "Reranking improves result quality",
+          "Query rewriting for better retrieval",
+          "Parent-child retrieval for context"
+        ],
+        "takeaway": "Advanced retrieval techniques significantly improve RAG quality. Combine multiple strategies for best results."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-hybrid-search"],
+  "relatedGlossaryTerms": ["hybrid-search", "reranking", "query-rewriting"]
+}

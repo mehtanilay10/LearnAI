@@ -1,0 +1,50 @@
+{
+  "id": "dotnet-lesson-1-14",
+  "slug": "dotnet-streaming-apis-background",
+  "moduleSlug": "dotnet-performance-scaling",
+  "title": "Streaming APIs & Background Workers",
+  "description": "Implement streaming APIs and background ingestion workers for AI processing.",
+  "order": 6,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["streaming", "background-workers", "ingestion", "async"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Streaming APIs"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Streaming responses provide real-time output generation. Implement streaming endpoints with IAsyncEnumerable and handle cancellation gracefully."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Streaming Response Endpoint",
+        "code": "[HttpGet(\"stream\")\npublic async IAsyncEnumerable<string> StreamCompletionAsync(\n    [FromQuery] string prompt,\n    [FromHeader] string? requestId = null,\n    CancellationToken cancellationToken = default)\n{\n    await foreach (var chunk in _aiService.StreamCompleteAsync(prompt, cancellationToken))\n    {\n        cancellationToken.ThrowIfCancellationRequested();\n        yield return chunk;\n    }\n}\n\n// Background ingestion worker\npublic class DocumentIngestionWorker : BackgroundService\n{\n    private readonly IQueue<DocumentIngestionTask> _queue;\n    private readonly IEmbeddingService _embeddingService;\n    private readonly IVectorStore _vectorStore;\n    private readonly ILogger<DocumentIngestionWorker> _logger;\n    \n    protected override async Task ExecuteAsync(CancellationToken stoppingToken)\n    {\n        await foreach (var task in _queue.DequeueAsync(stoppingToken))\n        {\n            try\n            {\n                await ProcessDocumentAsync(task, stoppingToken);\n            }\n            catch (Exception ex)\n            {\n                _logger.LogError(ex, \"Failed to process document {DocumentId}\", task.DocumentId);\n                await _queue.RequeueAsync(task, delay: TimeSpan.FromMinutes(5), stoppingToken);\n            }\n        }\n    }\n    \n    private async Task ProcessDocumentAsync(DocumentIngestionTask task, CancellationToken ct)\n    {\n        // Mark as processing\n        await _vectorStore.UpdateStatusAsync(task.DocumentId, ProcessingStatus.Processing, ct);\n        \n        // Chunk document\n        var chunks = await _chunker.ChunkAsync(task.Document, ct);\n        \n        // Generate embeddings (batched)\n        var embeddings = await _embeddingService.GenerateBatchAsync(chunks, ct);\n        \n        // Store in vector database (idempotent)\n        await _vectorStore.UpsertAsync(task.DocumentId, chunks, embeddings, ct);\n        \n        // Mark as complete\n        await _vectorStore.UpdateStatusAsync(task.DocumentId, ProcessingStatus.Completed, ct);\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "IAsyncEnumerable enables streaming responses",
+          "BackgroundService for long-running workers",
+          "Queue-based processing for ingestion",
+          "Idempotent operations for safe retries",
+          "Track processing status for observability"
+        ],
+        "takeaway": "Streaming APIs and background workers are essential for AI applications. Use IAsyncEnumerable for streaming and BackgroundService for ingestion pipelines."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-resilient-ai-clients"],
+  "relatedGlossaryTerms": ["streaming", "background-service", "idempotency"]
+}

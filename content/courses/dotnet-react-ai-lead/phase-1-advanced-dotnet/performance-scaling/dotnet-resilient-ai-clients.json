@@ -1,0 +1,50 @@
+{
+  "id": "dotnet-lesson-1-13",
+  "slug": "dotnet-resilient-ai-clients",
+  "moduleSlug": "dotnet-performance-scaling",
+  "title": "Resilient AI Service Clients",
+  "description": "Build resilient AI service clients with retry policies, circuit breakers, and bulkhead isolation.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["resilience", "retry", "circuit-breaker", "ai-clients"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Resilience Patterns for AI Services"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI services can be unreliable. Implement retry policies with exponential backoff, circuit breakers to prevent cascading failures, and bulkhead isolation to limit resource usage."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Polly Resilience Pipeline",
+        "code": "using Polly;\nusing Polly.Retry;\nusing Polly.CircuitBreaker;\nusing Polly.Bulkhead;\n\n// Create resilience pipeline\nvar retryPolicy = Policy\n    .Handle<HttpRequestException>()\n    .OrResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)\n    .WaitAndRetryAsync(\n        retryCount: 3,\n        sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),\n        onRetry: (outcome, timeSpan, retryCount, context) =>\n        {\n            Console.WriteLine($\"Retry {retryCount} after {timeSpan.TotalSeconds}s due to: {outcome.Exception?.Message}\");\n        });\n\nvar circuitBreakerPolicy = Policy\n    .Handle<HttpRequestException>()\n    .CircuitBreakerAsync(\n        exceptionsAllowedBeforeBreaking: 5,\n        durationOfBreak: TimeSpan.FromSeconds(30),\n        onBreak: (ex, breakDelay) => Console.WriteLine($\"Circuit broken for {breakDelay.TotalSeconds}s\"),\n        onReset: () => Console.WriteLine(\"Circuit reset\"));\n\nvar bulkheadPolicy = Policy.BulkheadAsync(\n    maxParallelization: 10,\n    maxQueuingActions: 5,\n    onBulkheadRejected: (context) => Console.WriteLine(\"Bulkhead rejected\"));\n\nvar resiliencePipeline = Policy.WrapAsync(\n    circuitBreakerPolicy,\n    retryPolicy,\n    bulkheadPolicy);\n\n// Use with AI client\npublic class ResilientAIClient\n{\n    private readonly HttpClient _httpClient;\n    private readonly AsyncPolicy<HttpResponseMessage> _pipeline;\n    \n    public ResilientAIClient(HttpClient httpClient, AsyncPolicy<HttpResponseMessage> pipeline)\n    {\n        _httpClient = httpClient;\n        _pipeline = pipeline;\n    }\n    \n    public async Task<string> CompleteAsync(string prompt)\n    {\n        return await _pipeline.ExecuteAsync(async () =>\n        {\n            var response = await _httpClient.PostAsJsonAsync(\"/completions\", new { prompt });\n            response.EnsureSuccessStatusCode();\n            return await response.Content.ReadAsStringAsync();\n        });\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Retry with exponential backoff handles transient failures",
+          "Circuit breakers prevent cascading failures",
+          "Bulkhead isolation limits resource consumption",
+          "Use Polly for resilience patterns in .NET",
+          "Monitor circuit state and retry metrics"
+        ],
+        "takeaway": "Resilient AI clients are essential for production systems. Implement retry, circuit breaker, and bulkhead patterns to handle AI service unreliability gracefully."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-streaming-error-handling"],
+  "relatedGlossaryTerms": ["resilience", "circuit-breaker", "retry-pattern"]
+}

@@ -14,7 +14,8 @@
     "dotnet-application-insights",
     "dotnet-structured-logging",
     "dotnet-metrics-dashboards",
-    "dotnet-distributed-tracing"
+    "dotnet-distributed-tracing",
+    "dotnet-cost-monitoring"
   ],
   "whatYouLearn": [
     "Application Insights integration",

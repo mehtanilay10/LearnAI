@@ -1,0 +1,50 @@
+{
+  "id": "dotnet-lesson-3-19",
+  "slug": "dotnet-microsoft-extensions-ai",
+  "moduleSlug": "dotnet-ai-sdk-semantickernel",
+  "title": "Microsoft.Extensions.AI Ecosystem",
+  "description": "Master Microsoft.Extensions.AI abstractions for portable AI integration.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["microsoft-extensions-ai", "abstractions", "dotnet"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Microsoft.Extensions.AI"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Microsoft.Extensions.AI provides common abstractions for chat clients, embeddings, and AI service integration. Learn the abstractions to build provider-agnostic code."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Using Microsoft.Extensions.AI",
+        "code": "using Microsoft.Extensions.AI;\nusing Microsoft.Extensions.AI.OpenAI;\n\n// Configure with DI\nbuilder.Services.AddChatClient(sp =>\n{\n    var apiKey = sp.GetRequiredService<IConfiguration>()[\"OpenAI:ApiKey\"];\n    return new OpenAIClient(apiKey).AsChatClient();\n});\n\n// Use the abstraction\npublic class ProductService\n{\n    private readonly IChatClient _chatClient;\n    \n    public ProductService(IChatClient chatClient)\n    {\n        _chatClient = chatClient;\n    }\n    \n    public async Task<string> GenerateDescriptionAsync(string productName)\n    {\n        var messages = new List<ChatMessage>\n        {\n            new ChatMessage(ChatRole.System, \"You are a marketing copywriter.\"),\n            new ChatMessage(ChatRole.User, $\"Write a product description for: {productName}\")\n        };\n        \n        var response = await _chatClient.CompleteAsync(messages);\n        return response.Message.Text;\n    }\n}\n\n// Middleware for logging\npublic class LoggingChatClientMiddleware : IChatClientMiddleware\n{\n    private readonly ILogger _logger;\n    \n    public async Task<ChatCompletion> OnCompleteAsync(\n        IList<ChatMessage> messages,\n        ChatOptions options,\n        Func<IList<ChatMessage>, ChatOptions, Task<ChatCompletion>> next,\n        CancellationToken cancellationToken)\n    {\n        _logger.LogInformation(\"Generating completion for {MessageCount} messages\", messages.Count);\n        \n        var stopwatch = Stopwatch.StartNew();\n        var result = await next(messages, options, cancellationToken);\n        stopwatch.Stop();\n        \n        _logger.LogInformation(\n            \"Completion generated in {ElapsedMs}ms with {TokenCount} tokens\",\n            stopwatch.ElapsedMilliseconds,\n            result.Usage?.TotalTokenCount ?? 0);\n        \n        return result;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "IChatClient abstraction for provider-agnostic code",
+          "Switch providers without changing application code",
+          "Middleware for cross-cutting concerns (logging, retry)",
+          "Microsoft.Extensions.VectorData for vector stores",
+          "Semantic Kernel extends these abstractions"
+        ],
+        "takeaway": "Microsoft.Extensions.AI provides portable abstractions. Use them to build provider-agnostic AI code that can switch between OpenAI, Azure OpenAI, and other providers."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-semantic-kernel-basics"],
+  "relatedGlossaryTerms": ["microsoft-extensions-ai", "abstractions", "middleware"]
+}

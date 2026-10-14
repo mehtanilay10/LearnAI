@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-7-9",
+  "slug": "dotnet-evaluation-production",
+  "moduleSlug": "dotnet-capstone-implementation",
+  "title": "Evaluation & Production Readiness",
+  "description": "Implement measurable evaluation, audit logs, failure recovery, and production documentation.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["evaluation", "audit-logs", "production-readiness", "documentation"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Evaluation & Production Readiness"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Implement measurable evaluation with golden datasets, audit logs for compliance, failure recovery strategies, and production readiness documentation."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Golden dataset for evaluation",
+          "Audit logs for compliance and debugging",
+          "Failure recovery with checkpoints",
+          "Cost and latency budgets",
+          "Production readiness checklist"
+        ],
+        "takeaway": "Production AI requires systematic evaluation and observability. Implement audit logs, failure recovery, and clear documentation for production readiness."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-capstone-deployment"],
+  "relatedGlossaryTerms": ["evaluation", "audit-logs", "sla"]
+}

@@ -14,7 +14,8 @@
     "dotnet-authentication-authorization",
     "dotnet-owasp-top-10",
     "dotnet-secure-coding",
-    "dotnet-secrets-management"
+    "dotnet-secrets-management",
+    "dotnet-ai-security-governance"
   ],
   "whatYouLearn": [
     "OAuth2 and OpenID Connect",

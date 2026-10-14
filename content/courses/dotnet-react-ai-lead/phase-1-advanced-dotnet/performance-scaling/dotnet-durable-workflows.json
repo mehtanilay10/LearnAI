@@ -1,0 +1,50 @@
+{
+  "id": "dotnet-lesson-1-15",
+  "slug": "dotnet-durable-workflows",
+  "moduleSlug": "dotnet-performance-scaling",
+  "title": "Durable Workflows & Idempotency",
+  "description": "Implement durable workflows with Azure Durable Functions and idempotent operations.",
+  "order": 7,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["durable-functions", "workflows", "idempotency", "azure"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Durable Workflows"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Durable Functions provide stateful workflow orchestration. Implement checkpoints, resume from failure, and idempotent operations for reliable AI workflows."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Durable Function Orchestration",
+        "code": "[FunctionName(\"DocumentProcessingOrchestrator\")]\npublic async Task Run(\n    [OrchestrationTrigger] TaskOrchestrationContext context)\n{\n    var documentId = context.GetInput<string>();\n    \n    // Step 1: Ingest document (checkpoint here)\n    var chunks = await context.CallActivityAsync<string[]>(\n        \"ChunkDocument\", \n        documentId);\n    \n    // Step 2: Generate embeddings (parallel)\n    var embeddingTasks = chunks.Select(chunk => \n        context.CallActivityAsync<float[]>(\"GenerateEmbedding\", chunk));\n    var embeddings = await Task.WhenAll(embeddingTasks);\n    \n    // Step 3: Store in vector database\n    await context.CallActivityAsync(\n        \"StoreInVectorDb\", \n        (documentId, chunks, embeddings));\n    \n    // Step 4: Update index\n    await context.CallActivityAsync(\n        \"UpdateSearchIndex\", \n        documentId);\n    \n    return \"Processing complete\";\n}\n\n// Idempotent activity\n[FunctionName(\"StoreInVectorDb\")]\npublic async Task StoreInVectorDb(\n    [ActivityTrigger] (string documentId, string[] chunks, float[][] embeddings) input,\n    ILogger log)\n{\n    var (docId, chunks, embeddings) = input;\n    \n    // Use upsert for idempotency\n    var upserted = await _vectorStore.UpsertAsync(\n        documentId: docId,\n        chunks: chunks,\n        embeddings: embeddings,\n        options: new UpsertOptions { IfMatchETag = null } // overwrite if exists\n    );\n    \n    log.LogInformation(\"Upserted {Count} vectors for document {DocumentId}\", upserted, docId);\n}\n\n// Idempotency pattern for HTTP endpoints\npublic class IdempotentRequestHandler\n{\n    private readonly IIdempotencyStore _store;\n    \n    public async Task<T> HandleAsync<T>(\n        string idempotencyKey,\n        Func<Task<T>> operation,\n        CancellationToken ct)\n    {\n        // Check if already processed\n        var cached = await _store.GetAsync<T>(idempotencyKey, ct);\n        if (cached != null)\n        {\n            return cached; // Return cached result\n        }\n        \n        // Execute operation\n        var result = await operation();\n        \n        // Store result with TTL\n        await _store.SetAsync(idempotencyKey, result, TimeSpan.FromHours(24), ct);\n        \n        return result;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Durable Functions provide stateful orchestration",
+          "Checkpoints enable resume from failure",
+          "Idempotent operations ensure safe retries",
+          "Use upsert patterns for vector database operations",
+          "Idempotency keys for HTTP endpoints"
+        ],
+        "takeaway": "Durable workflows and idempotency are essential for reliable AI systems. Use Durable Functions for orchestration and idempotent patterns for safe retries."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-streaming-apis-background"],
+  "relatedGlossaryTerms": ["durable-functions", "idempotency", "checkpoints"]
+}

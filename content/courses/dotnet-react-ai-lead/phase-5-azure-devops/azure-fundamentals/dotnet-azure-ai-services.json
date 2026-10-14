@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-5-13",
+  "slug": "dotnet-azure-ai-services",
+  "moduleSlug": "dotnet-azure-fundamentals",
+  "title": "Azure AI Services Deployment",
+  "description": "Deploy Azure OpenAI, AI Search, managed identity, AI gateways, and private networking.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["azure-ai", "managed-identity", "private-networking", "ai-gateway"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Azure AI Services"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Deploy Azure OpenAI with managed identity, Azure AI Search for vector search, AI gateways for routing, and private networking for security."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Azure OpenAI with managed identity",
+          "Azure AI Search for hybrid search",
+          "AI Gateway for model routing",
+          "Private endpoints for security",
+          "Autoscaling for cost optimization"
+        ],
+        "takeaway": "Azure AI services provide managed infrastructure. Use managed identity, private networking, and AI gateways for secure, scalable deployments."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-azure-app-service"],
+  "relatedGlossaryTerms": ["azure-openai", "managed-identity", "private-endpoint"]
+}

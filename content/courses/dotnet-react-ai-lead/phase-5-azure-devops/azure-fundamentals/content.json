@@ -14,7 +14,8 @@
     "dotnet-azure-app-service",
     "dotnet-azure-functions",
     "dotnet-cosmos-db",
-    "dotnet-azure-sql"
+    "dotnet-azure-sql",
+    "dotnet-azure-ai-services"
   ],
   "whatYouLearn": [
     "Azure App Service deployment and scaling",

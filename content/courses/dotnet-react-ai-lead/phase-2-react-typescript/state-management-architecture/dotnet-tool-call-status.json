@@ -1,0 +1,50 @@
+{
+  "id": "dotnet-lesson-2-14",
+  "slug": "dotnet-tool-call-status",
+  "moduleSlug": "dotnet-state-management",
+  "title": "Tool Call Status & Approval",
+  "description": "Display tool call status and implement approval flows for consequential actions.",
+  "order": 6,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["tool-calling", "approval", "react", "typescript"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Tool Call Status Display"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Display tool call status in real-time. Show pending, running, completed, and failed states. Implement approval flows for sensitive operations."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Tool Call Status Component",
+        "code": "interface ToolCall {\n  id: string;\n  name: string;\n  arguments: Record<string, unknown>;\n  status: 'pending' | 'approved' | 'rejected' | 'running' | 'completed' | 'failed';\n  result?: unknown;\n  error?: string;\n  requiresApproval: boolean;\n}\n\nfunction ToolCallCard({ toolCall, onApprove, onReject }: {\n  toolCall: ToolCall;\n  onApprove: (id: string) => void;\n  onReject: (id: string) => void;\n}) {\n  return (\n    <div className={`tool-call-card status-${toolCall.status}`}>\n      <div className=\"tool-name\">{toolCall.name}</div>\n      <div className=\"tool-arguments\">\n        {JSON.stringify(toolCall.arguments, null, 2)}\n      </div>\n      \n      {toolCall.requiresApproval && toolCall.status === 'pending' && (\n        <div className=\"approval-actions\">\n          <button onClick={() => onApprove(toolCall.id)}>Approve</button>\n          <button onClick={() => onReject(toolCall.id)}>Reject</button>\n        </div>\n      )}\n      \n      {toolCall.status === 'running' && (\n        <div className=\"status-indicator\">Running...</div>\n      )}\n      \n      {toolCall.status === 'completed' && toolCall.result && (\n        <div className=\"tool-result\">\n          {JSON.stringify(toolCall.result, null, 2)}\n        </div>\n      )}\n      \n      {toolCall.status === 'failed' && (\n        <div className=\"error\">{toolCall.error}</div>\n      )}\n    </div>\n  );\n}",
+        "language": "typescript"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Display real-time tool call status",
+          "Implement approval flows for sensitive operations",
+          "Show tool arguments and results clearly",
+          "Handle failed tool calls gracefully",
+          "Allow user intervention when needed"
+        ],
+        "takeaway": "Tool call status visibility is critical for user trust. Show what's happening and allow approval for consequential actions."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-streaming-ai-ux"],
+  "relatedGlossaryTerms": ["tool-calling", "approval-flows", "human-in-the-loop"]
+}

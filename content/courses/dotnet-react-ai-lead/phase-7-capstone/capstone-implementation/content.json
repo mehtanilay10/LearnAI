@@ -14,7 +14,8 @@
     "dotnet-capstone-backend",
     "dotnet-capstone-frontend",
     "dotnet-capstone-rag-implementation",
-    "dotnet-capstone-deployment"
+    "dotnet-capstone-deployment",
+    "dotnet-evaluation-production"
   ],
   "whatYouLearn": [
     ".NET backend with AI integration",

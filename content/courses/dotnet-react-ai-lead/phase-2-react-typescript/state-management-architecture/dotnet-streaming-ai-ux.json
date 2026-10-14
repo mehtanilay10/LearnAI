@@ -1,0 +1,50 @@
+{
+  "id": "dotnet-lesson-2-13",
+  "slug": "dotnet-streaming-ai-ux",
+  "moduleSlug": "dotnet-state-management",
+  "title": "Streaming AI UX",
+  "description": "Implement streaming AI responses with real-time UI updates and user controls.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["streaming", "ui", "react", "typescript"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Streaming Response UI"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Streaming responses require real-time UI updates. Implement Server-Sent Events (SSE) or WebSocket clients, handle backpressure, and provide user controls."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Streaming Response Component",
+        "code": "import { useState, useCallback, useEffect, useRef } from 'react';\n\ninterface StreamingResponseProps {\n  prompt: string;\n  onComplete?: (fullResponse: string) => void;\n}\n\nexport function StreamingResponse({ prompt, onComplete }: StreamingResponseProps) {\n  const [response, setResponse] = useState('');\n  const [isStreaming, setIsStreaming] = useState(false);\n  const [error, setError] = useState<string | null>(null);\n  const abortController = useRef<AbortController | null>(null);\n\n  const streamResponse = useCallback(async () => {\n    abortController.current = new AbortController();\n    setIsStreaming(true);\n    setResponse('');\n    setError(null);\n\n    try {\n      const response = await fetch('/api/stream', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ prompt }),\n        signal: abortController.current.signal,\n      });\n\n      if (!response.ok) throw new Error('Stream failed');\n\n      const reader = response.body?.getReader();\n      const decoder = new TextDecoder();\n\n      if (!reader) throw new Error('No reader');\n\n      while (true) {\n        const { done, value } = await reader.read();\n        if (done) break;\n\n        const chunk = decoder.decode(value, { stream: true });\n        setResponse(prev => prev + chunk);\n      }\n\n      onComplete?.(response);\n    } catch (err) {\n      if (err.name !== 'AbortError') {\n        setError(err.message);\n      }\n    } finally {\n      setIsStreaming(false);\n      abortController.current = null;\n    }\n  }, [prompt, onComplete]);\n\n  const stopStreaming = useCallback(() => {\n    abortController.current?.abort();\n  }, []);\n\n  return (\n    <div className=\"streaming-response\">\n      <div className=\"response-content\">{response}</div>\n      {isStreaming && (\n        <button onClick={stopStreaming}>Stop</button>\n      )}\n      {error && <div className=\"error\">{error}</div>}\n    </div>\n  );\n}",
+        "language": "typescript"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Use fetch with ReadableStream for streaming",
+          "AbortController for cancellation",
+          "TextDecoder for chunk decoding",
+          "Handle backpressure and connection drops",
+          "Provide stop/regenerate controls"
+        ],
+        "takeaway": "Streaming UX requires careful handling of chunks, cancellation, and errors. Provide user controls and handle connection issues gracefully."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-state-architecture-patterns"],
+  "relatedGlossaryTerms": ["streaming", "sse", "websockets"]
+}

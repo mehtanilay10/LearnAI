@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-6-14",
+  "slug": "dotnet-ai-evaluation",
+  "moduleSlug": "dotnet-testing-strategies",
+  "title": "AI Evaluation & LLMOps",
+  "description": "Implement dataset-based evaluation, retrieval metrics, adversarial testing, and prompt regression tests.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["evaluation", "llmops", "retrieval-metrics", "adversarial-testing"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "AI Evaluation & LLMOps"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Implement systematic evaluation: dataset-based testing, retrieval metrics (Recall@k, MRR), adversarial testing, and regression tests for prompts and models."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Dataset-based evaluation with golden datasets",
+          "Retrieval metrics: Recall@k, MRR, precision",
+          "Task-specific correctness checks",
+          "Adversarial testing for robustness",
+          "Regression tests for model and prompt changes"
+        ],
+        "takeaway": "LLMOps requires systematic evaluation. Use dataset-based testing, retrieval metrics, and regression tests to measure quality and detect regressions."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-tdd-best-practices"],
+  "relatedGlossaryTerms": ["evaluation", "llmops", "retrieval-metrics"]
+}

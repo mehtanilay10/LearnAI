@@ -14,7 +14,8 @@
     "dotnet-unit-testing",
     "dotnet-integration-testing",
     "dotnet-e2e-testing",
-    "dotnet-tdd-best-practices"
+    "dotnet-tdd-best-practices",
+    "dotnet-ai-evaluation"
   ],
   "whatYouLearn": [
     "Unit testing with xUnit",

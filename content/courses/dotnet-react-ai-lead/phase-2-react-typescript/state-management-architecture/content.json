@@ -14,7 +14,10 @@
     "dotnet-context-and-redux",
     "dotnet-react-query-server-state",
     "dotnet-form-state-management",
-    "dotnet-state-architecture-patterns"
+    "dotnet-state-architecture-patterns",
+    "dotnet-streaming-ai-ux",
+    "dotnet-tool-call-status",
+    "dotnet-conversation-state"
   ],
   "whatYouLearn": [
     "Context API for prop drilling avoidance",

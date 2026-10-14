@@ -1,0 +1,50 @@
+{
+  "id": "dotnet-lesson-3-18",
+  "slug": "dotnet-multimodal-ai",
+  "moduleSlug": "dotnet-llm-integration",
+  "title": "Multimodal AI Integration",
+  "description": "Integrate vision, audio, and multimodal models in .NET applications.",
+  "order": 6,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["multimodal", "vision", "audio", "gpt-4-vision"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Multimodal AI"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Multimodal models process images, audio, and text together. Integrate GPT-4 Vision, Whisper for audio, and build multimodal applications."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Vision Model Integration",
+        "code": "public class VisionClient\n{\n    private readonly HttpClient _httpClient;\n    private readonly string _apiKey;\n    \n    public async Task<string> AnalyzeImageAsync(\n        byte[] imageData,\n        string prompt,\n        CancellationToken ct = default)\n    {\n        var base64Image = Convert.ToBase64String(imageData);\n        \n        var requestBody = new\n        {\n            model = \"gpt-4-vision-preview\",\n            messages = new[]\n            {\n                role = \"user\",\n                content = new object[]\n                {\n                    type = \"text\",\n                    text = prompt\n                },\n                {\n                    type = \"image_url\",\n                    image_url = new\n                    {\n                        url = $\"data:image/jpeg;base64,{base64Image}\"\n                    }\n                }\n            }\n        };\n        \n        var response = await _httpClient.PostAsJsonAsync(\n            \"https://api.openai.com/v1/chat/completions\",\n            requestBody,\n            ct);\n        \n        response.EnsureSuccessStatusCode();\n        var result = await response.Content.ReadFromJsonAsync<VisionResponse>(ct);\n        return result.choices[0].message.content;\n    }\n}\n\n// Audio transcription with Whisper\npublic class AudioClient\n{\n    public async Task<string> TranscribeAsync(\n        byte[] audioData,\n        CancellationToken ct = default)\n    {\n        using var content = new MultipartFormDataContent();\n        content.Add(new ByteArrayContent(audioData), \"file\", \"audio.mp3\");\n        content.Add(new StringContent(\"whisper-1\"), \"model\");\n        \n        var response = await _httpClient.PostAsync(\n            \"https://api.openai.com/v1/audio/transcriptions\",\n            content,\n            ct);\n            \n        response.EnsureSuccessStatusCode();\n        var result = await response.Content.ReadFromJsonAsync<TranscriptionResponse>(ct);\n        return result.text;\n    }\n}",
+        "language": "csharp"
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "GPT-4 Vision processes images and text",
+          "Base64 encode images for API requests",
+          "Whisper transcribes audio to text",
+          "Handle large files with streaming uploads",
+          "Combine modalities for rich applications"
+        ],
+        "takeaway": "Multimodal AI enables rich applications. Integrate vision and audio models to process images, audio, and text together."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-model-routing"],
+  "relatedGlossaryTerms": ["multimodal", "gpt-4-vision", "whisper"]
+}

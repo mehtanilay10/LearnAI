@@ -14,7 +14,10 @@
     "dotnet-profiling-benchmarking",
     "dotnet-caching-strategies",
     "dotnet-message-queues",
-    "dotnet-horizontal-vertical-scaling"
+    "dotnet-horizontal-vertical-scaling",
+    "dotnet-resilient-ai-clients",
+    "dotnet-streaming-apis-background",
+    "dotnet-durable-workflows"
   ],
   "whatYouLearn": [
     "Profiling tools and performance counters",

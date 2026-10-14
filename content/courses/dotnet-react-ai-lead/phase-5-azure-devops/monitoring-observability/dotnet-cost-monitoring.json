@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-5-14",
+  "slug": "dotnet-cost-monitoring",
+  "moduleSlug": "dotnet-monitoring-observability",
+  "title": "AI Cost Monitoring & Optimization",
+  "description": "Monitor AI costs, set budgets, optimize token usage, and track latency budgets.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["cost-monitoring", "budgeting", "token-optimization", "latency"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Cost Monitoring"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Monitor AI costs with token tracking, set budgets and alerts, optimize token usage with caching and routing, and track latency budgets."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Track token usage per user/feature",
+          "Set cost budgets and alerts",
+          "Optimize with caching and model routing",
+          "Monitor latency budgets",
+          "Trace cost attribution across services"
+        ],
+        "takeaway": "AI costs can escalate quickly. Implement cost monitoring, budgets, and optimization strategies to control spend while maintaining quality."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-metrics-dashboards"],
+  "relatedGlossaryTerms": ["cost-monitoring", "token-budget", "latency-sla"]
+}

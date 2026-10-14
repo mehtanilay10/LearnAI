@@ -1,0 +1,42 @@
+{
+  "id": "dotnet-lesson-6-13",
+  "slug": "dotnet-ai-security-governance",
+  "moduleSlug": "dotnet-security-fundamentals",
+  "title": "AI-Specific Security & Governance",
+  "description": "Implement prompt injection defenses, data exfiltration prevention, tenant isolation, and authorization for AI.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["ai-security", "prompt-injection", "governance", "tenant-isolation"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "AI Security & Governance"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Implement prompt injection defenses, data exfiltration prevention, tenant isolation, and authorization at retrieval and tool-execution time."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Prompt injection defense with input validation",
+          "Data exfiltration prevention",
+          "Tenant isolation at retrieval time",
+          "Authorization for tool execution",
+          "Indirect injection through retrieved documents"
+        ],
+        "takeaway": "AI introduces new attack surfaces. Implement prompt injection defenses, tenant isolation, and authorization for AI-specific security."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-secure-coding"],
+  "relatedGlossaryTerms": ["prompt-injection", "data-exfiltration", "tenant-isolation"]
+}
