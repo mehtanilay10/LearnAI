@@ -23,7 +23,7 @@ export function ModuleCard({
 }: ModuleCardProps) {
   const moduleHref = courseSlug
     ? `/courses/${courseSlug}/${module.slug}`
-    : `/modules/${module.slug}`;
+    : `/courses/unknown/${module.slug}`;
   const hasProgress = completedCount !== undefined && lessonCount && lessonCount > 0;
   const progressPercent = hasProgress
     ? Math.round((completedCount! / lessonCount!) * 100)

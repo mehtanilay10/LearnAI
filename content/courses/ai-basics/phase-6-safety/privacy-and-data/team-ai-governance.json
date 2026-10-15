@@ -197,6 +197,60 @@
           "Revisit policy monthly as tools and risks evolve"
         ]
       }
+    },
+    {
+      "type": "heading",
+      "id": "governance-approaches-compared",
+      "data": {
+        "level": 3,
+        "text": "Governance approaches compared",
+        "anchor": "governance-approaches-compared"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Lightweight governance vs heavy governance",
+        "cards": [
+          {
+            "title": "Lightweight",
+            "description": "Short policy, risk-tiered approvals, monthly refresh. Teams understand it and follow it because it is practical.",
+            "tags": [
+              "recommended"
+            ]
+          },
+          {
+            "title": "Heavyweight",
+            "description": "Long policy documents, central approval for everything, annual review. Teams ignore it and use shadow AI because it is too slow.",
+            "tags": [
+              "avoid"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Real team policy example",
+        "content": "A 12-person marketing team adopted this 1-page policy:\n\n1. Approved tools: Claude Pro, Notion AI, Zapier. Everything else needs sign-off.\n2. Data rules: Public content is fine. Internal docs are fine in enterprise tools. Customer PII never goes to a chatbot.\n3. High-impact outputs: Any customer-facing content needs a 5-minute human review before publishing.\n4. Incident path: If AI output leaks data or looks wrong, Slack #ai-ops within 1 hour.\n\nResult: 80% adoption in 3 weeks, zero incidents in 2 months."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "title": "Common pitfall",
+        "text": "The biggest governance mistake is writing a policy no one reads. Keep it under 2 pages, use examples, and revisit it monthly. A short policy that people follow beats a long policy that everyone ignores."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "Remember",
+        "text": "Governance is not the enemy of speed. Good governance removes uncertainty and lets teams move faster because they know what is allowed without asking for permission every time."
+      }
     }
   ],
   "relatedLessons": [

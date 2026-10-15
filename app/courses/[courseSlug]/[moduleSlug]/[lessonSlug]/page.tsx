@@ -24,6 +24,7 @@ import { ProgressTracker } from '@/components/course/ProgressTracker';
 import { DifficultyBadge } from '@/components/ui/DifficultyBadge';
 import { ReadingTimeBadge } from '@/components/ui/ReadingTimeBadge';
 import { LessonCard } from '@/components/course/LessonCard';
+import { LessonKeyboardShortcuts } from '@/components/course/LessonKeyboardShortcuts';
 
 interface Params {
   params: Promise<{ courseSlug: string; moduleSlug: string; lessonSlug: string }>;
@@ -41,12 +42,13 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const { moduleSlug, lessonSlug } = await params;
+  const { courseSlug, moduleSlug, lessonSlug } = await params;
   const lesson = getLessonBySlug(lessonSlug);
   if (!lesson) return {};
   return buildLessonMetadata({
     title: lesson.title,
     description: lesson.description,
+    courseSlug,
     moduleSlug,
     lessonSlug,
   });
@@ -147,8 +149,6 @@ export default async function CourseLessonDetailPage({ params }: Params) {
             )}
           </header>
 
-          Nilay+123
-
           {/* Mobile: progress tracker + course contents (combined) */}
           <div className="mb-6 lg:hidden">
             <MobileProgressAndContents
@@ -160,6 +160,12 @@ export default async function CourseLessonDetailPage({ params }: Params) {
               lessonsByModule={lessonsByModule}
             />
           </div>
+
+          {/* Keyboard shortcuts */}
+          <LessonKeyboardShortcuts
+            prevHref={prev ? `/courses/${courseSlug}/${prev.moduleSlug}/${prev.slug}` : undefined}
+            nextHref={next ? `/courses/${courseSlug}/${next.moduleSlug}/${next.slug}` : undefined}
+          />
 
           {/* Content blocks */}
           <ContentBlockRenderer blocks={lesson.blocks} />

@@ -186,6 +186,35 @@
           ]
         ]
       }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Evaluation frameworks at a glance",
+        "cards": [
+          {
+            "title": "Trust but verify",
+            "description": "Default to trusting AI output, then spot-check critical claims. Fast but can miss subtle errors.",
+            "tags": [
+              "fast"
+            ]
+          },
+          {
+            "title": "Healthy skepticism",
+            "description": "Assume output needs verification, especially for facts and numbers. Slightly slower but dramatically reduces error propagation.",
+            "tags": [
+              "safe"
+            ]
+          },
+          {
+            "title": "Red-team mindset",
+            "description": "Actively look for flaws, inconsistencies, and unsupported claims. Slowest but most thorough for high-stakes decisions.",
+            "tags": [
+              "thorough"
+            ]
+          }
+        ]
+      }
     }
   ],
   "relatedLessons": [

@@ -11,6 +11,7 @@ const FOOTER_LINKS = [
     heading: 'Learn',
     links: [
       { href: '/courses', label: 'All Courses' },
+      { href: '/roadmap', label: 'Learning Roadmap' },
       { href: '/glossary', label: 'AI Glossary' },
       { href: '/projects', label: 'Mini Projects' },
     ],

@@ -9,6 +9,7 @@ import { modules, getModulesByPhase } from '@/content/modules';
 import { lessons, getLessonsByModule } from '@/content/lessons';
 import { glossaryTerms } from '@/content/glossary';
 import { courses, getCourseBySlug } from '@/content/courses';
+import { plans, getPlanForCourse, getPlanWeek } from '@/content/plans';
 import type {
   Phase,
   Module,
@@ -19,10 +20,11 @@ import type {
   ContentBlock,
   SearchResult,
   Difficulty,
+  PlanWeek,
 } from '@/types';
 
 // ── Re-exports for convenience ────────────────────────────────────────────────
-export { phases, modules, lessons, glossaryTerms, courses };
+export { phases, modules, lessons, glossaryTerms, courses, plans };
 
 // ── Course helpers ────────────────────────────────────────────────────────────
 
@@ -131,6 +133,10 @@ export function getLessonBreadcrumb(lesson: Lesson): {
   const phase = mod ? getPhaseBySlug(mod.phaseSlug) : undefined;
   return { phase, module: mod, lesson };
 }
+
+// ── Plan helpers ──────────────────────────────────────────────────────────────
+
+export { getPlanForCourse, getPlanWeek };
 
 // ── Glossary helpers ──────────────────────────────────────────────────────────
 

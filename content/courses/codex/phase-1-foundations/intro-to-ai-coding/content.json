@@ -10,7 +10,9 @@
   "icon": "💡",
   "tags": ["ai-coding", "copilot", "introduction"],
   "lessonSlugs": [
-    "what-is-ai-coding"
+    "what-is-ai-coding",
+    "history-of-ai-coding",
+    "setting-up-ai-coding-environment"
   ],
   "whatYouLearn": [
     "What AI coding assistants actually do under the hood",

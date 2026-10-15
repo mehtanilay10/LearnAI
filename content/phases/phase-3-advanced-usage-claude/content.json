@@ -1,0 +1,16 @@
+{
+  "id": "phase-claude-3",
+  "slug": "phase-3-advanced-usage",
+  "courseSlug": "claude",
+  "title": "Phase 3: Advanced Usage",
+  "subtitle": "Artifacts, API, and integrations",
+  "description": "Go beyond chat. Learn to build interactive Artifacts, integrate Claude via API, use prompt caching, and embed Claude into your daily workflows.",
+  "order": 3,
+  "icon": "🚀",
+  "color": "accent",
+  "moduleSlug": [
+    "claude-artifacts",
+    "claude-api-and-integrations"
+  ],
+  "estimatedWeeks": 3
+}

@@ -158,6 +158,57 @@
           ]
         ]
       }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "learning-workflow-loop",
+        "caption": "A sustainable learning loop turns AI news into capability without overwhelm.",
+        "definition": "flowchart TD\n    A[Scan 2-3 newsletters/week] --> B{Relevant to my work?}\n    B -->|Yes| C[Save for deep dive]\n    B -->|No| D[Skip — no guilt]\n    C --> E[30-min experiment]\n    E --> F[Update prompt library]\n    F --> G[Share with team]\n    G --> A"
+      }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Info sources compared",
+        "cards": [
+          {
+            "title": "Newsletters (The Rundown, TLDR AI)",
+            "description": "Curated daily summaries. High signal, low time cost. Best for maintaining directional awareness.",
+            "tags": [
+              "curated"
+            ]
+          },
+          {
+            "title": "Official blogs (OpenAI, Anthropic, Google)",
+            "description": "First-hand product updates and research. Authoritative but marketing-heavy. Best for tracking specific tools you use.",
+            "tags": [
+              "authoritative"
+            ]
+          },
+          {
+            "title": "YouTube explainers (AI Explained, Fireship)",
+            "description": "Visual, accessible breakdowns of complex topics. Good for building intuition when a concept feels abstract.",
+            "tags": [
+              "visual"
+            ]
+          },
+          {
+            "title": "Twitter/X threads",
+            "description": "Fast, opinionated, often wrong. Use only for detecting emerging topics, not for learning facts.",
+            "tags": [
+              "noise-heavy"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Concrete example: 15-minute weekly review",
+        "content": "Monday morning, 15 minutes:\n\n1. Open The Rundown AI newsletter. Scan for anything mentioning Claude, GPT-4o, or Perplexity.\n2. Found: 'Claude added Projects feature.'\n3. Ask: 'Does this change anything I do weekly?' Yes — I use Claude for document analysis and Projects would let me organize prompts by client.\n4. Bookmark the article for the weekend.\n5. Move on. No guilt about the 20 other links I did not open.\n\nThis system keeps me informed without turning me into a full-time AI news consumer."
+      }
     }
   ],
   "relatedLessons": [

@@ -31,10 +31,10 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const { moduleSlug } = await params;
+  const { courseSlug, moduleSlug } = await params;
   const mod = getModuleBySlug(moduleSlug);
   if (!mod) return {};
-  return buildModuleMetadata({ title: mod.title, description: mod.description, moduleSlug });
+  return buildModuleMetadata({ title: mod.title, description: mod.description, courseSlug, moduleSlug });
 }
 
 export default async function CourseModuleDetailPage({ params }: Params) {

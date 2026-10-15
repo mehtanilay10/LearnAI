@@ -1,22 +1,20 @@
 {
   "id": "term-025",
   "slug": "text-to-image",
-  "term": "Text-to-Image",
-  "shortDefinition": "AI systems that generate images from text descriptions.",
-  "fullDefinition": "Text-to-image models take a text description (prompt) as input and generate a corresponding image. They use a different architecture from LLMs — typically diffusion models. Major text-to-image tools include DALL-E (OpenAI), Midjourney, Stable Diffusion (open), Adobe Firefly, and Imagen (Google). Quality varies dramatically between tools for different types of images.",
+  "term": "Text-to-Image Generation",
+  "shortDefinition": "The AI capability of creating visual images from textual descriptions using generative models.",
+  "fullDefinition": "Text-to-image generation is a type of generative AI that creates images from natural language descriptions. Modern systems like DALL-E, Midjourney, and Stable Diffusion use diffusion models or autoregressive transformers trained on vast collections of image-text pairs. The model learns to associate visual concepts with their textual descriptions, enabling it to compose novel images that match prompts. The quality of generated images has improved dramatically, with modern models producing photorealistic and artistically coherent results. Users can guide the output through detailed prompts, style references, and image editing tools. This technology is used in design, advertising, concept art, and creative exploration.",
   "category": "multimodal",
   "difficulty": "beginner",
   "relatedTerms": [
-    "multimodal",
-    "generative-ai",
-    "prompt"
+    "multimodal-ai",
+    "diffusion-model",
+    "generative-ai"
   ],
+  "learnMoreSlug": "images-and-ai",
   "examples": [
-    "DALL-E 3: \"a photorealistic image of a red fox in autumn forest\"",
-    "Midjourney: known for artistic, aesthetic high-quality images"
-  ],
-  "alsoKnownAs": [
-    "Image Generation",
-    "AI Image Generation"
+    "Generating product mockups from a simple description",
+    "Creating concept art for a video game from a narrative prompt",
+    "Producing marketing visuals in a specific brand style"
   ]
 }

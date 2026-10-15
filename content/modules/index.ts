@@ -1,4 +1,5 @@
 import type { Module } from '@/types';
+import { isModuleArray } from '@/lib/typeGuards';
 
 // AI Basics — phase-1-foundations
 import whatIsAi from '../courses/ai-basics/phase-1-foundations/what-is-ai/content.json';
@@ -47,6 +48,15 @@ import codexAiCodingTools from '../courses/codex/phase-2-tools/ai-coding-tools/c
 import codexPracticalAiWorkflows from '../courses/codex/phase-3-workflows/practical-ai-workflows/content.json';
 import codexAgenticWorkflows from '../courses/codex/phase-3-workflows/agentic-workflows/content.json';
 import codexSecurityAndTesting from '../courses/codex/phase-4-advanced-techniques/security-and-testing/content.json';
+
+// Claude course modules
+import claudeWhatIsClaude from '../modules/claude/what-is-claude/content.json';
+import claudeGettingStarted from '../modules/claude/getting-started/content.json';
+import claudeClaudeForWriting from '../modules/claude/claude-for-writing/content.json';
+import claudeClaudeForResearch from '../modules/claude/claude-for-research/content.json';
+import claudeClaudeArtifacts from '../modules/claude/claude-artifacts/content.json';
+import claudeClaudeApiAndIntegrations from '../modules/claude/claude-api-and-integrations/content.json';
+import claudeMasteringClaude from '../modules/claude/mastering-claude/content.json';
 
 // .NET + React AI Lead course modules
 // Phase 1: Advanced .NET & System Design
@@ -121,6 +131,14 @@ const rawModules = [
   codexPracticalAiWorkflows,
   codexAgenticWorkflows,
   codexSecurityAndTesting,
+  // Claude course
+  claudeWhatIsClaude,
+  claudeGettingStarted,
+  claudeClaudeForWriting,
+  claudeClaudeForResearch,
+  claudeClaudeArtifacts,
+  claudeClaudeApiAndIntegrations,
+  claudeMasteringClaude,
   // .NET + React AI Lead course
   dotnetAdvancedCsharp,
   dotnetSystemDesign,
@@ -148,7 +166,7 @@ const rawModules = [
   dotnetCapstoneImplementation,
 ];
 
-export const modules: Module[] = rawModules as unknown as Module[];
+export const modules: Module[] = isModuleArray(rawModules) ? rawModules : [];
 
 export function getModuleBySlug(slug: string): Module | undefined {
   return modules.find((m) => m.slug === slug);

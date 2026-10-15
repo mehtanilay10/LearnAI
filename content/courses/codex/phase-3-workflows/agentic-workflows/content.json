@@ -10,7 +10,9 @@
   "icon": "🤖",
   "tags": ["agents", "workflows", "refactoring", "tdd"],
   "lessonSlugs": [
-    "agentic-coding-intro"
+    "agentic-coding-intro",
+    "building-ai-agents",
+    "multi-file-workflows"
   ],
   "whatYouLearn": [
     "How agentic coding differs from simple code completion",

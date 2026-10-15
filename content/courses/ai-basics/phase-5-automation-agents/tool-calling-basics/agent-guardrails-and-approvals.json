@@ -142,6 +142,74 @@
           ]
         ]
       }
+    },
+    {
+      "type": "comparison-cards",
+      "data": {
+        "title": "Guardrail strategies compared",
+        "cards": [
+          {
+            "title": "Permissive",
+            "description": "Agent can use any tool freely. Fast but risky — a single mistake can cause data loss or compliance violations.",
+            "tags": [
+              "risky"
+            ]
+          },
+          {
+            "title": "Moderate",
+            "description": "Agent needs approval for medium/high-risk actions. Good balance of speed and safety for most business use cases.",
+            "tags": [
+              "balanced"
+            ]
+          },
+          {
+            "title": "Strict",
+            "description": "Every tool call requires human approval. Safest but slowest. Best for financial, legal, or medical contexts.",
+            "tags": [
+              "safe"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Real approval workflow example",
+        "content": "A customer support agent wants to issue a $200 refund.\n\nStep 1: Agent detects refund request and checks order total.\nStep 2: Policy rule says refunds under $500 require manager approval.\nStep 3: Agent pauses and shows the manager: 'Customer requests $200 refund for order #1234. Approve?'\nStep 4: Manager clicks Approve.\nStep 5: Agent processes the refund and logs the action.\n\nWithout the approval gate, the agent might have issued the refund immediately — which is fine here, but the same pattern applied to a $5,000 refund would be dangerous."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "title": "Warning",
+        "text": "Never deploy an agent that can write to production, send emails, or modify records without at least one human approval gate for high-risk actions. The cost of a single bad action far exceeds the convenience of full automation."
+      }
+    },
+    {
+      "type": "heading",
+      "id": "approval-workflow-deep-dive",
+      "data": {
+        "level": 3,
+        "text": "Approval workflow deep dive",
+        "anchor": "approval-workflow-deep-dive"
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "End-to-end approval workflow",
+        "content": "A marketing automation agent wants to schedule a LinkedIn post.\n\n1. Agent drafts post and checks brand guidelines.\n2. Policy says: external posts require team-lead approval.\n3. Agent creates a preview card: 'Draft post for @company — approve to schedule?'\n4. Team lead reviews, suggests one edit.\n5. Agent applies edit and reposts preview.\n6. Team lead clicks Approve.\n7. Agent schedules post and logs: approved_by=team_lead, scheduled_at=timestamp.\n\nThis workflow is safe because the agent cannot post without approval, and every step is logged for audit."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "Important",
+        "text": "The best approval workflows feel like a conversation, not a bureaucracy. Show the user exactly what will happen, let them edit, and log the decision. This builds trust while keeping safety."
+      }
     }
   ],
   "relatedLessons": [

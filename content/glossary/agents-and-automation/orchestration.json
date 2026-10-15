@@ -2,17 +2,19 @@
   "id": "term-027",
   "slug": "orchestration",
   "term": "Orchestration",
-  "shortDefinition": "The coordination of multiple AI agents or tools to complete a larger task.",
-  "fullDefinition": "Orchestration in AI refers to managing and coordinating multiple components — models, agents, tools, APIs — to complete complex tasks. An orchestrator system receives a high-level goal, breaks it into sub-tasks, assigns them to appropriate agents or tools, manages dependencies, and assembles the final result. Frameworks like LangChain, AutoGen, and CrewAI are orchestration tools.",
+  "shortDefinition": "The coordination and management of multiple AI agents, tools, and services to execute complex workflows.",
+  "fullDefinition": "Orchestration is the process of coordinating multiple AI components \u2014 agents, tools, models, and services \u2014 to execute complex, multi-step workflows. An orchestrator manages the sequence of operations, handles dependencies between steps, routes data between components, and ensures the overall process achieves its goals. In AI systems, orchestration frameworks like LangChain, CrewAI, and AutoGen provide primitives for defining agent roles, managing conversation flows, and handling error recovery. Good orchestration makes complex AI systems feel like single, coherent applications to end users, hiding the complexity of the underlying components.",
   "category": "agents-and-automation",
   "difficulty": "advanced",
   "relatedTerms": [
-    "agent",
-    "tool-calling",
-    "mcp"
+    "multi-agent-system",
+    "autonomous-agent",
+    "rag"
   ],
+  "learnMoreSlug": "building-your-first-workflow",
   "examples": [
-    "A research pipeline that orchestrates web search, summarization, and report formatting agents",
-    "Microsoft AutoGen coordinating multiple specialized AI agents on a software project"
+    "Orchestrating a research pipeline: search, read, summarize, and format",
+    "Coordinating a customer support workflow: classify, search KB, draft response, escalate",
+    "Managing a code review pipeline: lint, test, analyze, and report findings"
   ]
 }

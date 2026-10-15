@@ -10,7 +10,8 @@
   "icon": "🧪",
   "tags": ["security", "testing", "quality", "production"],
   "lessonSlugs": [
-    "ai-security-risks"
+    "ai-security-risks",
+    "testing-strategies"
   ],
   "whatYouLearn": [
     "Common security vulnerabilities in AI-generated code",

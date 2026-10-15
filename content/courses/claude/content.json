@@ -1,0 +1,16 @@
+{
+  "id": "course-claude",
+  "slug": "claude",
+  "title": "Claude",
+  "subtitle": "Master Anthropic's Claude AI assistant",
+  "description": "Learn how to use Claude effectively for writing, research, analysis, and advanced workflows. From basic conversations to building with Artifacts and the Claude API.",
+  "icon": "🧠",
+  "color": "accent",
+  "order": 3,
+  "phaseSlugs": [
+    "phase-1-foundations",
+    "phase-2-core-features",
+    "phase-3-advanced-usage",
+    "phase-4-best-practices"
+  ]
+}
