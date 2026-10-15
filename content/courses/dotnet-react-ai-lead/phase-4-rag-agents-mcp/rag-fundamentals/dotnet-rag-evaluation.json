@@ -1,0 +1,106 @@
+{
+  "id": "dotnet-lesson-4-22",
+  "slug": "dotnet-rag-evaluation",
+  "moduleSlug": "dotnet-rag-fundamentals",
+  "title": "Evaluating RAG Systems with Automated Metrics",
+  "description": "Measure RAG system quality using faithfulness, answer relevance, context precision, and context recall metrics with .NET evaluation frameworks.",
+  "order": 8,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["rag-evaluation", "metrics", "faithfulness", "precision", "recall", "testing", "ai-quality"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Why RAG Evaluation Differs from Traditional QA"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Traditional question-answering has a single correct answer. RAG systems have two quality dimensions: (1) Does the generated answer faithfully reflect the provided context (no hallucinations)? and (2) Does the system retrieve the right context to answer the question correctly? Evaluating RAG requires metrics for both dimensions, which is why simple accuracy falls short."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Metric", "What It Measures", "How to Compute", "Good Threshold"],
+        "rows": [
+          ["Faithfulness", "Does the answer match the provided context?", "LLM judge: compare answer to context quotes", ">0.85"],
+          ["Answer Relevance", "Is the answer relevant to the question?", "LLM judge: question-answer relevance", ">0.85"],
+          ["Context Precision", "Are retrieved passages relevant?", "LLM judge: label each passage relevant/irrelevant", ">0.75"],
+          ["Context Recall", "Did we retrieve enough context to answer?", "LLM judge: could the answer be derived from context?", ">0.75"],
+          ["Factual Accuracy", "Does the answer match ground truth?", "Compare to reference answers", ">0.90"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Automated RAG Evaluation Pipeline"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Manual evaluation is slow and subjective. Automated RAG evaluation uses LLM judges (typically GPT-4 or Claude) to score system outputs against ground truth or reference answers. The evaluation pipeline takes a question, generates a context plus answer, then runs the judge LLM with a structured rubric."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": ".NET RAG Evaluation with LLM Judges",
+        "content": "An automated evaluation pipeline that measures faithfulness and answer relevance:",
+        "language": "csharp",
+        "code": "public class RagEvaluator\n{\n    private readonly IChatClient _ragSystem;   // System under test\n    private readonly IChatClient _judge;        // GPT-4-turbo for judging\n    private readonly IVectorSearchService _retriever;\n\n    public async Task<RagEvaluationResult> EvaluateAsync(\n        string question, string groundTruth, CancellationToken ct = default)\n    {\n        // Step 1: Run the RAG pipeline\n        var retrievedContext = await _retriever.SearchAsync(question, topK: 5, ct);\n        var contextText = string.Join(\"\\n---\\n\", retrievedContext.Select(d => d.Content));\n        var prompt = $\"Question: {question}\\n\\nContext:\\n{contextText}\";\n        var answer = await _ragSystem.CompleteAsync(prompt, new ChatOptions\n        {\n            Temperature = 0.1f,\n            MaxOutputTokenCount = 500\n        }, ct);\n\n        // Step 2: Judge faithfulness — does the answer match the context?\n        var faithfulnessScore = await JudgeFaithfulnessAsync(question, contextText, answer.Text, ct);\n\n        // Step 3: Judge answer relevance — is the answer relevant to the question?\n        var relevanceScore = await JudgeRelevanceAsync(question, answer.Text, ct);\n\n        // Step 4: Context precision — are retrieved docs relevant?\n        var precisionScore = await JudgeContextPrecisionAsync(question, retrievedContext, ct);\n\n        // Step 5: Compare to ground truth (if available)\n        var accuracyScore = await JudgeFactualAccuracyAsync(groundTruth, answer.Text, ct);\n\n        return new RagEvaluationResult\n        {\n            Question = question,\n            GeneratedAnswer = answer.Text,\n            Faithfulness = faithfulnessScore,\n            AnswerRelevance = relevanceScore,\n            ContextPrecision = precisionScore,\n            Factuality = accuracyScore,\n            OverallScore = (faithfulnessScore + relevanceScore + precisionScore + accuracyScore) / 4\n        };\n    }\n\n    private async Task<double> JudgeFaithfulnessAsync(\n        string question, string context, string answer, CancellationToken ct)\n    {\n        var judgePrompt = $$\n\"\"\"Evaluate whether the answer is faithful to the provided context. Does every claim\nin the answer have supporting evidence in the context?\n\nScore: 1.0 = perfectly faithful, 0.0 = entirely hallucinated.\nFormat: Just output a number 0-1.\n\nQuestion: {{question}}\nContext: {{context}}\nAnswer: {{answer}}\n\"\"\";\n\n        var response = await _judge.CompleteAsync(judgePrompt, cancellationToken: ct);\n        return ParseScore(response.Text);\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "RAG-Specific Failure Modes"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "RAG systems fail in predictable ways. Understanding these failure modes is key to targeted improvement: (1) No context retrieved (retrieval failure), (2) Wrong context retrieved (irrelevant passages), (3) Context too long (LLM ignores it), (4) Context too short (LLM hallucinates), (5) Format mismatch (context in wrong format for the LLM)."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Failure Mode Classification",
+        "content": "Classifying RAG failures to guide remediation:",
+        "language": "csharp",
+        "code": "public enum RagFailureMode\n{\n    Successful,          // Answer is correct and grounded\n    NoContext,           // Retriever returned no relevant docs\n    WrongContext,        // Retrieved wrong docs, answer not grounded\n    ContextIgnored,      // LLM ignored the provided context\n    Hallucination,       // Answer not supported by any context\n    FactualError,        // Answer contradicts known facts\n    IncompleteAnswer     // Partial answer, missing key info\n}\n\npublic class FailureAnalyzer\n{\n    private readonly IChatClient _classifier;\n\n    public async Task<RagFailureMode> ClassifyFailureAsync(\n        string question, List<DocumentChunk> context, string answer, string groundTruth)\n    {\n        var hasContext = context.Any();\n        var contextRelevant = await IsContextRelevantAsync(question, context);\n        var answerInContext = await IsAnswerSupportedAsync(answer, context);\n        var answerCorrect = await IsAnswerCorrectAsync(answer, groundTruth);\n\n        if (!hasContext || !contextRelevant)\n            return RagFailureMode.NoContext;\n        if (!answerInContext)\n            return RagFailureMode.Hallucination;\n        if (answerCorrect && answerInContext)\n            return RagFailureMode.Successful;\n        if (!answerCorrect)\n            return RagFailureMode.FactualError;\n\n        return RagFailureMode.IncompleteAnswer;\n    }\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "text": "Do not rely on a single metric. A system can score high on faithfulness but low on answer correctness — the LLM is confidently wrong but grounded in wrong context. Always evaluate the full matrix: faithfulness plus answer relevance plus context precision plus context recall plus factuality."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "RAG has two quality dimensions: answer groundedness and context quality",
+          "Five core metrics: faithfulness, answer relevance, context precision, context recall, factuality",
+          "Use LLM judges with structured rubrics for automated evaluation",
+          "Classify failure modes to guide targeted fixes",
+          "Run evaluation on a diverse benchmark dataset of 100+ queries per iteration"
+        ],
+        "takeaway": "RAG evaluation is multi-dimensional. Automated LLM-judge pipelines combined with failure mode classification enable data-driven iteration on retrieval and generation quality."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-ai-evaluation", "dotnet-rag-architecture", "dotnet-cross-encoder-reranking"],
+  "relatedGlossaryTerms": ["rag", "hallucination", "evaluation", "metrics"]
+}

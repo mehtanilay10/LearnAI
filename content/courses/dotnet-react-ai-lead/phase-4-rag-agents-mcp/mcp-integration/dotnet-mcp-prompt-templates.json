@@ -1,0 +1,93 @@
+{
+  "id": "dotnet-lesson-4-25",
+  "slug": "dotnet-mcp-prompt-templates",
+  "moduleSlug": "dotnet-mcp-integration",
+  "title": "MCP Prompt Templates & Dynamic Prompts",
+  "description": "Design reusable MCP prompt templates with dynamic variable injection and context-aware template selection.",
+  "order": 7,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["mcp", "prompt-templates", "dynamic-prompts", "template-engine", "context-awareness"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Prompt Templates as First-Class MCP Resources"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "MCP prompt templates allow servers to expose reusable, parameterized prompt definitions that clients can invoke. Unlike static prompts, template-based prompts support dynamic variable injection — the client provides values at invocation time, and the server renders the final prompt. This enables context-aware prompts that adapt to user role, document type, or conversation history."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "MCP Prompt Template Protocol"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The MCP specification defines prompt templates through the Prompts capability. A server advertises available templates via ListPROMPTS, each with a name, description, and arguments schema. Clients invoke a template via CreatePROMPT, passing argument values. The server returns a rendered prompt with messages ready for LLM consumption."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "MCP Server with Dynamic Prompt Templates",
+        "content": "A .NET MCP server that exposes parameterized prompt templates:",
+        "language": "csharp",
+        "code": "using McpDotNet.Server;\nusing System.Text.Json.Serialization;\n\n[McpServer(\"enterprise-nexus-prompts\")]\npublic class PromptTemplateServer : McpServer\n{\n    // Define a code review prompt template with dynamic parameters\n    [McpPrompt(\"code-review\", \"Code review prompt for .NET code quality\")]\n    public async Task<McpPrompt> GetCodeReviewPrompt(\n        [McpPromptArgument(\"code\")] string code,\n        [McpPromptArgument(\"language\")] string language = \"csharp\",\n        [McpPromptArgument(\"strictness\")] string strictness = \"moderate\")\n    {\n        var strictnessLevel = strictness switch\n        {\n            \"strict\" => \"Critically review all code quality, security, and performance issues.\",\n            \"moderate\" => \"Review for common issues in code quality and maintainability.\",\n            \"light\" => \"Provide a light review focusing on obvious issues.\",\n            _ => \"Provide a balanced code review\"\n        };\n\n        return new McpPrompt\n        {\n            Messages = new[]\n            {\n                new McpPromptMessage\n                {\n                    Role = McpRole.System,\n                    Content = $\"{strictnessLevel} You are an expert {language} engineer.\"\n                },\n                new McpPromptMessage\n                {\n                    Role = McpRole.User,\n                    Content = $\"Review the following {language} code:\\n\\n```\\n{code}\\n```\\n\\nRespond with: 1) Summary of issues found, 2) Specific fixes with code examples, 3) Overall rating (1-5 stars).\"\n                }\n            },\n            // Declare the arguments for discovery\n            Arguments = new[]\n            {\n                new PromptArgument { Name = \"code\", Description = \"The source code to review\", Required = true },\n                new PromptArgument { Name = \"language\", Description = \"Programming language\", Required = false },\n                new PromptArgument { Name = \"strictness\", Description = \"Review strictness level\", Required = false }\n            }\n        };\n    }\n\n    // Template with conversation history context\n    [McpPrompt(\"summarize-conversation\", \"Summarize conversation history\")]\n    public McpPrompt GetConversationSummary(\n        [McpPromptArgument(\"history\")] string conversationHistory,\n        [McpPromptArgument(\"max_length\")] int maxLength = 300)\n    {\n        return new McpPrompt\n        {\n            Messages = new[]\n            {\n                new McpPromptMessage\n                {\n                    Role = McpRole.User,\n                    Content = $\"Summarize the following conversation in under {maxLength} words, highlighting decisions made, action items, and outstanding questions:\\n\\n{conversationHistory}\\n\\nSummary:\"\n                }\n            }\n        };\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Dynamic Template Selection"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Dynamic prompt templates select different message sequences based on runtime context. For example, a code review template might include security-focused instructions for production code but a lighter touch for prototype code. The template engine evaluates conditions at invocation time and renders the appropriate prompt."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Context-Aware Prompt Template Engine",
+        "content": "A template engine that adapts prompts based on context variables:",
+        "language": "csharp",
+        "code": "public class ContextualPromptEngine\n{\n    private readonly Dictionary<string, McpPrompt> _templates;\n\n    public McpPrompt RenderTemplate(string templateName, Dictionary<string, object> context)\n    {\n        var template = _templates[templateName];\n        \n        // Resolve conditional logic in templates\n        var renderedMessages = template.Messages.Select(m =>\n        {\n            var content = m.Content;\n            \n            // Variable interpolation\n            content = Interpolate(content, context);\n            \n            // Conditional blocks: {{#if isProduction}}...{{/if}}\n            content = ApplyConditionals(content, context);\n            \n            // Loop blocks: {{#each items}}...{{/each}}\n            content = ApplyLoops(content, context);\n            \n            return new McpPromptMessage\n            {\n                Role = m.Role,\n                Content = content\n            };\n        }).ToList();\n\n        return new McpPrompt { Messages = renderedMessages };\n    }\n\n    private string Interpolate(string content, Dictionary<string, object> context)\n    {\n        foreach (var kvp in context)\n        {\n            content = content.Replace($\"{{{{{kvp.Key}}}}}\", kvp.Value?.ToString() ?? \"\");\n        }\n        return content;\n    }\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Version-control your prompt templates alongside code. Use semantic versioning for templates that affect LLM behavior. Breaking changes to prompts should trigger tests that validate expected outputs, just like code changes."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "MCP prompt templates expose parameterized, reusable prompts via the Prompts capability",
+          "Dynamic variable injection allows context-aware prompts that adapt at invocation time",
+          "Conditional template engines enable different prompt variants per context",
+          "Version-control prompt templates and test breaking changes like code",
+          "Templates can include conversation history, tool specifications, and role context"
+        ],
+        "takeaway": "MCP prompt templates turn ad-hoc prompts into reusable, parameterized, and version-controlled assets that scale across teams and use cases."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-building-mcp-servers", "dotnet-prompt-engineering", "dotnet-mcp-tools-resources"],
+  "relatedGlossaryTerms": ["mcp", "prompt-template", "dynamic-prompt"]
+}

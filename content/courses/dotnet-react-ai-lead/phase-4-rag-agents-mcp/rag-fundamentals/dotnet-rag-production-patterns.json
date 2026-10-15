@@ -1,0 +1,131 @@
+{
+  "id": "dotnet-lesson-4-23",
+  "slug": "dotnet-rag-production-patterns",
+  "moduleSlug": "dotnet-rag-fundamentals",
+  "title": "Production RAG Patterns and Latency Optimization",
+  "description": "Deploy RAG in production with latency budgets, async indexing pipelines, multi-tenant isolation, and cost management strategies.",
+  "order": 9,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["rag-production", "latency", "multi-tenant", "indexing", "cost-optimization", "scalability"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "From Prototype to Production: RAG Engineering"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A prototype RAG system that works fine on 100 documents breaks down at scale. Production RAG must handle: millions of documents with async indexing pipelines, sub-second query latency for interactive use, multi-tenant data isolation, cost tracking per customer, and graceful degradation when vector backends are unavailable."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "production-rag-architecture",
+        "caption": "Production RAG architecture: async indexing, multi-tier caching, and streaming responses",
+        "definition": "graph TD\n    subgraph Ingestion[\"Async Indexing Pipeline\"]\n        Upload[Document Upload]\n        Chunker[Chunking Service]\n        Embedder[Embedding Generator]\n        VectorDB[(Vector Database)]\n    end\n\n    subgraph Query[\"Query Pipeline\"]\n        UserQuery[User Query]\n        QueryCache[(Redis Cache)] \n        EmbeddingCache[(Embedding Cache)]\n        VectorSearch[Vector Search]\n        Reranker[Cross-Encoder Reranker]\n        LLM[LLM Generation]\n        StreamResp[Streaming Response]\n    end\n\n    Upload --> Chunker --> Embedder --> VectorDB\n    UserQuery --> QueryCache\n    QueryCache -->|HIT| StreamResp\n    QueryCache -->|MISS| EmbeddingCache\n    EmbeddingCache -->|HIT| VectorSearch\n    EmbeddingCache -->|MISS| Embedder\n    VectorSearch --> VectorDB\n    VectorDB --> Reranker\n    Reranker --> LLM\n    LLM --> StreamResp\n"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Latency Budget Analysis for RAG"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The end-to-end latency of a RAG query includes: query parsing (1ms), embedding generation (10-50ms), vector search (5-50ms), cross-encoder reranking (50-200ms), prompt assembly (1ms), LLM generation (500ms-5s), streaming start (immediate). The target for interactive use is under 2 seconds total."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Component", "Avg Latency", "Optimization Strategy"],
+        "rows": [
+          ["Query Parsing", "<5ms", "Lightweight NLP, no ML models"],
+          ["Query Embedding", "10-50ms", "Cache plus batch generation"],
+          ["Vector Search (10M vectors)", "5-50ms", "HNSW with tuned M plus EfSearch"],
+          ["Cross-Encoder Rerank (top-50)", "50-200ms", "Use quantized model, skip below threshold"],
+          ["LLM Generation (4K tokens)", "500-5000ms", "Streaming, shorter max_tokens, smaller model"],
+          ["Total (interactive)", "600-5300ms", "Parallelize, cache, fallback"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Async Indexing Pipeline with Durable Workflows"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Documents arrive via uploads, database changes, or external sources. An async indexing pipeline: (1) receives the document, (2) chunks it with overlap, (3) generates embeddings, (4) stores vectors in the database, (5) updates search indexes. Using Durable Functions ensures exactly-once processing even if workers crash."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Durable Function Indexing Pipeline",
+        "content": "A resilient document indexing pipeline with retry and dead-letter queues:",
+        "language": "csharp",
+        "code": "[FunctionName(\"IndexDocumentOrchestrator\")]\npublic async Task IndexDocumentAsync(\n    [OrchestrationTrigger] TaskOrchestrationContext context,\n    string documentId)\n{\n    try\n    {\n        // Step 1: Fetch and chunk document\n        var chunks = await context.CallActivityAsync<List<DocumentChunk>>(\n            \"ChunkDocument\", documentId);\n        \n        // Step 2: Generate embeddings (parallel, with retry)\n        var embeddingTasks = chunks.Select(chunk =>\n            context.CallActivityWithRetryAsync<float[]>(\"GenerateEmbedding\",\n                new RetryOptions(TimeSpan.FromSeconds(5), 3), chunk.Text));\n        var embeddings = await Task.WhenAll(embeddingTasks);\n        \n        // Step 3: Store in vector database\n        await context.CallActivityAsync(\"StoreVectors\", new VectorBatch\n        {\n            DocumentId = documentId,\n            Chunks = chunks,\n            Embeddings = embeddings\n        });\n        \n        // Step 4: Trigger search index update\n        await context.CallActivityAsync(\"UpdateSearchIndex\", documentId);\n    }\n    catch (Exception ex)\n    {\n        // Dead-letter for persistent failures\n        await context.CallActivityAsync(\"NotifyIndexingFailure\",\n            new FailureNotification { DocumentId = documentId, Error = ex.Message });\n    }\n}\n\n// Idempotent embedding generation with caching\n[FunctionName(\"GenerateEmbedding\")]\npublic async Task<float[]> GenerateEmbedding(\n    [ActivityTrigger] string text, ILogger log)\n{\n    var cacheKey = $\"emb:{Sha256(text)}\";\n    var cached = await _cache.GetAsync<float[]>(cacheKey);\n    if (cached != null) return cached;\n\n    var response = await _embeddingClient.GenerateAsync(text);\n    await _cache.SetAsync(cacheKey, response.ToArray(), TimeSpan.FromDays(7));\n    return response.ToArray();\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Multi-Tenant RAG Isolation"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Multi-tenant RAG systems must prevent data leakage between customers. Approaches include: separate vector indexes per tenant, partition keys in shared indexes, and access control filters applied at query time. The filter approach is most cost-effective but requires careful implementation to prevent bypasses."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Approach", "Isolation Strength", "Cost", "Complexity", "Best For"],
+        "rows": [
+          ["Separate Indexes", "Strongest", "High (N x cost)", "Low", "High-security tenants"],
+          ["Partition Keys", "Strong (within DB)", "Medium", "Medium", "SaaS with 10-100 tenants"],
+          ["Query-time Filters", "Weak (must validate)", "Lowest", "High", "Many small tenants"],
+          ["Hybrid (Partition plus Filter)", "Strong", "Medium", "High", "Balanced approach"]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "text": "Always validate tenant access at query time, even when using partition keys. A bug in filter injection can leak data across tenants. Use defense-in-depth: database-level partitioning, application-level filtering, and audit logging."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Target sub-2-second latency for interactive RAG through embedding caching and HNSW tuning",
+          "Use Durable Functions for resilient, exactly-once document indexing pipelines",
+          "Multi-tenant isolation requires defense-in-depth: partitioning, filtering, and audit logging",
+          "Monitor the latency fingerprint: break down query time by each pipeline component",
+          "Plan re-indexing during off-peak hours as graph quality degrades with data growth"
+        ],
+        "takeaway": "Production RAG is as much about engineering (caching, partitioning, pipelines) as it is about ML. Start with a latency budget and work backward to optimize each component."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-rag-architecture", "dotnet-durable-workflows", "dotnet-hybrid-search", "dotnet-embedding-cache-strategies"],
+  "relatedGlossaryTerms": ["rag", "latency", "multi-tenant", "indexing"]
+}

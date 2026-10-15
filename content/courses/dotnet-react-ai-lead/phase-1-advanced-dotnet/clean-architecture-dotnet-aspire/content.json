@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-1-4",
+  "slug": "dotnet-clean-architecture-aspire",
+  "phaseSlug": "dotnet-phase-1-advanced-dotnet",
+  "title": "Clean Architecture, DDD & .NET Aspire",
+  "description": "Apply Domain-Driven Design and Clean Architecture principles in .NET. Build maintainable, testable systems with CQRS, Event Sourcing, and .NET Aspire for local orchestration.",
+  "longDescription": "Master enterprise architecture patterns: Domain-Driven Design (entities, value objects, aggregates, domain events), Clean Architecture with dependency inversion, CQRS with Event Sourcing for immutable audit trails, and .NET Aspire for local development orchestration with service discovery, health checks, and telemetry.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedHours": 12,
+  "icon": "🏛️",
+  "tags": ["clean-architecture", "ddd", "cqrs", "event-sourcing", "dotnet-aspire"],
+  "lessonSlugs": [
+    "dotnet-domain-driven-design",
+    "dotnet-clean-architecture-net",
+    "dotnet-cqrs-event-sourcing",
+    "dotnet-aspire-orchestration"
+  ],
+  "whatYouLearn": [
+    "Domain-Driven Design building blocks in .NET",
+    "Clean Architecture layering and dependency inversion",
+    "CQRS and Event Sourcing for auditability",
+    ".NET Aspire for local dev orchestration",
+    "Service discovery, health checks, and telemetry"
+  ]
+}

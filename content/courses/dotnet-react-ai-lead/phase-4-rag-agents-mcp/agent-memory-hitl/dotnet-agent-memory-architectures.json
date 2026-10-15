@@ -1,0 +1,125 @@
+{
+  "id": "dotnet-lesson-4-17",
+  "slug": "dotnet-agent-memory-architectures",
+  "moduleSlug": "dotnet-agent-memory-hitl",
+  "title": "Agent Memory Architectures: Short-term, Long-term & Episodic",
+  "description": "Design memory systems for AI agents: conversation memory, persistent user profiles, episodic memory stores, and context window management in .NET.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["agents", "memory", "context-window", "conversation", "episodic-memory", "long-term-memory"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Three Pillars of Agent Memory"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Human memory has three stores: sensory (short-term), working (operational), and long-term (consolidated). AI agents need analogous memory systems. Short-term memory holds the current conversation context within the LLM's context window. Long-term memory persists facts and preferences across sessions. Episodic memory stores the history of agent decisions and actions for learning and accountability."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "agent-memory-architecture",
+        "caption": "Agent memory architecture: STM, LTM, and Episodic stores interaction",
+        "definition": "graph TD\n    subgraph CurrentSession[\"Current Session\"]\n        STM[\"Short-Term Memory\\nConversation History\\n(Context Window)\"]\n    end\n\n    subgraph PersistentStore[\"Persistent Store\"]\n        LTM[\"Long-Term Memory\\nUser Profiles, Facts, Preferences\\n(Key-Value / Vector DB)\"]\n        Episodic[\"Episodic Memory\\nPast Conversations, Decisions\\n(Document DB / Blob)\"]\n    end\n\n    subgraph Processing[\"Processing Layer\"]\n        Relevance[\"Relevance Scoring\\n(Which memories to include?)\"]\n        Pruning[\"Context Pruning\\n(Token budget management)\"]\n        Summarizer[\"Memory Consolidation\\n(Summarize old conversations)\"]\n    end\n\n    STM --> Relevance\n    STM --> Pruning\n    Pruning --> LTM\n    Relevance --> LTM\n    LTM --> Episodic\n    Episodic --> Summarizer\n    Summarizer --> LTM\n    STM --> Episodic\n    Episodic --> Relevance\n"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Short-Term Memory: Context Window Management"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The context window is the LLM's short-term memory — it can only process a finite number of tokens. For GPT-4o, that's 128K tokens (~300 pages of text). As conversations grow, you must prune old messages, summarize prior exchanges, or use techniques like sliding window or attention sinks to stay within limits."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Sliding Window and Summarization Memory in C#",
+        "content": "A memory manager that prunes old messages and summarizes conversation history:",
+        "language": "csharp",
+        "code": "public class ConversationMemoryManager\n{\n    private readonly ILogger _logger;\n    private readonly IChatClient _summarizer; // Low-cost model for summarization\n    private const int MaxRecentMessages = 10;\n    private const int MaxTokens = 10000; // for the summarization model\n\n    public async Task<List<ChatMessage>> PruneAsync(\n        List<ChatMessage> messages, ITokenizer tokenizer)\n    {\n        var tokenCount = tokenizer.CountTokens(messages);\n        if (tokenCount <= MaxTokens)\n            return messages;\n\n        // Keep system prompt + last N messages\n        var systemMessages = messages.Where(m => m.Role == ChatRole.System).ToList();\n        var recentMessages = messages\n            .Where(m => m.Role != ChatRole.System)\n            .TakeLast(MaxRecentMessages)\n            .ToList();\n\n        // Summarize the rest\n        var olderMessages = messages\n            .Skip(systemMessages.Count)\n            .Take(messages.Count - systemMessages.Count - MaxRecentMessages)\n            .ToList();\n\n        if (olderMessages.Any())\n        {\n            var summary = await SummarizeAsync(olderMessages);\n            var summaryMessage = new ChatMessage(ChatRole.User,\n                $\"Previous conversation summary: {summary}\");\n            systemMessages.Add(summaryMessage);\n        }\n\n        return systemMessages.Concat(recentMessages).ToList();\n    }\n\n    private async Task<string> SummarizeAsync(List<ChatMessage> messages)\n    {\n        var summaryRequest = $\"Summarize the key points of this conversation in 3 sentences:\"\n            + string.Join(\"\\n\", messages.Select(m => $\"[{m.Role}]: {m.Text}\"));\n        \n        var response = await _summarizer.CompleteAsync(summaryRequest);\n        return response.Message.Text;\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Long-Term Memory: Persistent User Knowledge"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Long-term memory stores information the agent should recall across sessions: user preferences, project context, known facts, and relationships. This is typically a vector database for semantic recall combined with a key-value store for structured facts. The agent queries LTM at the start of a session to pre-warm its context."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "User Profile and Fact Memory Store",
+        "content": "A long-term memory service that retrieves user-specific facts:",
+        "language": "csharp",
+        "code": "public class UserLongTermMemory\n{\n    private readonly IVectorStore _vectorStore;\n    private readonly IRedisCache _keyValue;\n    private readonly ILogger _logger;\n\n    // Retrieve top-K semantically relevant facts for a user\n    public async Task<List<string>> RecallFactsAsync(\n        string userId, string query, int topK = 5, CancellationToken ct = default)\n    {\n        // Use user-specific namespace to partition memory\n        var collection = _vectorStore.GetCollection<Guid, MemoryRecord>(\"user-facts\");\n        var queryEmbedding = await _embeddingService.GenerateAsync(query, ct);\n        \n        var results = await collection.VectorizedSearchAsync(\n            queryEmbedding, new() { TopK = topK }, ct);\n\n        return results.Select(r => r.Record.Payload).ToList();\n    }\n\n    // Store a new fact with metadata\n    public async Task StoreFactAsync(string userId, string fact, Dictionary<string, object> metadata, CancellationToken ct = default)\n    {\n        var embedding = await _embeddingService.GenerateAsync(fact, ct);\n        var record = new MemoryRecord\n        {\n            Id = Guid.NewGuid().ToString(),\n            Vector = embedding,\n            Payload = fact,\n            Metadata = new Dictionary<string, object>\n            {\n                [\"userId\"] = userId,\n                [\"createdAt\"] = DateTime.UtcNow,\n                [\"source\"] = metadata.GetValueOrDefault(\"source\", \"conversation\"),\n                [...metadata]\n            }\n        };\n\n        await collection.UpsertAsync(record, ct);\n\n        // Update key-value metadata for fast lookups\n        await _keyValue.HashSetAsync($\"user:{userId}:facts\", fact, DateTime.UtcNow, ct);\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Episodic Memory: Learning from Past Interactions"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Episodic memory stores entire conversation transcripts, tool call histories, and decision traces. This is used for agent debugging, post-hoc analysis, training data generation, and compliance auditing. Unlike short-term and long-term memory, episodic memory is append-only — it preserves the full fidelity of past interactions."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Memory Type", "Storage Backend", "Retention", "Purpose", "Query Pattern"],
+        "rows": [
+          ["Short-term (Context Window)", "In-memory List<ChatMessage>", "Per session", "Immediate reasoning", "Sequential access"],
+          ["Long-term (Facts)", "Vector DB + Key-Value store", "Indefinite", "User knowledge recall", "Semantic + exact search"],
+          ["Episodic (History)", "Document DB / Blob Storage", "Indefinite", "Audit, training, debugging", "Time-range + filter queries"]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "text": "Always tag episodic memory entries with user ID, timestamp, session ID, and correlation ID. This enables GDPR deletion requests, time-based pruning, and cross-session traceability."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Short-term memory (context window) requires active pruning via summarization or sliding window",
+          "Long-term memory uses vector databases for semantic recall and key-value stores for structured facts",
+          "Episodic memory preserves full conversation history for auditing, training, and debugging",
+          "Each memory type has different retention, storage, and query requirements",
+          "GDPR and compliance require traceable, deletable user-scoped memory"
+        ],
+        "takeaway": "A well-designed agent memory architecture separates context (operational), facts (persistent), and history (auditable) — each with its own storage, lifecycle, and access patterns."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-agent-fundamentals", "dotnet-conversation-state", "dotnet-agent-debugging-tracing"],
+  "relatedGlossaryTerms": ["context-window", "memory", "agent"]
+}

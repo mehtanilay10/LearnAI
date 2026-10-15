@@ -11,7 +11,8 @@
   "moduleSlug": [
     "dotnet-rag-fundamentals",
     "dotnet-ai-agents",
-    "dotnet-mcp-integration"
+    "dotnet-mcp-integration",
+    "dotnet-agent-memory-hitl"
   ],
   "estimatedWeeks": 2
 }

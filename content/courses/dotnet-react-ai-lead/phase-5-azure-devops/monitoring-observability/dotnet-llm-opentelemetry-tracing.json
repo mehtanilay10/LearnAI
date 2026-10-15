@@ -1,0 +1,96 @@
+{
+  "id": "dotnet-lesson-5-16",
+  "slug": "dotnet-llm-opentelemetry-tracing",
+  "moduleSlug": "dotnet-monitoring-observability",
+  "title": "LLM Distributed Tracing with OpenTelemetry",
+  "description": "Trace LLM calls, RAG pipelines, and agent decision chains end-to-end with OpenTelemetry, including token attribution and cost tracking per trace.",
+  "order": 7,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["opentelemetry", "distributed-tracing", "llm-tracing", "rag-observability", "agent-tracing"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "OpenTelemetry for AI: The GenAI Semantic Conventions"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "OpenTelemetry provides a vendor-neutral framework for distributed tracing, metrics, and logging. For AI applications, the OpenTelemetry GenAI special interest group has defined semantic conventions — standardized attributes for LLM calls (model name, token counts, temperature) that make traces portable across observability backends (Datadog, New Relic, Grafana Tempo, Azure Monitor)."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["OTel GenAI Attribute", "Example Value", "Purpose"],
+        "rows": [
+          ["gen_ai.system", "openai", "Identifies the AI system/vendor"],
+          ["gen_ai.request.model", "gpt-4o-mini", "Model identifier for the request"],
+          ["gen_ai.usage.input_tokens", "1542", "Number of input tokens consumed"],
+          ["gen_ai.usage.output_tokens", "287", "Number of output tokens generated"],
+          ["gen_ai.request.temperature", "0.2", "Sampling temperature used"],
+          ["gen_ai.request.max_tokens", "2000", "Max output tokens configured"],
+          ["gen_ai.response.id", "chatcmpl-abc123", "Provider response identifier"],
+          ["server.address", "api.openai.com", "API endpoint address"]
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Instrumented LLM Call with OpenTelemetry",
+        "content": "Wrapping OpenAI .NET SDK calls with OpenTelemetry spans for distributed tracing:",
+        "language": "csharp",
+        "code": "using System.Diagnostics;\nusing OpenTelemetry;\nusing OpenTelemetry.Trace;\nusing OpenTelemetry.Metrics;\n\npublic class TracedLlmClient\n{\n    private static readonly ActivitySource ActivitySource =\n        new ActivitySource(\"EnterpriseNexus.AI\", \"1.0\");\n\n    private readonly IChatClient _inner;\n    private readonly ILogger _logger;\n\n    public async Task<ChatCompletion> CompleteAsync(\n        string model, List<ChatMessage> messages, ChatOptions options, CancellationToken ct = default)\n    {\n        // Start a span for this LLM call\n        using var activity = ActivitySource.StartActivity(\"llm.call\")?;\n        activity?.SetTag(\"gen_ai.system\", \"openai\");\n        activity?.SetTag(\"gen_ai.request.model\", model);\n        activity?.SetTag(\"gen_ai.request.temperature\", options?.Temperature ?? 1.0);\n        activity?.SetTag(\"gen_ai.request.max_tokens\", options?.MaxOutputTokenCount);\n        activity?.SetTag(\"server.address\", \"api.openai.com\");\n\n        // Record request messages as span events\n        foreach (var msg in messages)\n        {\n            activity?.AddEvent(new ActivityEvent(\"gen_ai.prompt_message\",\n                default, new ActivityTagsCollection\n                {\n                    [\"gen_ai.prompt.role\"] = msg.Role.ToString(),\n                    [\"gen_ai.prompt.content\"] = Truncate(msg.Text, 500)\n                }));\n        }\n\n        var stopwatch = Stopwatch.StartNew();\n        try\n        {\n            var response = await _inner.CompleteAsync(model, messages, options, ct);\n\n            stopwatch.Stop();\n            activity?.SetTag(\"gen_ai.usage.input_tokens\", response.Usage?.InputTokenCount);\n            activity?.SetTag(\"gen_ai.usage.output_tokens\", response.Usage?.OutputTokenCount);\n            activity?.SetTag(\"gen_ai.response.id\", response.Id);\n            activity?.SetTag(\"llm.duration_ms\", stopwatch.ElapsedMilliseconds);\n\n            // Record as metric for aggregation\n            activity?.SetTag(\"llm.cost_usd\", CalculateCost(response.Usage, model));\n\n            return response;\n        }\n        catch (Exception ex)\n        {\n            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);\n            activity?.RecordException(ex);\n            throw;\n        }\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Tracing RAG Pipelines as Workflow Spans"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A RAG query involves multiple steps: query embedding, vector search, document loading, context assembly, and LLM generation. Each should be a span in a trace. The parent span is the overall query; child spans are each operation. This creates a trace tree that reveals which component consumed the most time."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "RAG Pipeline Tracing with Parent-Child Spans",
+        "content": "Tracing a complete RAG pipeline with nested spans:",
+        "language": "csharp",
+        "code": "public class TracedRagPipeline\n{\n    private static readonly ActivitySource ActivitySource =\n        new ActivitySource(\"EnterpriseNexus.RAG\", \"1.0\");\n\n    public async Task<string> QueryAsync(string question, CancellationToken ct)\n    {\n        using var trace = ActivitySource.StartActivity(\"rag.query\")?;\n        trace?.SetTag(\"rag.question\", Truncate(question, 200));\n        trace?.SetTag(\"rag.top_k\", 5);\n\n        // Step 1: Generate query embedding\n        float[] embedding;\n        using (var embedSpan = ActivitySource.StartActivity(\"rag.embed_query\"))\n        {\n            var sw = Stopwatch.StartNew();\n            embedding = await _embeddings.GenerateAsync(question, ct);\n            embedSpan?.SetTag(\"embed.duration_ms\", sw.ElapsedMilliseconds);\n            embedSpan?.SetTag(\"embed.model\", \"text-embedding-3-small\");\n        }\n\n        // Step 2: Vector search\n        List<DocumentChunk> chunks;\n        using (var searchSpan = ActivitySource.StartActivity(\"rag.vector_search\"))\n        {\n            var sw = Stopwatch.StartNew();\n            chunks = await _vectorStore.SearchAsync(embedding, topK: 5, ct);\n            searchSpan?.SetTag(\"search.results_count\", chunks.Count);\n            searchSpan?.SetTag(\"search.duration_ms\", sw.ElapsedMilliseconds);\n        }\n\n        // Step 3: Context assembly\n        using var ctxSpan = ActivitySource.StartActivity(\"rag.context_assembly\");\n        var context = string.Join(\"\\n---\\n\", chunks.Select(c => c.Content));\n        ctxSpan?.SetTag(\"context.length_chars\", context.Length);\n\n        // Step 4: LLM generation\n        string answer;\n        using (var genSpan = ActivitySource.StartActivity(\"rag.llm_generation\"))\n        {\n            var sw = Stopwatch.StartNew();\n            answer = await _llmClient.CompleteAsync($\"Context: {context}\\n\\nQuestion: {question}\", ct);\n            genSpan?.SetTag(\"generation.duration_ms\", sw.ElapsedMilliseconds);\n        }\n\n        return answer;\n    }\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Use the OpenTelemetry Collector as a sidecar to export traces to multiple backends (Jaeger for dev, Datadog for prod). The Collector can also enrich traces with additional attributes before export, like tenant ID or user role."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "OpenTelemetry GenAI semantic conventions standardize LLM trace attributes across vendors",
+          "Wrap each LLM call in its own span with model, temperature, and token usage attributes",
+          "RAG pipelines should have nested spans for embedding, search, context assembly, and generation",
+          "Record request messages and response IDs as span events for debugging",
+          "Use the OpenTelemetry Collector for vendor-neutral trace export and enrichment"
+        ],
+        "takeaway": "Distributed tracing transforms AI applications from black boxes into observable pipelines. Every LLM call, retrieval step, and agent decision becomes a traceable span."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-application-insights", "dotnet-distributed-tracing", "dotnet-ai-observability-insights", "dotnet-agent-evaluation-monitoring"],
+  "relatedGlossaryTerms": ["opentelemetry", "tracing", "distributed-tracing", "observability"]
+}

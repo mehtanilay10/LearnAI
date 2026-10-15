@@ -12,7 +12,8 @@
     "dotnet-llm-fundamentals",
     "dotnet-prompt-engineering",
     "dotnet-llm-integration",
-    "dotnet-ai-sdk-semantickernel"
+    "dotnet-ai-sdk-semantickernel",
+    "dotnet-embedding-systems"
   ],
   "estimatedWeeks": 3
 }

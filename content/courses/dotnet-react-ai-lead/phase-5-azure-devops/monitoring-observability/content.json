@@ -15,7 +15,9 @@
     "dotnet-structured-logging",
     "dotnet-metrics-dashboards",
     "dotnet-distributed-tracing",
-    "dotnet-cost-monitoring"
+    "dotnet-cost-monitoring",
+    "dotnet-ai-observability-insights",
+    "dotnet-llm-opentelemetry-tracing"
   ],
   "whatYouLearn": [
     "Application Insights integration",

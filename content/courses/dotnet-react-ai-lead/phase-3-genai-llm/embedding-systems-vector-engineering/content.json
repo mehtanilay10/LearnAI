@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-3-5",
+  "slug": "dotnet-embedding-systems",
+  "phaseSlug": "dotnet-phase-3-genai-llm",
+  "title": "Embedding Systems & Vector Engineering",
+  "description": "Optimize embedding models, vector database indexing, cross-encoder reranking, and caching strategies for high-performance RAG systems.",
+  "longDescription": "Go beyond basic RAG: embedding model selection and quantization, vector indexing algorithms (HNSW, IVF-PQ, ANOGA), cross-encoder reranking for precision, embedding caching and invalidation, and observability for vector database performance.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedHours": 12,
+  "icon": "📊",
+  "tags": ["embeddings", "vector-database", "rag", "optimization", "reranking"],
+  "lessonSlugs": [
+    "dotnet-embedding-model-optimization",
+    "dotnet-vector-index-optimization",
+    "dotnet-cross-encoder-reranking",
+    "dotnet-embedding-cache-strategies"
+  ],
+  "whatYouLearn": [
+    "Embedding model selection and quantization tradeoffs",
+    "Vector indexing algorithms for latency vs accuracy",
+    "Cross-encoder reranking for improved retrieval precision",
+    "Embedding caching and invalidation strategies",
+    "Vector database observability and performance monitoring"
+  ]
+}

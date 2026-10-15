@@ -1,0 +1,26 @@
+{
+  "id": "dotnet-module-4-4",
+  "slug": "dotnet-agent-memory-hitl",
+  "phaseSlug": "dotnet-phase-4-rag-agents-mcp",
+  "title": "Agent Memory & Human-in-the-Loop",
+  "description": "Design agent memory architectures, implement evaluation and monitoring, and build human-in-the-loop workflows for safe, auditable AI agents.",
+  "longDescription": "Master agent production concerns: short-term, long-term, and episodic memory patterns in .NET; evaluating agent behavior with custom metrics; distributed tracing for agent decision chains; and human-in-the-loop workflows with approval gates, intervention, and audit trails.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedHours": 14,
+  "icon": "🧠",
+  "tags": ["agents", "memory", "human-in-the-loop", "evaluation", "monitoring", "tracing"],
+  "lessonSlugs": [
+    "dotnet-agent-memory-architectures",
+    "dotnet-agent-evaluation-monitoring",
+    "dotnet-human-in-the-loop-agents",
+    "dotnet-agent-debugging-tracing"
+  ],
+  "whatYouLearn": [
+    "Agent memory architectures: short-term, long-term, episodic",
+    "Agent evaluation metrics and monitoring dashboards",
+    "Human-in-the-loop approval workflows and intervention",
+    "Distributed tracing for agent decision chains",
+    "Debugging agent execution and state transitions"
+  ]
+}

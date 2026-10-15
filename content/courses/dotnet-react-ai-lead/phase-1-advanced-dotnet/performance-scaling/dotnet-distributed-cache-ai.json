@@ -1,0 +1,105 @@
+{
+  "id": "dotnet-lesson-1-21",
+  "slug": "dotnet-distributed-cache-ai",
+  "moduleSlug": "dotnet-performance-scaling",
+  "title": "Redis Distributed Caching for AI Workloads",
+  "description": "Implement Redis distributed caching for AI response caching, embedding storage, and rate-limit state coordination across scaled instances.",
+  "order": 9,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["redis", "distributed-cache", "caching", "ai-workloads", "scaling"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Why Distributed Caching is Critical for AI Applications"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI workloads are expensive — both in compute and cost. A distributed cache (Redis) shared across all application instances provides three critical benefits: (1) semantic response caching prevents duplicate LLM calls, (2) embedding caching avoids redundant vector computation, and (3) rate-limit state coordination ensures consistent quota management across scaled instances."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Cache Use Case", "TTL", "Key Strategy", "Eviction Policy", "Memory Impact"],
+        "rows": [
+          ["LLM Response Cache", "1-7 days", "SHA256(prompt + params)", "LRU", "High-value, low cardinality"],
+          ["Embedding Cache", "1-30 days", "SHA256(text + model)", "LFU", "High-value, very low change rate"],
+          ["Semantic Cache", "1-7 days", "Normalized query embedding hash", "Custom (similarity threshold)", "Moderate"],
+          ["Rate Limit Counter", "Per-minute rolling", "userId:minute:api", "TTL-based", "Low"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Semantic Response Caching"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Semantic caching stores responses keyed not by exact prompt match, but by semantic similarity. If a new query is semantically similar to a cached prompt, the cached response is returned. This is especially powerful for FAQ-style queries or knowledge base lookups, reducing LLM costs by 50-80%."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Semantic Cache with Redis Vector Search",
+        "content": "A semantic cache that uses embeddings to find semantically similar cached prompts:",
+        "language": "csharp",
+        "code": "public class SemanticCacheManager\n{\n    private readonly IRedisClient _redis;\n    private readonly IEmbeddingService _embedding;\n    private readonly ILogger _logger;\n    private const double SIMILARITY_THRESHOLD = 0.92;\n    private const int CACHE_TTL_HOURS = 168;\n\n    public async Task<CachedResponse?> GetCachedAsync(string prompt, string modelParams, CancellationToken ct = default)\n    {\n        // Generate embedding for the query\n        var queryEmbedding = await _embedding.GenerateAsync(prompt, ct);\n        \n        // Search Redis for semantically similar cached prompts\n        var redisDb = _redis.GetDb();\n        var similar = await redisDb.VectorSearchAsync(\n            \"semantic_cache_index\", queryEmbedding, \n            new VectorSearchParameters { Threshold = SIMILARITY_THRESHOLD, K = 1 });\n\n        if (similar.Any())\n        {\n            var cached = await redisDb.GetAsync($\"semcache:{similar[0].Id}\");\n            if (cached != null)\n            {\n                _logger.LogInformation(\"Semantic cache HIT (similarity: {Sim})\",\n                    similar[0].Score);\n                return JsonSerializer.Deserialize<CachedResponse>(cached);\n            }\n        }\n\n        return null;\n    }\n\n    public async Task StoreCacheAsync(string prompt, string response, string modelParams, CancellationToken ct = default)\n    {\n        var embedding = await _embedding.GenerateAsync(prompt, ct);\n        var key = $\"semcache:{Guid.NewGuid()}\";\n        var entry = new CachedResponse { Prompt = prompt, Response = response };\n\n        // Store with embedding for vector search + TTL\n        await redisDb.VectorAddAsync(key, embedding, JsonSerializer.Serialize(entry),\n            TimeSpan.FromHours(CACHE_TTL_HOURS));\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Rate Limit Coordination"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When horizontally scaling AI services across multiple instances, each instance must share rate-limit state. Redis atomic increment operations with sliding window counters provide consistent rate limiting across all instances, preventing quota violations from race conditions."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Distributed Rate Limiter with Redis",
+        "content": "Sliding window rate limiter using Redis atomic operations:",
+        "language": "csharp",
+        "code": "public class RedisRateLimiter\n{\n    private readonly IDatabase _redis;\n    private readonly ILogger _logger;\n\n    public async Task<bool> TryAcquireAsync(\n        string apiKey, int maxRequests, TimeSpan window, CancellationToken ct = default)\n    {\n        var key = $\"rate_limit:{apiKey}:{DateTime.UtcNow:yyyy-MM-dd-HH-mm}\";\n        \n        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();\n        var pipeline = _redis.CreateTransaction();\n        \n        // Add current timestamp\n        await pipeline.SortedSetAddAsync(key, now, now, CommandFlags.HighPriority);\n        // Remove entries outside the window\n        await pipeline.SortedSetRemoveRangeByScoreAsync(key, 0, now - (long)window.TotalSeconds);\n        // Count remaining entries\n        var count = await pipeline.SortedSetLengthAsync(key);\n        // Set expiry\n        await pipeline.KeyExpireAsync(key, window);\n        \n        await pipeline.ExecuteAsync();\n\n        var current = (int)count;\n        if (current > maxRequests)\n        {\n            _logger.LogWarning(\"Rate limit exceeded for {ApiKey}: {Count}/{Max}\", apiKey, current, maxRequests);\n            return false;\n        }\n        return true;\n    }\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Use Redis Streams for audit logging of AI interactions. Each LLM call, token count, and user ID can be streamed to a Redis Stream, which is consumed by monitoring services for cost tracking and abuse detection."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "LLM response caching, embedding caching, and rate-limit coordination are the three primary AI caching use cases",
+          "Semantic caching uses vector similarity to match near-duplicate prompts, saving 50-80% on LLM costs",
+          "Distributed rate limiters must use atomic Redis operations to coordinate across scaled instances",
+          "Set appropriate TTLs: responses 1-7 days, embeddings 1-30 days, rate limits per-minute",
+          "Redis Streams can audit log all AI interactions for cost tracking and abuse detection"
+        ],
+        "takeaway": "Distributed caching is the bridge from single-instance development to multi-instance production for AI applications — it directly affects cost, performance, and scalability."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-caching-strategies", "dotnet-embedding-cache-strategies", "dotnet-azure-functions"],
+  "relatedGlossaryTerms": ["redis", "cache", "rate-limiting"]
+}

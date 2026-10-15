@@ -1,0 +1,114 @@
+{
+  "id": "dotnet-lesson-3-23",
+  "slug": "dotnet-cross-encoder-reranking",
+  "moduleSlug": "dotnet-embedding-systems",
+  "title": "Cross-Encoder Reranking for Retrieval Precision",
+  "description": "Implement cross-encoder reranking with Microsoft.Extensions.AI and Semantic Kernel to dramatically improve RAG retrieval quality beyond initial vector search.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["reranking", "cross-encoder", "rag", "retrieval", "semantic-kernel", "optimization"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Why Rerank? Bridging Recall and Precision"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Bi-encoder vector search is fast but coarse: it computes independent embeddings for the query and each document, then compares with cosine similarity. Cross-encoders are more precise because they jointly encode the query and document together, capturing semantic interactions. The tradeoff is cost — cross-encoders are 10-100x slower per pair. Reranking uses a bi-encoder for initial recall (top-k) and then applies a cross-encoder to re-rank only those k candidates, combining speed with precision."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "reranking-pipeline",
+        "caption": "RAG retrieval pipeline: bi-encoder recall then cross-encoder precision",
+        "definition": "flowchart LR\n    UserQuery[User Query] --> BiEncoder[(Bi-Encoder\nEmbedding Search\n1000 docs to 10ms)]\n    BiEncoder --> TopK[Top-K Candidates\n(e.g. k=50)]\n    TopK --> CrossEncoder[(Cross-Encoder\nRerank\n50 pairs to 200ms)]\n    CrossEncoder --> FinalResults[Ranked Results\nfor LLM Context]\n    Corpus[(Document Corpus\n100K+ chunks)] --> BiEncoder"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Implementing Cross-Encoder Reranking in .NET"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In .NET, cross-encoder reranking can be implemented via cloud APIs (Cohere Rerank, Azure AI Search Semantic Ranker) or locally using ONNX Runtime with lightweight cross-encoder models like cross-encoder/ms-marco-MiniLM-L-6-v2. The choice depends on latency requirements, data sensitivity, and operational overhead."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Cloud Reranker with Cohere Rerank API",
+        "content": "Using the Cohere Rerank API for production-quality reranking:",
+        "language": "csharp",
+        "code": "public class CohereReranker : IReranker\n{\n    private readonly HttpClient _httpClient;\n    private readonly ILogger _logger;\n    private const string Model = \"rerank-v3.5\";\n\n    public async Task<List<DocumentChunk>> RerankAsync(\n        string query, List<DocumentChunk> candidates, int topK = 5, CancellationToken ct = default)\n    {\n        if (candidates.Count <= topK) return candidates;\n\n        var request = new\n        {\n            model = Model,\n            query = query,\n            documents = candidates.Select(c => c.Content).ToList(),\n            top_k = topK\n        };\n\n        var response = await _httpClient.PostAsJsonAsync(\n            \"https://api.cohere.ai/v1/rerank\", request, ct);\n        response.EnsureSuccessStatusCode();\n\n        var result = await response.Content.ReadFromJsonAsync<RerankResponse>(cancellationToken: ct);\n        \n        // Map rerank results back to documents\n        var reranked = result.Results\n            .OrderBy(r => r.Index) // Results are pre-sorted by relevance score\n            .Select(r => candidates[r.Index])\n            .Take(topK)\n            .ToList();\n\n        _logger.LogInformation(\"Reranked {Input} candidates to {TopK} results\", candidates.Count, topK);\n        return reranked;\n    }\n}\n\npublic class RerankResponse\n{\n    public List<RerankResult> Results { get; set; }\n}\n\npublic class RerankResult\n{\n    public double Score { get; set; }\n    public int Index { get; set; }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Local Cross-Encoder with ONNX Runtime"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "For data-sensitive deployments, local cross-encoder reranking eliminates cloud API calls. Use ONNX Runtime with models like cross-encoder/ms-marco-MiniLM-L-6-v2 (22M parameters, CPU-friendly at ~100ms per pair) or cross-encoder/stsb-roberta-large (340M parameters, ~500ms per pair but higher accuracy)."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Local Cross-Encoder Reranker with ONNX",
+        "content": "Running a quantized cross-encoder locally in .NET:",
+        "language": "csharp",
+        "code": "public class OnnxReranker : IReranker\n{\n    private readonly Lazy<InferenceSession> _session;\n    private readonly Lazy<Tokenizer> _tokenizer;\n\n    public OnnxReranker(string modelPath, string vocabPath)\n    {\n        _session = new Lazy<InferenceSession>(() =>\n            new InferenceSession(modelPath));\n        _tokenizer = new Lazy<Tokenizer>(() =>\n            new Tokenizer(Tokenizer.Load(vocabPath)));\n    }\n\n    public async Task<List<DocumentChunk>> RerankAsync(\n        string query, List<DocumentChunk> candidates, int topK = 5, CancellationToken ct = default)\n    {\n        var scored = new List<(DocumentChunk chunk, float score)>();\n\n        foreach (var chunk in candidates)\n        {\n            // Cross-encoder: tokenize query + document together\n            var encoded = _tokenizer.Value.Encode($\"{query} [SEP] {chunk.Content}\");\n            var input = new List<NamedOnnxValue>\n            {\n                NamedOnnxValue.CreateFromTensor(\"input_ids\", encoded.Ids.ToArray()),\n                NamedOnnxValue.CreateFromTensor(\"attention_mask\", encoded.AttentionMask.ToArray())\n            };\n\n            using var result = _session.Value.Run(input);\n            var score = result.First().AsTensor<float>().GetValue(0);\n            scored.Add((chunk, score));\n        }\n\n        return scored\n            .OrderByDescending(s => s.score)\n            .Take(topK)\n            .Select(s => s.chunk)\n            .ToList();\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Reranking Threshold and Skip Patterns"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Not every retrieval result benefits from reranking. When the initial vector search returns high-confidence results (e.g., cosine similarity > 0.9), skip reranking to save latency and cost. Conversely, when results are borderline, apply a stricter cross-encoder threshold. The threshold is domain-dependent — test empirically."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Use a lightweight classifier to predict whether reranking will change the top-5 order. If the classifier predicts no change (with 95% confidence), skip the expensive cross-encoder entirely. This can reduce reranking cost by 40-60% without measurable accuracy loss."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Cross-encoders jointly encode query and document, capturing richer semantic interactions than bi-encoders",
+          "Use cloud rerankers (Cohere) for highest quality, ONNX for local/data-sensitive deployments",
+          "Set skip thresholds: if top-k vector results exceed similarity threshold, skip reranking",
+          "Rerank only top-50 to top-100 from vector search — not the entire corpus",
+          "Cross-encoder reranking adds 5-15% to RAG accuracy at 10-50ms additional latency"
+        ],
+        "takeaway": "Reranking is a precision-boosting technique that spends additional compute only on the most promising candidates, making it a cost-effective way to improve RAG quality."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-retrieval-optimization", "dotnet-hybrid-search", "dotnet-rag-architecture", "dotnet-microsoft-extensions-ai"],
+  "relatedGlossaryTerms": ["rerank", "cross-encoder", "rag", "retrieval"]
+}

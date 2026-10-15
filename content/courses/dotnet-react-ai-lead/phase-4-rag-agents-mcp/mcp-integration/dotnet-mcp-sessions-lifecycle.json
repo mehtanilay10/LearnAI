@@ -1,0 +1,101 @@
+{
+  "id": "dotnet-lesson-4-24",
+  "slug": "dotnet-mcp-sessions-lifecycle",
+  "moduleSlug": "dotnet-mcp-integration",
+  "title": "MCP Session Management & Lifecycle",
+  "description": "Manage MCP client sessions, understand connection lifecycle, implement reconnection strategies, and handle resource cleanup in production.",
+  "order": 6,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["mcp", "session-management", "lifecycle", "reconnection", "production", "resource-cleanup"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Understanding MCP Client-Server Sessions"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A Model Context Protocol session is a long-lived, bidirectional connection between an MCP client and an MCP server. Sessions carry authentication tokens, tool context, conversation state, and resource metadata. Understanding the session lifecycle — connect, initialize, operate, terminate — is essential for building reliable MCP integrations that handle failures gracefully."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "mcp-session-lifecycle",
+        "caption": "MCP client-server session lifecycle flow",
+        "definition": "stateDiagram-v2\n    [*] --> Connecting: Start Session\n    Connecting --> Initializing: Send initialize request\n    Initializing --> Ready: Server responds with capabilities\n    Ready --> Operating: ListTools, CallTool, ReadResource\n    Operating --> Operating: Tool calls, resource reads\n    Operating --> Reconnecting: Connection lost\n    Reconnecting --> Ready: Reconnect with session token\n    Reconnecting --> Terminated: Max retries exceeded\n    Ready --> Terminated: Client disconnects\n    Terminated --> [*]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Session Initialization and Capability Negotiation"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "When an MCP client connects, it sends an initialize request with protocol version, client capabilities (prompt support, resource subscription, sampling), and client info. The server responds with its own capabilities (available tools, resources, prompt templates) and the negotiated protocol version. This exchange determines what operations the client can perform."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "MCP Client with Session Management",
+        "content": "A robust MCP client that handles initialization, reconnection, and cleanup:",
+        "language": "csharp",
+        "code": "using McpDotNet;\nusing System.Threading.Channels;\n\npublic class ManagedMcpClient : IDisposable, IAsyncDisposable\n{\n    private readonly McpClientFactory _factory;\n    private readonly ILogger _logger;\n    private McpClientSession? _session;\n    private readonly SemaphoreSlim _connectionLock = new(1, 1);\n    private readonly CancellationTokenSource _cts = new();\n    private DateTime _lastActivity;\n    private Task? _heartbeatTask;\n\n    public async Task ConnectAsync(string serverUri, TimeSpan timeout = default)\n    {\n        await _connectionLock.WaitAsync(_cts.Token);\n        try\n        {\n            var config = new McpClientConfig\n            {\n                TransportType = TransportType.Stdio,\n                TransportOptions = new StdioServerTransportOptions\n                {\n                    Name = serverUri,\n                    Command = \"dotnet\", // or node, python, etc.\n                    CommandLine = \"run --project \" + serverUri,\n                    TransportInitializationRetryCount = 3,\n                    TransportInitializationRetryDelay = TimeSpan.FromSeconds(2)\n                }\n            };\n\n            _session = _factory.CreateClient(config);\n            await _session.StartAsync(timeout == default ? TimeSpan.FromSeconds(30) : timeout);\n\n            // Capture initialized server capabilities\n            _logger.LogInformation(\"MCP server initialized. Tools: {Tools}, Resources: {Resources}, Prompts: {Prompts}\",\n                _session.Capabilities.Tools?.Any(),\n                _session.Capabilities.Resources?.Any(),\n                _session.Capabilities.Prompts?.Any());\n\n            _lastActivity = DateTime.UtcNow;\n            StartHeartbeat();\n        }\n        finally\n        {\n            _connectionLock.Release();\n        }\n    }\n\n    private void StartHeartbeat()\n    {\n        _heartbeatTask = Task.Run(async () =>\n        {\n            while (!_cts.Token.IsCancellationRequested)\n            {\n                await Task.Delay(TimeSpan.FromMinutes(5), _cts.Token);\n                try\n                {\n                    await _session?.PingAsync(_cts.Token);\n                    _logger.LogDebug(\"MCP heartbeat OK\");\n                }\n                catch (Exception ex)\n                {\n                    _logger.LogWarning(ex, \"MCP heartbeat failed, attempting reconnection\");\n                    await ReconnectAsync();\n                }\n            }\n        });\n    }\n\n    public async Task ReconnectAsync()\n    {\n        // Graceful cleanup before reconnect\n        if (_session != null)\n        {\n            await _session.StopAsync();\n            _session.Dispose();\n            _session = null;\n        }\n        \n        // Reconnect with exponential backoff\n        for (int attempt = 0; attempt < 5; attempt++)\n        {\n            try\n            {\n                await ConnectAsync(_currentServerUri);\n                _logger.LogInformation(\"MCP reconnected after {Attempt} attempts\", attempt + 1);\n                return;\n            }\n            catch (Exception ex)\n            {\n                var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));\n                _logger.LogWarning(\"Reconnect attempt {Attempt} failed, waiting {Delay}s\", attempt + 1, delay.TotalSeconds);\n                await Task.Delay(delay, _cts.Token);\n            }\n        }\n        \n        throw new InvalidOperationException(\"Failed to reconnect MCP session after 5 attempts\");\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Resource Lifecycle and Cleanup"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "MCP sessions hold resources: file handles, network connections, temporary files, and memory buffers. Proper cleanup prevents resource leaks in long-running services. Always dispose sessions explicitly, handle process exit signals, and implement finalizer fallbacks for unmanaged resources."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Graceful MCP Shutdown with Resource Cleanup",
+        "content": "Ensuring clean shutdown of MCP sessions during application lifecycle events:",
+        "language": "csharp",
+        "code": "public class McpLifecycleManager : IHostedService, IDisposable\n{\n    private readonly ManagedMcpClient _client;\n    private readonly ILogger _logger;\n    private readonly CancellationTokenSource _shutdownCts = new();\n\n    public async Task StartAsync(CancellationToken cancellationToken)\n    {\n        // Establish MCP connection at startup\n        await _client.ConnectAsync(Environment.GetEnvironmentVariable(\"MCP_SERVER_URI\"));\n        \n        // Hook into application shutdown\n        AppDomain.CurrentDomain.ProcessExit += OnProcessExit;\n        Console.CancelKeyPress += OnCancelKeyPress;\n    }\n\n    private void OnProcessExit(object? sender, EventArgs e)\n    {\n        _logger.LogInformation(\"Process exit detected, shutting down MCP sessions\");\n        _shutdownCts.Cancel();\n        _client.Dispose();\n    }\n\n    private void OnCancelKeyPress(object? sender, ConsoleCancelKeyPressEventArgs e)\n    {\n        e.Cancel = true;\n        _logger.LogInformation(\"Ctrl+C received, shutting down MCP sessions\");\n        _shutdownCts.Cancel();\n        _client.Dispose();\n    }\n\n    public async Task StopAsync(CancellationToken cancellationToken)\n    {\n        _logger.LogInformation(\"Stopping MCP client\");\n        await _client.StopAsync();\n        _client.Dispose();\n    }\n\n    public void Dispose()\n    {\n        _shutdownCts.Dispose();\n        _client?.Dispose();\n    }\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Implement session state persistence: serialize MCP session context (connected tools, resource URIs, prompt templates) to a database. On restart, restore sessions without re-initializing capabilities. This reduces startup time for frequently used MCP servers."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "MCP sessions follow a defined lifecycle: connect, initialize, operate, terminate",
+          "Implement reconnection with exponential backoff for transient network failures",
+          "Heartbeat and ping operations detect silent connection drops",
+          "Always dispose sessions explicitly on application shutdown",
+          "Persist session state for fast recovery on restart"
+        ],
+        "takeaway": "Production MCP integrations require robust session management with automatic reconnection, heartbeat monitoring, and graceful cleanup to handle the realities of long-running connections."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-mcp-fundamentals", "dotnet-mcp-client-integration", "dotnet-durable-workflows"],
+  "relatedGlossaryTerms": ["mcp", "session", "lifecycle", "connection"]
+}

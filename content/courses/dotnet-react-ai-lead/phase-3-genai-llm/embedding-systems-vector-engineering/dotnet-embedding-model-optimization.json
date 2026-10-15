@@ -1,0 +1,113 @@
+{
+  "id": "dotnet-lesson-3-21",
+  "slug": "dotnet-embedding-model-optimization",
+  "moduleSlug": "dotnet-embedding-systems",
+  "title": "Embedding Model Selection & Optimization",
+  "description": "Choose optimal embedding models, understand quantization tradeoffs, and optimize embedding generation for latency, cost, and accuracy.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["embeddings", "optimization", "quantization", "latency", "cost", "model-selection"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Choosing the Right Embedding Model"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Not all embedding models are created equal. The choice depends on domain specificity, latency requirements, cost constraints, and the downstream task (semantic search, clustering, classification). Understanding dimensional tradeoffs, instruction-following capabilities, and multilingual support is critical for RAG effectiveness."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Model", "Dimensions", "Latency (ms/query)", "Cost ($/1M tokens)", "Strengths", "Use Cases"],
+        "rows": [
+          ["text-embedding-3-small", "512-1536", "12-18", "$0.02", "Balanced, cost-efficient, customizable dimensions", "General RAG, multi-tenant SaaS"],
+          ["text-embedding-3-large", "1024-3072", "18-25", "$0.13", "High accuracy, instruction-following", "Enterprise search, precision-critical"],
+          ["text-embedding-ada-002", "1536", "8-12", "$0.10", "Legacy, widely supported", "Existing Pinecone/Weaviate pipelines"],
+          ["intfloat/multilingual-e5-large", "1024", "50-80", "$0", "Open-source, multilingual", "Local/OSS deployments"],
+          ["thenlper/gte-large", "1024", "35-60", "$0", "Apache 2.0, strong retrieval", "On-prem RAG, data sovereignty"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Quantization Impact on Embedding Quality"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Quantization reduces model size and inference latency by lowering numerical precision (e.g., FP32 → INT8 or FP4). For embeddings, this introduces a tradeoff: smaller models fit more in GPU/CPU cache and reduce cost, but degraded embedding quality can significantly hurt retrieval accuracy. The key is measuring the accuracy-cost curve empirically for your specific domain."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Embedding Generation with Dimension Control and Caching",
+        "content": "Configurable embedding service with model selection, dimension customization, and deduplication:",
+        "language": "csharp",
+        "code": "public class EmbeddingService\n{\n    private readonly IEmbeddingClient _openAi;\n    private readonly IEmbeddingClient _azure;\n    private readonly IRedisCache _cache;\n    private readonly ILogger _logger;\n\n    public EmbeddingService(\n        IConfiguration config,\n        IRedisCache cache,\n        ILogger logger)\n    {\n        var provider = config[\"Embedding:Provider\"];\n        var model = config[\"Embedding:Model\"];\n        _openAi = new OpenAIEmbeddingClient(model, config[\"OpenAI:ApiKey\"]);\n        _azure = new Azure.AI.OpenAI.AzureOpenAIEmbeddingClient(\n            new Uri(config[\"Azure:Endpoint\"]),\n            new AzureKeyCredential(config[\"Azure:Key\"]), model);\n        _cache = cache;\n        _logger = logger;\n    }\n\n    public async Task<float[]> GenerateEmbeddingAsync(\n        string text, int? dimensions = null, CancellationToken ct = default)\n    {\n        // Deduplicate by content hash\n        var cacheKey = $\"emb:{dimensions}:{Sha256(text)}\";\n        var cached = await _cache.GetAsync<float[]>(cacheKey, ct);\n        if (cached != null) return cached;\n\n        var options = new EmbeddingGenerationOptions\n        {\n            Dimensions = dimensions, // text-embedding-3-small supports 256–1536\n            // For instruction-following: prepend task description\n        };\n\n        var response = await _openAi.GenerateEmbeddingAsync(text, options, ct);\n        var embedding = response.Value.ToArray();\n\n        await _cache.SetAsync(cacheKey, embedding, TimeSpan.FromHours(24), ct);\n        _logger.LogInformation(\"Generated embedding: {Tokens} tokens, {Dims} dims\", response.Value.Count, embedding.Length);\n        return embedding;\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Instruction-Following Embeddings"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Modern embedding models like text-embedding-3-large and E5 are trained with instructions. Prefixing input text with a task-specific instruction (e.g., 'Represent the query for retrieval:') dramatically improves performance on retrieval tasks. This is especially important when your corpus contains diverse content types (prose, tables, code)."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Task-Specific Instruction Prefixes",
+        "content": "Different prefixes for queries vs passages, code vs prose:",
+        "language": "csharp",
+        "code": "public static class EmbeddingInstructions\n{\n    // For general search queries\n    public const string QueryGeneral = \"Represent a question about software engineering:\";\n    \n    // For code-related queries\n    public const string QueryCode = \"Represent a coding question for code retrieval:\";\n    \n    // For document passages (for indexing)\n    public const string PassageGeneral = \"Represent a passage for semantic search:\";\n    \n    // For code documentation\n    public const string PassageCode = \"Represent code documentation:\";\n\n    // For classification queries\n    public const string QueryClassification = \"Represent a classification query:\";\n}\n\n// Usage in indexing pipeline\nvar instruction = isQuery ? EmbeddingInstructions.QueryCode : EmbeddingInstructions.PassageCode;\nvar textToEmbed = $\"{instruction} {rawText}\";\nvar embedding = await embeddingService.GenerateEmbeddingAsync(textToEmbed);"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Measure embedding quality with domain-specific datasets. Use Mean Reciprocal Rank (MRR) and Normalized Discounted Cumulative Gain (NDCG) rather than generic benchmarks. A 3% accuracy gain from a better model often pays for itself in reduced hallucinations downstream."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "text": "Dimension reduction via PCA or SVD after embedding can reduce storage and improve ANN index speed, but may degrade retrieval quality. Always validate that dimensionality reduction doesn't hurt your retrieval metrics before applying it."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Choose embedding models based on domain, cost, and latency tradeoffs",
+          "text-embedding-3-small is ideal for cost-sensitive, general-purpose RAG",
+          "Instruction-following models benefit from task-specific prefixes",
+          "Quantize only after measuring acceptable accuracy degradation",
+          "Cache embeddings aggressively — identical inputs produce identical vectors"
+        ],
+        "takeaway": "Embedding optimization is an empirical process. Measure, iterate, and profile with real domain data before and after every change."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-vector-index-optimization", "dotnet-hybrid-search", "dotnet-embedding-cache-strategies"],
+  "relatedGlossaryTerms": ["embedding", "vector-database", "tokenization"]
+}

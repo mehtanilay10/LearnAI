@@ -1,0 +1,102 @@
+{
+  "id": "dotnet-lesson-1-19",
+  "slug": "dotnet-aspire-orchestration",
+  "moduleSlug": "dotnet-clean-architecture-aspire",
+  "title": ".NET Aspire Local Development Orchestration",
+  "description": "Master .NET Aspire for local development: service discovery, containers, health checks, configuration, and OpenTelemetry in a unified AppHost.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["dotnet-aspire", "orchestration", "service-discovery", "health-checks", "local-dev", "containers"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": ".NET Aspire: Unified Local Development"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": ".NET Aspire is a .NET-based application stack with tooling that streamlines the development, testing, and production deployment of distributed, containerizable services. The Aspire AppHost acts as a local orchestrator — provisioning dependencies (databases, caches, message brokers) as containers, injecting connection strings, configuring health checks, and wiring up distributed tracing — all with a single project reference."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Complete AppHost Definition",
+        "content": "A .NET Aspire AppHost that provisions Redis, PostgreSQL, RabbitMQ, and three application services with service discovery and telemetry:",
+        "language": "csharp",
+        "code": "var builder = DistributedApplication.CreateBuilder(args);\n\n// === Infrastructure Dependencies ===\nvar redis = builder.AddRedis(\"cache\")\n    .WithRedisCommander(); // UI for cache inspection\n\nvar postgres = builder.AddPostgres(\"postgres\")\n    .WithPgAdmin()\n    .AddDatabase(\"nexus-db\");\n\nvar rabbit = builder.AddRabbitMQ(\"messaging\")\n    .WithManagementPage();\n\nvar openai = builder.AddConnectionString(\"azure-openai\",\n    connectionString: builder.Configuration[\"AI:Azure:ConnectionString\"]);\n\n// === Application Services ===\nvar api = builder.AddProject<Projects.EnterpriseNexus_WebApi>(\"api\")\n    .WithReference(redis, postgres, rabbit, openai)\n    .WithEnvironment(\"LOG_LEVEL\", \"Information\")\n    .WithHttpHealthCheck(\"/health\")\n    .WithGrpcHealthCheck();\n\nvar worker = builder.AddProject<Projects.EnterpriseNexus_IngestionWorker>(\"worker\")\n    .WithReference(postgres, redis)\n    .WaitFor(postgres)\n    .WithEnvironment(\"QUEUE_NAME\", \"documents\");\n\nvar frontend = builder.AddNpmApp(\"frontend\", \"../EnterpriseNexus.Frontend\", \"dev\")\n    .WithReference(api)\n    .WithHttpEndpoint(port: 3000, targetPort: 5173, envVar: \"PORT\")\n    .PublishAsDockerFile();\n\n// === Dashboard & Telemetry ===\nbuilder.AddRedis(id: \"dashboard-cache\",\n    connectionString: redis.ConnectionString);\n\nbuilder.Build().Run();"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Resource Configuration & Service Discovery"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Aspire automatically injects connection strings, service endpoints, and environment variables into consuming projects. References establish dependency ordering — a service waits until its dependencies are healthy before starting."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Consuming Injected Configuration in Services",
+        "content": "How an ASP.NET Core service accesses Aspire-provisioned resources:",
+        "language": "csharp",
+        "code": "// Connection strings are automatically available\nvar builder = WebApplication.CreateBuilder(args);\n\n// Redis\nbuilder.Services.AddStackExchangeRedisCache(options =>\n    options.Configuration = builder.Configuration.GetConnectionString(\"cache\"));\n\n// Database\nbuilder.Services.AddDbContext<AppDbContext>(options =>\n    options.UseNpgsql(builder.Configuration.GetConnectionString(\"nexus-db\")));\n\n// RabbitMQ\nbuilder.Services.AddRabbitMq(builder.Configuration.GetConnectionString(\"messaging\"));\n\n// OpenAI (non-secret, passed via environment)\nbuilder.Services.AddSingleton(sp => new OpenAIClient(\n    new OpenAIClientSettings\n    {\n        Endpoint = new Uri(builder.Configuration[\"AI:Azure:Endpoint\"]),\n        ApiKey = builder.Configuration[\"AI:Azure:Key\"]\n    }));\n\nvar app = builder.Build();\napp.MapHealthChecks(\"/\");\napp.Run();"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Health Checks & Telemetry"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Aspire integrates health checks and OpenTelemetry out of the box. Every service gets automatic metrics, logs, and traces. The Aspire Dashboard provides a real-time view of all services, their health, and distributed traces."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Custom Health Check for AI Dependencies",
+        "content": "A health check that verifies OpenAI API reachability and token quota:",
+        "language": "csharp",
+        "code": "public class OpenAiHealthCheck : IHealthCheck\n{\n    private readonly OpenAIClient _client;\n\n    public async Task<HealthCheckResult> CheckHealthAsync(\n        HealthCheckContext context, CancellationToken ct = default)\n    {\n        try\n        {\n            // Lightweight model info call to verify connectivity\n            var models = await _client.Models.ListAsync(ct);\n            var response = models.First();\n            return HealthCheckResult.Healthy($\"OpenAI reachable, model: {response.Id}\");\n        }\n        catch (AuthenticationException ex)\n        {\n            return new HealthCheckResult(\n                HealthStatus.Degraded, \"Invalid API key\", ex);\n        }\n        catch (Exception ex)\n        {\n            return new HealthCheckResult(\n                HealthStatus.Unhealthy, \"OpenAI unreachable\", ex);\n        }\n    }\n}\n\n// Register in DI\nbuilder.Services.AddHealthChecks()\n    .AddCheck<OpenAiHealthCheck>(\"openai\", tags: [\"ai\", \"llm\"]);"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Use ComponentParameter to override specific configurations per environment. For example, in development you can swap real Azure OpenAI for a local Ollama container, or replace PostgreSQL with a lighter SQLite option."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          ".NET Aspire orchestrates local dependencies (databases, caches, brokers) as containers from a single AppHost",
+          "Service discovery is automatic — referenced services expose typed connection strings",
+          "Health checks and OpenTelemetry are built-in with a real-time dashboard",
+          "ComponentParameter allows environment-specific resource overrides",
+          "Aspire bridges the gap between local development and production container deployments"
+        ],
+        "takeaway": ".NET Aspire transforms local development from manual service provisioning to declarative infrastructure-as-code, ensuring consistency from laptop to production."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-distributed-systems-fundamentals", "dotnet-docker-containerization", "dotnet-monitoring-observability"],
+  "relatedGlossaryTerms": ["dotnet-aspire", "service-discovery", "health-check", "orchestration"]
+}

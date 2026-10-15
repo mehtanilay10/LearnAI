@@ -15,7 +15,10 @@
     "dotnet-building-mcp-servers",
     "dotnet-mcp-client-integration",
     "dotnet-mcp-tools-resources",
-    "dotnet-mcp-authorization-security"
+    "dotnet-mcp-authorization-security",
+    "dotnet-mcp-sessions-lifecycle",
+    "dotnet-mcp-prompt-templates",
+    "dotnet-mcp-production-deployment"
   ],
   "whatYouLearn": [
     "MCP protocol and architecture",

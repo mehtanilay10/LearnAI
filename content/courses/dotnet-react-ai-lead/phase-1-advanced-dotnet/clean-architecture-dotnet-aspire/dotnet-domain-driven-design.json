@@ -1,0 +1,150 @@
+{
+  "id": "dotnet-lesson-1-16",
+  "slug": "dotnet-domain-driven-design",
+  "moduleSlug": "dotnet-clean-architecture-aspire",
+  "title": "Domain-Driven Design in .NET",
+  "description": "Apply Domain-Driven Design building blocks: entities, value objects, aggregates, repositories, and domain events in .NET applications.",
+  "order": 1,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["ddd", "domain-driven-design", "entities", "aggregates", "repositories", "dotnet"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Domain-Driven Design: Tactical Building Blocks"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Domain-Driven Design (DDD) provides a set of tactical patterns to model complex business domains. By isolating domain logic from infrastructure concerns, DDD enables teams to build expressive, maintainable, and testable domain models that scale with business complexity. In .NET, these patterns map naturally to classes, interfaces, and dependency injection."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Entities: Identity and Mutability"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "An Entity is defined by its identity, not its attributes. Two Entity instances with the same identity are considered the same object across the lifecycle of the application, even if their properties differ. Entities encapsulate state changes through behavior methods rather than exposing public setters."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Entity with Identity and Encapsulated Mutations",
+        "content": "An Order aggregate root with identity-based equality and encapsulated state transitions:",
+        "language": "csharp",
+        "code": "public class Order : Entity<OrderId>, IAggregateRoot\n{\n    private readonly List<OrderLine> _lines = new();\n\n    // Factories ensure valid initial state\n    public static Order Create(OrderId id, CustomerId customer, ShippingAddress address)\n    {\n        var order = new Order(id)\n        {\n            _customer = customer,\n            _status = OrderStatus.Pending,\n            _shippingAddress = address,\n            _createdAt = DateTime.UtcNow\n        };\n        order.AddDomainEvent(new OrderCreatedEvent(order.Id));\n        return order;\n    }\n\n    // Behavior method, not a setter\n    public void AddItem(ProductId productId, Money price, int quantity)\n    {\n        if (_status != OrderStatus.Pending)\n            throw new InvalidOperationException(\n                $\"Cannot add items to order in { _status} state\");\n\n        var line = new OrderLine(productId, price, quantity);\n        _lines.Add(line);\n        AddDomainEvent(new OrderItemAddedEvent(Id, line.Id));\n    }\n\n    public void Confirm()\n    {\n        if (!_lines.Any())\n            throw new InvalidOperationException(\"Cannot confirm an empty order\");\n        _status = OrderStatus.Confirmed;\n        AddDomainEvent(new OrderConfirmedEvent(Id));\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Value Objects: Immutable and Comparable"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Value Objects derive their identity from their attributes. Two Value Objects with identical property values are considered equal. They are immutable by design, providing thread safety and predictable behavior in distributed systems."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Value Object: Money",
+        "content": "A Money value object with equality, arithmetic operations, and currency validation:",
+        "language": "csharp",
+        "code": "public sealed class Money : ValueObject\n{\n    public decimal Amount { get; }\n    public string Currency { get; }\n\n    public Money(decimal amount, string currency)\n    {\n        if (amount < 0) throw new ArgumentException(\"Amount cannot be negative\", nameof(amount));\n        if (string.IsNullOrWhiteSpace(currency)) throw new ArgumentException(\"Currency is required\", nameof(currency));\n        Amount = amount;\n        Currency = currency;\n    }\n\n    public static Money operator +(Money left, Money right) =>\n        left.Currency == right.Currency\n            ? new(left.Amount + right.Amount, left.Currency)\n            : throw new InvalidOperationException(\"Cannot add different currencies\");\n\n    protected override IEnumerable<object> GetEqualityComponents()\n    {\n        yield return Amount;\n        yield return Currency;\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Aggregates and Aggregate Roots"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "An Aggregate is a cluster of domain objects that can be treated as a single unit. The Aggregate Root is the entry point through which the outside world interacts with the aggregate. All state changes within an aggregate must go through the root, ensuring invariants are always maintained."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Repositories: Decoupling Persistence"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Repositories abstract data access behind collection-like interfaces. They allow the domain layer to query for aggregates by their identity or by specification, without knowing the underlying persistence technology (EF Core, Dapper, MongoDB, etc.)."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Repository Interface and EF Core Implementation",
+        "content": "A repository pattern with a specification-based query interface and EF Core implementation:",
+        "language": "csharp",
+        "code": "// Domain layer defines the contract\npublic interface IOrderRepository\n{\n    Task<Order?> GetByIdAsync(OrderId id, CancellationToken ct = default);\n    Task<IReadOnlyList<Order>> ListAsync(ISpecification<Order> spec, CancellationToken ct = default);\n    Task<int> CountAsync(ISpecification<Order> spec, CancellationToken ct = default);\n    void Add(Order order);\n    void Update(Order order);\n    void Delete(Order order);\n}\n\n// Infrastructure layer implements it\npublic class EfOrderRepository : IOrderRepository\n{\n    private readonly AppDbContext _context;\n    public EfOrderRepository(AppDbContext context) => _context = context;\n\n    public async Task<Order?> GetByIdAsync(OrderId id, CancellationToken ct = default)\n        => await _context.Orders.FindAsync([id], ct);\n\n    public async Task<IReadOnlyList<Order>> ListAsync(\n        ISpecification<Order> spec, CancellationToken ct = default)\n        => await _context.Orders.WithSpecification(spec).ToListAsync(ct);\n\n    public void Add(Order order) => _context.Orders.Add(order);\n    public void Update(Order order) => _context.Entry(order).State = EntityState.Modified;\n    public void Delete(Order order) => _context.Orders.Remove(order);\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Domain Events: Decoupling Side Effects"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Domain Events decouple side effects (logging, notifications, integration) from domain logic. When an aggregate's state changes meaningfully, it publishes a domain event. Event handlers in the infrastructure layer react to these events."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Domain Event Publishing and Handling",
+        "content": "An aggregate raises domain events that are published via MediatR upon SaveChanges:",
+        "language": "csharp",
+        "code": "// Base entity with event collection\npublic abstract class Entity<TId> : IEquatable<Entity<TId>>\n{\n    private readonly List<IDomainEvent> _domainEvents = new();\n    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();\n\n    public void AddDomainEvent(IDomainEvent event)\n        => _domainEvents.Add(event);\n\n    public void ClearDomainEvents() => _domainEvents.Clear();\n}\n\n// Publish events in DbContext SaveChanges\npublic override async Task<int> SaveChangesAsync(CancellationToken ct = default)\n{\n    var domainEvents = ChangeTracker.Entries<Entity>()\n        .Where(e => e.DomainEvents.Any())\n        .SelectMany(e => e.DomainEvents)\n        .ToList();\n\n    foreach (var domainEvent in domainEvents)\n        await _mediator.Publish(domainEvent, ct);\n\n    return await base.SaveChangesAsync(ct);\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Use strongly-typed IDs with records or wrapper structs to prevent accidentally passing a CustomerId where an OrderId is expected. This eliminates an entire class of bugs at compile time."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Entities are identity-based; enforce invariants through behavior methods, not public setters",
+          "Value Objects are immutable and compared by value — ideal for Money, Address, Email",
+          "Aggregates group related objects, with the root enforcing consistency boundaries",
+          "Repositories abstract persistence behind collection-like domain interfaces",
+          "Domain Events decouple side effects, promoting clean separation of concerns"
+        ],
+        "takeaway": "DDD tactical patterns bring clarity to complex domains by making business logic explicit, enforceable, and testable through well-defined boundaries."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-clean-architecture-net", "dotnet-cqrs-event-sourcing"],
+  "relatedGlossaryTerms": ["domain-driven-design", "clean-architecture", "domain-event", "aggregate"]
+}

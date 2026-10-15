@@ -1,0 +1,101 @@
+{
+  "id": "dotnet-lesson-4-18",
+  "slug": "dotnet-agent-evaluation-monitoring",
+  "moduleSlug": "dotnet-agent-memory-hitl",
+  "title": "Agent Evaluation & Monitoring in Production",
+  "description": "Define agent success metrics, implement distributed tracing for agent loops, and set up real-time observability dashboards using OpenTelemetry and Azure Monitor.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["agent-monitoring", "evaluation", "opentelemetry", "metrics", "tracing", "agent-quality"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Measuring Agent Success: Beyond Accuracy"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Traditional ML metrics (accuracy, precision, recall) don't capture agent quality. An agent might produce correct answers but take too many steps, use too many tokens, or make unnecessary tool calls. Agent evaluation requires task-specific metrics: goal completion rate, step efficiency, tool call accuracy, hallucination rate, and user satisfaction."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Agent Evaluation Metrics Framework"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Metric", "Definition", "Target Threshold", "Instrumentation"],
+        "rows": [
+          ["Goal Completion Rate", "Percentage of tasks completed successfully", ">85%", "End-of-session user rating or outcome check"],
+          ["Step Efficiency", "Average number of reasoning-tool-observation cycles", "<5 steps", "Step counter in agent loop"],
+          ["Tool Call Accuracy", "Percentage of tool calls that return useful results", ">90%", "Post-call result validation"],
+          ["Token Efficiency Ratio", "Total tokens / Goal completion rate", "<2000 tokens/task", "Token accounting per session"],
+          ["Hallucination Rate", "Percentage of responses with factual errors", "<5%", "Automated fact-checking or human review"],
+          ["Timeout Rate", "Percentage of sessions timing out (>30s per step)", "<1%", "Cancellation tracking"]
+        ]
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Agent Metrics Collector with OpenTelemetry",
+        "content": "Collecting agent execution metrics using OpenTelemetry counters and histograms:",
+        "language": "csharp",
+        "code": "public class AgentMetricsCollector\n{\n    private readonly Counter<long> _tasksCompleted;\n    private readonly Counter<long> _tasksFailed;\n    private readonly Histogram<double> _stepsPerTask;\n    private readonly Histogram<double> _tokensPerTask;\n    private readonly Histogram<double> _taskDuration;\n    private readonly Histogram<double> _toolCallLatency;\n\n    public AgentMetricsCollector(IMeterFactory meterFactory)\n    {\n        var meter = meterFactory.Create(\"EnterpriseNexus.Agent\");\n\n        _tasksCompleted = meter.CreateCounter<long>(\"agent.tasks.completed\", \"tasks\", \"Number of completed agent tasks\");\n        _tasksFailed = meter.CreateCounter<long>(\"agent.tasks.failed\", \"tasks\", \"Number of failed agent tasks\");\n        _stepsPerTask = meter.CreateHistogram<double>(\"agent.steps.per_task\", \"steps\", \"Average steps per task\");\n        _tokensPerTask = meter.CreateHistogram<double>(\"agent.tokens.per_task\", \"tokens\", \"Tokens consumed per task\");\n        _taskDuration = meter.CreateHistogram<double>(\"agent.task.duration\", \"seconds\", \"Task execution duration\");\n        _toolCallLatency = meter.CreateHistogram<double>(\"agent.tool.call_latency\", \"ms\", \"Tool call latency\");\n    }\n\n    public void RecordTaskCompletion(bool success, int steps, int totalTokens, TimeSpan duration)\n    {\n        if (success)\n            _tasksCompleted.Add(1);\n        else\n            _tasksFailed.Add(1);\n\n        _stepsPerTask.Record(steps);\n        _tokensPerTask.Record(totalTokens);\n        _taskDuration.Record(duration.TotalSeconds);\n    }\n\n    public void RecordToolCall(string toolName, TimeSpan duration, bool success)\n    {\n        _toolCallLatency.Record(duration.TotalMilliseconds, new KeyValuePair<string, object?>(\"tool_name\", toolName));\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Distributed Tracing for Agent Decision Chains"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Each agent iteration (reason -> act -> observe) should be a trace span. When an agent calls multiple tools, each tool call is a child span. This creates a trace tree that reveals where time is spent, which tools are invoked, and why the agent took a particular path. OpenTelemetry semantic conventions for GenAI provide standardized attributes."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Agent Tracing with OpenTelemetry GenAI Semantic Conventions",
+        "content": "Instrumenting agent execution with structured trace spans:",
+        "language": "csharp",
+        "code": "using System.Diagnostics;\n\npublic class TracedAgentLoop\n{\n    private static readonly ActivitySource ActivitySource =\n        new ActivitySource(\"EnterpriseNexus.Agent\", \"1.0\");\n\n    public async Task<string> RunAsync(string userGoal, CancellationToken ct)\n    {\n        using var activity = ActivitySource.StartActivity(\"agent.execution\");\n        activity?.SetTag(\"gen_ai.system\", \"openai\");\n        activity?.SetTag(\"gen_ai.request.user_agent\", \"EnterpriseNexus-Agent/1.0\");\n        activity?.SetTag(\"session.id\", Guid.NewGuid().ToString());\n\n        var conversation = new List<ChatMessage>\n        {\n            new ChatRole.System, \"You are an autonomous agent...\"),\n            new ChatRole.User, userGoal)\n        };\n\n        var stepCount = 0;\n        while (stepCount < MaxSteps)\n        {\n            using var stepActivity = ActivitySource.StartActivity(\"agent.step\");\n            stepActivity?.SetTag(\"agent.step_number\", stepCount);\n\n            // LLM call\n            using var llmActivity = ActivitySource.StartActivity(\"llm.completion\");\n            llmActivity?.SetTag(\"gen_ai.request.temperature\", 0.1);\n            llmActivity?.SetTag(\"gen_ai.request.max_tokens\", 4000);\n\n            var completion = await _client.CompleteAsync(conversation, cancellationToken: ct);\n\n            // Tool calls\n            var toolCalls = completion.Message.Contents.OfType<FunctionCallContent>().ToList();\n            foreach (var call in toolCalls)\n            {\n                using var toolActivity = ActivitySource.StartActivity(\"agent.tool_call\");\n                toolActivity?.SetTag(\"tool.name\", call.Name);\n                toolActivity?.SetTag(\"tool.arguments\", JsonSerializer.Serialize(call.Arguments));\n\n                var sw = Stopwatch.StartNew();\n                var result = await CallToolAsync(call, ct);\n                toolActivity?.SetTag(\"tool.duration_ms\", sw.ElapsedMilliseconds);\n                toolActivity?.SetTag(\"tool.result_length\", result?.Length ?? 0);\n\n                conversation.Add(new(ChatRole.Tool, result));\n            }\n\n            stepCount++;\n        }\n        return finalResponse;\n    }\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "text": "Always use sampling — don't evaluate every single agent run. Sample traces and metrics at 100% for failed sessions, 10% for successful ones. Sampling all traces generates enormous cost and volume. Use head-based sampling for traces and tail-based sampling for alerting."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Agent metrics must capture step efficiency, tool accuracy, and token consumption — not just outcome",
+          "Use OpenTelemetry counters for aggregate metrics and histograms for distributions",
+          "Trace each agent step as a span; tool calls as child spans with GenAI semantic conventions",
+          "Implement sampling strategies to reduce observability cost at scale",
+          "Correlate traces with user feedback for closed-loop agent improvement"
+        ],
+        "takeaway": "Agent observability requires custom metrics and tracing beyond standard APM. Measure the agent's decision-making process, not just its final answer."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-agent-memory-architectures", "dotnet-agent-debugging-tracing", "dotnet-distributed-tracing"],
+  "relatedGlossaryTerms": ["agent", "opentelemetry", "tracing", "observability"]
+}

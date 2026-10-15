@@ -1,0 +1,105 @@
+{
+  "id": "dotnet-lesson-3-24",
+  "slug": "dotnet-embedding-cache-strategies",
+  "moduleSlug": "dotnet-embedding-systems",
+  "title": "Embedding Caching & Invalidation Strategies",
+  "description": "Implement efficient embedding caching with Redis, handle cache invalidation for updated documents, and optimize cost for high-throughput embedding pipelines.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 45,
+  "tags": ["embedding-cache", "redis", "invalidation", "caching", "cost-optimization"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The High Cost of Embeddings: Why Caching is Critical"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Embedding generation is one of the most expensive operations in an AI application — both in compute and cost. For text-embedding-3-small, a typical document chunk of 256 tokens costs approximately $0.000002. That seems negligible, but at scale — processing 1 million chunks — it becomes $2.00 per pass. More importantly, the latency of generating embeddings can dominate response time when the same documents are queried repeatedly. A well-designed caching strategy can reduce embedding costs by 80-95%."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Cache Use Case", "TTL", "Key Strategy", "Eviction Policy", "Memory Impact"],
+        "rows": [
+          ["LLM Response Cache", "1-7 days", "SHA256(prompt + parameters)", "LRU", "High-value, low cardinality"],
+          ["Embedding Cache", "1-30 days", "SHA256(text + model)", "LFU", "High-value, very low change rate"],
+          ["Semantic Cache", "1-7 days", "Normalized query embedding hash", "Custom (similarity threshold)", "Moderate"],
+          ["Rate Limit Counter", "Per-minute rolling", "userId:minute:api", "TTL-based", "Low"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Content-Based Caching with Invalidations"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Content-based embedding caching uses a deterministic hash of the input text as the cache key. This guarantees that identical text never generates duplicate embeddings. When a document is updated, its hash changes, and the old embedding is naturally orphaned — a separate cleanup job purges expired entries."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Content-Based Embedding Cache with Redis",
+        "content": "A content-hash-based embedding cache with invalidation strategies:",
+        "language": "csharp",
+        "code": "public class SmartEmbeddingCache\n{\n    private readonly IRedisClient _redis;\n    private readonly IEmbeddingService _embedding;\n    private readonly ILogger _logger;\n    private const double SIMILARITY_THRESHOLD = 0.92;\n    private const int CACHE_TTL_HOURS = 168;\n\n    public async Task<float[]> GenerateOrGetCachedAsync(string text, string modelParams, CancellationToken ct = default)\n    {\n        // Content hash ensures identical text gets same embedding\n        var contentHash = Sha256(text.Trim().ToLowerInvariant());\n        var cacheKey = $\"emb:{modelParams}:{contentHash}\";\n        \n        var cached = await _redis.GetAsync(cacheKey);\n        if (cached != null)\n        {\n            _logger.LogDebug(\"Cache HIT for {CacheKey}\", cacheKey);\n            return JsonSerializer.Deserialize<float[]>(cached);\n        }\n\n        _logger.LogDebug(\"Cache MISS for {CacheKey}, generating embedding\", cacheKey);\n\n        // Generate embedding from model\n        var embedding = await _embedding.GenerateAsync(text, ct);\n\n        // Store with expiration and metadata\n        var cacheEntry = new EmbeddingCacheEntry\n        {\n            ContentHash = contentHash,\n            TextPreview = text.Substring(0, Math.Min(100, text.Length)),\n            GeneratedAt = DateTime.UtcNow,\n            Embedding = embedding\n        };\n\n        await _redis.SetAsync(cacheKey, JsonSerializer.Serialize(cacheEntry),\n            TimeSpan.FromHours(CACHE_TTL_HOURS));\n\n        return embedding;\n    }\n\n    // Bulk invalidate when a document changes\n    public async Task InvalidateDocumentAsync(string documentId, CancellationToken ct = default)\n    {\n        // Remove all cache entries referencing this document\n        // In Redis: use tag-based invalidation or scan-and-delete\n        await _redis.RemoveByPatternAsync($\"emb:*:{Sha256(documentId)}:*\", ct);\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Multi-Level Caching: Memory plus Redis"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A two-tier caching strategy provides optimal performance: L1 (in-process memory cache) serves hot embeddings with microsecond latency, while L2 (Redis) provides shared caching across application instances and survives restarts. Use a read-through pattern: check L1, then L2, then generate and write to both tiers."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Two-Tier Embedding Cache with Memory plus Redis",
+        "content": "L1 memory cache for hot embeddings, L2 Redis for distributed shared cache:",
+        "language": "csharp",
+        "code": "public class TieredEmbeddingCache\n{\n    private readonly IMemoryCache _memoryCache;\n    private readonly IDistributedCache _redisCache;\n    private readonly ConcurrentDictionary<string, SemaphoreSlim> _locks = new();\n    private static readonly TimeSpan MemoryTtl = TimeSpan.FromHours(1);\n    private static readonly TimeSpan RedisTtl = TimeSpan.FromDays(7);\n\n    public async Task<float[]> GetEmbeddingAsync(string text, CancellationToken ct = default)\n    {\n        var cacheKey = $\"emb:{Sha256(text)}\";\n        \n        // L1: Try in-memory cache (microsecond latency)\n        if (_memoryCache.TryGetValue<float[]>(cacheKey, out var memoryHit))\n            return memoryHit;\n\n        // L2: Try Redis cache (sub-millisecond)\n        var redisHit = await _redisCache.GetAsync<float[]>(cacheKey, ct);\n        if (redisHit != null)\n        {\n            _memoryCache.Set(cacheKey, redisHit, MemoryTtl);\n            return redisHit;\n        }\n\n        // Cache miss: generate with singleton lock to prevent thundering herd\n        var semaphore = _locks.GetOrAdd(cacheKey, _ => new SemaphoreSlim(1, 1));\n        await semaphore.WaitAsync(ct);\n\n        try\n        {\n            // Double-check after acquiring lock\n            if (_memoryCache.TryGetValue<float[]>(cacheKey, out var cached))\n                return cached;\n\n            var embedding = await GenerateEmbeddingAsync(text, ct);\n            await _redisCache.SetAsync(cacheKey, embedding, RedisTtl, ct);\n            _memoryCache.Set(cacheKey, embedding, MemoryTtl);\n            return embedding;\n        }\n        finally\n        {\n            semaphore.Release();\n            _locks.TryRemove(cacheKey, out _);\n        }\n    }\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Use Redis Streams to audit-log all embedding operations for cost tracking and abuse detection. Each embedding generation, cache hit/miss, and invalidation can be streamed to a Redis Stream, which is consumed by monitoring services."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "LLM response caching, embedding caching, and rate-limit coordination are the three primary AI caching use cases",
+          "Content-hash keys guarantee deduplication but require versioned invalidation strategies",
+          "Two-tier caching (memory + Redis) optimizes both latency and sharing across instances",
+          "Set appropriate TTLs: responses 1-7 days, embeddings 1-30 days, rate limits per-minute",
+          "Redis Streams can audit-log all AI interactions for cost tracking and abuse detection"
+        ],
+        "takeaway": "Distributed caching is the bridge from single-instance development to multi-instance production for AI applications, directly affecting cost, performance, and scalability."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-caching-strategies", "dotnet-vector-index-optimization", "dotnet-embedding-model-optimization"],
+  "relatedGlossaryTerms": ["cache", "redis", "embedding"]
+}

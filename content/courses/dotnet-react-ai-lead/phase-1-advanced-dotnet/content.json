@@ -11,7 +11,8 @@
   "moduleSlug": [
     "dotnet-advanced-csharp",
     "dotnet-system-design",
-    "dotnet-performance-scaling"
+    "dotnet-performance-scaling",
+    "dotnet-clean-architecture-aspire"
   ],
   "estimatedWeeks": 2
 }

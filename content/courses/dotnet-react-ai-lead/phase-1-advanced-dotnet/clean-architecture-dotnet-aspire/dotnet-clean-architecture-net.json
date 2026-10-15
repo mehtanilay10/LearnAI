@@ -1,0 +1,127 @@
+{
+  "id": "dotnet-lesson-1-17",
+  "slug": "dotnet-clean-architecture-net",
+  "moduleSlug": "dotnet-clean-architecture-aspire",
+  "title": "Clean Architecture in .NET",
+  "description": "Build maintainable .NET applications following Clean Architecture principles with dependency inversion, separation of concerns, and onion/hexagonal architecture patterns.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["clean-architecture", "dependency-inversion", "separation-of-concerns", "dotnet", "onion-architecture"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Clean Architecture: The Dependency Inversion Principle"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Clean Architecture, as described by Robert C. Martin, inverts the traditional dependency flow. Instead of high-level modules depending on low-level implementation details, both depend on abstractions. The direction of dependencies always points inward toward the core domain — infrastructure and frameworks depend on the domain, never the other way around."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "clean-architecture-layers",
+        "caption": "Clean Architecture concentric layers with inward-pointing dependencies",
+        "definition": "graph TD\n    subgraph PresentationLayer[\"Presentation (Outer) Layer\"]\n        WebAPI[\"Web API Controllers\\nMinimal APIs\\nBlazor Components\"]\n        MVC[\"MVC Controllers & Views\"]\n    end\n\n    subgraph ApplicationLayer[\"Application Layer\"]\n        UseCases[\"Use Cases / Application Services\\n(MediatR Handlers)\"]\n        Dtos[\"Request/Response DTOs\"]\n    end\n\n    subgraph DomainLayer[\"Domain Layer (Core)\"]\n        Entities[\"Domain Entities\\n(Aggregates, Value Objects)\"]\n        Interfaces[\"Domain Interfaces\\n(IRepository, IEmailService)\"]\n        Events[\"Domain Events\"]\n    end\n\n    subgraph InfrastructureLayer[\"Infrastructure (Outer) Layer\"]\n        EF[\"Entity Framework\\nRepository Implementations\"]\n        Email[\"Email/SMS Providers\\nExternal API Clients\"]\n        Auth[\"Authentication\\n(Entra ID, JWT)\"]\n    end\n\n    WebAPI -->|depends on| UseCases\n    MVC -->|depends on| UseCases\n    UseCases -->|depends on| Entities\n    UseCases -->|depends on| Interfaces\n    EF -->|implements| Interfaces\n    Email -->|implements| Interfaces\n    Auth -->|depends on| Entities\n    EF -->|depends on| Entities"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Layer Responsibilities"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Layer", "Project", "Dependencies (can reference)", "Restrictions"],
+        "rows": [
+          ["Domain", "EnterpriseNexus.Domain", "Nothing (pure .NET standard)", "No external dependencies — only primitives and built-in types"],
+          ["Application", "EnterpriseNexus.Application", "Domain", "Cannot reference Infrastructure or Presentation"],
+          ["Infrastructure", "EnterpriseNexus.Infrastructure", "Application, Domain", "Implements domain interfaces; depends on EF Core, SDKs, Auth libraries"],
+          ["Presentation", "EnterpriseNexus.WebApi", "Application, Infrastructure (at composition root)", "Controllers reference Application DTOs and services"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Dependency Injection at the Composition Root"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The composition root is where the dependency graph is assembled. In ASP.NET Core, this happens in Program.cs / Startup. All domain interfaces are bound to concrete implementations here, keeping the domain layer ignorant of infrastructure details."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Composition Root in Program.cs",
+        "content": "Wiring domain interfaces to infrastructure implementations via the DI container:",
+        "language": "csharp",
+        "code": "var builder = WebApplication.CreateSlimBuilder(args);\n\n// Bind domain interfaces to infrastructure implementations\n// Domain layer defines IOrderRepository, infrastructure provides EfOrderRepository\nbuilder.Services.AddScoped<IOrderRepository, EfOrderRepository>();\nbuilder.Services.AddScoped<IEmailSender, SmtpEmailSender>();\nbuilder.Services.AddScoped<IEmbeddingService, AzureOpenAIEmbeddingService>();\n\n// Register DB context (Infrastructure concern)\nbuilder.Services.AddDbContext<AppDbContext>(options =>\n    options.UseSqlServer(builder.Configuration.GetConnectionString(\"DefaultConnection\")));\n\n// Health checks for all dependencies\nbuilder.Services.AddHealthChecks()\n    .AddDbContextCheck<AppDbContext>()\n    .AddAzureOpenAI(OpenAIDeployment.Type.Embedding, \"text-embedding-3-large\")\n    .AddRedis(builder.Configuration.GetConnectionString(\"Redis\"));\n\nvar app = builder.Build();\n\n// Middleware pipeline\napp.MapControllers();\napp.MapHealthChecks(\"/health\");\napp.Run();"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Onion vs Hexagonal vs Clean Architecture"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "These terms are often used interchangeably but have nuances. Onion Architecture (Fowler) emphasizes domain at the center. Hexagonal Architecture (CQRS) emphasizes ports (interfaces) and adapters (implementations). Clean Architecture unifies these into concentric layers with dependency rule arrows."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "title": "Common Anti-Patterns to Avoid",
+        "text": "1. The 'Big Ball of Mud' — no layer boundaries. 2. Domain projects referencing Infrastructure directly. 3. Controllers containing business logic. 4. Cross-cutting concerns (logging, auth) scattered across domain code. 5. Leaky abstractions where EF entities are used as DTOs."
+      }
+    },
+    {
+      "type": "exercise",
+      "data": {
+        "title": "Refactoring Exercise: Layer Boundary Violation",
+        "description": "Given a codebase where the Presentation layer directly queries a DbContext, refactor to introduce a repository interface in the Domain layer and an Infrastructure implementation.",
+        "steps": [
+          "Identify all direct DbContext usage in controllers",
+          "Define an IRepository interface in the Domain layer",
+          "Create an EF Core implementation in the Infrastructure layer",
+          "Register the implementation at the composition root",
+          "Verify layer independence using NetArchTest.Rules"
+        ],
+        "expectedOutcome": "Controllers depend only on IRepository, not on EF Core. Domain layer has no references to any infrastructure."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Dependencies always point inward — frameworks depend on domain, not vice versa",
+          "Domain layer contains no external dependencies — pure business logic",
+          "DI composition root binds abstractions to implementations at startup",
+          "Layer isolation prevents tight coupling and enables independent testing",
+          "Common variants: Onion, Hexagonal, and Clean Architecture share core principles"
+        ],
+        "takeaway": "Clean Architecture creates a foundation where domain logic remains stable while infrastructure and presentation evolve independently."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-domain-driven-design", "dotnet-cqrs-event-sourcing", "dotnet-distributed-systems-fundamentals"],
+  "relatedGlossaryTerms": ["clean-architecture", "dependency-inversion", "separation-of-concerns"]
+}

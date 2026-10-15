@@ -1,0 +1,101 @@
+{
+  "id": "dotnet-lesson-6-15",
+  "slug": "dotnet-ai-pair-programming",
+  "moduleSlug": "dotnet-ai-assisted-dev",
+  "title": "AI Pair Programming Workflows in .NET Teams",
+  "description": "Establish team workflows for AI-assisted development with GitHub Copilot, code review automation, and collaborative prompt strategies.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["ai-pair-programming", "github-copilot", "team-workflow", "collaboration", "prompt-strategy", "code-review"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "AI Pair Programming: Beyond Solo Copilot"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "AI pair programming extends beyond an individual developer using Copilot for autocomplete. In a team context, it involves shared prompt libraries, collaborative code review workflows, automated test generation from acceptance criteria, and systematic integration of AI assistance into the development lifecycle. The key is treating AI as a team member — with documented workflows, quality gates, and shared knowledge."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "ai-pair-programming-workflow",
+        "caption": "Team AI pair programming workflow from task to production",
+        "definition": "flowchart LR\n    Ticket[User Story / Ticket] --> PromptEng[Apply Prompt Template\nfrom Shared Library]\n    PromptEng --> Copilot[GitHub Copilot\nCode Generation]\n    Copilot --> Review[AI Code Review\n(Security, Style, Tests)]\n    Review --> Human[Human Review\\nApprove Changes]\n    Human -->|Approved| Tests[AI-Generated\nTests]\n    Human -->|Changes| PromptEng\n    Tests --> Coverage[Test Coverage\\n>80%]\n    Coverage --> Merge[Merge to Main]\n    Merge --> Monitor[AI-Powered\nMonitoring & Alerts]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Shared Prompt Library for .NET Teams"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "A shared prompt library standardizes AI interactions across the team. Instead of each developer writing ad-hoc prompts, the team maintains reusable prompt templates for common tasks: code review, refactoring, test generation, documentation, and bug diagnosis. These templates include context about coding standards, architecture patterns, and project conventions."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Team Prompt Template Repository",
+        "content": "A repository structure for shared .NET AI prompts with context injection:",
+        "language": "markdown",
+        "code": "# Team AI Prompts Repository\n\n## /prompts/dotnet/\n- code-review-system-design.md  # Reviews for Clean Architecture compliance\n- code-review-security.md       # OWASP and security scanning prompts\n- generate-tests.md             # Unit/integration test generation\n- refactor-async.md             # Async/await best practices\n- explain-metrics.md            # Application Insights query explanation\n\n## Context Headers (included in all prompts)\nProject: EnterpriseNexus\nArchitecture: .NET 9 Clean Architecture + .NET Aspire\nTesting: xUnit + TestServer\nCode Style: .editorconfig enforced, no nullable warnings\nCI/CD: GitHub Actions, Docker, AKS\n\n## Usage with Copilot Workspace\n\n// In .github/copilot-instructions.md\n```\nYou are a senior .NET engineer on the EnterpriseNexus team.\nFollow Clean Architecture patterns with strict layer isolation.\nAll new code must include unit tests with >80% coverage.\n```"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "AI-Automated Code Review Workflow"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Integrate AI code review into your CI pipeline. When a PR is opened, an automated workflow sends the diff to an AI reviewer with a team-specific prompt template. The AI checks for: Clean Architecture violations, security issues (OWASP), performance anti-patterns, missing tests, and style guide compliance. Results are posted as PR comments with severity levels."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "GitHub Action for AI Code Review",
+        "content": "A GitHub Action that runs AI-powered code review on PRs:",
+        "language": "yaml",
+        "code": "name: AI Code Review\n\non:\n  pull_request:\n    types: [opened, synchronize]\n\njobs:\n  ai-review:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Generate Diff\nn        run: |\n          git diff HEAD^ HEAD > pr_diff.txt\n          echo \"DIFF=$(cat pr_diff.txt)\" >> $GITHUB_OUTPUT\n      - name: AI Code Review\nn        uses: github/codeql-action/analyze@v3\n        with:\n          prompt: |\n            You are reviewing a .NET 9 codebase following Clean Architecture.\n            Check for:\n            1. Layer dependency violations (presentation -> infrastructure is OK, domain -> infrastructure is NOT)\n            2. Missing async/await patterns\n            3. Potential SQL injection or insecure data access\n            4. Missing unit tests for new public methods\n            5. Nullable reference type annotations\n            Provide feedback as a JSON array of {file, line, severity, message}.\n          diff: ${{ inputs.DIFF }}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Use AI to generate test cases from acceptance criteria before implementation starts. Feed user stories into an AI agent that produces xUnit test classes, TestServer setup, and assertion patterns specific to your domain. This shifts testing left and ensures coverage matches requirements."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Treat AI as a team member with standardized workflows and shared resources",
+          "Shared prompt libraries with project context ensure consistent AI output",
+          "AI code review in CI catches architecture, security, and quality issues early",
+          "Generate tests from acceptance criteria before coding (shift-left testing)",
+          "Document which AI workflows require human approval vs fully autonomous"
+        ],
+        "takeaway": "AI pair programming at scale requires systematic workflows — shared prompts, automated review, and test-first generation — to ensure quality and consistency across the team."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-github-copilot", "dotnet-ai-code-review", "dotnet-ai-debugging", "dotnet-tdd-best-practices"],
+  "relatedGlossaryTerms": ["ai-assisted", "pair-programming", "github-copilot", "code-review"]
+}

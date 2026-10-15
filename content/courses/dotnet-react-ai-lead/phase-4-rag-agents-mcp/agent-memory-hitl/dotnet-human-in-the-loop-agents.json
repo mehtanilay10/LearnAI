@@ -1,0 +1,101 @@
+{
+  "id": "dotnet-lesson-4-19",
+  "slug": "dotnet-human-in-the-loop-agents",
+  "moduleSlug": "dotnet-agent-memory-hitl",
+  "title": "Human-in-the-Loop Agent Workflows",
+  "description": "Implement approval gates, user overrides, and intervention points in autonomous agent workflows for enterprise safety.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["human-in-the-loop", "approval-gate", "agent-safety", "intervention", "workflow", "enterprise"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Balancing Autonomy with Human Oversight"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Fully autonomous agents are powerful but risky in enterprise settings. Human-in-the-loop (HITL) workflows insert deliberate checkpoints where humans review, approve, or override agent decisions. The key is designing these checkpoints to be minimally disruptive to the user experience while maximizing safety for critical operations like financial transactions, data access, or external API calls."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "hitl-workflow",
+        "caption": "Human-in-the-loop agent decision flow with approval gates",
+        "definition": "flowchart TD\n    Start([User Request]) --> Analyze[Agent Analysis]\n    Analyze --> RiskAssessment{Risk Level}\n    RiskAssessment -->|Low| Execute[Auto-execute Action]\n    RiskAssessment -->|Medium| Pause[Pause & Request Approval]\n    RiskAssessment -->|High| Escalate[Escalate to Human]\n    Pause --> HumanApprove{Human Approves?}\n    HumanApprove -->|Yes| Execute\n    HumanApprove -->|No| Revise[Revise Plan]\n    Revise --> Analyze\n    Execute --> Result[Action Result]\n    Result --> Continue{More Steps?}\n    Continue -->|Yes| Analyze\n    Continue -->|No| Complete[Return to User]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Approval Gate Patterns"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Approval gates intercept agent tool calls and require human confirmation before execution. They are classified by risk: financial gates (amount thresholds), data access gates (PII, compliance), destructive gates (deletion, modification), and external API gates (third-party calls)."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Approval Gate Decorator for Tool Calling",
+        "content": "A .NET decorator that wraps tool execution with user approval:",
+        "language": "csharp",
+        "code": "public class ApprovalRequiredTool : AIFunction\n{\n    private readonly AIFunction _inner;\n    private readonly ApprovalConfig _config;\n    private readonly IApprovalService _approvalService;\n\n    public ApprovalRequiredTool(AIFunction inner, ApprovalConfig config, IApprovalService approval)\n    {\n        _inner = inner;\n        _config = config;\n        _approvalService = approval;\n    }\n\n    protected override async Task<FunctionResult> InvokeAsync(\n        FunctionArguments arguments,\n        CancellationToken cancellationToken)\n    {\n        // Check if this tool requires approval\n        if (await _config.RequiresApprovalAsync(arguments))\n        {\n            var approvalRequest = new ApprovalRequest\n            {\n                ToolName = Name,\n                Arguments = arguments.ToDictionary(),\n                RiskLevel = _config.RiskLevel,\n                UserMessageId = GetCurrentUserId()\n            };\n\n            var approved = await _approvalService.RequestApprovalAsync(approvalRequest, cancellationToken);\n            if (!approved.Approved)\n            {\n                return new FunctionResult($\"Action blocked by user: {approved.RejectionReason}\");\n            }\n\n            // Log the approval for audit trail\n            await _approvalService.LogApprovalAsync(approvalRequest, approved, cancellationToken);\n        }\n\n        return await _inner.InvokeAsync(arguments, cancellationToken);\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Intervention and Override Patterns"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Intervention allows a human to step into an ongoing agent session. Unlike approval gates (which block before execution), intervention occurs during execution. Common patterns: pausing the agent loop, modifying the agent's goals or instructions, providing direct tool calls, or resetting the conversation to a checkpoint."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Agent Intervention Endpoint",
+        "content": "An ASP.NET Core endpoint for human intervention during agent execution:",
+        "language": "csharp",
+        "code": "[ApiController]\n[Route(\"api/agent/{sessionId}/intervene\")]\npublic class AgentInterventionController : ControllerBase\n{\n    private readonly IAgentSessionStore _sessions;\n\n    [HttpPost(\"pause\")]\n    public async Task<IActionResult> Pause(string sessionId)\n    {\n        var session = await _sessions.GetAsync(sessionId);\n        if (session == null) return NotFound();\n        \n        session.State = AgentState.Paused;\n        await _sessions.UpdateAsync(session);\n        \n        // Notify connected clients via SignalR\n        await _hubContext.Clients.Group(sessionId)\n            .SendAsync(\"agent_paused\", new { sessionId });\n        \n        return Ok(new { status = \"paused\" });\n    }\n\n    [HttpPost(\"override\")]\n    public async Task<IActionResult> Override(string sessionId, [FromBody] Intervention intervention)\n    {\n        var session = await _sessions.GetAsync(sessionId);\n        if (session == null) return NotFound();\n\n        // Add human instruction to the conversation\n        session.Conversation.Add(new ChatMessage(ChatRole.User,\n            $\"[Human Override] {intervention.Instruction}\"));\n        \n        // Resume with modified context\n        session.PendingIntervention = intervention;\n        session.State = AgentState.Running;\n        await _sessions.UpdateAsync(session);\n\n        return Ok(new { status = \"resumed\" });\n    }\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "text": "Always log HITL decisions — approvals, interventions, and overrides — to an immutable audit log with timestamps, user IDs, and reasons. This is not optional for regulated industries."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Approval gates intercept tool calls based on risk classification (financial, data, destructive, external)",
+          "Intervention allows human modification of ongoing agent sessions via pause/override",
+          "All HITL decisions must be logged to immutable audit trails",
+          "Signal the agent's state changes to connected clients in real-time (SignalR)",
+          "Design approval flows to be friction-minimized but risk-maximized — block high-risk, auto-approve low-risk"
+        ],
+        "takeaway": "Human-in-the-loop is not a constraint on autonomy — it's a safety infrastructure layer that enables autonomous agents to operate in high-stakes environments."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-agent-fundamentals", "dotnet-agent-evaluation-monitoring", "dotnet-authentication-authorization"],
+  "relatedGlossaryTerms": ["human-in-the-loop", "agent", "approval", "workflow"]
+}

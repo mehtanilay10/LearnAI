@@ -14,7 +14,9 @@
     "dotnet-react-internals",
     "dotnet-custom-hooks-patterns",
     "dotnet-react-performance-optimization",
-    "dotnet-advanced-component-patterns"
+    "dotnet-advanced-component-patterns",
+    "dotnet-react-server-actions-ai",
+    "dotnet-react-server-components-ai"
   ],
   "whatYouLearn": [
     "React Fiber architecture and reconciliation",

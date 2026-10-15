@@ -16,7 +16,10 @@
     "dotnet-chunking-strategies",
     "dotnet-hybrid-search",
     "dotnet-advanced-retrieval",
-    "dotnet-microsoft-extensions-vectordata"
+    "dotnet-microsoft-extensions-vectordata",
+    "dotnet-retrieval-optimization",
+    "dotnet-rag-evaluation",
+    "dotnet-rag-production-patterns"
   ],
   "whatYouLearn": [
     "RAG architecture and workflow",

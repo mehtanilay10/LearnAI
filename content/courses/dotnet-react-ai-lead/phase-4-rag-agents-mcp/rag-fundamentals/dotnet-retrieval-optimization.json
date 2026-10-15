@@ -1,0 +1,114 @@
+{
+  "id": "dotnet-lesson-4-21",
+  "slug": "dotnet-retrieval-optimization",
+  "moduleSlug": "dotnet-rag-fundamentals",
+  "title": "Advanced Retrieval Optimization",
+  "description": "Implement query expansion, query rewriting, multi-query retrieval, and reciprocal rank fusion to maximize RAG retrieval quality.",
+  "order": 7,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["rag", "retrieval", "query-expansion", "rewriting", "multi-query", "rrf", "optimization"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Beyond Simple Query to Embedding to Search"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Basic RAG retrieves documents using a single embedding query against a vector store. But user queries are often short, ambiguous, or lack the specific terms used in the documents. Advanced retrieval techniques preprocess the query into multiple, richer representations that dramatically improve recall before the LLM even sees the results."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "advanced-retrieval-pipeline",
+        "caption": "Advanced RAG retrieval pipeline with query expansion, rewriting, and RRF",
+        "definition": "flowchart LR\n    UserQuery[User Query] --> QueryExpand[Query Expansion\\nMultiple variants]\n    UserQuery --> QueryRewrite[Query Rewriting\\nAdd context, disambiguate]\n    UserQuery --> MultiQuery[Multi-Query\\nDifferent phrasings]\n    \n    QueryExpand --> VectorSearch1[Vector Search\nRound 1]\n    QueryRewrite --> VectorSearch2[Vector Search\nRound 2]\n    MultiQuery --> VectorSearch3[Vector Search\nRound 3]\n    \n    VectorSearch1 --> RRF[Reciprocal Rank\nFusion]\n    VectorSearch2 --> RRF\n    VectorSearch3 --> RRF\n    \n    RRF --> CrossEncoder[Rerank with Cross-Encoder]\n    CrossEncoder --> FinalResults[Ranked Results\nfor LLM Context]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Query Expansion and Decomposition"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Query expansion generates multiple search queries from a single user input. The LLM can decompose complex questions into sub-questions (e.g., 'What are the security implications of RAG and how to mitigate them?' becomes two queries: 'RAG security risks' and 'RAG security mitigation'). This increases the chance of retrieving relevant documents that don't match the exact original query phrasing."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Query Decomposition with LLM",
+        "content": "Decomposing a complex query into multiple simpler queries for parallel retrieval:",
+        "language": "csharp",
+        "code": "public class QueryExpansionService\n{\n    private readonly IChatClient _llm;\n    private readonly IVectorSearchService _vectorSearch;\n\n    public async Task<List<DocumentChunk>> RetrieveAsync(\n        string userQuery, int topPerQuery = 10, CancellationToken ct = default)\n    {\n        // Step 1: Decompose complex query into sub-questions\n        var subQueries = await DecomposeQueryAsync(userQuery, ct);\n        \n        // Execute all sub-queries in parallel\n        var tasks = subQueries.Select(q => _vectorSearch.SearchAsync(q, topPerQuery, ct));\n        var results = await Task.WhenAll(tasks);\n\n        // Merge and deduplicate results\n        var allDocs = results.SelectMany(r => r)\n            .GroupBy(d => d.Id)\n            .Select(g => g.First())\n            .ToList();\n\n        // Optional: rerank the merged set\n        return await RerankAsync(allDocs, userQuery, ct);\n    }\n\n    private async Task<List<string>> DecomposeQueryAsync(string query, CancellationToken ct)\n    {\n        var prompt = $\"\"\"\nBreak down the following question into simpler sub-questions that can be answered independently.\nReturn ONLY the sub-questions, one per line, without any additional text.\n\nQuestion: {query}\nSub-questions:\n\"\"\";\n\n        var response = await _llm.CompleteAsync(prompt, cancellationToken: ct);\n        return response.Message.Text\n            .Split('\\n', StringSplitOptions.RemoveEmptyEntries)\n            .Select(q => q.Trim().Trim('-'))\n            .Where(q => !string.IsNullOrEmpty(q))\n            .ToList();\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Reciprocal Rank Fusion (RRF)"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Reciprocal Rank Fusion combines results from multiple retrieval methods (vector search, keyword search, cross-encoder) without needing score normalization. Each result's rank in each method contributes a score of 1/(k + rank), where k is a constant (typically 60). Results appearing in multiple methods get higher fused scores."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Reciprocal Rank Fusion in .NET",
+        "content": "Implementing RRF to combine multiple retrieval backends:",
+        "language": "csharp",
+        "code": "public class ReciprocalRankFusion\n{\n    private const int K = 60; // RRF constant\n\n    public List<ScoredDocument> Fuse(\n        params IEnumerable<ScoredDocument>[] rankedLists)\n    {\n        var docScores = new Dictionary<string, double>();\n        var docMetadata = new Dictionary<string, ScoredDocument>();\n\n        foreach (var list in rankedLists)\n        {\n            var rank = 1;\n            foreach (var doc in list)\n            {\n                var score = 1.0 / (K + rank);\n                var key = doc.Document.Id?.ToString() ?? Guid.NewGuid().ToString();\n                \n                docScores[key] = docScores.GetValueOrDefault(key, 0) + score;\n                docMetadata[key] = doc;\n                rank++;\n            }\n        }\n\n        return docScores\n            .OrderByDescending(kvp => kvp.Value)\n            .Select(kvp => new ScoredDocument\n            {\n                Document = docMetadata[kvp.Key].Document,\n                Score = kvp.Value\n            })\n            .ToList();\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Hybrid Search: BM25 Plus Vector Search Fusion"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Hybrid search combines keyword (BM25) and vector (semantic) search. BM25 excels at exact term matching (e.g., 'CVE-2024-1234'), while vector search captures semantic meaning ('security vulnerability'). RRF or weighted score fusion combines both signals. Azure AI Search, Qdrant, and Weaviate all support hybrid search natively."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "For RAG, use query expansion plus multi-query retrieval BEFORE combining with RRF. Do not fuse raw single-query results — decompose first, retrieve, then fuse. This typically improves recall by 20-40% compared to a single vector search."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Query decomposition breaks complex questions into parallelizable sub-queries",
+          "Reciprocal Rank Fusion combines multiple ranked lists without score normalization",
+          "Hybrid BM25 plus vector search captures both exact terms and semantic meaning",
+          "Always decompose before fusing — not after",
+          "Cross-encoder reranking is the final precision boost after fusion"
+        ],
+        "takeaway": "Advanced retrieval is a pipeline: decompose, then retrieve with multiple methods, fuse with RRF, then rerank with cross-encoder. Each stage adds 5-15% RAG accuracy."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-hybrid-search", "dotnet-cross-encoder-reranking", "dotnet-advanced-retrieval"],
+  "relatedGlossaryTerms": ["rag", "retrieval", "query-expansion", "rerank"]
+}

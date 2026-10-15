@@ -1,0 +1,101 @@
+{
+  "id": "dotnet-lesson-4-26",
+  "slug": "dotnet-mcp-production-deployment",
+  "moduleSlug": "dotnet-mcp-integration",
+  "title": "MCP Server Production Deployment",
+  "description": "Deploy MCP servers in production with Docker, Kubernetes, scaling policies, and observability hooks.",
+  "order": 8,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["mcp", "production-deployment", "docker", "kubernetes", "scaling", "observability"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "From Local MCP to Production Deployment"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In development, MCP servers often run as local stdio processes. In production, they must be deployed as networked services with load balancing, auto-scaling, health checks, and observability. The transition from stdio to HTTP/SSE transport requires architectural changes: stateless sessions, connection pooling, and request-level tracing."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "mcp-production-architecture",
+        "caption": "Production MCP server architecture with HTTP transport, load balancing, and observability",
+        "definition": "graph TD\n    subgraph Clients[\"MCP Clients\"]\n        Client1[\"Agent Process 1\"]\n        Client2[\"Agent Process 2\"]\n        Client3[\"Agent Process N\"]\n    end\n\n    subgraph LoadBalancer[\"Load Balancer\"]\n        LB[\"NGINX / Azure Load\\nBalancer / App Gateway\"]\n    end\n\n    subgraph MCPServers[\"MCP Server Cluster\"]\n        S1[\"MCP Server Pod 1\\n(HTTP SSE Transport)\"]\n        S2[\"MCP Server Pod 2\"]\n        S3[\"MCP Server Pod 3\"]\n    end\n\n    subgraph Back[\"Backend Services\"]\n        DB[(Database)]\n        Cache[(Redis Cache)]\n        Observability[OpenTelemetry Collector]\n    end\n\n    Client1 -->|SSE / HTTP| LB\n    Client2 -->|SSE / HTTP| LB\n    Client3 -->|SSE / HTTP| LB\n    LB --> S1\n    LB --> S2\n    LB --> S3\n    S1 --> DB\n    S1 --> Cache\n    S1 --> Observability\n    S2 --> DB\n    S2 --> Cache\n    S2 --> Observability\n    S3 --> DB\n    S3 --> Cache\n    S3 --> Observability"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Dockerizing MCP Servers"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "MCP servers can be containerized like any .NET application. Use multi-stage Docker builds to minimize image size, especially important since MCP servers may run on edge nodes or in constrained environments. The key is exposing the transport endpoint (HTTP/SSE) rather than stdio."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Dockerized MCP Server with HTTP Transport",
+        "content": "Multi-stage Dockerfile and runtime configuration for production MCP servers:",
+        "language": "dockerfile",
+        "code": "# Dockerfile\nFROM mcr.microsoft.com/dotnet/sdk:9.0 AS build\nWORKDIR /src\nCOPY [\"MyMcpServer.csproj\", \".\"]\nRUN dotnet restore \"MyMcpServer.csproj\"\nCOPY . .\nRUN dotnet publish -c Release -o /app/publish --no-restore\n\nFROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime\nWORKDIR /app\n\n# Install Node.js if the MCP server uses Node tools\nRUN apt-get update && apt-get install -y nodejs npm\n\nCOPY --from=build /app/publish .\n\n# Health check\nHEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \\\n    CMD curl -f http://localhost:8080/health || exit 1\n\nEXPOSE 8080\nENTRYPOINT [\"dotnet\", \"MyMcpServer.dll\"]\n\n# docker-compose.yml\nservices:\n  mcp-server:\n    build: .\n    ports:\n      - \"8080:8080\"\n    environment:\n      - MCP_TRANSPORT=http\n      - MCP_PORT=8080\n      - REDIS_CONNECTION=redis:6379\n      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317\n    depends_on:\n      - redis\n      - otel-collector\n    deploy:\n      replicas: 3\n      resources:\n        limits:\n          cpus: '0.5'\n          memory: 512M"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Kubernetes Deployment with Auto-Scaling"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In Kubernetes, deploy MCP servers as Deployments with HorizontalPodAutoscaler based on CPU or custom metrics (active sessions, pending tool calls). Use readiness gates to prevent routing traffic to pods still initializing the MCP transport layer."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Kubernetes Deployment with HPA",
+        "content": "K8s YAML for MCP server with autoscaling and session-aware metrics:",
+        "language": "yaml",
+        "code": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: mcp-enterprise-nexus\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: mcp-server\n  template:\n    metadata:\n      labels:\n        app: mcp-server\n    spec:\n      containers:\n      - name: mcp-server\n        image: mcp-enterprise-nexus:latest\n        ports:\n        - containerPort: 8080\n        env:\n        - name: MCP_TRANSPORT\n          value: \"http\"\n        - name: ASPNETCORE_URLS\n          value: \"http://+:8080\"\n        readinessProbe:\n          httpGet:\n            path: /health\n            port: 8080\n          initialDelaySeconds: 5\n          periodSeconds: 10\n        resources:\n          requests:\n            cpu: \"250m\"\n            memory: \"256Mi\"\n          limits:\n            cpu: \"500m\"\n            memory: \"512Mi\"\n---\napiVersion: autoscaling/v2\nkind: HorizontalPodAutoscaler\nmetadata:\n  name: mcp-server-hpa\nspec:\n  scaleTargetRef:\n    apiVersion: apps/v1\n    kind: Deployment\n    name: mcp-enterprise-nexus\n  minReplicas: 2\n  maxReplicas: 10\n  metrics:\n  - type: Resource\n    resource:\n      name: cpu\n      target:\n        type: Utilization\n        averageUtilization: 70"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "important",
+        "text": "In production, use HTTP/SSE transport instead of stdio. Stdio is designed for local development where each client spawns a new server process. At scale, this leads to resource exhaustion. HTTP transport allows connection pooling and shared server instances."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Use HTTP/SSE transport for production — stdio is local-development only",
+          "Containerize with multi-stage builds and health checks",
+          "Deploy on Kubernetes with HPA based on CPU and session metrics",
+          "Use readiness gates to prevent routing to initializing pods",
+          "Instrument with OpenTelemetry for distributed tracing of MCP calls"
+        ],
+        "takeaway": "Production MCP deployment requires the full cloud-native stack — containerization, load balancing, autoscaling, health checks, and observability — applied to the MCP protocol's unique session and tool-calling model."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-building-mcp-servers", "dotnet-mcp-sessions-lifecycle", "dotnet-kubernetes-aks", "dotnet-docker-containerization"],
+  "relatedGlossaryTerms": ["mcp", "production-deployment", "docker", "kubernetes"]
+}

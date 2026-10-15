@@ -1,0 +1,126 @@
+{
+  "id": "dotnet-lesson-1-18",
+  "slug": "dotnet-cqrs-event-sourcing",
+  "moduleSlug": "dotnet-clean-architecture-aspire",
+  "title": "CQRS & Event Sourcing in .NET",
+  "description": "Implement CQRS with separated read/write models and Event Sourcing for immutable, auditable domain state.",
+  "order": 3,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["cqrs", "event-sourcing", "mediatr", "read-model", "audit", "dotnet"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "CQRS: Separating Reads from Writes"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Command Query Responsibility Segregation (CQRS) separates the read model from the write model. Commands (writes) encapsulate business logic and produce side effects. Queries (reads) return data without side effects. This separation allows each model to be optimized independently — the write model enforces invariants, while the read model can use denormalized, pre-computed views optimized for query performance."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "cqrs-separation",
+        "caption": "CQRS separates commands (writes) from queries (reads) through distinct models",
+        "definition": "graph LR\n    User[User Action] --> Cmd[\"Command\"]\n    Cmd --> CmdHandler[\"Command Handler\\nEnforces Invariants\\nValidates State\"]\n    CmdHandler --> Events[(Domain Events)]\n    Events --> WriteDB[(Write Model\\nNormalized DB)]\n    Events --> Projections[Projection Handlers]\n    Projections --> ReadDB[(Read Model\\nDenormalized Views)]\n    Query[Query Request] --> ReadDB\n    ReadDB --> ProjectionResult[Read-Optimized Result]\n    ProjectionResult --> User\n    Events -.-> AuditLog[(Audit Log)]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Event Sourcing: The Source of Truth"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Event Sourcing persists the state of a domain object as a sequence of events rather than as a current snapshot. The current state is reconstructed by replaying events. This provides a complete audit trail, enables temporal queries (what did the state look like at any point in time), and supports replaying events to recover from bugs."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Aggregate with Event Sourcing",
+        "content": "An Account aggregate that persists and replays AccountCredited and AccountDebited events:",
+        "language": "csharp",
+        "code": "public class Account : AggregateRoot\n{\n    public decimal Balance { get; private set; }\n\n    // Parameterless constructor for event sourcing\n    private Account() {}\n\n    public static Account Open(AccountId id, CustomerId owner)\n    {\n        var account = new Account();\n        account.RaiseEvent(new AccountOpened(id, owner, DateTime.UtcNow));\n        return account;\n    }\n\n    public void Credit(decimal amount, string reference)\n    {\n        if (amount <= 0) throw new ArgumentException(\"Amount must be positive\");\n        RaiseEvent(new AccountCredited(Id, amount, reference, DateTime.UtcNow));\n    }\n\n    public void Debit(decimal amount)\n    {\n        if (amount <= 0) throw new ArgumentException(\"Amount must be positive\");\n        if (Balance - amount < 0) throw new InvalidOperationException(\"Insufficient funds\");\n        RaiseEvent(new AccountDebited(Id, amount, DateTime.UtcNow));\n    }\n\n    // Apply events to rebuild state\n    private void Apply(AccountOpened e) { Id = e.AccountId; Balance = 0; }\n    private void Apply(AccountCredited e) { Balance += e.Amount; }\n    private void Apply(AccountDebited e) { Balance -= e.Amount; }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "MediatR Pipeline for CQRS"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "MediatR is the de facto library for implementing CQRS in .NET. Commands and Queries implement IRequest<TResponse>. Pipeline behaviors enable cross-cutting concerns like validation, logging, and metering without polluting handlers."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "MediatR Commands, Queries, and Pipeline Behavior",
+        "content": "A complete CQRS example with validation pipeline behavior:",
+        "language": "csharp",
+        "code": "// Command\npublic record CreateOrderCommand(\n    CustomerId CustomerId, ShippingAddress Address, List<OrderItemDto> Items)\n    : IRequest<OrderId>;\n\npublic class CreateOrderHandler : IRequestHandler<CreateOrderCommand, OrderId>\n{\n    private readonly IOrderRepository _repo;\n    private readonly IPublisher _publisher;\n\n    public async Task<OrderId> Handle(CreateOrderCommand cmd, CancellationToken ct)\n    {\n        var order = Order.Create(OrderId.New(), cmd.CustomerId, cmd.Address);\n        foreach (var item in cmd.Items)\n            order.AddItem(item.ProductId, item.Price, item.Quantity);\n        order.Confirm(); // enforces invariants\n        _repo.Add(order);\n        await _repo.UnitOfWork.SaveChangesAsync(ct);\n        return order.Id;\n    }\n}\n\n// Validation pipeline behavior\npublic class ValidationBehavior<TCommand> : IPipelineBehavior<TCommand, Unit>\n    where TCommand : IRequest<Unit>\n{\n    private readonly IEnumerable<AbstractValidator<TCommand>> _validators;\n\n    public async Task<Unit> Handle(TCommand request, RequestHandlerDelegate<Unit> next,\n        CancellationToken ct)\n    {\n        var failures = _validators\n            .Select(v => v.Validate(request))\n            .SelectMany(result => result.Errors)\n            .Where(f => f != null)\n            .ToList();\n        if (failures.Any()) throw new ValidationException(failures);\n        return await next();\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Projections and Read Model Updates"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "After a command handler commits domain events, projection handlers update denormalized read models. This can be synchronous (same transaction) or asynchronous (event-driven eventual consistency). For AI applications, read models often pre-compute embeddings or aggregate statistics for fast retrieval."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Pattern", "When to Use", "Consistency", "Complexity"],
+        "rows": [
+          ["Synchronous Projection", "Single database, read-after-write needs", "Strong", "Low"],
+          ["Async Event Handler", "Separate read DB, eventual consistency OK", "Eventual", "Medium"],
+          ["Outbox Pattern", "Cross-service updates with guaranteed delivery", "Eventual + Guaranteed", "High"],
+          ["Idempotent Projections", "Events may be replayed/duplicated", "Strong (deduped)", "Medium"]
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "warning",
+        "text": "Event Sourcing introduces complexity: event versioning, snapshotting for long-lived aggregates, handling schema changes, and debugging event streams. Use it only for domains where auditability, temporal queries, or high write throughput justify the cost."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "CQRS separates commands (business logic) from queries (data retrieval)",
+          "Event Sourcing persists state as immutable event streams instead of current snapshots",
+          "Projections build read models from domain events for optimized querying",
+          "MediatR with pipeline behaviors provides clean cross-cutting concern handling",
+          "Use idempotency and the Outbox pattern for reliable async event processing"
+        ],
+        "takeaway": "CQRS + Event Sourcing enables auditable, scalable write models paired with optimized read models, but adds complexity that pays off in domains requiring traceability and temporal queries."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-event-driven-architecture", "dotnet-domain-driven-design", "dotnet-clean-architecture-net"],
+  "relatedGlossaryTerms": ["cqrs", "event-sourcing", "mediatr", "command-query"]
+}

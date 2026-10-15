@@ -1,0 +1,105 @@
+{
+  "id": "dotnet-lesson-1-20",
+  "slug": "dotnet-native-aot-ai",
+  "moduleSlug": "dotnet-performance-scaling",
+  "title": "Native AOT for AI Client Applications",
+  "description": "Run AI client applications as Native AOT binaries for faster startup, smaller deployments, and reduced attack surface.",
+  "order": 8,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["native-aot", "performance", "startup", "deployment", "size-optimization"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "What is Native AOT?"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Native AOT (Ahead-of-Time compilation) in .NET produces single-file, self-contained executables that run without a runtime installation. Unlike the traditional JIT compiler, Native AOT compiles all code to native machine code at build time, eliminating JIT compilation at runtime. This results in dramatically faster startup times (milliseconds vs seconds), smaller memory footprint, and reduced attack surface — critical for AI microservices and edge deployments."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Metric", "JIT (.NET 9)", "Native AOT", "Improvement"],
+        "rows": [
+          ["Startup Time", "~2.1s", "~0.08s", "~26x faster"],
+          ["Working Set (idle)", "~85 MB", "~12 MB", "~7x smaller"],
+          ["Deployment Size", "~65 MB", "~12 MB", "~5x smaller"],
+          ["Container Image", "~100 MB", "~15 MB", "~7x smaller"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Enabling Native AOT: Project Configuration"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Native AOT requires explicit configuration. Not all libraries are compatible — reflection-heavy code (JSON serialization without source generators, some DI registrations, dynamic code) may need adjustments. The PublishAot flag, trimming settings, and ILLink directives control the behavior."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Native AOT Project File with Dynamic Dependency Handling",
+        "content": "A .csproj configured for Native AOT with proper trimming and reflection handling:",
+        "language": "xml",
+        "code": "<Project Sdk=\"Microsoft.NET.Sdk.Web\">\n\n  <PropertyGroup>\n    <TargetFramework>net9.0</TargetFramework>\n    <Nullable>enable</Nullable>\n    \n    <!-- Enable Native AOT -->\n    <PublishAot>true</PublishAot>\n    <SelfContained>true</SelfContained>\n    <PublishSingleFile>true</PublishSingleFile>\n    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>\n    \n    // Allow trimming for smaller binaries\n    <PublishTrimmed>true</PublishTrimmed>\n    <TrimMode>link</TrimMode>\n    <TrimmerSingleWarn>false</TrimmerSingleWarn>\n  </PropertyGroup>\n\n  <!-- Explicitly preserve types used by reflection -->\n  <ItemGroup>\n    <TrimmerRootAssembly Include=\"System.Text.Json\"\n      TrimMode=\"copyused\" />\n    <DynamicallyAccessedAssemblies Include=\"@(ApplicationFiles)\" />\n  </ItemGroup>\n\n  // For OpenAI SDK which uses reflection:\n  // Use JsonPropertyName attributes + source generators instead\n  <ItemGroup>\n    <PackageReference Include=\"Microsoft.Extensions.AI\"\n      Version=\"1.0.0\" />\n    <PackageReference Include=\"OpenAI\" Version=\"2.1.0\" />\n  </ItemGroup>\n\n</Project>"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Native AOT Compatibility for AI Libraries"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "The OpenAI .NET SDK v2.x and Microsoft.Extensions.AI are designed to be trimming-compatible. Use JsonPropertyName attributes instead of runtime reflection, and prefer source generators over reflection-based serializers. HttpClient is fully compatible with Native AOT. The main challenge is dependency injection — use the Add* methods that generate AOT-compatible code."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "AOT-Compatible DI Registration for AI Services",
+        "content": "Registering AI services with Native AOT-compatible DI:",
+        "language": "csharp",
+        "code": "var builder = WebApplication.CreateBuilder(args);\n\n// Native AOT compatible DI registrations\n// Use the AOT analyzer to find issues\n\nbuilder.Services.AddHttpClient<IChatClient, OpenAIChatClient>(sp =>\n{\n    var config = sp.GetRequiredService<IConfiguration>();\n    return new OpenAIChatClient(\n        config[\"OpenAI:ApiKey\"],\n        new OpenAIClientSettings\n        {\n            Endpoint = new Uri(config[\"OpenAI:BaseUrl\"]),\n            Organization = config[\"OpenAI:OrgId\"]\n        });\n});\n\n// For Microsoft.Extensions.AI, use the concrete types directly\n// Avoid generic constraints that require reflection\n\nbuilder.Services.AddSingleton<AIAgentService>();\n\nbuilder.Services.Configure<AIServiceOptions>(builder.Configuration.GetSection(\"AI\"));\n\n// Use AOT-compatible JSON options\nbuilder.Services.ConfigureHttpJsonOptions(options =>\n{\n    options.SerializerOptions.TypeInfoResolverChain = [AppJsonSerializerContext.Default];\n});\n\nvar app = builder.Build();\napp.MapPost(\"/api/chat\", async (\n    ChatRequest request, IChatClient client) =>\n    await StreamResponse(client, request));\napp.Run();"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Run the Native AOT analyzer: <GenerateAotMetadata>true</GenerateAotMetadata> in your project file catches reflection issues at build. For local development, keep a non-AOT profile for faster iterative builds, and enable AOT only for release/production."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Native AOT eliminates JIT, producing single-file native executables with 20x+ faster startup",
+          "Requires compatible libraries: avoid reflection-heavy patterns, use source generators",
+          "Configure trimming and specify DynamicallyAccessedMembers for reflection-dependent code",
+          "OpenAI .NET SDK and Microsoft.Extensions.AI are AOT-compatible with proper configuration",
+          "Use separate dev/release profiles — AOT builds are slower but deploy-time only"
+        ],
+        "takeaway": "Native AOT transforms .NET AI services into lightweight, fast-starting containers, but requires disciplined use of AOT-compatible libraries and source generators."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-profiling-benchmarking", "dotnet-resilient-ai-clients", "dotnet-docker-containerization"],
+  "relatedGlossaryTerms": ["native-aot", "ahead-of-time", "compilation", "trimming"]
+}

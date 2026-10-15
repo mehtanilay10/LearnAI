@@ -118,6 +118,49 @@ import dotnetCapstoneRagImplementation from '../courses/dotnet-react-ai-lead/pha
 import dotnetCapstoneDeployment from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-implementation/dotnet-capstone-deployment.json';
 import dotnetEvaluationProduction from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-implementation/dotnet-evaluation-production.json';
 
+// Phase 1: New module - Clean Architecture & .NET Aspire
+import dotnetDomainDrivenDesign from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/clean-architecture-dotnet-aspire/dotnet-domain-driven-design.json';
+import dotnetCleanArchitectureNet from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/clean-architecture-dotnet-aspire/dotnet-clean-architecture-net.json';
+import dotnetCqrsEventSourcing from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/clean-architecture-dotnet-aspire/dotnet-cqrs-event-sourcing.json';
+import dotnetAspireOrchestration from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/clean-architecture-dotnet-aspire/dotnet-aspire-orchestration.json';
+
+// Phase 1: New lessons under performance-scaling
+import dotnetNativeAotAi from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/performance-scaling/dotnet-native-aot-ai.json';
+import dotnetDistributedCacheAi from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/performance-scaling/dotnet-distributed-cache-ai.json';
+
+// Phase 2: New lessons under advanced-react-patterns
+import dotnetReactServerActionsAi from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/advanced-react-patterns/dotnet-react-server-actions-ai.json';
+import dotnetReactServerComponentsAi from '../courses/dotnet-react-ai-lead/phase-2-react-typescript/advanced-react-patterns/dotnet-react-server-components-ai.json';
+
+// Phase 3: New module - Embedding Systems & Vector Engineering
+import dotnetEmbeddingModelOptimization from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/embedding-systems-vector-engineering/dotnet-embedding-model-optimization.json';
+import dotnetVectorIndexOptimization from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/embedding-systems-vector-engineering/dotnet-vector-index-optimization.json';
+import dotnetCrossEncoderReranking from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/embedding-systems-vector-engineering/dotnet-cross-encoder-reranking.json';
+import dotnetEmbeddingCacheStrategies from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/embedding-systems-vector-engineering/dotnet-embedding-cache-strategies.json';
+
+// Phase 4: New module - Agent Memory & Human-in-the-Loop
+import dotnetAgentMemoryArchitectures from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/agent-memory-hitl/dotnet-agent-memory-architectures.json';
+import dotnetAgentEvaluationMonitoring from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/agent-memory-hitl/dotnet-agent-evaluation-monitoring.json';
+import dotnetHumanInTheLoopAgents from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/agent-memory-hitl/dotnet-human-in-the-loop-agents.json';
+import dotnetAgentDebuggingTracing from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/agent-memory-hitl/dotnet-agent-debugging-tracing.json';
+
+// Phase 4: New lessons under rag-fundamentals
+import dotnetRetrievalOptimization from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/dotnet-retrieval-optimization.json';
+import dotnetRagEvaluation from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/dotnet-rag-evaluation.json';
+import dotnetRagProductionPatterns from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/rag-fundamentals/dotnet-rag-production-patterns.json';
+
+// Phase 4: New lessons under mcp-integration
+import dotnetMcpSessionsLifecycle from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/mcp-integration/dotnet-mcp-sessions-lifecycle.json';
+import dotnetMcpPromptTemplates from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/mcp-integration/dotnet-mcp-prompt-templates.json';
+import dotnetMcpProductionDeployment from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/mcp-integration/dotnet-mcp-production-deployment.json';
+
+// Phase 5: New lessons under monitoring-observability
+import dotnetAiObservabilityInsights from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/monitoring-observability/dotnet-ai-observability-insights.json';
+import dotnetLlmOpentelemetryTracing from '../courses/dotnet-react-ai-lead/phase-5-azure-devops/monitoring-observability/dotnet-llm-opentelemetry-tracing.json';
+
+// Phase 6: New lesson under ai-assisted-dev
+import dotnetAiPairProgramming from '../courses/dotnet-react-ai-lead/phase-6-security-testing/ai-assisted-development/dotnet-ai-pair-programming.json';
+
 // AI Basics — phase-1-foundations — what-is-ai
 import aiVsMlVsGenerativeAi from '../courses/ai-basics/phase-1-foundations/what-is-ai/ai-vs-ml-vs-generative-ai.json';
 import howLlmsWorkSimply from '../courses/ai-basics/phase-1-foundations/what-is-ai/how-llms-work-simply.json';
@@ -411,6 +454,40 @@ const rawLessons = [
   dotnetCapstoneRagImplementation,
   dotnetCapstoneDeployment,
   dotnetEvaluationProduction,
+  // Phase 1: New module - Clean Architecture & .NET Aspire
+  dotnetDomainDrivenDesign,
+  dotnetCleanArchitectureNet,
+  dotnetCqrsEventSourcing,
+  dotnetAspireOrchestration,
+  // Phase 1: New lessons under performance-scaling
+  dotnetNativeAotAi,
+  dotnetDistributedCacheAi,
+  // Phase 2: New lessons under advanced-react-patterns
+  dotnetReactServerActionsAi,
+  dotnetReactServerComponentsAi,
+  // Phase 3: New module - Embedding Systems & Vector Engineering
+  dotnetEmbeddingModelOptimization,
+  dotnetVectorIndexOptimization,
+  dotnetCrossEncoderReranking,
+  dotnetEmbeddingCacheStrategies,
+  // Phase 4: New module - Agent Memory & Human-in-the-Loop
+  dotnetAgentMemoryArchitectures,
+  dotnetAgentEvaluationMonitoring,
+  dotnetHumanInTheLoopAgents,
+  dotnetAgentDebuggingTracing,
+  // Phase 4: New lessons under rag-fundamentals
+  dotnetRetrievalOptimization,
+  dotnetRagEvaluation,
+  dotnetRagProductionPatterns,
+  // Phase 4: New lessons under mcp-integration
+  dotnetMcpSessionsLifecycle,
+  dotnetMcpPromptTemplates,
+  dotnetMcpProductionDeployment,
+  // Phase 5: New lessons under monitoring-observability
+  dotnetAiObservabilityInsights,
+  dotnetLlmOpentelemetryTracing,
+  // Phase 6: New lesson under ai-assisted-dev
+  dotnetAiPairProgramming,
 ];
 
 export const lessons: Lesson[] = rawLessons as unknown as Lesson[];

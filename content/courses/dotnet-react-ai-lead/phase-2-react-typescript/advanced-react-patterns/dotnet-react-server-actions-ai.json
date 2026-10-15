@@ -1,0 +1,93 @@
+{
+  "id": "dotnet-lesson-2-16",
+  "slug": "dotnet-react-server-actions-ai",
+  "moduleSlug": "dotnet-advanced-react",
+  "title": "React 19 Server Actions for AI Workflows",
+  "description": "Use React 19 Server Actions to invoke .NET backend AI endpoints directly from forms, with automatic error handling and optimistic updates.",
+  "order": 5,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["react-19", "server-actions", "ai-workflow", "optimistic-ui", "form-handling", "typescript"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Server Actions: Bridging Client and Server for AI Calls"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "React 19 introduced Server Actions as a first-class feature. Server Actions are async functions that execute on the server and can be called directly from client components. They serialize form data, handle errors gracefully, and integrate with React's pending state for loading indicators. For AI workflows, this means your chat form can invoke a .NET backend endpoint that streams LLM responses — all without writing a single fetch call."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Chat Form with Server Action and Optimistic UI",
+        "content": "A chat submission form that uses Server Actions with useOptimistic for immediate UI feedback:",
+        "language": "tsx",
+        "code": "'use client';\n\nimport { useState, useOptimistic } from 'react';\nimport { useFormStatus } from 'react-dom';\n\ninterface Message { id: string; role: 'user' | 'assistant'; content: string; }\n\n// Server Action defined on the server\nimport { sendMessage } from '@/lib/actions/chat';\n\nexport function ChatForm({\n    messages,\n    setMessages\n}: { messages: Message[]; setMessages: React.Dispatch<React.SetStateAction<Message[]>> }) {\n    const [optimisticMessages, addOptimistic] = useOptimistic(\n        messages,\n        (state: Message[], newMsg: Message) => [...state, newMsg]\n    );\n\n    const { pending } = useFormStatus();\n\n    async function handleSubmit(formData: FormData) {\n        const prompt = formData.get('prompt') as string;\n        \n        // Optimistically add user message\n        addOptimistic({ id: 'temp', role: 'user', content: prompt });\n        \n        try {\n            // Server Action streams the response\n            const reader = await sendMessage(formData);\n            \n            // Stream tokens to UI\n            const assistantMsg = { id: '', role: 'assistant', content: '' };\n            setMessages(prev => [...prev, { ...assistantMsg, id: 'streaming' }]);\n            \n            for await (const chunk of reader) {\n                setMessages(prev => prev.map(m =>\n                    m.id === 'streaming' ? { ...m, content: m.content + chunk } : m\n                ));\n            }\n        } catch (error) {\n            addOptimistic({ id: 'error', role: 'assistant', content: 'Failed to get response' });\n        }\n    }\n\n    return (\n        <form action={handleSubmit}>\n            <textarea name=\"prompt\" placeholder=\"Ask about your codebase...\" />\n            <button type=\"submit\" disabled={pending}>\n                {pending ? 'Thinking...' : 'Send'}\n            </button>\n        </form>\n    );\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Server Action Implementation in Next.js App Router"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Server Actions in the App Router are defined with the 'use server' directive. They run in the Node.js server context where they have full access to .NET backend services via HTTP calls to your ASP.NET Core API."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Server Action for AI Chat Streaming",
+        "content": "A Next.js Server Action that proxies to a .NET backend with Server-Sent Events:",
+        "language": "typescript",
+        "code": "// app/actions/chat.ts\n'use server';\n\nimport { Readable } from 'stream';\n\nexport async function sendMessage(\n    formData: FormData\n): Promise<ReadableStream<string>> {\n    const prompt = formData.get('prompt') as string;\n    const conversationId = formData.get('conversationId') as string;\n\n    // Proxy to .NET backend SSE endpoint\n    const response = await fetch(\n        `${process.env.API_URL}/api/chat/stream`,\n        {\n            method: 'POST',\n            headers: { 'Content-Type': 'application/json' },\n            body: JSON.stringify({ prompt, conversationId }),\n            signal: new AbortSignal.timeout(60000),\n        }\n    );\n\n    if (!response.ok) {\n        throw new Error(`API error: ${response.status}`);\n    }\n\n    // Convert Web Stream to ReadableStream\n    const reader = response.body?.getReader();\n    const decoder = new TextDecoder();\n\n    return new ReadableStream({\n        async pull(controller) {\n            try {\n                const { done, value } = await reader!.read();\n                if (done) {\n                    controller.close();\n                    return;\n                }\n                const chunk = decoder.decode(value, { stream: true });\n                controller.enqueue(chunk);\n            } catch (err) {\n                controller.error(err);\n            }\n        },\n        cancel() {\n            reader?.cancel();\n        }\n    });\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Error Boundaries and Pending States"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Server Actions automatically surface errors through React's error boundaries and useFormStatus. The pending state provides real-time feedback without additional boilerplate. For AI applications, this is crucial — users need immediate feedback that their request was received and is being processed."
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Use the useActionState hook to track AI action results declaratively. It returns [state, formAction, isPending] and handles serialization/deserialization of form data automatically. Perfect for tool call results that need to update the UI."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Server Actions eliminate manual fetch boilerplate for AI endpoint calls",
+          "useOptimistic provides immediate UI feedback before the server responds",
+          "useFormStatus exposes pending state for loading indicators",
+          "Server Actions integrate with React error boundaries for clean error handling",
+          "Perfect for Server-Sent Events streaming from .NET backend to React UI"
+        ],
+        "takeaway": "Server Actions in React 19 turn AI backend calls into declarative, type-safe, and optimistic-first interactions with zero fetch boilerplate."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-streaming-ai-ux", "dotnet-react-query-server-state", "dotnet-react-server-components-ai"],
+  "relatedGlossaryTerms": ["server-actions", "react-19", "optimistic-ui", "sse"]
+}

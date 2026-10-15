@@ -1,0 +1,108 @@
+{
+  "id": "dotnet-lesson-5-15",
+  "slug": "dotnet-ai-observability-insights",
+  "moduleSlug": "dotnet-monitoring-observability",
+  "title": "AI-Specific Observability in Application Insights",
+  "description": "Monitor LLM token usage, prompt/response costs, hallucination detection, and AI workflow metrics with Azure Application Insights and custom dimensions.",
+  "order": 6,
+  "difficulty": "advanced",
+  "estimatedMinutes": 50,
+  "tags": ["app-insights", "ai-observability", "token-tracking", "cost-monitoring", "hallucination-detection"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Beyond CPU and Memory: AI-Native Observability"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Traditional APM tools focus on system metrics: CPU, memory, disk, network. AI applications have a different failure mode: the system is 'up' but the LLM is hallucinating, returning irrelevant results, or consuming tokens at unexpected rates. AI observability adds a new dimension — measuring the quality and cost of AI operations alongside system health."
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["AI Metric", "Definition", "Alert Threshold", "Application Insights Custom Dimension"],
+        "rows": [
+          ["Token Usage", "Input + output tokens per request", ">5000 tokens/request", "ai.tokens_total"],
+          ["Token Cost (USD)", "Estimated API cost per request", "> $0.05/request", "ai.cost_usd"],
+          ["Response Time", "LLM generation latency", "> 10s p95", "ai.llm_duration_ms"],
+          ["Time to First Token", "Initial response latency", "> 1s p95", "ai.ttft_ms"],
+          ["Hallucination Rate", "Groundedness score (LLM judgment)", "> 15%", "ai.hallucination_rate"],
+          ["Retrieval Precision", "Relevance of retrieved docs", "< 60%", "ai.context_precision"],
+          ["Error Rate", "LLM API errors (429, 500, etc.)", "> 2%", "ai.error_rate"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Token Tracking and Cost Allocation"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "LLM APIs charge per token. Monitoring token usage provides visibility into cost drivers: which endpoints consume the most tokens, which users/projects are most expensive, and whether token usage is growing unexpectedly. Instrument your LLM client to record token counts as custom metrics dimensions."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Token Tracking with Application Insights Telemetry",
+        "content": "Instrumenting LLM calls with token and cost tracking in Application Insights:",
+        "language": "csharp",
+        "code": "public class InstrumentedChatService\n{\n    private readonly TelemetryClient _telemetry;\n    private readonly IChatClient _chatClient;\n    private static readonly Dictionary<string, (double input, double output)> TokenCosts =\n        new() { [\"gpt-4o\"] = (0.000003, 0.000006), [\"gpt-4o-mini\"] = (0.00000015, 0.0000006) };\n\n    public async Task<string> GenerateAsync(\n        string prompt, string model = \"gpt-4o\", [CallerMemberName] string operation = \"\")\n    {\n        var stopwatch = Stopwatch.StartNew();\n        \n        var response = await _chatClient.CompleteAsync(\n            new ChatMessage[] { new(ChatRole.User, prompt) },\n            new() { ModelId = model });\n\n        stopwatch.Stop();\n        var usage = response.Usage;\n\n        var inputCost = usage.InputTokenCount * TokenCosts[model].input;\n        var outputCost = usage.OutputTokenCount * TokenCosts[model].output;\n        var totalCost = inputCost + outputCost;\n\n        // Record custom metrics\n        _telemetry.GetMetric(\"ai.tokens.total\").Track(\n            usage.InputTokenCount + usage.OutputTokenCount,\n            new Dictionary<string, string>\n            {\n                [\"model\"] = model,\n                [\"operation\"] = operation,\n                [\"user_id\"] = GetCurrentUserId()\n            });\n\n        _telemetry.GetMetric(\"ai.cost_usd\").Track(totalCost,\n            new Dictionary<string, string> { [\"model\"] = model });\n\n        _telemetry.GetMetric(\"ai.llm_duration_ms\").Track(stopwatch.ElapsedMilliseconds);\n\n        // Track hallucination rate via automated checks\n        var groundedness = await CheckGroundednessAsync(prompt, response.Text);\n        _telemetry.GetMetric(\"ai.hallucination_rate\").Track(groundedness ? 0 : 1);\n\n        return response.Text;\n    }\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Custom Dashboards for AI Metrics"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Application Insights workbooks enable custom dashboards that combine AI metrics with system metrics. Key panels: token usage trend (per model), cost breakdown by endpoint, hallucination rate over time, and latency percentiles including TTFT and total generation time."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Application Insights Workbook Query",
+        "content": "KQL query for AI metrics dashboard in Application Insights:",
+        "language": "kusto",
+        "code": "// AI Cost and Token Usage Dashboard\ncustomMetrics\n| where name == \"ai.cost_usd\" or name == \"ai.tokens.total\"\n| where timestamp > ago(24h)\n| summarize\n    total_cost = sum(value),\n    total_tokens = sum(value),\n    avg_cost = avg(value),\n    request_count = count()\n    by bin(timestamp, 1h), name, customDimensions.model\n| render timechart \n\n---\n\n// Hallucination Rate Trend\ncustomMetrics\n| where name == \"ai.hallucination_rate\"\n| where timestamp > ago(7d)\n| summarize hallucination_rate = avg(value) by bin(timestamp, 1d)\n| render timechart with (title=\"Daily Hallucination Rate\")"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Set up alert rules for cost anomalies: if daily spend exceeds $500 or token usage spikes 3x above the weekly average, trigger an alert. Use adaptive thresholds that account for legitimate traffic growth."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Track tokens, cost, TTFT, generation latency, and hallucination rate as custom metrics",
+          "Dimension metrics by model, endpoint, user ID, and tenant for granular analysis",
+          "Set up cost anomaly alerts with adaptive thresholds to catch unexpected spend",
+          "Use Application Insights workbooks to combine AI and system metrics in dashboards",
+          "Implement automated groundedness checks to measure hallucination rate programmatically"
+        ],
+        "takeaway": "AI observability extends traditional APM with quality and cost metrics. Instrument your LLM calls with token tracking, cost allocation, and automated quality checks to keep AI applications both performant and economical."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-application-insights", "dotnet-cost-monitoring", "dotnet-llm-opentelemetry-tracing"],
+  "relatedGlossaryTerms": ["observability", "telemetry", "token", "hallucination"]
+}

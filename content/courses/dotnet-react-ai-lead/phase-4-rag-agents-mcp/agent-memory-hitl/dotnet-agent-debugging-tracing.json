@@ -1,0 +1,93 @@
+{
+  "id": "dotnet-lesson-4-20",
+  "slug": "dotnet-agent-debugging-tracing",
+  "moduleSlug": "dotnet-agent-memory-hitl",
+  "title": "Agent Debugging & Decision Tracing",
+  "description": "Debug AI agent failures, trace decision chains, and build replay tooling for iterative agent development.",
+  "order": 4,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["agent-debugging", "tracing", "replay", "debugging", "agent-quality", "inspection"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "The Black Box Problem: Why Agents Are Hard to Debug"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Unlike traditional applications where you can set breakpoints and step through code, AI agents have non-deterministic, LLM-mediated decision paths. When an agent fails, you can't simply inspect a stack trace. You need to capture the full decision chain — every thought, action, and observation — and provide tooling to replay, inspect, and analyze them."
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Decision Tracing: Capturing Thought -> Action -> Observation"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Every agent step produces three pieces of information: the agent's internal reasoning (thought/prompt sent to LLM), the tool call it decided to make (action), and the result from the environment (observation). Capturing all three into a structured trace allows post-hoc analysis of why the agent took a particular path."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Agent Step Tracing with Full Context Capture",
+        "content": "Capturing thought, action, and observation for each agent step:",
+        "language": "csharp",
+        "code": "public class AgentStepTrace\n{\n    public int StepNumber { get; set; }\n    public DateTimeOffset Timestamp { get; set; }\n    public ChatMessage Thought { get; set; }  // LLM reasoning output\n    public FunctionCallContent Action { get; set; }  // Tool call decision\n    public string Observation { get; set; }  // Tool result\n    public TimeSpan Duration { get; set; }\n    public Dictionary<string, object> Metadata { get; set; }\n}\n\npublic class TracedAgent\n{\n    private readonly List<AgentStepTrace> _trace = new();\n\n    public async Task<string> RunAsync(string userGoal)\n    {\n        var conversation = new List<ChatMessage> { new(ChatRole.User, userGoal) };\n        \n        for (int step = 0; step < MaxIterations; step++)\n        {\n            var stepStart = Stopwatch.StartNew();\n            \n            // Record the full prompt that went to the LLM\n            var requestMsg = CloneConversation(conversation);\n            \n            var completion = await _client.CompleteAsync(conversation);\n            \n            var functionCalls = completion.Message.Contents\n                .OfType<FunctionCallContent>().ToList();\n            \n            if (!functionCalls.Any())\n            {\n                // Final answer — record and return\n                _trace.Add(new AgentStepTrace\n                {\n                    StepNumber = step,\n                    Timestamp = DateTimeOffset.UtcNow,\n                    Thought = requestMsg, // What we sent\n                    Action = null, // No tool call\n                    Observation = completion.Message.Text,\n                    Duration = stepStart.Elapsed\n                });\n                return completion.Message.Text;\n            }\n\n            // Execute tool calls and capture observations\n            foreach (var call in functionCalls)\n            {\n                var toolResult = await ExecuteToolAsync(call);\n                \n                _trace.Add(new AgentStepTrace\n                {\n                    StepNumber = step,\n                    Timestamp = DateTimeOffset.UtcNow,\n                    Thought = requestMsg,\n                    Action = call,\n                    Observation = toolResult,\n                    Duration = stepStart.Elapsed,\n                    Metadata = new Dictionary<string, object>\n                    {\n                        [\"token_usage\"] = completion.Usage,\n                        [\"temperature\"] = 0.1\n                    }\n                });\n\n                conversation.Add(new(ChatRole.Tool, toolResult));\n            }\n        }\n        return string.Empty;\n    }\n\n    public void ExportTrace(string sessionId) =>\n        _trace.ToJsonFile($\"traces/{sessionId}.json\");\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Replay and Inspection Tooling"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Agent traces enable powerful debugging workflows: replay a session in isolation, compare two agent versions on the same input, simulate different tool responses, and analyze failure patterns. A dedicated inspector UI shows each step as a card with the thought, action, observation, and resulting trace."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Agent Session Replay API",
+        "content": "An ASP.NET Core controller for replaying agent sessions:",
+        "language": "csharp",
+        "code": "[ApiController]\n[Route(\"api/agent/replay/{sessionId}\")]\npublic class AgentReplayController : ControllerBase\n{\n    private readonly IAgentTraceStore _traces;\n\n    [HttpGet]\n    public async Task<IActionResult> GetReplay(string sessionId, [FromQuery] int? highlightStep = null)\n    {\n        var trace = await _traces.GetAsync(sessionId);\n        if (trace == null) return NotFound();\n\n        var replay = new AgentReplay\n        {\n            SessionId = sessionId,\n            Steps = trace.Steps.Select(s => new ReplayStep\n            {\n                StepNumber = s.StepNumber,\n                Thought = s.Thought,\n                Action = s.Action?.Name,\n                ActionArgs = s.Action?.Arguments,\n                Observation = Truncate(s.Observation, 500),\n                DurationMs = (int)s.Duration.TotalMilliseconds,\n                Success = s.Action == null ? true : s.Observation.Contains(\"error\", StringComparison.OrdinalIgnoreCase) == false\n            }).ToList()\n        };\n\n        return Ok(new { replay, highlightedStep = highlightStep });\n    }\n\n    [HttpPost(\"simulate\")]\n    public async Task<IActionResult> Simulate(string sessionId, [FromBody] SimulatedToolResult simulated)\n    {\n        var trace = await _traces.GetAsync(sessionId);\n        var replayed = await ReplayWithOverrideAsync(trace, simulated);\n        return Ok(replayed);\n    }\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Store traces in a queryable format (JSON with indexed metadata). Add correlation IDs that thread through the entire agent session, including tool calls and external API calls. This lets you search for all traces where a specific tool was called or where the agent made more than N steps."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Capture thought (prompt), action (tool call), and observation (result) for every agent step",
+          "Structured traces enable post-hoc analysis and failure debugging",
+          "Replay tooling allows comparing agent runs, simulating tool responses, and root cause analysis",
+          "Highlight failed steps in the inspector to guide debugging",
+          "Thread correlation IDs through all components for end-to-end traceability"
+        ],
+        "takeaway": "Agent debugging replaces the stack trace with the decision trace. Capturing every step's reasoning, action, and observation makes agent behavior explainable and debuggable."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-agent-memory-architectures", "dotnet-agent-evaluation-monitoring", "dotnet-distributed-tracing"],
+  "relatedGlossaryTerms": ["agent", "tracing", "debugging", "replay"]
+}

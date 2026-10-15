@@ -17,7 +17,9 @@
     "dotnet-horizontal-vertical-scaling",
     "dotnet-resilient-ai-clients",
     "dotnet-streaming-apis-background",
-    "dotnet-durable-workflows"
+    "dotnet-durable-workflows",
+    "dotnet-native-aot-ai",
+    "dotnet-distributed-cache-ai"
   ],
   "whatYouLearn": [
     "Profiling tools and performance counters",

@@ -14,7 +14,8 @@
     "dotnet-github-copilot",
     "dotnet-ai-code-review",
     "dotnet-ai-refactoring",
-    "dotnet-ai-debugging"
+    "dotnet-ai-debugging",
+    "dotnet-ai-pair-programming"
   ],
   "whatYouLearn": [
     "GitHub Copilot best practices",

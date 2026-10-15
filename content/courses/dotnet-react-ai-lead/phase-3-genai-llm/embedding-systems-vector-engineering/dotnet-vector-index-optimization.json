@@ -1,0 +1,143 @@
+{
+  "id": "dotnet-lesson-3-22",
+  "slug": "dotnet-vector-index-optimization",
+  "moduleSlug": "dotnet-embedding-systems",
+  "title": "Vector Database Indexing Algorithms",
+  "description": "Master Approximate Nearest Neighbor (ANN) algorithms: HNSW, IVF-PQ, and choose the right index type for latency vs accuracy tradeoffs.",
+  "order": 2,
+  "difficulty": "advanced",
+  "estimatedMinutes": 60,
+  "tags": ["vector-database", "ann", "hnsw", "ivf-pq", "indexing", "optimization"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "Approximate Nearest Neighbor (ANN) Algorithms"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Exact nearest neighbor search requires computing distances to every vector in the database — computationally infeasible for large corpora. Approximate Nearest Neighbor algorithms trade perfect accuracy for dramatic speedups. The three dominant algorithms are HNSW (graph-based), IVF-PQ (quantization-based), and LSH (hash-based). Understanding their tradeoffs is essential for production RAG systems."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "ann-algorithm-comparison",
+        "caption": "ANN algorithm tradeoffs: HNSW vs IVF-PQ vs LSH",
+        "definition": "graph TD\n    subgraph HNSW[\"HNSW (Hierarchical NSW)\"]\n        H1[\"Hierarchical graph layers\\nTop layers = coarse navigation\\nBottom layer = dense connections\"]\n        H2[\"O(log n) query time\\nHigh recall (95-99%)\\nMemory: 3-6x vector size\"]\n        H3[\"Best for: < 100M vectors\\nGood recall + speed\"]\n    end\n\n    subgraph IVFPQ[\"IVF-PQ (Inverted File + Product Quantization)\"]\n        I1[\"Coarse quantizer (k-means)\\nFine quantizer (PQ codebook)\"]\n        I2[\"O(n^(1/4)) query time\\nRecall: 70-90%\\nMemory: 0.1-0.3x vector size\"]\n        I3[\"Best for: > 100M vectors\\nLow memory, fast\"]\n    end\n\n    subgraph LSH[\"LSH (Locality Sensitive Hashing)\"]\n        L1[\"Hash functions preserve\\nrelative distances in hash space\"]\n        L2[\"O(1) query time\\nRecall: 50-80%\\nMemory: 0.05-0.2x vector size\"]\n        L3[\"Best for: Ultra-low memory\\nSimple setups\"]\n    end\n\n    HNSW -->|Tradeoff| IVFPQ\n    IVFPQ -->|Tradeoff| LSH\n    L1 --> L2 --> L3\n    H1 --> H2 --> H3\n    I1 --> I2 --> I3"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "HNSW: Hierarchical Navigable Small World"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "HNSW builds a multi-layer graph where top layers provide coarse-grained navigation and bottom layers provide fine-grained connectivity. During search, entry from the top layer navigates to increasingly dense layers until reaching the bottom. This produces near-optimal recall with O(log n) query complexity."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Configuring HNSW in Azure AI Search",
+        "content": "HNSW index parameters for different performance targets:",
+        "language": "csharp",
+        "code": "var index = new SearchIndex(\"documents\")\n{\n    // HNSW algorithm configuration\n    VectorSearch = new VectorSearch\n    {\n        Algorithms = new[]\n        {\n            new HnswVectorSearchAlgorithmConfiguration\n            {\n                Name = \"hnsw-accuracy\",\n                Parameters = new HnswParameters\n                {\n                    Metric = \"cosine\",\n                    M = 8,          // Higher M = better recall, more memory\n                    EfConstruction = 200, // Higher = better graph quality, slower build\n                    EfSearch = 100  // Search parameter: higher = better accuracy, slower query\n                }\n            },\n            new HnswVectorSearchAlgorithmConfiguration\n            {\n                Name = \"hnsw-speed\",\n                Parameters = new HnswParameters\n                {\n                    Metric = \"cosine\",\n                    M = 4,            // Lower M = less memory, lower recall\n                    EfConstruction = 100,\n                    EfSearch = 50      // Lower search = faster but less accurate\n                }\n            }\n        }\n    }\n};"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "IVF-PQ: Inverted File with Product Quantization"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "IVF-PQ first partitions the vector space into Voronoi cells (coarse quantization), then compresses each vector into a compact binary/codebook representation (product quantization). At query time, only vectors in nearby cells are scanned, dramatically reducing computation. PQ can achieve 10-100x compression with moderate accuracy loss."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "IVF-PQ Configuration for Large Corpora",
+        "content": "Optimizing IVF-PQ parameters for 100M+ vector datasets:",
+        "language": "csharp",
+        "code": "var index = new SearchIndex(\"large-corpus\")\n{\n    VectorSearch = new VectorSearch\n    {\n        Algorithms = new[]\n        {\n            new Int32VectorSearchAlgorithmConfiguration\n            {\n                Name = \"ivf-pq-balanced\",\n                Parameters = new Int32VectorParameters\n                {\n                    Metric = \"cosine\",\n                    Nlist = 10000,      // Number of Voronoi cells (coarse quantizer)\n                    Nprobe = 10,        // Cells to search (accuracy vs speed)\n                    Compression = CompressionAmount.Compact,  // PQ compression level\n                    Quantization = QuantizationType.PQ  // Product Quantization\n                }\n            }\n        }\n    }\n};"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Index Selection Decision Matrix"
+      }
+    },
+    {
+      "type": "table",
+      "data": {
+        "headers": ["Dataset Size", "Accuracy Requirement", "Latency Requirement", "Memory Constraint", "Recommended Algorithm"],
+        "rows": [
+          ["< 10M vectors", "High (95%+)", "Fast (<50ms)", "Flexible", "HNSW with high EfSearch"],
+          ["< 100M vectors", "Moderate (80%+)", "Fast (<50ms)", "Flexible", "HNSW with balanced params"],
+          ["> 100M vectors", "Moderate (80%+)", "Fast (<50ms)", "Tight (minimal)", "IVF-PQ with high Nlist"],
+          ["> 100M vectors", "High (95%+)", "Medium (<200ms)", "Flexible", "HNSW with high M and Ef"],
+          ["Any size", "Low (60%+)", "Ultra-fast (<10ms)", "Very tight", "IVF-PQ with low Nprobe or LSH"]
+        ]
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Dynamic Index Parameters"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Index parameters need to be tuned per workload. EfSearch (HNSW) and Nprobe (IVF) can be adjusted at query time without rebuilding the index, enabling per-query optimization. For a production system, you can route high-priority queries (e.g., customer-facing search) with higher accuracy settings, and batch/recommendation queries with lower settings."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Query-Time Accuracy Tuning",
+        "content": "Adjusting search accuracy dynamically per query type:",
+        "language": "csharp",
+        "code": "public class VectorSearchService\n{\n    private readonly SearchClient _client;\n\n    public async Task<SearchResults<Document>> SearchAsync(\n        string query, string indexName, bool isCustomerFacing = false)\n    {\n        var options = new SearchOptions\n        {\n            // For customer-facing queries: maximize accuracy\n            // For batch/recommendation: prioritize speed\n            Size = isCustomerFacing ? 10 : 50,\n            VectorSearch = new() // Override with query-specific parameters\n            {\n                Queries = new[]\n                {\n                    new VectorizableEmbedding (\n                        await GenerateEmbeddingAsync(query), \"contentVector\")\n                    {\n                        // Higher k for customer queries\n                        K = isCustomerFacing ? 50 : 100,\n                        // Override algorithm parameters\n                        Override = new VectorSearchAlgorithmOverride\n                        {\n                            Name = \"hnsw-\" + (isCustomerFacing ? \"accuracy\" : \"speed\")\n                        }\n                    }\n                }\n            }\n        };\n\n        return await _client.SearchAsync<Document>(query, options);\n    }\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "tip",
+        "text": "Rebuild the HNSW graph periodically as your data grows. A graph built on 10K vectors performs poorly at 1M vectors. Plan for re-indexing during low-traffic windows."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "HNSW offers the best speed-accuracy balance for datasets under ~100M vectors",
+          "IVF-PQ dramatically reduces memory usage at the cost of some accuracy, ideal for massive corpora",
+          "EfSearch/Nprobe parameters enable per-query accuracy tuning without reindexing",
+          "Higher M (HNSW) and Nlist (IVF) improve accuracy but increase build time and memory",
+          "Re-index periodically — graph quality degrades quadratically with dataset growth"
+        ],
+        "takeaway": "Select your ANN algorithm based on dataset size and accuracy requirements, then tune query-time parameters for per-query performance optimization."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-embedding-model-optimization", "dotnet-vector-databases", "dotnet-hybrid-search"],
+  "relatedGlossaryTerms": ["vector-database", "ann", "embedding"]
+}

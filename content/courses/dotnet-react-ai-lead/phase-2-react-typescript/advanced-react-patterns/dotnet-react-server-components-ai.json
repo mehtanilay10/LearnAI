@@ -1,0 +1,101 @@
+{
+  "id": "dotnet-lesson-2-17",
+  "slug": "dotnet-react-server-components-ai",
+  "moduleSlug": "dotnet-advanced-react",
+  "title": "React Server Components with AI Data Fetching",
+  "description": "Leverage React Server Components (RSC) to pre-fetch AI data, stream partial UI, and optimize server-side rendering for AI-powered pages.",
+  "order": 6,
+  "difficulty": "advanced",
+  "estimatedMinutes": 55,
+  "tags": ["react-server-components", "rsc", "streaming", "server-side-rendering", "ai-data", "nextjs-15"],
+  "blocks": [
+    {
+      "type": "heading",
+      "data": {
+        "level": 2,
+        "text": "React Server Components: Server-First AI Rendering"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "React Server Components render on the server and stream HTML to the client. Unlike client components, they don't ship JavaScript bundles to the browser. For AI applications, this means you can fetch LLM data server-side, render the initial response immediately, and progressively enhance with interactive client components only where needed — dramatically reducing bundle size and Time to First Byte."
+      }
+    },
+    {
+      "type": "mermaid",
+      "data": {
+        "id": "rsc-ai-rendering-flow",
+        "caption": "RSC rendering flow for AI-powered pages",
+        "definition": "flowchart LR\n    ClientReq[Client Request] --> ServerComp[\"Server Component\\n(Async Data Fetch)\"]\n    ServerComp --> AsyncAwait{await AI\\nResponse?}\n    AsyncAwait -->|Streaming| StreamResp[Stream Partial UI]\n    AsyncAwait -->|Resolved| FullRender[Full Render]\n    StreamResp --> ClientHydration[\"Client Hydration\\n(Client Components Only)\"]\n    FullRender --> ClientHydration\n    ClientHydration --> Interactive[Interactive AI UI]\n    ServerComp -->|Server Actions| BackendAPI[.NET Backend API]"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Data Fetching in Server Components"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "In React Server Components, you can use async/await directly in the component body. This is perfect for fetching AI data from your .NET backend — the component suspends until data is ready, and React streams the rendered output incrementally to the client."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "AI Knowledge Base Page as a Server Component",
+        "content": "A server component that pre-fetches AI-generated knowledge base articles:",
+        "language": "tsx",
+        "code": "// app/knowledge-base/page.tsx\n\nimport { KnowledgeSidebar } from './knowledge-sidebar';\nimport { ChatInterface } from './chat-interface';\nimport { fetchKbArticles } from '@/lib/api/kb';\nimport { generateSummary } from '@/lib/api/ai';\n\n// Server Component — runs entirely on the server\nexport default async function KnowledgeBasePage({\n    searchParams,\n}: {\n    searchParams: Promise<{ q?: string }>;\n}) {\n    const { q = '' } = await searchParams;\n    \n    // Fetch KB articles server-side (parallel with search)\n    const articles = await fetchKbArticles(q);\n    \n    // Pre-generate AI summary for the page (server-side)\n    const summary = articles.length > 0\n        ? await generateSummary(articles.map(a => a.title))\n        : null;\n    \n    return (\n        <div className=\"kb-layout\">\n            <aside>\n                <KnowledgeSidebar articles={articles} />\n            </aside>\n            <main>\n                {summary && (\n                    <section className=\"ai-summary\">\n                        <h2>AI-Generated Summary</h2>\n                        <p>{summary}</p>\n                    </section>\n                )}\n                <ChatInterface articles={articles} />\n            </main>\n        </div>\n    );\n}\n\n// Client Component — interactive chat\n'use client';\nexport function ChatInterface({ articles }: { articles: Article[] }) {\n    const [messages, setMessages] = useState<Message[]>([]);\n    const [input, setInput] = useState('');\n    \n    // Only the chat interaction logic ships to the client\n    // The heavy data fetching was done in the Server Component\n    return (\n        <div className=\"chat-interface\">\n            {messages.map(msg => (\n                <MessageItem key={msg.id} message={msg} />\n            ))}\n            <form onSubmit={(e) => handleSubmit(e, articles, setMessages, input)}>\n                <input value={input} onChange={e => setInput(e.target.value)} />\n            </form>\n        </div>\n    );\n}"
+      }
+    },
+    {
+      "type": "heading",
+      "data": {
+        "level": 3,
+        "text": "Streaming Partial Content with Suspense"
+      }
+    },
+    {
+      "type": "paragraph",
+      "data": {
+        "text": "Server Components support React Suspense for streaming. While slow data (like an LLM summary) is fetching, the user sees the rest of the page immediately. Once the summary resolves, it streams in and the user sees it appear without a full page reload."
+      }
+    },
+    {
+      "type": "example",
+      "data": {
+        "title": "Suspense Boundary for Async AI Content",
+        "content": "Streaming server-rendered AI content with Suspense fallback:",
+        "language": "tsx",
+        "code": "// app/knowledge-base/summary.tsx\n\nimport { Suspense } from 'react';\nimport { generateSummary } from '@/lib/api/ai';\n\nexport async function AISummary({ titles }: { titles: string[] }) {\n    const summary = await generateSummary(titles);\n    return (\n        <article className=\"prose max-w-2xl\">\n            <h2>AI Summary</h2>\n            <p>{summary}</p>\n        </article>\n    );\n}\n\n// In the parent page:\nexport default async function Page() {\n    const articles = await fetchKbArticles();\n    \n    return (\n        <main>\n            {/* Articles render immediately */}\n            <ArticleList articles={articles} />\n            \n            {/* Summary streams when ready */}\n            <Suspense fallback={<div className=\"skeleton\">Generating AI summary...</div>}>\n                <AISummary titles={articles.map(a => a.title)} />\n            </Suspense>\n        </main>\n    );\n}"
+      }
+    },
+    {
+      "type": "callout",
+      "data": {
+        "variant": "info",
+        "text": "Server Components cannot use useState or other client-side hooks. Any interactive element that needs state management must be a separate client component, imported and used within the server component. This separation is automatic and enforced by Next.js 15."
+      }
+    },
+    {
+      "type": "summary-box",
+      "data": {
+        "title": "Key Takeaways",
+        "points": [
+          "Server Components run on the server, reducing client bundle size for AI-heavy pages",
+          "Async/await in component bodies suspends rendering until data resolves",
+          "Suspense streams partial UI while awaiting slow operations",
+          "Separate interactive elements into client components with 'use client'",
+          "Perfect for pre-fetching LLM-generated content server-side"
+        ],
+        "takeaway": "RSC enables server-first AI rendering: heavy data fetching and AI inference happen server-side, streaming progressive UI to the client with minimal JavaScript."
+      }
+    }
+  ],
+  "relatedLessons": ["dotnet-react-server-actions-ai", "dotnet-streaming-ai-ux", "dotnet-react-query-server-state"],
+  "relatedGlossaryTerms": ["react-server-components", "streaming", "server-side-rendering", "suspense"]
+}

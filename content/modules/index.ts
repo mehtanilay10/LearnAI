@@ -84,6 +84,13 @@ import dotnetAiAssistedDev from '../courses/dotnet-react-ai-lead/phase-6-securit
 import dotnetCapstoneDesign from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-design/content.json';
 import dotnetCapstoneImplementation from '../courses/dotnet-react-ai-lead/phase-7-capstone/capstone-implementation/content.json';
 
+// Phase 1: New module - Clean Architecture & .NET Aspire
+import dotnetCleanArchitectureAspire from '../courses/dotnet-react-ai-lead/phase-1-advanced-dotnet/clean-architecture-dotnet-aspire/content.json';
+// Phase 3: New module - Embedding Systems & Vector Engineering
+import dotnetEmbeddingSystems from '../courses/dotnet-react-ai-lead/phase-3-genai-llm/embedding-systems-vector-engineering/content.json';
+// Phase 4: New module - Agent Memory & Human-in-the-Loop
+import dotnetAgentMemoryHitl from '../courses/dotnet-react-ai-lead/phase-4-rag-agents-mcp/agent-memory-hitl/content.json';
+
 const rawModules = [
   whatIsAi,
   aiToolsOverview,
@@ -118,6 +125,7 @@ const rawModules = [
   dotnetAdvancedCsharp,
   dotnetSystemDesign,
   dotnetPerformanceScaling,
+  dotnetCleanArchitectureAspire,
   dotnetAdvancedReact,
   dotnetTypescriptAdvanced,
   dotnetStateManagement,
@@ -125,9 +133,11 @@ const rawModules = [
   dotnetPromptEngineering,
   dotnetLlmIntegration,
   dotnetAiSdkSemantickernel,
+  dotnetEmbeddingSystems,
   dotnetRagFundamentals,
   dotnetAiAgents,
   dotnetMcpIntegration,
+  dotnetAgentMemoryHitl,
   dotnetAzureFundamentals,
   dotnetDevopsCicd,
   dotnetMonitoringObservability,
